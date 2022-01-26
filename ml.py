@@ -2,7 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import sklearn
 from sklearn.decomposition import PCA
+from umap import UMAP
 
 os.makedirs("data/reports")
 
@@ -42,3 +44,18 @@ plt.show()
 fig, ax = plt.subplots()
 ax.plot(t[1], t[2], "bo")
 plt.show()
+
+###############################################################################
+# UMAP
+###############################################################################
+
+df_umap = df_pivot.iloc[:, 1:]
+
+umap = UMAP(n_neighbors=100, random_state=111)
+t = umap.fit(df_umap)
+
+plt.scatter(t.embedding_[:, 0], t.embedding_[:, 1])
+plt.title("Embedding of the training set by UMAP", fontsize=24)
+plt.show()
+
+tdf = pd.DataFrame(t.embedding_)
