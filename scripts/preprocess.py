@@ -54,6 +54,11 @@ df_template = pd.melt(
     template, id_vars="parameter_name", var_name="p_value_temp", value_name="delete"
 )
 
+df_log.loc[
+    (df_log.marker_symbol == "1500009L16Rik")
+    & (df_log.parameter_name == "Heart weight")
+]
+
 df_concat = pd.DataFrame(columns=df_log.columns)
 for symbol in df_log.marker_symbol.unique():
     print(symbol)
