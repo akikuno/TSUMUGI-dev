@@ -41,6 +41,11 @@ df_log["p_value"] = df_log["p_value"].replace(0, 10 ** -20)
 df_log["p_value"] = -np.log10(df_log["p_value"])
 df_log[df_log["p_value"] > 20] = 20
 
+# symbolとparameterが重複している場合には-logPが大きい方を選択する
+df_log = (
+    df_log.groupby(["marker_symbol", "parameter_name"]).aggregate(np.max).reset_index()
+)
+
 df_log["p_value"].describe()
 df_log.parameter_name.describe()
 
@@ -53,11 +58,6 @@ template["p_value"] = 0
 df_template = pd.melt(
     template, id_vars="parameter_name", var_name="p_value_temp", value_name="delete"
 )
-
-df_log.loc[
-    (df_log.marker_symbol == "1500009L16Rik")
-    & (df_log.parameter_name == "Heart weight")
-]
 
 df_concat = pd.DataFrame(columns=df_log.columns)
 for symbol in df_log.marker_symbol.unique():
