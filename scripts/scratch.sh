@@ -20,9 +20,6 @@ zcat data/impc/results/geneAndMPTermAssociation.csv.gz |
 # data/impc/results/statistical-results-ALL.csv.gz
 
 zcat data/impc/results/statistical-results-ALL.csv.gz |
-    head -n 1 >tmp.csv
-zcat data/impc/results/statistical-results-ALL.csv.gz |
-    grep Maf, >>tmp.csv
+    grep -e phenotyping_center, -e "Maf<em1(IMPC)Mbp>" >tmp_maf.csv
 
-gzip -c tmp.csv >tmp.csv.gz
 # END

@@ -15,9 +15,10 @@ df = pd.read_csv(in_file)
 # Select columns
 ###############################################################################
 
-cols = ["marker_symbol", "parameter_name", "p_value"]
+cols = ["marker_symbol", "parameter_name", "p_value", "effect_size"]
 df_select = df[cols]
 
+df_select["parameter_name"].value_counts()
 ###############################################################################
 # Filter P value < 0.05
 ###############################################################################

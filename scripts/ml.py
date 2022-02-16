@@ -51,11 +51,11 @@ plt.show()
 
 df_umap = df_pivot.iloc[:, 1:]
 
-umap = UMAP(n_neighbors=100, random_state=111)
+umap = UMAP(n_neighbors=10, random_state=111)
 t = umap.fit(df_umap)
 
 plt.scatter(t.embedding_[:, 0], t.embedding_[:, 1])
-plt.title("Embedding of the training set by UMAP", fontsize=24)
+plt.title("Embedding by UMAP", fontsize=24)
 plt.show()
 
 tdf = pd.DataFrame(t.embedding_)
