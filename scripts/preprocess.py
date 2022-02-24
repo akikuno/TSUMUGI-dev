@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 os.makedirs("data/reports")
 
@@ -18,15 +19,30 @@ df = pd.read_csv(in_file)
 cols = ["marker_symbol", "parameter_name", "p_value", "effect_size"]
 df_select = df[cols]
 
-df_select["parameter_name"].value_counts()
 ###############################################################################
-# Filter P value < 0.05
+# Filter P value < 0.05 and Effect size > ± 75%
 ###############################################################################
+tmp: pd.DataFrame = df_select
 
-df_filter = df_select[df_select["p_value"] < 0.05]
+tmp = tmp[tmp.marker_symbol == "Maf"]
+tmp[tmp.effect_size == 1]
 
+pval_filter = df_select["p_value"] < 0.05
+
+qhigh = df_select["effect_size"].quantile(0.95)
+qlow = df_select["effect_size"].quantile(0.05)
+es_filter = (df_select["effect_size"] > qhigh) | (df_select["effect_size"] < qlow)
+
+df_filter = df_select[pval_filter & es_filter]
 df_filter = df_filter.drop_duplicates(subset=cols)
 df_filter = df_filter.sort_values(["marker_symbol", "p_value"])
+
+tmp = df_filter["effect_size"]
+tmp = pd.DataFrame(tmp.describe())
+target = ["min", "25%", "50%", "75%", "max"]
+tmp[tmp.index.isin(target)].boxplot()
+plt.show()
+# 192632
 # 一時保存
 df_filter.to_csv("data/reports/pval_filter.csv", index=False)
 
@@ -34,6 +50,7 @@ df_filter.to_csv("data/reports/pval_filter.csv", index=False)
 # Convert to -log10 P value
 ###############################################################################
 
+df_filter["effect_size"].describe()
 df_filter = pd.read_csv("data/reports/pval_filter.csv")
 
 # P値の対数変換および最大値を20に設定
