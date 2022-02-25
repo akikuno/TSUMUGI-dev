@@ -14,5 +14,8 @@ conda update conda -y
 conda create -y -n impc
 conda install -y -n impc -c conda-forge \
     numpy pandas scikit-learn matplotlib seaborn hdbscan umap-learn networkx \
-    r-base r-essentials r-arules
+    r-base r-essentials
+
+Rscript -e 'install.packages(c("arules", "arulesVis"), repos = "http://cran.us.r-project.org")'
+Rscript -e 'install.packages(c("tnet", "bipartite"), repos = "http://cran.us.r-project.org" )'
 ```

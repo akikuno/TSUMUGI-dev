@@ -16,9 +16,13 @@ df = pd.read_csv(in_file)
 # Select columns
 ###############################################################################
 
-cols = ["marker_symbol", "parameter_name", "p_value", "effect_size"]
+cols = ["marker_symbol", "mp_term_name", "zygosity", "effect_size"]
 df_select = df[cols]
 
+tmp = df_select.dropna()
+
+tmp.effect_size.plot(style=".")
+plt.show()
 ###############################################################################
 # Filter P value < 0.05 and Effect size > ± 75%
 ###############################################################################
