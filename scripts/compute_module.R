@@ -26,7 +26,6 @@ modules <- as_adjacency_matrix(g, attr = "effect_size") %>%
     computeModules()
 end <- Sys.time() #---------
 
-end - start # 44 min
 
 list_modules <- listModuleInformation(modules)
 
@@ -35,6 +34,8 @@ str(list_modules)
 # Export
 ###########################################################
 save(list_modules, file = "reports/list_modules.rda")
+
+end - start # 44 min
 
 write_csv(df_mp_term, "reports/symbol_mp_zygosity_effectsize.csv")
 
