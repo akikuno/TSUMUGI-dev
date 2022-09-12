@@ -1,7 +1,7 @@
-from urllib import request
-from bs4 import BeautifulSoup
-from http.client import RemoteDisconnected
 from pathlib import Path
+from urllib import request
+from http.client import RemoteDisconnected
+from bs4 import BeautifulSoup
 
 url = "http://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-17.0/results/"
 
