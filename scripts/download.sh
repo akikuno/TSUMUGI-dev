@@ -2,15 +2,18 @@
 
 mkdir -p data/impc
 echo "*" >data/impc/.gitignore
-
 mkdir -p data/impc/results/
 rm -rf ftp*
-wget -O - http://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/results |
-    grep "^<a href=" |
-    cut -d '"' -f 2 |
+
+url_impc="http://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-17.0/results/"
+
+wget -O - "$url_impc" >tmp
+cat tmp |
+    grep "<a href="
+cut -d '"' -f 2 |
     while read -r line; do
         echo "$line"
-        wget -P data/impc/results/ http://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/results/"$line"
+        wget -P data/impc/results/ http""/"$line"
     done
 
 ###############################################################################
