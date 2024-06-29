@@ -17,6 +17,35 @@
 
 https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-21.1/
 
+### 残す列
+
+https://www.mousephenotype.org/help/programmatic-data-access/data-fields/
+
+#### 解析に使用する列
+- zygosity
+- sex
+- p_value
+- effect_size
+- categorical_p_value
+- categorical_effect_size
+- batch_significant
+- mp_term_name
+- top_level_mp_term_name
+- marker_symbol
+
+#### 生データにアクセスするための列
+
+- allele_accession_id=MGI:5548394&
+- phenotyping_center=HMGU
+- parameter_stable_id=IMPC_CBC_009_001
+- pipeline_stable_id=HMGU_001
+
+例： https://www.mousephenotype.org/data/exportraw?allele_accession_id=MGI:5548394&phenotyping_center=HMGU&parameter_stable_id=IMPC_CBC_009_001&pipeline_stable_id=HMGU_001
+
+#### なんだかよくわからない列
+- null_test_p_valueとp_valueの違い
+
+
 ## Setting
 
 ```bash
