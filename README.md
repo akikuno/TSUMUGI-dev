@@ -25,9 +25,9 @@ https://www.mousephenotype.org/help/programmatic-data-access/data-fields/
 - zygosity
 - sex
 - p_value
+- genotype_effect_p_value
+- sex_effect_p_value
 - effect_size
-- categorical_p_value
-- categorical_effect_size
 - batch_significant
 - mp_term_name
 - top_level_mp_term_name
