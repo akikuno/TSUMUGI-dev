@@ -25,7 +25,6 @@ https://www.mousephenotype.org/help/programmatic-data-access/data-fields/
 - zygosity
 - sex
 - p_value
-- genotype_effect_p_value
 - sex_effect_p_value
 - effect_size
 - batch_significant
@@ -43,7 +42,7 @@ https://www.mousephenotype.org/help/programmatic-data-access/data-fields/
 例： https://www.mousephenotype.org/data/exportraw?allele_accession_id=MGI:5548394&phenotyping_center=HMGU&parameter_stable_id=IMPC_CBC_009_001&pipeline_stable_id=HMGU_001
 
 #### なんだかよくわからない列
-- null_test_p_valueとp_valueの違い
+- null_test_p_value, genotype_p_value, p_valueの違い
 
 
 ## Setting
