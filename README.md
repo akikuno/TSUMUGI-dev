@@ -51,6 +51,10 @@ https://www.mousephenotype.org/help/programmatic-data-access/data-fields/
 conda update conda -y
 conda create -y -n impc
 conda install -y -n impc -c conda-forge \
-    numpy pandas scikit-learn matplotlib seaborn hdbscan umap-learn networkx \
+    numpy pandas scikit-learn matplotlib seaborn networkx \
     r-base r-essentials
+
+conda activate impc
+pip install -U pip
+pip install k-means-constrained
 ```

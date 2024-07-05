@@ -12,7 +12,7 @@ df_url <-
     ))
 
 
-threshold <- 1e-4
+threshold <- 0.05
 
 df_filter <-
     df_url %>%
@@ -31,10 +31,20 @@ df_select <-
     # head(100) %>%
     # as.data.frame()
 
-write_tsv(df_select, "data/impc/results_filtered.tsv")
+write_tsv(df_select, "data/impc/results_filtered_all.tsv")
 
 df_select %>%
-    select(top_level_mp_term_name) %>%
-    group_by(top_level_mp_term_name) %>%
-    summarise(Unique_Elements = n()) %>%
-    as.data.frame()
+    filter(data_type == "unidimensional") %>%
+    write_tsv("data/impc/results_filtered_unidimensional.tsv")
+
+# df_select %>%
+#     select(data_type) %>%
+#     group_by(data_type) %>%
+#     summarise(Unique_Elements = n()) %>%
+#     as.data.frame()
+
+# df_select %>%
+#     select(top_level_mp_term_name) %>%
+#     group_by(top_level_mp_term_name) %>%
+#     summarise(Unique_Elements = n()) %>%
+#     as.data.frame()
