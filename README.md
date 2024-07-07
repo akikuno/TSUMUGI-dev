@@ -44,6 +44,19 @@ https://www.mousephenotype.org/help/programmatic-data-access/data-fields/
 #### なんだかよくわからない列
 - null_test_p_value, genotype_p_value, p_valueの違い
 
+## 戦略
+
+### unidimensionalだけにして、homoとhetero、オスとメスの4カテゴリーに分ける
+- male/homo
+- male/hetero
+- female/homo
+- female/hetero
+
+この4グループのそれぞれから、KOで似た表現型を呈する遺伝子群を探索する
+
+1つの表現型だけが似ているというものを除くため、2つ以上のeffect_size != 0があるもの
+
+
 
 ## Setting
 
