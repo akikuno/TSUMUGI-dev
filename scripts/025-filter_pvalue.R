@@ -6,8 +6,8 @@ df <- read_csv("data/impc/statistical-results-ALL.csv")
 colnames(df) %>% sort()
 
 df %>%
-    filter(genotype_effect_p_value < 0.05) %>%
-    select(genotype_effect_p_value, male_ko_effect_p_value, female_ko_effect_p_value, male_control_count,male_mutant_count, male_percentage_change) %>%
+    filter(sex_effect_p_value < 0.05) %>%
+    select(sex_effect_p_value, male_ko_effect_p_value, female_ko_effect_p_value, male_control_count,male_mutant_count, male_percentage_change) %>%
     distinct()
 
 df_url <-
