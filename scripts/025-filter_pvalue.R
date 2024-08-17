@@ -5,10 +5,10 @@ df <- read_csv("data/impc/statistical-results-ALL.csv")
 
 colnames(df) %>% sort()
 
-df %>%
-    filter(sex_effect_p_value < 0.05) %>%
-    select(sex_effect_p_value, male_ko_effect_p_value, female_ko_effect_p_value, male_control_count,male_mutant_count, male_percentage_change) %>%
-    distinct()
+# df %>%
+#     filter(sex_effect_p_value < 0.05) %>%
+#     select(sex_effect_p_value, male_ko_effect_p_value, female_ko_effect_p_value, male_control_count,male_mutant_count, male_percentage_change) %>%
+#     distinct()
 
 df_url <-
     df %>%
@@ -17,11 +17,26 @@ df_url <-
     ))
 
 
-threshold <- 0.05
+df_url %>% select(significant, p_value, )
+threshold <- 10^-4
+
+df_filter_p_batch <-
+    df_url %>%
+    filter(p_value < threshold & (batch_significant == "FALSE" | is.na(batch_significant)))
 
 df_filter <-
     df_url %>%
-    filter(p_value < threshold & (batch_significant == "FALSE" | is.na(batch_significant)))
+    filter(p_value < threshold)
+
+nrow(df_filter)
+nrow(df_filter_p_batch)
+
+
+write_csv(df_filter, "data/impc/statistical_filtered_pvalue.csv")
+
+# df_filter <-
+#     df_url %>%
+#     filter(p_value < threshold & (batch_significant == "FALSE" | is.na(batch_significant)))
 
 # df_filter %>%
 #     filter(parameter_stable_id == "IMPC_FER_001_001") %>%
