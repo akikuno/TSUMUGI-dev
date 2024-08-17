@@ -8,7 +8,6 @@ system("mkdir -p data/mp_term_name")
 # df <- df %>%
 #     mutate(mp_term_name = make_clean_names(mp_term_name))
 df %>%
-    filter(!is.na(mp_term_name)) %>%
     select(mp_term_name) %>%
     distinct() %>%
     arrange(mp_term_name) %>%

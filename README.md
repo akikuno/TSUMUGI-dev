@@ -86,10 +86,10 @@ https://www.mousephenotype.org/help/programmatic-data-access/data-fields/
 
 ```bash
 conda update conda -y
-conda create -y -n impc python=3.10
-conda install -y -n impc -c conda-forge \
-    numpy pandas scikit-learn matplotlib seaborn networkx \
+conda create -y -n env-impc python=3.10
+conda install -y -n env-impc -c conda-forge \
+    numpy pandas scikit-learn matplotlib seaborn networkx ipykernel \
     r-base r-essentials \
     dash dash_cytoscape
-conda activate impc
+conda activate env-impc
 ```

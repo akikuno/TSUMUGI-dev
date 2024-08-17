@@ -17,7 +17,6 @@ df_url <-
     ))
 
 
-df_url %>% select(significant, p_value, )
 threshold <- 10^-4
 
 # df_filter_p_batch <-
@@ -28,7 +27,7 @@ threshold <- 10^-4
 
 df_filter <-
     df_url %>%
-    filter(p_value < threshold)
+    filter(p_value < threshold, !is.na(mp_term_name))
 
 nrow(df_filter)
 
