@@ -4,13 +4,20 @@ import plotly.graph_objects as go
 from dash import dcc, html
 from dash.dependencies import Input, Output
 
-# Raw CSV-like data
-data = [
-    {"from": "A", "to": "B", "node_size": 3, "edge_size": 1},
-    {"from": "B", "to": "C", "node_size": 1, "edge_size": 3},
-    {"from": "C", "to": "A", "node_size": 2, "edge_size": 2},
-    {"from": "C", "to": "D", "node_size": 1, "edge_size": 1},
-]
+from pathlib import Path
+import pandas as pd
+
+path_network = Path("data", "network.csv")
+df_network = pd.read_csv(path_network)
+data = df_network.to_dict(orient="records")
+
+# # Raw CSV-like data
+# data = [
+#     {"from": "A", "to": "B", "node_size": 3, "edge_size": 1},
+#     {"from": "B", "to": "C", "node_size": 1, "edge_size": 3},
+#     {"from": "C", "to": "A", "node_size": 2, "edge_size": 2},
+#     {"from": "C", "to": "D", "node_size": 1, "edge_size": 1},
+# ]
 
 # Create unique nodes and determine their sizes
 node_sizes = {}
@@ -40,7 +47,7 @@ elements = []
 
 # Add nodes with size labels and color based on size
 for node, size in node_sizes.items():
-    scaled_size = size * 20  # Scale node size
+    scaled_size = size * 10  # Scale node size
     color = interpolate_color(size, min_size, max_size)
     elements.append(
         {
