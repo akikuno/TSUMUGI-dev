@@ -1,11 +1,10 @@
+from pathlib import Path
+
 import dash
 import dash_cytoscape as cyto
-import plotly.graph_objects as go
+import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output
-
-from pathlib import Path
-import pandas as pd
 
 path_network = Path("data", "network.csv")
 df_network = pd.read_csv(path_network)
@@ -47,17 +46,16 @@ elements = []
 
 # Add nodes with size labels and color based on size
 for node, size in node_sizes.items():
-    scaled_size = size * 10  # Scale node size
+    scaled_size = size * 20  # Scale node size
     color = interpolate_color(size, min_size, max_size)
     elements.append(
         {
-            "data": {"id": node, "label": f"{node} ({size})"},
+            "data": {"id": node, "label": node},
+            # "data": {"id": node, "label": f"{node} ({size})"},
             "style": {
                 "width": scaled_size,
                 "height": scaled_size,
                 "background-color": color,
-                "border-color": "black",
-                "border-width": 2,
             },
         }
     )
@@ -71,29 +69,9 @@ for entry in data:
                 "target": entry["to"],
                 "label": f"{entry['edge_size']}",  # Edge size label
             },
-            "style": {"width": entry["edge_size"] * 2},  # Scale edge width
+            "style": {"width": entry["edge_size"] * 10},  # Scale edge width
         }
     )
-
-# Create the color scale as a vertical color bar using Plotly
-colorscale_fig = go.Figure(
-    go.Heatmap(
-        # z=[[min_size, max_size]],
-        # colorscale=[[0, "rgb(255, 255, 0)"], [1, "rgb(255, 140, 0)"]],
-        showscale=True,
-        colorbar=dict(
-            thickness=10,
-            len=1,
-            outlinewidth=1,
-            ticks="outside",
-            tickvals=[min_size, max_size],
-            ticktext=[str(min_size), str(max_size)],
-            title="Node Size",
-        ),
-    )
-)
-
-colorscale_fig.update_layout(margin=dict(l=0, r=0, t=0, b=0), xaxis=dict(visible=False), yaxis=dict(visible=False))
 
 # Initialize the Dash app
 app = dash.Dash(__name__)
@@ -113,8 +91,8 @@ app.layout = html.Div(
                         {"label": "Cose", "value": "cose"},
                         {"label": "Concentric", "value": "concentric"},
                     ],
-                    value="breadthfirst",
-                    clearable=False,
+                    value="cose",
+                    clearable=True,
                     style={"width": "50%"},
                 ),
                 cyto.Cytoscape(
@@ -140,10 +118,6 @@ app.layout = html.Div(
                 ),
             ],
             style={"width": "80%", "display": "inline-block"},
-        ),
-        html.Div(
-            [dcc.Graph(figure=colorscale_fig, config={"displayModeBar": False})],
-            style={"width": "15%", "display": "inline-block", "vertical-align": "top"},
         ),
     ]
 )
