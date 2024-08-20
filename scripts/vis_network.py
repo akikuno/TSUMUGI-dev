@@ -18,7 +18,14 @@ data = df_network.to_dict(orient="records")
 #     {"from": "C", "to": "D", "node_size": 1, "edge_size": 1},
 # ]
 
-# Create unique nodes and determine their sizes
+scale_node_size = 20
+scale_edge_size = 10
+# -----------------------------------------------------------------------------
+# Add nodes with size labels and color based on size
+# -----------------------------------------------------------------------------
+
+# Determine max/min sizes of nodes (= effect size)
+
 node_sizes = {}
 max_size = 0
 min_size = float("inf")
@@ -41,17 +48,24 @@ def interpolate_color(size, min_size, max_size):
     return f"rgb({color[0]}, {color[1]}, {color[2]})"
 
 
-# Create Cytoscape elements
-elements = []
+nodes = []
 
-# Add nodes with size labels and color based on size
-for node, size in node_sizes.items():
-    scaled_size = size * 20  # Scale node size
-    color = interpolate_color(size, min_size, max_size)
-    elements.append(
+for entry in data:
+    scaled_size = entry["node_size"] * scale_node_size  # Scale node size
+    color = interpolate_color(entry["node_size"], min_size, max_size)
+    nodes.append(
         {
-            "data": {"id": node, "label": node},
-            # "data": {"id": node, "label": f"{node} ({size})"},
+            "data": {"id": entry["from"], "label": entry["from"], "annotation": entry["from_mp"].replace("\\n", "\n")},
+            "style": {
+                "width": scaled_size,
+                "height": scaled_size,
+                "background-color": color,
+            },
+        }
+    )
+    nodes.append(
+        {
+            "data": {"id": entry["to"], "label": entry["to"], "annotation": entry["to_mp"].replace("\\n", "\n")},
             "style": {
                 "width": scaled_size,
                 "height": scaled_size,
@@ -60,18 +74,45 @@ for node, size in node_sizes.items():
         }
     )
 
+# for node, size in node_sizes.items():
+#     scaled_size = size * scale_node_size  # Scale node size
+#     color = interpolate_color(size, min_size, max_size)
+#     nodes.append(
+#         {
+#             "data": {"id": node, "label": node},
+#             "style": {
+#                 "width": scaled_size,
+#                 "height": scaled_size,
+#                 "background-color": color,
+#             },
+#         }
+#     )
+
+unique_nodes = list({node["data"]["id"]: node for node in nodes}.values())
+# -----------------------------------------------------------------------------
 # Add edges with size labels
+# -----------------------------------------------------------------------------
+edges = []
+
 for entry in data:
-    elements.append(
+    edges.append(
         {
             "data": {
                 "source": entry["from"],
                 "target": entry["to"],
                 "label": f"{entry['edge_size']}",  # Edge size label
+                "annotation": entry["edge_mp"].replace("\\n", "\n"),
             },
-            "style": {"width": entry["edge_size"] * 10},  # Scale edge width
+            "style": {"width": entry["edge_size"] * scale_edge_size},  # Scale edge width
         }
     )
+
+
+elements = unique_nodes + edges
+
+###############################################################################
+# Dash app
+###############################################################################
 
 # Initialize the Dash app
 app = dash.Dash(__name__)
@@ -81,25 +122,27 @@ app.layout = html.Div(
     [
         html.Div(
             [
+                html.H1("Phenotypic similarity gene network of 'Male Infertility'", style={"textAlign": "center"}),
+                html.P("Select Network layout:"),
                 dcc.Dropdown(
                     id="layout-dropdown",
                     options=[
                         {"label": "Breadthfirst", "value": "breadthfirst"},
                         {"label": "Circle", "value": "circle"},
+                        {"label": "Cose", "value": "cose"},
                         {"label": "Grid", "value": "grid"},
                         {"label": "Random", "value": "random"},
-                        {"label": "Cose", "value": "cose"},
                         {"label": "Concentric", "value": "concentric"},
                     ],
                     value="cose",
-                    clearable=True,
-                    style={"width": "50%"},
+                    clearable=False,
+                    style={"width": "50%", "align-items": "center", "justify-content": "center"},
                 ),
                 cyto.Cytoscape(
                     id="network-graph",
                     elements=elements,
-                    style={"width": "100%", "height": "600px"},
-                    layout={"name": "breadthfirst"},
+                    style={"width": "100%", "height": "1000px"},
+                    layout={"name": "cose"},
                     stylesheet=[
                         {
                             "selector": "node",
@@ -116,17 +159,59 @@ app.layout = html.Div(
                         },
                     ],
                 ),
+                html.Div(id="tooltip"),
             ],
-            style={"width": "80%", "display": "inline-block"},
+            style={"width": "100%", "display": "inline-block"},
         ),
     ]
 )
 
 
-# Callback to update layout based on dropdown selection
-@app.callback(Output("network-graph", "layout"), Input("layout-dropdown", "value"))
-def update_layout(layout):
-    return {"name": layout}
+@app.callback(
+    [Output("network-graph", "layout"), Output("tooltip", "children"), Output("tooltip", "style")],
+    [
+        Input("layout-dropdown", "value"),
+        Input("network-graph", "mouseoverNodeData"),
+        Input("network-graph", "mouseoverEdgeData"),
+        Input("network-graph", "tapNode"),
+        Input("network-graph", "tapEdge"),
+    ],
+)
+def update_layout_and_display_tooltip(layout, node_data, edge_data, tap_node, tap_edge):
+    ctx = dash.callback_context
+
+    # 1. レイアウトドロップダウンが変更された場合
+    if "layout-dropdown.value" in ctx.triggered[0]["prop_id"]:
+        return {"name": layout}, dash.no_update, dash.no_update
+
+    # 2. ノードやエッジがタップまたはマウスオーバーされた場合
+    tooltip_text = ""
+    if "tapNode" in ctx.triggered[0]["prop_id"]:
+        tooltip_text = node_data["annotation"]
+    elif "tapEdge" in ctx.triggered[0]["prop_id"]:
+        tooltip_text = edge_data["annotation"]
+    elif "mouseoverNodeData" in ctx.triggered[0]["prop_id"]:
+        tooltip_text = node_data["annotation"]
+    elif "mouseoverEdgeData" in ctx.triggered[0]["prop_id"]:
+        tooltip_text = edge_data["annotation"]
+
+    tooltip_style = {
+        "visibility": "visible",
+        "position": "absolute",
+        "padding": "20px",
+        "background": "#ddd",
+        "border-radius": "5px",
+        "font-size": "20px",
+        "width": "50%",
+        "margen": "0, auto",
+        "display": "flex",
+        "align-items": "center",
+        "justify-content": "center",
+        "line-height": "1.5",
+        "text-align": "center",
+    }
+
+    return dash.no_update, html.Div(tooltip_text, style={"white-space": "pre-line"}), tooltip_style
 
 
 # Run the app

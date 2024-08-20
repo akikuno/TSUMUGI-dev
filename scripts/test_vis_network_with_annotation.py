@@ -7,7 +7,7 @@ from dash import html
 from dash.dependencies import Input, Output
 
 # CSVデータを文字列として扱う
-csv_data = """from,to,node_size,edge_size,from_node_annotation,to_node_annotation,edge_annotation
+csv_data = """from,to,node_size,edge_size,from_mp,to_mp,edge_mp
 A,B,1,1,"example A\nhogehogehogheohgoeho","example B","example A-B"
 B,C,1,1,"example B","example C","example B-C"
 """
@@ -20,15 +20,15 @@ nodes = []
 edges = []
 
 for index, row in df.iterrows():
-    nodes.append({"data": {"id": row["from"], "label": row["from"], "annotation": row["from_node_annotation"]}})
-    nodes.append({"data": {"id": row["to"], "label": row["to"], "annotation": row["to_node_annotation"]}})
+    nodes.append({"data": {"id": row["from"], "label": row["from"], "annotation": row["from_mp"]}})
+    nodes.append({"data": {"id": row["to"], "label": row["to"], "annotation": row["to_mp"]}})
     edges.append(
         {
             "data": {
                 "source": row["from"],
                 "target": row["to"],
-                "label": row["edge_annotation"],
-                "annotation": row["edge_annotation"],
+                "label": row["edge_mp"],
+                "annotation": row["edge_mp"],
             }
         }
     )
@@ -36,20 +36,19 @@ for index, row in df.iterrows():
 # ノードをユニークにする
 unique_nodes = {node["data"]["id"]: node for node in nodes}.values()
 
+elements = list(unique_nodes) + edges
+
+
 # Dashアプリケーションの設定
 app = dash.Dash(__name__)
-
-cyto_layout = {
-    "name": "preset",
-}
 
 app.layout = html.Div(
     [
         cyto.Cytoscape(
             id="cytoscape",
-            elements=list(unique_nodes) + edges,
-            layout=cyto_layout,
-            style={"width": "100%", "height": "400px"},
+            elements=elements,
+            layout={"name": "cose"},
+            style={"width": "100%", "height": "600px"},
         ),
         html.Div(
             id="tooltip",
@@ -103,4 +102,4 @@ def display_tooltip(node_data, edge_data, tap_node, tap_edge):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8051)
