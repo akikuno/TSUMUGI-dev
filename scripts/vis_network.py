@@ -113,12 +113,11 @@ app.layout = html.Div(
                 dcc.Dropdown(
                     id="layout-dropdown",
                     options=[
-                        {"label": "Breadthfirst", "value": "breadthfirst"},
-                        {"label": "Circle", "value": "circle"},
                         {"label": "Cose", "value": "cose"},
+                        {"label": "Circle", "value": "circle"},
                         {"label": "Grid", "value": "grid"},
-                        {"label": "Random", "value": "random"},
                         {"label": "Concentric", "value": "concentric"},
+                        {"label": "Random", "value": "random"},
                     ],
                     value="cose",
                     clearable=False,
