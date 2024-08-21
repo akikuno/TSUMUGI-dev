@@ -74,20 +74,6 @@ for entry in data:
         }
     )
 
-# for node, size in node_sizes.items():
-#     scaled_size = size * scale_node_size  # Scale node size
-#     color = interpolate_color(size, min_size, max_size)
-#     nodes.append(
-#         {
-#             "data": {"id": node, "label": node},
-#             "style": {
-#                 "width": scaled_size,
-#                 "height": scaled_size,
-#                 "background-color": color,
-#             },
-#         }
-#     )
-
 unique_nodes = list({node["data"]["id"]: node for node in nodes}.values())
 # -----------------------------------------------------------------------------
 # Add edges with size labels
@@ -216,4 +202,4 @@ def update_layout_and_display_tooltip(layout, node_data, edge_data, tap_node, ta
 
 # Run the app
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, host="127.0.0.1", port=8051)
