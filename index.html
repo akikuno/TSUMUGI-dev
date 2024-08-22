@@ -53,10 +53,6 @@
             margin-top: 10px;
         }
 
-        #color-scale {
-            border: 1px solid #333;
-        }
-
         .edge-scale-container {
             width: 100%;
             margin-top: 10px;
@@ -85,17 +81,37 @@
     </p>
 
     <div class="container">
+
         <div class="cy-container">
             <div class="cy"></div>
+
+            <!-- Colar scale and edge scale -->
             <div class="color-scale-container">
-                <canvas id="color-scale" width="400" height="30"></canvas>
+                <svg width="400" height="30" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:rgb(248,229,140);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgb(255,140,0);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="400" height="30" fill="url(#colorGradient)" />
+                    <text x="0" y="25" font-family="Arial" font-size="12px" fill="#000">Low</text>
+                    <text x="370" y="25" font-family="Arial" font-size="12px" fill="#000">High</text>
+                </svg>
                 <p class="scale-label">Node color: Scaled effect size. Strength of the effect on the phenotype </p>
             </div>
             <div class="edge-scale-container">
-                <canvas id="edge-scale" width="400" height="30"></canvas>
+                <svg width="400" height="30" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="0,15 400,0 400,30" style="fill:gray;stroke:none;" />
+                    <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
+                    <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
+                </svg>
                 <p class="scale-label">Edge size: Scaled number of shared phenotypes</p>
             </div>
+            <!-- Colar scale and edge scale -->
+
         </div>
+
         <div class="tooltip"></div>
     </div>
 
@@ -209,59 +225,6 @@
 
             document.querySelector('.tooltip').innerHTML = tooltipText;
         });
-
-        function drawColorScale() {
-            const canvas = document.getElementById('color-scale');
-            const ctx = canvas.getContext('2d');
-
-            const width = canvas.width;
-            const height = canvas.height;
-
-            const minValue = 0;
-            const maxValue = 1;
-
-            for (let i = 0; i < width; i++) {
-                const value = minValue + (i / width) * (maxValue - minValue);
-                const color = getColorForValue(value, minValue, maxValue);
-                ctx.fillStyle = color;
-                ctx.fillRect(i, 0, 1, height);
-            }
-
-            ctx.fillStyle = "#000";
-            ctx.font = "12px Arial";
-            ctx.fillText("Low", 0, height - 5);
-            ctx.fillText("High", width - 30, height - 5);
-        }
-
-        function drawEdgeScale() {
-            const canvas = document.getElementById('edge-scale');
-            const ctx = canvas.getContext('2d');
-
-            const width = canvas.width;
-            const height = canvas.height;
-
-            // 三角形の頂点と底辺の座標を設定
-            const triangleHeight = height; // 三角形の高さ
-            const triangleWidth = width; // 三角形の幅
-
-            ctx.beginPath();
-            ctx.moveTo(0, height - 15); // 左下の頂点
-            ctx.lineTo(triangleWidth, height - 30); // 右上の頂点
-            ctx.lineTo(triangleWidth, height); // 右下の頂点
-            ctx.closePath();
-
-            ctx.fillStyle = "gray"; // 三角形の色を灰色に設定
-            ctx.fill();
-
-            ctx.fillStyle = "#333";
-            ctx.font = "12px Arial";
-            ctx.fillText("Few", 0, height - 5);
-            ctx.fillStyle = "#FFF";
-            ctx.fillText("Many", width - 30, height - 5);
-        }
-
-        drawColorScale();
-        drawEdgeScale();
 
     </script>
 </body>
