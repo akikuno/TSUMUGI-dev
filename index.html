@@ -21,10 +21,17 @@
             height: 1000px;
         }
 
-        .cy {
+        .cy-container {
             flex: 3;
-            /* 3 parts of the 3:1 ratio */
+            display: flex;
+            flex-direction: column;
             height: 100%;
+        }
+
+        .cy {
+            flex: 1;
+            height: calc(100% - 130px);
+            /* カラースケールバーとテキストの高さを差し引いて設定 */
         }
 
         .tooltip {
@@ -38,6 +45,29 @@
             position: relative;
             word-wrap: break-word;
             line-height: 1.5;
+        }
+
+        .color-scale-container {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #color-scale {
+            border: 1px solid #333;
+        }
+
+        .edge-scale-container {
+            width: 100%;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .scale-label {
+            margin-top: 5px;
+            font-size: 16px;
+            font-family: 'Cabin';
+            color: #333;
         }
     </style>
 </head>
@@ -55,13 +85,21 @@
     </p>
 
     <div class="container">
-        <div class="cy"></div>
-        <div class="tooltip">
+        <div class="cy-container">
+            <div class="cy"></div>
+            <div class="color-scale-container">
+                <canvas id="color-scale" width="400" height="30"></canvas>
+                <p class="scale-label">Node color: Scaled effect size. Strength of the effect on the phenotype </p>
+            </div>
+            <div class="edge-scale-container">
+                <canvas id="edge-scale" width="400" height="30"></canvas>
+                <p class="scale-label">Edge size: Scaled number of shared phenotypes</p>
+            </div>
         </div>
+        <div class="tooltip"></div>
     </div>
 
     <script>
-
         const elements = [
             { data: { id: 'a', label: 'A', annotation: ['hoge', 'hooo'], node_size: 3 } },
             { data: { id: 'b', label: 'B', annotation: 'fuga', node_size: 10 } },
@@ -70,7 +108,6 @@
             { data: { source: 'a', target: 'c', annotation: 'FooBar', edge_size: 1.5 } },
         ];
 
-        // ノードサイズとエッジサイズの最小値と最大値を見つける
         const nodeSizes = elements.filter(ele => ele.data.node_size !== undefined).map(ele => ele.data.node_size);
         const edgeSizes = elements.filter(ele => ele.data.edge_size !== undefined).map(ele => ele.data.edge_size);
 
@@ -86,13 +123,9 @@
         function getColorForValue(value, minValue, maxValue) {
             const ratio = (value - minValue) / (maxValue - minValue);
 
-            // 薄い黄色 (#f8e58c) の RGB 値
             const r1 = 248, g1 = 229, b1 = 140;
-
-            // 濃いオレンジ (#FF8C00) の RGB 値
             const r2 = 255, g2 = 140, b2 = 0;
 
-            // 各色成分を補間
             const r = Math.round(r1 + (r2 - r1) * ratio);
             const g = Math.round(g1 + (g2 - g1) * ratio);
             const b = Math.round(b1 + (b2 - b1) * ratio);
@@ -100,7 +133,6 @@
             return 'rgb(' + r + ',' + g + ',' + b + ')';
         }
 
-        // ノードサイズとエッジサイズをスケーリングし、色を設定する
         elements.forEach(function (ele) {
             if (ele.data.node_size !== undefined) {
                 ele.data.node_size = scaleValue(ele.data.node_size, nodeMin, nodeMax, 10, 30);
@@ -110,9 +142,11 @@
             }
             if (ele.data.edge_size !== undefined) {
                 ele.data.edge_size = scaleValue(ele.data.edge_size, edgeMin, edgeMax, 0.5, 2);
+                ele.style = {
+                    'line-color': 'gray',
+                };
             }
         });
-
 
         const cy = cytoscape({
             container: document.querySelector('.cy'),
@@ -147,7 +181,7 @@
                     }
                 }
             ],
-            layout: { name: 'cose' }  // Default layout
+            layout: { name: 'cose' }
         });
 
         document.getElementById('layout-dropdown').addEventListener('change', function () {
@@ -170,11 +204,64 @@
                 const annotations = Array.isArray(data.annotation)
                     ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
                     : '・ ' + data.annotation;
-                tooltipText = "<b>Shared phenotypes of " + sourceNode + " and " + targetNode + " KOs</b><br>" + annotations;
+                tooltipText = "<b>Shared phenotypes of " + sourceNode + " and " + targetNode + "</b><br>" + annotations;
             }
 
             document.querySelector('.tooltip').innerHTML = tooltipText;
         });
+
+        function drawColorScale() {
+            const canvas = document.getElementById('color-scale');
+            const ctx = canvas.getContext('2d');
+
+            const width = canvas.width;
+            const height = canvas.height;
+
+            const minValue = 0;
+            const maxValue = 1;
+
+            for (let i = 0; i < width; i++) {
+                const value = minValue + (i / width) * (maxValue - minValue);
+                const color = getColorForValue(value, minValue, maxValue);
+                ctx.fillStyle = color;
+                ctx.fillRect(i, 0, 1, height);
+            }
+
+            ctx.fillStyle = "#000";
+            ctx.font = "12px Arial";
+            ctx.fillText("Low", 0, height - 5);
+            ctx.fillText("High", width - 30, height - 5);
+        }
+
+        function drawEdgeScale() {
+            const canvas = document.getElementById('edge-scale');
+            const ctx = canvas.getContext('2d');
+
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // 三角形の頂点と底辺の座標を設定
+            const triangleHeight = height; // 三角形の高さ
+            const triangleWidth = width; // 三角形の幅
+
+            ctx.beginPath();
+            ctx.moveTo(0, height - 15); // 左下の頂点
+            ctx.lineTo(triangleWidth, height - 30); // 右上の頂点
+            ctx.lineTo(triangleWidth, height); // 右下の頂点
+            ctx.closePath();
+
+            ctx.fillStyle = "gray"; // 三角形の色を灰色に設定
+            ctx.fill();
+
+            ctx.fillStyle = "#333";
+            ctx.font = "12px Arial";
+            ctx.fillText("Few", 0, height - 5);
+            ctx.fillStyle = "#FFF";
+            ctx.fillText("Many", width - 30, height - 5);
+        }
+
+        drawColorScale();
+        drawEdgeScale();
 
     </script>
 </body>
