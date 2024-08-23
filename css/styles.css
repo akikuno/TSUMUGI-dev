@@ -1,6 +1,7 @@
 body {
     font-size: 18px;
-    font-family: 'Cabin';
+    font-family: 'Roboto', sans-serif;
+    color: #333;
 }
 
 .container {
@@ -21,7 +22,7 @@ body {
 .tooltip-container {
     flex: 1;
     background: #fff;
-    padding: 20px;
+    padding: 15px;
     margin: 10px;
     border-radius: 5px;
     font-size: 20px;
@@ -46,16 +47,12 @@ body {
 
 .scale-label {
     margin-top: 5px;
-    font-size: 16px;
-    font-family: 'Cabin';
-    color: #333;
 }
 
 .control-panel {
     width: 73%;
-    box-sizing: border-box;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     padding: 10px;
     margin: 10px;
     z-index: 10;
@@ -68,12 +65,15 @@ body {
 }
 
 .control-label {
-    font-size: 16px;
-    font-family: 'Cabin';
-    color: #333;
     margin-right: 10px;
 }
 
 .slider {
     width: 200px;
+}
+
+.slider-value {
+    display: inline-block;
+    width: 25px;
+    text-align: center;
 }
