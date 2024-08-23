@@ -11,16 +11,16 @@
 // ];
 
 const elements = (function () {
-    var req = new XMLHttpRequest();  // XMLHttpRequest オブジェクトを生成する
-    var result = null;
-    req.onreadystatechange = function () {  // XMLHttpRequest オブジェクトの状態が変化した際に呼び出されるイベントハンドラ
-        if (req.readyState == 4 && req.status == 200) {  // サーバーからのレスポンスが完了し、かつ、通信が正常に終了した場合
-            result = JSON.parse(req.responseText);  // 取得した JSON をパースしてresultに代入
+    const req = new XMLHttpRequest();
+    let result = null;
+    req.onreadystatechange = function () {
+        if (req.readyState === 4 && req.status === 200) {
+            result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false); // HTTPメソッドとアクセスするサーバーのURLを指定
-    req.send(null);  // 実際にサーバーへリクエストを送信
-    return result;  // パースされたJSONデータを返す
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false);
+    req.send(null);
+    return result;
 })();
 
 // ========================================================
@@ -36,24 +36,24 @@ const edgeMin = Math.min(...edgeSizes);
 const edgeMax = Math.max(...edgeSizes);
 
 function scaleToOriginalRange(value, minValue, maxValue) {
-    // スライダーの値（1-10）を元の範囲にスケール
+    // Scale the slider value (1-10) to the original range
     return minValue + (value - 1) * (maxValue - minValue) / 9;
 }
 
 function scaleToSliderRange(value, minValue, maxValue) {
-    // 元の範囲の値をスライダーの値（1-10）にスケール
+    // Scale the original range value to the slider value (1-10)
     return 1 + (value - minValue) * 9 / (maxValue - minValue);
 }
 
 function getColorForValue(value) {
-    // valueが1から10の範囲であることを前提
-    const ratio = (value - 1) / (10 - 1); // 1から10の間での割合
+    // Assumes value is in the range of 1 to 10
+    const ratio = (value - 1) / (10 - 1);
 
-    // ライトイエローからオレンジへのグラデーション
-    const r1 = 248, g1 = 229, b1 = 140; // ライトイエロー
-    const r2 = 255, g2 = 140, b2 = 0;   // オレンジ
+    // Gradient from light yellow to orange
+    const r1 = 248, g1 = 229, b1 = 140; // Light Yellow
+    const r2 = 255, g2 = 140, b2 = 0;   // Orange
 
-    // 線形補間
+    // Linear interpolation
     const r = Math.round(r1 + (r2 - r1) * ratio);
     const g = Math.round(g1 + (g2 - g1) * ratio);
     const b = Math.round(b1 + (b2 - b1) * ratio);
@@ -68,19 +68,19 @@ function filterElements() {
     const nodeThreshold = scaleToOriginalRange(nodeColorSliderValue, nodeMin, nodeMax);
     const edgeThreshold = scaleToOriginalRange(edgeSizeSliderValue, edgeMin, edgeMax);
 
-    // ノードのフィルタリング
+    // Filter nodes
     cy.nodes().forEach(function (node) {
         const nodeColor = node.data('node_color');
         node.style('display', nodeColor >= nodeThreshold ? 'element' : 'none');
     });
 
-    // エッジのフィルタリング
+    // Filter edges
     cy.edges().forEach(function (edge) {
         const edgeSize = edge.data('edge_size');
         const sourceNode = cy.getElementById(edge.data('source'));
         const targetNode = cy.getElementById(edge.data('target'));
 
-        // エッジのフィルタリング条件
+        // Edge filtering conditions
         if (sourceNode.style('display') === 'element' && targetNode.style('display') === 'element' && edgeSize >= edgeThreshold) {
             edge.style('display', 'element');
         } else {
@@ -88,7 +88,7 @@ function filterElements() {
         }
     });
 
-    // エッジのフィルタリング後に、次数が0のノードを非表示にする
+    // Hide nodes with degree 0 after filtering edges
     cy.nodes().forEach(function (node) {
         const connectedEdges = node.connectedEdges().filter(edge => edge.style('display') === 'element');
         if (connectedEdges.length === 0) {
@@ -96,11 +96,11 @@ function filterElements() {
         }
     });
 
-    // レイアウトの再実行
-    cy.layout({ name: 'cose', componentSpacing: 100, nodeRepulsion: 100000 }).run();  // 現在使用しているレイアウトを再実行
+    // Re-run the layout
+    cy.layout({ name: 'cose', componentSpacing: 100, nodeRepulsion: 100000 }).run();  // Re-run the currently used layout
 }
 
-// スライダーの初期設定
+// Initial slider setup
 document.getElementById('node-color-slider').value = 1;
 document.getElementById('node-color-value').textContent = 1;
 
@@ -125,8 +125,8 @@ const cy = cytoscape({
                 'text-halign': 'center',
                 'font-family': 'Roboto',
                 'font-size': "20px",
-                'width': 10,
-                'height': 10,
+                'width': 15,
+                'height': 15,
                 'background-color': function (ele) {
                     const color_value = scaleToOriginalRange(ele.data('node_color'), nodeMin, nodeMax);
                     return getColorForValue(color_value);
@@ -146,13 +146,13 @@ const cy = cytoscape({
 });
 
 
-// レイアウト変更のイベントリスナー
+// Event listener for layout change
 document.getElementById('layout-dropdown').addEventListener('change', function () {
     const layout = this.value;
     cy.layout({ name: layout }).run();
 });
 
-// スライダーのイベントリスナー
+// Event listeners for sliders
 document.getElementById('node-color-slider').addEventListener('input', function () {
     document.getElementById('node-color-value').textContent = this.value;
     filterElements();
@@ -163,8 +163,10 @@ document.getElementById('edge-size-slider').addEventListener('input', function (
     filterElements();
 });
 
-// 初期フィルタリングとノード色の設定
+// Initial filtering and node color setup
 filterElements();
+
+
 // ========================================================
 // Tooltip handling
 // ========================================================
@@ -190,5 +192,5 @@ cy.on('mouseover', 'node, edge', function (event) {
     document.querySelector('.tooltip-container').innerHTML = tooltipText;
 });
 
-// 初期フィルタリングとノード色の設定
+// Initial filtering and node color setup
 filterElements();
