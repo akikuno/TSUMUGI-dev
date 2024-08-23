@@ -1,0 +1,7468 @@
+[
+  {
+    "data": {
+      "id": "Camsap3",
+      "label": "Camsap3",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "abnormal cornea morphology",
+        "abnormal lens morphology",
+        "absent pinna reflex",
+        "cataract",
+        "corneal opacity",
+        "decreased blood urea nitrogen level",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased circulating cholesterol level",
+        "decreased lean body mass",
+        "female infertility",
+        "fused cornea and lens",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating thyroxine level",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility",
+        "trunk curl"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Dnmt3l",
+      "label": "Dnmt3l",
+      "annotation": [
+        "female infertility",
+        "increased bone mineral density",
+        "increased mean corpuscular hemoglobin",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Hectd3",
+      "label": "Hectd3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased brain size",
+        "decreased grip strength",
+        "female infertility",
+        "increased cardiac muscle contractility",
+        "increased total body fat amount",
+        "male infertility",
+        "small heart",
+        "small liver",
+        "small lung",
+        "small spleen",
+        "small stomach",
+        "small thymus"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Celsr1",
+      "label": "Celsr1",
+      "annotation": [
+        "abnormal head morphology",
+        "abnormal retina morphology",
+        "abnormal skin morphology",
+        "abnormal snout morphology",
+        "abnormal spleen morphology",
+        "abnormal tail morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "corneal opacity",
+        "enlarged testis",
+        "female infertility",
+        "increased brain size",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased lean body mass",
+        "increased total body fat amount",
+        "male infertility",
+        "no spontaneous movement",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Stoml2",
+      "label": "Stoml2",
+      "annotation": [
+        "decreased prepulse inhibition",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating bilirubin level",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Clcn1",
+      "label": "Clcn1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal cholesterol homeostasis",
+        "abnormal eye morphology",
+        "abnormal gait",
+        "decreased body length",
+        "decreased circulating HDL cholesterol level",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "decreased heart weight",
+        "decreased locomotor activity",
+        "decreased lymphocyte cell number",
+        "decreased mean platelet volume",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "decreased vertical activity",
+        "female infertility",
+        "increased circulating aspartate transaminase level",
+        "increased circulating bilirubin level",
+        "increased eosinophil cell number",
+        "male infertility",
+        "tremors"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Kdm3a",
+      "label": "Kdm3a",
+      "annotation": [
+        "abnormal behavior",
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal skin morphology",
+        "decreased anxiety-related response",
+        "decreased bone mineral content",
+        "decreased prepulse inhibition",
+        "decreased thigmotaxis",
+        "eye hemorrhage",
+        "impaired glucose tolerance",
+        "male infertility",
+        "small spleen"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Nphp1",
+      "label": "Nphp1",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal uterus morphology",
+        "decreased exploration in new environment",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Psma8",
+      "label": "Psma8",
+      "annotation": [
+        "abnormal pancreas morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal skin morphology",
+        "enlarged kidney",
+        "enlarged urinary bladder",
+        "increased monocyte cell number",
+        "male infertility",
+        "small epididymis",
+        "small testis",
+        "small thymus"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Spidr",
+      "label": "Spidr",
+      "annotation": [
+        "abnormal eye posterior chamber depth",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Fbxo43",
+      "label": "Fbxo43",
+      "annotation": [
+        "female infertility",
+        "increased eosinophil cell number",
+        "increased hematocrit",
+        "increased mean platelet volume",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Dpy19l1",
+      "label": "Dpy19l1",
+      "annotation": [
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal seminal vesicle morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Prdm14",
+      "label": "Prdm14",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal eye anterior chamber depth",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased respiratory quotient",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Mapk6",
+      "label": "Mapk6",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "anophthalmia",
+        "cataract",
+        "decreased body length",
+        "decreased brain size",
+        "edema",
+        "increased startle reflex",
+        "male infertility",
+        "no spontaneous movement"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Helq",
+      "label": "Helq",
+      "annotation": [
+        "abnormal caudal vertebrae morphology",
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "enlarged spleen",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Sun5",
+      "label": "Sun5",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal liver morphology",
+        "abnormal lymph node morphology",
+        "abnormal spleen morphology",
+        "decreased circulating calcium level",
+        "enlarged seminal vesicle",
+        "enlarged testis",
+        "male infertility",
+        "prolonged QT interval"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Kash5",
+      "label": "Kash5",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased circulating HDL cholesterol level",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Syce1",
+      "label": "Syce1",
+      "annotation": [
+        "abnormal lens morphology",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased locomotor activity",
+        "female infertility",
+        "improved glucose tolerance",
+        "increased fasting circulating glucose level",
+        "increased thigmotaxis",
+        "limb grasping",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Gh",
+      "label": "Gh",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal spleen morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased brain weight",
+        "decreased fasting circulating glucose level",
+        "decreased grip strength",
+        "decreased heart weight",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased liver weight",
+        "decreased locomotor activity",
+        "decreased lung weight",
+        "decreased prepulse inhibition",
+        "decreased spleen weight",
+        "decreased thymus weight",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility",
+        "small heart",
+        "small spleen"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Fndc3a",
+      "label": "Fndc3a",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased exploration in new environment",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "impaired pupillary reflex",
+        "increased leukocyte cell number",
+        "increased lymphocyte cell number",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Csnk2a2",
+      "label": "Csnk2a2",
+      "annotation": [
+        "abnormal behavior",
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "decreased exploration in new environment",
+        "decreased thigmotaxis",
+        "enlarged spleen",
+        "increased circulating alkaline phosphatase level",
+        "increased mean corpuscular volume",
+        "increased vertical activity",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Plcb1",
+      "label": "Plcb1",
+      "annotation": [
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal lymph node morphology",
+        "abnormal ovary morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "enlarged spleen",
+        "female infertility",
+        "hyperactivity",
+        "male infertility",
+        "microphthalmia"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Nek1",
+      "label": "Nek1",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal cranium morphology",
+        "abnormal pelvic girdle bone morphology",
+        "abnormal retina outer nuclear layer morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased prepulse inhibition",
+        "decreased total retina thickness",
+        "male infertility",
+        "short tibia"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Ccdc28a",
+      "label": "Ccdc28a",
+      "annotation": [
+        "decreased anxiety-related response",
+        "decreased vertical activity",
+        "hyperactivity",
+        "increased grip strength",
+        "increased lean body mass",
+        "limb grasping",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Fkbp4",
+      "label": "Fkbp4",
+      "annotation": [
+        "abnormal body wall morphology",
+        "abnormal cholesterol homeostasis",
+        "abnormal lymph node morphology",
+        "abnormal male genitalia morphology",
+        "abnormal placenta morphology",
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "decreased heart rate",
+        "decreased mean corpuscular volume",
+        "enlarged epididymis",
+        "female infertility",
+        "male infertility",
+        "no spontaneous movement",
+        "prolonged RR interval",
+        "small seminal vesicle",
+        "small spleen",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Nhlh2",
+      "label": "Nhlh2",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal cholesterol homeostasis",
+        "abnormal ovary morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal testis morphology",
+        "abnormal urinary bladder morphology",
+        "abnormal uterus morphology",
+        "absent epididymis",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "decreased mean corpuscular hemoglobin concentration",
+        "eye hemorrhage",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased mean corpuscular volume",
+        "increased spleen weight",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tmem209",
+      "label": "Tmem209",
+      "annotation": [
+        "abnormal embryo size",
+        "abnormal eyelid fusion",
+        "abnormal head shape",
+        "abnormal head size",
+        "abnormal placenta morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal stomach morphology",
+        "anophthalmia",
+        "enlarged lymph nodes",
+        "enlarged spleen",
+        "exencephaly",
+        "male infertility",
+        "microphthalmia",
+        "pallor",
+        "protruding tongue"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Hipk4",
+      "label": "Hipk4",
+      "annotation": [
+        "decreased blood urea nitrogen level",
+        "decreased exploration in new environment",
+        "impaired righting response",
+        "increased circulating serum albumin level",
+        "limb grasping",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "L2hgdh",
+      "label": "L2hgdh",
+      "annotation": [
+        "abnormal eye morphology",
+        "decreased exploration in new environment",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Foxo4",
+      "label": "Foxo4",
+      "annotation": [
+        "abnormal heart morphology",
+        "abnormal urinary bladder morphology",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Usp42",
+      "label": "Usp42",
+      "annotation": [
+        "abnormal behavior",
+        "abnormal lens morphology",
+        "cataract",
+        "decreased body length",
+        "decreased body weight",
+        "decreased lean body mass",
+        "hyperactivity",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Kiss1r",
+      "label": "Kiss1r",
+      "annotation": [
+        "abnormal kidney morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal testis morphology",
+        "abnormal uterus morphology",
+        "absent epididymis",
+        "absent ovary",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart weight",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased liver weight",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased spleen weight",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tg",
+      "label": "Tg",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal coat/ hair morphology",
+        "abnormal locomotor behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased vertical activity",
+        "improved glucose tolerance",
+        "increased bone mineral content",
+        "increased grip strength",
+        "male infertility",
+        "prolonged RR interval"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Wdr62",
+      "label": "Wdr62",
+      "annotation": [
+        "enlarged lymph nodes",
+        "increased circulating sodium level",
+        "male infertility",
+        "microphthalmia",
+        "small kidney",
+        "small seminal vesicle",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Zscan21",
+      "label": "Zscan21",
+      "annotation": [
+        "abnormal retina inner nuclear layer morphology",
+        "abnormal skin coloration",
+        "decreased respiratory quotient",
+        "decreased total retina thickness",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tmem203",
+      "label": "Tmem203",
+      "annotation": [
+        "abnormal retina morphology",
+        "decreased heart rate",
+        "decreased prepulse inhibition",
+        "hyperactivity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating calcium level",
+        "increased heart weight",
+        "male infertility",
+        "prolonged RR interval"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tram1",
+      "label": "Tram1",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased circulating bilirubin level",
+        "decreased circulating total protein level",
+        "decreased exploration in new environment",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "decreased startle reflex",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Spata16",
+      "label": "Spata16",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Lrig3",
+      "label": "Lrig3",
+      "annotation": [
+        "abnormal cranium morphology",
+        "abnormal digit morphology",
+        "abnormal heart left ventricle morphology",
+        "abnormal heart morphology",
+        "abnormal skeletal muscle morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal vertebrae morphology",
+        "abnormal vertebral arch morphology",
+        "decreased circulating alkaline phosphatase level",
+        "enlarged thymus",
+        "female infertility",
+        "increased circulating alanine transaminase level",
+        "increased circulating creatine kinase level",
+        "increased circulating lactate dehydrogenase level",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Fbxo22",
+      "label": "Fbxo22",
+      "annotation": [
+        "abnormal tail morphology",
+        "decreased grip strength",
+        "decreased heart left ventricle size",
+        "decreased prepulse inhibition",
+        "female infertility",
+        "male infertility",
+        "thin ventricular wall"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Zcwpw1",
+      "label": "Zcwpw1",
+      "annotation": [
+        "abnormal pancreas morphology",
+        "enlarged lymph nodes",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Trim37",
+      "label": "Trim37",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "abnormal retina morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart left ventricle size",
+        "decreased lean body mass",
+        "decreased mean platelet volume",
+        "decreased red blood cell distribution width",
+        "female infertility",
+        "increased basophil cell number",
+        "increased fasting circulating glucose level",
+        "increased grip strength",
+        "increased total body fat amount",
+        "male infertility",
+        "thin ventricular wall"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Syce2",
+      "label": "Syce2",
+      "annotation": [
+        "abnormal skin morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "enlarged urinary bladder",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small epididymis",
+        "small kidney",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cep19",
+      "label": "Cep19",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal coat appearance",
+        "abnormal retina outer nuclear layer morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased total retina thickness",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Dnd1",
+      "label": "Dnd1",
+      "annotation": [
+        "abnormal retina outer nuclear layer morphology",
+        "abnormal retina vasculature morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased heart left ventricle size",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Gas2l2",
+      "label": "Gas2l2",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "absent pinna reflex",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Spag17",
+      "label": "Spag17",
+      "annotation": [
+        "decreased body length",
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Chsy3",
+      "label": "Chsy3",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "decreased body length",
+        "female infertility",
+        "increased bone mineral density",
+        "male infertility",
+        "thick skin"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Stag3",
+      "label": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased circulating total protein level",
+        "increased fasting circulating glucose level",
+        "increased total body fat amount",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Katnal2",
+      "label": "Katnal2",
+      "annotation": [
+        "abnormal pancreas morphology",
+        "abnormal uterus morphology",
+        "enlarged lymph nodes",
+        "enlarged spleen",
+        "enlarged stomach",
+        "enlarged urinary bladder",
+        "increased circulating alkaline phosphatase level",
+        "increased monocyte cell number",
+        "male infertility",
+        "small spleen"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Trappc2l",
+      "label": "Trappc2l",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal freezing behavior",
+        "abnormal heart morphology",
+        "abnormal spleen morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased locomotor activity",
+        "enlarged spleen",
+        "female infertility",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased mean platelet volume",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Hsp90aa1",
+      "label": "Hsp90aa1",
+      "annotation": [
+        "abnormal cranium morphology",
+        "abnormal incisor morphology",
+        "abnormal snout morphology",
+        "increased grip strength",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cfap91",
+      "label": "Cfap91",
+      "annotation": [
+        "abnormal brain morphology",
+        "abnormal eye morphology",
+        "increased brain size",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Fndc9",
+      "label": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "decreased lymphocyte cell number",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "female infertility",
+        "hyperactivity",
+        "increased circulating bilirubin level",
+        "increased mean platelet volume",
+        "increased neutrophil cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Gnl1",
+      "label": "Gnl1",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal cranium morphology",
+        "decreased body length",
+        "decreased erythrocyte cell number",
+        "decreased hemoglobin content",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "hydrocephaly",
+        "impaired glucose tolerance",
+        "increased grip strength",
+        "increased mean platelet volume",
+        "increased total body fat amount",
+        "limb grasping",
+        "male infertility",
+        "short tibia",
+        "thrombocytopenia"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Ezh1",
+      "label": "Ezh1",
+      "annotation": [
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "decreased prepulse inhibition",
+        "increased circulating glucose level",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Kpna2",
+      "label": "Kpna2",
+      "annotation": [
+        "abnormal cholesterol homeostasis",
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "decreased locomotor activity",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Stx2",
+      "label": "Stx2",
+      "annotation": [
+        "cataract",
+        "decreased mean corpuscular hemoglobin",
+        "decreased mean corpuscular hemoglobin concentration",
+        "decreased mean corpuscular volume",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased erythrocyte cell number",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "4930447C04Rik",
+      "label": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Lmtk2",
+      "label": "Lmtk2",
+      "annotation": [
+        "abnormal kidney morphology",
+        "decreased body length",
+        "decreased heart rate",
+        "enlarged heart",
+        "increased circulating alkaline phosphatase level",
+        "male infertility",
+        "prolonged RR interval",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Resf1",
+      "label": "Resf1",
+      "annotation": [
+        "abnormal eye morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Ube2j2",
+      "label": "Ube2j2",
+      "annotation": [
+        "abnormal blood urea nitrogen level",
+        "abnormal bone structure",
+        "abnormal liver morphology",
+        "abnormal mean corpuscular volume",
+        "abnormal platelet cell number",
+        "abnormal spatial working memory",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased erythrocyte cell number",
+        "decreased lean body mass",
+        "female infertility",
+        "hyperactivity",
+        "increased eosinophil cell number",
+        "increased mean corpuscular hemoglobin",
+        "increased startle reflex",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia",
+        "small epididymis",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cldn11",
+      "label": "Cldn11",
+      "annotation": [
+        "abnormal gait",
+        "hyperactivity",
+        "increased blood urea nitrogen level",
+        "increased startle reflex",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Bicral",
+      "label": "Bicral",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal retina morphology",
+        "decreased bone mineral content",
+        "decreased prepulse inhibition",
+        "increased blood urea nitrogen level",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased startle reflex",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Upf3a",
+      "label": "Upf3a",
+      "annotation": [
+        "abnormal eye morphology",
+        "decreased exploration in new environment",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Lrrc56",
+      "label": "Lrrc56",
+      "annotation": [
+        "abnormal heart position or orientation",
+        "abnormal heartbeat",
+        "abnormal lung morphology",
+        "abnormal skin morphology",
+        "enlarged lymph nodes",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Fam227b",
+      "label": "Fam227b",
+      "annotation": [
+        "abnormal colon morphology",
+        "abnormal jejunum morphology",
+        "abnormal lymph node morphology",
+        "abnormal mammary gland morphology",
+        "abnormal skeletal muscle morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal tooth morphology",
+        "enlarged epididymis",
+        "enlarged heart",
+        "enlarged thymus",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cnot7",
+      "label": "Cnot7",
+      "annotation": [
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal ovary morphology",
+        "decreased locomotor activity",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Spata22",
+      "label": "Spata22",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal pancreas morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "enlarged epididymis",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Bag5",
+      "label": "Bag5",
+      "annotation": [
+        "abnormal brain morphology",
+        "abnormal retina morphology",
+        "abnormal vitreous body morphology",
+        "anophthalmia",
+        "cataract",
+        "enlarged testis",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tle4",
+      "label": "Tle4",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal cholesterol homeostasis",
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal lymph node morphology",
+        "abnormal rectum morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "enlarged liver",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Ccnb1ip1",
+      "label": "Ccnb1ip1",
+      "annotation": [
+        "decreased locomotor activity",
+        "enlarged lymph nodes",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Enkur",
+      "label": "Enkur",
+      "annotation": [
+        "abnormal facial morphology",
+        "abnormal head shape",
+        "abnormal head size",
+        "abnormal skin coloration",
+        "abnormal skin morphology",
+        "hemorrhage",
+        "increased circulating alkaline phosphatase level",
+        "male infertility",
+        "no spontaneous movement"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Herc1",
+      "label": "Herc1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal lens morphology",
+        "abnormal retina morphology",
+        "cataract",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased circulating glucose level",
+        "decreased lean body mass",
+        "impaired glucose tolerance",
+        "increased circulating amylase level",
+        "increased circulating chloride level",
+        "increased circulating sodium level",
+        "increased fasting circulating glucose level",
+        "increased leukocyte cell number",
+        "increased red blood cell distribution width",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "S1pr3",
+      "label": "S1pr3",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "abnormal retina morphology",
+        "abnormal skin coloration",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Fbxo7",
+      "label": "Fbxo7",
+      "annotation": [
+        "decreased circulating fructosamine level",
+        "decreased circulating iron level",
+        "increased circulating sodium level",
+        "increased red blood cell distribution width",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tmem225",
+      "label": "Tmem225",
+      "annotation": [
+        "abnormal freezing behavior",
+        "abnormal heart morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "decreased prepulse inhibition",
+        "male infertility",
+        "small heart",
+        "small spleen"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tbccd1",
+      "label": "Tbccd1",
+      "annotation": [
+        "abnormal skin coloration",
+        "female infertility",
+        "impaired glucose tolerance",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Erich2",
+      "label": "Erich2",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Setx",
+      "label": "Setx",
+      "annotation": [
+        "decreased leukocyte cell number",
+        "decreased lymphocyte cell number",
+        "decreased total retina thickness",
+        "increased NK cell number",
+        "increased eosinophil cell number",
+        "increased monocyte cell number",
+        "increased neutrophil cell number",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Brwd1",
+      "label": "Brwd1",
+      "annotation": [
+        "abnormal seminal vesicle morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Sms",
+      "label": "Sms",
+      "annotation": [
+        "decreased body length",
+        "decreased body weight",
+        "decreased bone mineral density",
+        "decreased circulating glucose level",
+        "decreased circulating potassium level",
+        "decreased lean body mass",
+        "increased blood urea nitrogen level",
+        "increased circulating amylase level",
+        "increased circulating sodium level",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Ythdc2",
+      "label": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Gga1",
+      "label": "Gga1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tmc7",
+      "label": "Tmc7",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal liver morphology",
+        "abnormal ovary morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Pank2",
+      "label": "Pank2",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal digit morphology",
+        "abnormal heart morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "immune system phenotype",
+        "increased effector memory CD8-positive, alpha-beta T cell number",
+        "increased freezing behavior",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Reln",
+      "label": "Reln",
+      "annotation": [
+        "abnormal lymph node morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal uterus morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Adgb",
+      "label": "Adgb",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "abnormal uterus morphology",
+        "hydrocephaly",
+        "increased eosinophil cell number",
+        "increased skeletal muscle mass",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Usp15",
+      "label": "Usp15",
+      "annotation": [
+        "decreased circulating fructosamine level",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased basophil cell number",
+        "increased bone mineral content",
+        "increased circulating sodium level",
+        "increased eosinophil cell number",
+        "increased leukocyte cell number",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Mcidas",
+      "label": "Mcidas",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal spleen morphology",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "female infertility",
+        "increased circulating total protein level",
+        "increased grip strength",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "AU040320",
+      "label": "AU040320",
+      "annotation": [
+        "abnormal coat/hair pigmentation",
+        "abnormal retina morphology",
+        "absent vibrissae",
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "hyperactivity",
+        "impaired righting response",
+        "increased exploration in new environment",
+        "limb grasping",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Kif9",
+      "label": "Kif9",
+      "annotation": [
+        "abnormal skin morphology",
+        "blind uterus",
+        "male infertility",
+        "small liver",
+        "small spleen"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Kif6",
+      "label": "Kif6",
+      "annotation": [
+        "abnormal uterus morphology",
+        "female infertility",
+        "hydrocephaly",
+        "male infertility",
+        "small heart",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Igsf11",
+      "label": "Igsf11",
+      "annotation": [
+        "hyperactivity",
+        "impaired righting response",
+        "increased fasting circulating glucose level",
+        "limb grasping",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Fbxo24",
+      "label": "Fbxo24",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Xdh",
+      "label": "Xdh",
+      "annotation": [
+        "abnormal lung morphology",
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility",
+        "persistence of hyaloid vascular system"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Pgap6",
+      "label": "Pgap6",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Pramel13",
+      "label": "Pramel13",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Clpp",
+      "label": "Clpp",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased circulating fructosamine level",
+        "decreased lean body mass",
+        "decreased red blood cell distribution width",
+        "decreased total body fat amount",
+        "female infertility",
+        "increased circulating aspartate transaminase level",
+        "increased circulating bilirubin level",
+        "increased circulating cholesterol level",
+        "increased circulating glycerol level",
+        "increased hematocrit",
+        "increased hemoglobin content",
+        "increased lean body mass",
+        "increased leukocyte cell number",
+        "increased mean corpuscular hemoglobin",
+        "increased total body fat amount",
+        "male infertility",
+        "tremors"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cntd1",
+      "label": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tnrc6b",
+      "label": "Tnrc6b",
+      "annotation": [
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased thigmotaxis",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Hddc3",
+      "label": "Hddc3",
+      "annotation": [
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal pancreas morphology",
+        "enlarged heart",
+        "enlarged spleen",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Prmt6",
+      "label": "Prmt6",
+      "annotation": [
+        "abnormal retina morphology",
+        "decreased heart left ventricle size",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating creatinine level",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Gas2l1",
+      "label": "Gas2l1",
+      "annotation": [
+        "abnormal skin morphology",
+        "enlarged epididymis",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Teddm1a",
+      "label": "Teddm1a",
+      "annotation": [
+        "abnormal pancreas morphology",
+        "abnormal seminal vesicle morphology",
+        "decreased circulating alkaline phosphatase level",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Ube2j1",
+      "label": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased circulating amylase level",
+        "increased circulating cholesterol level",
+        "increased fluid intake",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Pramel12",
+      "label": "Pramel12",
+      "annotation": [
+        "abnormal cecum morphology",
+        "abnormal eye morphology",
+        "abnormal heart morphology",
+        "abnormal jejunum morphology",
+        "abnormal kidney morphology",
+        "abnormal pancreas morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal spleen morphology",
+        "abnormal stomach morphology",
+        "abnormal urinary bladder morphology",
+        "enlarged spleen",
+        "male infertility",
+        "small heart",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tulp2",
+      "label": "Tulp2",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Sun1",
+      "label": "Sun1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal retina morphology",
+        "abnormal retina outer nuclear layer morphology",
+        "abnormal startle reflex",
+        "decreased circulating total protein level",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "decreased total retina thickness",
+        "female infertility",
+        "increased heart rate",
+        "increased leukocyte cell number",
+        "increased lymphocyte cell number",
+        "increased total body fat amount",
+        "male infertility",
+        "small superior vagus ganglion",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Trip13",
+      "label": "Trip13",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal coat/hair pigmentation",
+        "abnormal digit morphology",
+        "abnormal lens morphology",
+        "abnormal retina morphology",
+        "abnormal tail morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "decreased hemoglobin content",
+        "decreased locomotor activity",
+        "female infertility",
+        "hyperactivity",
+        "increased blood urea nitrogen level",
+        "increased fasting circulating glucose level",
+        "increased mean corpuscular hemoglobin",
+        "increased thigmotaxis",
+        "increased vertical activity",
+        "male infertility",
+        "prolonged RR interval"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Rimklb",
+      "label": "Rimklb",
+      "annotation": [
+        "abnormal sleep behavior",
+        "absent vibrissae",
+        "decreased total body fat amount",
+        "hyperactivity",
+        "increased grip strength",
+        "increased mean corpuscular hemoglobin",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Ubn2",
+      "label": "Ubn2",
+      "annotation": [
+        "abnormal embryo size",
+        "abnormal eyelid fusion",
+        "abnormal facial morphology",
+        "abnormal head shape",
+        "abnormal head size",
+        "anophthalmia",
+        "decreased mean corpuscular hemoglobin",
+        "exencephaly",
+        "male infertility",
+        "pallor",
+        "protruding tongue"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Idh3b",
+      "label": "Idh3b",
+      "annotation": [
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Actl7b",
+      "label": "Actl7b",
+      "annotation": [
+        "abnormal heart morphology",
+        "abnormal urinary bladder morphology",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Efna5",
+      "label": "Efna5",
+      "annotation": [
+        "abnormal behavior",
+        "abnormal lens morphology",
+        "cataract",
+        "enlarged adrenal glands",
+        "enlarged kidney",
+        "enlarged uterus",
+        "increased anxiety-related response",
+        "increased thigmotaxis",
+        "irregularly shaped pupil",
+        "male infertility",
+        "polycystic kidney"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Bzw1",
+      "label": "Bzw1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "cataract",
+        "hyperactivity",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cfap119",
+      "label": "Cfap119",
+      "annotation": [
+        "decreased locomotor activity",
+        "decreased vertical activity",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Ccnt2",
+      "label": "Ccnt2",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "abnormal retina outer nuclear layer morphology",
+        "abnormal skin coloration",
+        "decreased total retina thickness",
+        "female infertility",
+        "male infertility",
+        "unresponsive to tactile stimuli"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Zfp541",
+      "label": "Zfp541",
+      "annotation": [
+        "decreased heart rate",
+        "male infertility",
+        "prolonged RR interval"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Arrdc5",
+      "label": "Arrdc5",
+      "annotation": [
+        "abnormal retina morphology",
+        "increased circulating alkaline phosphatase level",
+        "increased mean corpuscular hemoglobin",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Bbof1",
+      "label": "Bbof1",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "increased circulating iron level",
+        "increased mean corpuscular hemoglobin concentration",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Nexmif",
+      "label": "Nexmif",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal sternum morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "enlarged urinary bladder",
+        "hyperactivity",
+        "impaired contextual conditioning behavior",
+        "increased basophil cell number",
+        "increased blood urea nitrogen level",
+        "increased circulating triglyceride level",
+        "increased eosinophil cell number",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased monocyte cell number",
+        "increased neutrophil cell number",
+        "increased total body fat amount",
+        "male infertility",
+        "small kidney",
+        "small spleen"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cep250",
+      "label": "Cep250",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "absent pinna reflex",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Dctd",
+      "label": "Dctd",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cdk4",
+      "label": "Cdk4",
+      "annotation": [
+        "abnormal cranium morphology",
+        "abnormal embryo size",
+        "decreased body length",
+        "edema",
+        "female infertility",
+        "male infertility",
+        "microphthalmia"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Hook1",
+      "label": "Hook1",
+      "annotation": [
+        "abnormal skin morphology",
+        "enlarged lymph nodes",
+        "male infertility",
+        "small spleen"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Zc3hc1",
+      "label": "Zc3hc1",
+      "annotation": [
+        "abnormal cornea morphology",
+        "abnormal cranium morphology",
+        "abnormal posture",
+        "abnormal snout morphology",
+        "abnormal tooth morphology",
+        "decreased lean body mass",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Lca5l",
+      "label": "Lca5l",
+      "annotation": [
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "decreased hemoglobin content",
+        "increased circulating bilirubin level",
+        "increased circulating cholesterol level",
+        "increased total retina thickness",
+        "male infertility",
+        "thrombocytopenia"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Dusp7",
+      "label": "Dusp7",
+      "annotation": [
+        "abnormal cholesterol homeostasis",
+        "abnormal coat/hair pigmentation",
+        "female infertility",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Baz1a",
+      "label": "Baz1a",
+      "annotation": [
+        "abnormal stomach morphology",
+        "decreased exploration in new environment",
+        "decreased mean corpuscular hemoglobin",
+        "decreased mean corpuscular hemoglobin concentration",
+        "increased mean platelet volume",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Hormad2",
+      "label": "Hormad2",
+      "annotation": [
+        "abnormal freezing behavior",
+        "abnormal inspiratory capacity",
+        "abnormal mammary gland morphology",
+        "abnormal thymus morphology",
+        "decreased exploration in new environment",
+        "decreased lung elastance",
+        "enlarged spleen",
+        "enlarged thymus",
+        "male infertility",
+        "small testis"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tbc1d8",
+      "label": "Tbc1d8",
+      "annotation": [
+        "abnormal retina morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Tbc1d20",
+      "label": "Tbc1d20",
+      "annotation": [
+        "abnormal skin morphology",
+        "hemorrhage",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Rnf216",
+      "label": "Rnf216",
+      "annotation": [
+        "decreased lymphocyte cell number",
+        "increased monocyte cell number",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Cib4",
+      "label": "Cib4",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal skin morphology",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "id": "Scube1",
+      "label": "Scube1",
+      "annotation": [
+        "abnormal brain morphology",
+        "female infertility",
+        "hydrocephaly",
+        "male infertility"
+      ],
+      "node_color": 1
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "Prdm14",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.28
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "Kash5",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.348
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "Trim37",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.276
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "Cep19",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.292
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.28
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "Herc1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal lens morphology",
+        "cataract",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.31
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Camsap3",
+      "target": "Clpp",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.303
+    }
+  },
+  {
+    "data": {
+      "source": "Dnmt3l",
+      "target": "Chsy3",
+      "annotation": [
+        "female infertility",
+        "increased bone mineral density",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Dnmt3l",
+      "target": "Trappc2l",
+      "annotation": [
+        "female infertility",
+        "increased mean corpuscular hemoglobin",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Dnmt3l",
+      "target": "Kpna2",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Dnmt3l",
+      "target": "Spata22",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Dnmt3l",
+      "target": "Brwd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Dnmt3l",
+      "target": "Kif6",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Dnmt3l",
+      "target": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Spidr",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.294
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Prdm14",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Kash5",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Gh",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small heart",
+        "small spleen"
+      ],
+      "edge_size": 0.323
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Syce2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Cep19",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.368
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Dnd1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.35
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.353
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Hectd3",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "male infertility"
+      ],
+      "edge_size": 0.294
+    }
+  },
+  {
+    "data": {
+      "source": "Celsr1",
+      "target": "Brwd1",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Stoml2",
+      "target": "Hddc3",
+      "annotation": [
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Stoml2",
+      "target": "Prmt6",
+      "annotation": [
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Clcn1",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased grip strength",
+        "decreased lymphocyte cell number",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "female infertility",
+        "increased circulating bilirubin level",
+        "male infertility"
+      ],
+      "edge_size": 0.259
+    }
+  },
+  {
+    "data": {
+      "source": "Kdm3a",
+      "target": "Gh",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "decreased bone mineral content",
+        "decreased prepulse inhibition",
+        "impaired glucose tolerance",
+        "male infertility",
+        "small spleen"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Kdm3a",
+      "target": "Csnk2a2",
+      "annotation": [
+        "abnormal behavior",
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal skin morphology",
+        "decreased thigmotaxis",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Nphp1",
+      "target": "Csnk2a2",
+      "annotation": [
+        "abnormal skin morphology",
+        "decreased exploration in new environment",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Nphp1",
+      "target": "Upf3a",
+      "annotation": [
+        "decreased exploration in new environment",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Nphp1",
+      "target": "Brwd1",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Nphp1",
+      "target": "Reln",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal uterus morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Nphp1",
+      "target": "Kif6",
+      "annotation": [
+        "abnormal uterus morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Nphp1",
+      "target": "Pgap6",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Nphp1",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Nphp1",
+      "target": "Gas2l1",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Psma8",
+      "target": "Zcwpw1",
+      "annotation": [
+        "abnormal pancreas morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Psma8",
+      "target": "Syce2",
+      "annotation": [
+        "abnormal skin morphology",
+        "enlarged urinary bladder",
+        "male infertility",
+        "small epididymis",
+        "small testis"
+      ],
+      "edge_size": 0.294
+    }
+  },
+  {
+    "data": {
+      "source": "Psma8",
+      "target": "Brwd1",
+      "annotation": [
+        "abnormal seminal vesicle morphology",
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Psma8",
+      "target": "Teddm1a",
+      "annotation": [
+        "abnormal pancreas morphology",
+        "abnormal seminal vesicle morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Psma8",
+      "target": "Pgap6",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Psma8",
+      "target": "Gas2l1",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Prdm14",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.417
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Helq",
+      "annotation": [
+        "decreased bone mineral content",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Kash5",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.455
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Kiss1r",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Trim37",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.294
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Syce2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.385
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Cep19",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.455
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Dnd1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.455
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Stag3",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.417
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.625
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Spata22",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.364
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.625
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.364
+    }
+  },
+  {
+    "data": {
+      "source": "Spidr",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Fbxo43",
+      "target": "Spata16",
+      "annotation": [
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Fbxo43",
+      "target": "Erich2",
+      "annotation": [
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Fbxo43",
+      "target": "Usp15",
+      "annotation": [
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Fbxo43",
+      "target": "Fbxo24",
+      "annotation": [
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Dpy19l1",
+      "target": "Chsy3",
+      "annotation": [
+        "abnormal kidney morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Dpy19l1",
+      "target": "Kpna2",
+      "annotation": [
+        "abnormal kidney morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Dpy19l1",
+      "target": "Cnot7",
+      "annotation": [
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Dpy19l1",
+      "target": "Spata22",
+      "annotation": [
+        "abnormal heart morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Dpy19l1",
+      "target": "Pramel12",
+      "annotation": [
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal seminal vesicle morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Dpy19l1",
+      "target": "Brwd1",
+      "annotation": [
+        "abnormal seminal vesicle morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Helq",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.312
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Kash5",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Gh",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Fndc3a",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Nhlh2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Kiss1r",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Tram1",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.312
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Trim37",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.35
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Syce2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.353
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Cep19",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.4
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Dnd1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.4
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.467
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Gnl1",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased lean body mass",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Ube2j2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Spata22",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Herc1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Clpp",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.269
+    }
+  },
+  {
+    "data": {
+      "source": "Prdm14",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Mapk6",
+      "target": "Bag5",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "anophthalmia",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Mapk6",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Mapk6",
+      "target": "Tulp2",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Kash5",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Kiss1r",
+      "annotation": [
+        "abnormal kidney morphology",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Syce2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Dnd1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Chsy3",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.308
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Stag3",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.4
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Trappc2l",
+      "annotation": [
+        "decreased bone mineral content",
+        "enlarged spleen",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Kpna2",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.417
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.417
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Resf1",
+      "annotation": [
+        "abnormal eye morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Upf3a",
+      "annotation": [
+        "abnormal eye morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Spata22",
+      "annotation": [
+        "decreased bone mineral content",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Pramel12",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "enlarged spleen",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Tle4",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.417
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Helq",
+      "target": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Sun5",
+      "target": "Tmc7",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal liver morphology",
+        "abnormal spleen morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Gh",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.296
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Fndc3a",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.389
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Sun1",
+      "annotation": [
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Nhlh2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.348
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Kiss1r",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.35
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Tram1",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Trim37",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.368
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Syce2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Cep19",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Dnd1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Trappc2l",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased locomotor activity",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Gnl1",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.545
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Ube2j2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.292
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Spata22",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.357
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Ccnb1ip1",
+      "annotation": [
+        "decreased locomotor activity",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Herc1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.545
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Clpp",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Usp15",
+      "annotation": [
+        "decreased locomotor activity",
+        "female infertility",
+        "increased leukocyte cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Kash5",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.357
+    }
+  },
+  {
+    "data": {
+      "source": "Syce1",
+      "target": "Trip13",
+      "annotation": [
+        "abnormal lens morphology",
+        "decreased bone mineral density",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased fasting circulating glucose level",
+        "increased thigmotaxis",
+        "male infertility"
+      ],
+      "edge_size": 0.292
+    }
+  },
+  {
+    "data": {
+      "source": "Syce1",
+      "target": "Stag3",
+      "annotation": [
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "female infertility",
+        "increased fasting circulating glucose level",
+        "male infertility"
+      ],
+      "edge_size": 0.312
+    }
+  },
+  {
+    "data": {
+      "source": "Syce1",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.308
+    }
+  },
+  {
+    "data": {
+      "source": "Syce1",
+      "target": "Ccnb1ip1",
+      "annotation": [
+        "decreased locomotor activity",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Gh",
+      "target": "Nhlh2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Gh",
+      "target": "Kiss1r",
+      "annotation": [
+        "abnormal kidney morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart weight",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased liver weight",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.355
+    }
+  },
+  {
+    "data": {
+      "source": "Gh",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Gh",
+      "target": "Trappc2l",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal spleen morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased locomotor activity",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.258
+    }
+  },
+  {
+    "data": {
+      "source": "Gh",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.28
+    }
+  },
+  {
+    "data": {
+      "source": "Gh",
+      "target": "Tle4",
+      "annotation": [
+        "abnormal kidney morphology",
+        "abnormal spleen morphology",
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Gh",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.28
+    }
+  },
+  {
+    "data": {
+      "source": "Fndc3a",
+      "target": "Tram1",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased exploration in new environment",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.389
+    }
+  },
+  {
+    "data": {
+      "source": "Fndc3a",
+      "target": "Gnl1",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "edge_size": 0.28
+    }
+  },
+  {
+    "data": {
+      "source": "Fndc3a",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.294
+    }
+  },
+  {
+    "data": {
+      "source": "Fndc3a",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk2a2",
+      "target": "Trappc2l",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal spleen morphology",
+        "enlarged spleen",
+        "increased mean corpuscular volume",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.35
+    }
+  },
+  {
+    "data": {
+      "source": "Plcb1",
+      "target": "Tmc7",
+      "annotation": [
+        "abnormal liver morphology",
+        "abnormal ovary morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Plcb1",
+      "target": "Reln",
+      "annotation": [
+        "abnormal lymph node morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.357
+    }
+  },
+  {
+    "data": {
+      "source": "Plcb1",
+      "target": "Xdh",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Plcb1",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Nek1",
+      "target": "Cep19",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal retina outer nuclear layer morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased total retina thickness",
+        "male infertility"
+      ],
+      "edge_size": 0.4
+    }
+  },
+  {
+    "data": {
+      "source": "Nek1",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "male infertility"
+      ],
+      "edge_size": 0.308
+    }
+  },
+  {
+    "data": {
+      "source": "Ccdc28a",
+      "target": "Rimklb",
+      "annotation": [
+        "hyperactivity",
+        "increased grip strength",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Ccdc28a",
+      "target": "Igsf11",
+      "annotation": [
+        "hyperactivity",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Fkbp4",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Nhlh2",
+      "target": "Kiss1r",
+      "annotation": [
+        "abnormal seminal vesicle morphology",
+        "abnormal testis morphology",
+        "abnormal uterus morphology",
+        "absent epididymis",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased spleen weight",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.52
+    }
+  },
+  {
+    "data": {
+      "source": "Nhlh2",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.28
+    }
+  },
+  {
+    "data": {
+      "source": "Nhlh2",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Nhlh2",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Tmem209",
+      "target": "Ubn2",
+      "annotation": [
+        "abnormal embryo size",
+        "abnormal eyelid fusion",
+        "abnormal head shape",
+        "abnormal head size",
+        "anophthalmia",
+        "exencephaly",
+        "male infertility",
+        "pallor",
+        "protruding tongue"
+      ],
+      "edge_size": 0.529
+    }
+  },
+  {
+    "data": {
+      "source": "Hipk4",
+      "target": "Spag17",
+      "annotation": [
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Hipk4",
+      "target": "Igsf11",
+      "annotation": [
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Hipk4",
+      "target": "Idh3b",
+      "annotation": [
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "L2hgdh",
+      "target": "Upf3a",
+      "annotation": [
+        "abnormal eye morphology",
+        "decreased exploration in new environment",
+        "male infertility"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "Foxo4",
+      "target": "Actl7b",
+      "annotation": [
+        "abnormal heart morphology",
+        "abnormal urinary bladder morphology",
+        "male infertility"
+      ],
+      "edge_size": 1.0
+    }
+  },
+  {
+    "data": {
+      "source": "Usp42",
+      "target": "Efna5",
+      "annotation": [
+        "abnormal behavior",
+        "abnormal lens morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Usp42",
+      "target": "Sms",
+      "annotation": [
+        "decreased body length",
+        "decreased body weight",
+        "decreased lean body mass",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Usp42",
+      "target": "Bzw1",
+      "annotation": [
+        "cataract",
+        "hyperactivity",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Kiss1r",
+      "target": "Syce2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.261
+    }
+  },
+  {
+    "data": {
+      "source": "Kiss1r",
+      "target": "Dnd1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Kiss1r",
+      "target": "Stag3",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Kiss1r",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Kiss1r",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.412
+    }
+  },
+  {
+    "data": {
+      "source": "Tg",
+      "target": "Cfap119",
+      "annotation": [
+        "decreased locomotor activity",
+        "decreased vertical activity",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Wdr62",
+      "target": "Zcwpw1",
+      "annotation": [
+        "enlarged lymph nodes",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Zscan21",
+      "target": "S1pr3",
+      "annotation": [
+        "abnormal skin coloration",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Zscan21",
+      "target": "Tbccd1",
+      "annotation": [
+        "abnormal skin coloration",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Zscan21",
+      "target": "Ccnt2",
+      "annotation": [
+        "abnormal skin coloration",
+        "decreased total retina thickness",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.444
+    }
+  },
+  {
+    "data": {
+      "source": "Tmem203",
+      "target": "Lmtk2",
+      "annotation": [
+        "decreased heart rate",
+        "increased circulating alkaline phosphatase level",
+        "male infertility",
+        "prolonged RR interval"
+      ],
+      "edge_size": 0.308
+    }
+  },
+  {
+    "data": {
+      "source": "Tmem203",
+      "target": "Zfp541",
+      "annotation": [
+        "decreased heart rate",
+        "male infertility",
+        "prolonged RR interval"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Tmem203",
+      "target": "Arrdc5",
+      "annotation": [
+        "abnormal retina morphology",
+        "increased circulating alkaline phosphatase level",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Tram1",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.312
+    }
+  },
+  {
+    "data": {
+      "source": "Tram1",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "decreased startle reflex",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Tram1",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.308
+    }
+  },
+  {
+    "data": {
+      "source": "Tram1",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.308
+    }
+  },
+  {
+    "data": {
+      "source": "Tram1",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Spata16",
+      "target": "Erich2",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 1.0
+    }
+  },
+  {
+    "data": {
+      "source": "Spata16",
+      "target": "Usp15",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.444
+    }
+  },
+  {
+    "data": {
+      "source": "Spata16",
+      "target": "Fbxo24",
+      "annotation": [
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Spata16",
+      "target": "Bbof1",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Lrig3",
+      "target": "Fam227b",
+      "annotation": [
+        "abnormal skeletal muscle morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "enlarged thymus",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.261
+    }
+  },
+  {
+    "data": {
+      "source": "Fbxo22",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased grip strength",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Zcwpw1",
+      "target": "Katnal2",
+      "annotation": [
+        "abnormal pancreas morphology",
+        "enlarged lymph nodes",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Zcwpw1",
+      "target": "Spata22",
+      "annotation": [
+        "abnormal pancreas morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Trim37",
+      "target": "Syce2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Trim37",
+      "target": "Cep19",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Trim37",
+      "target": "Dnd1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Trim37",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased fasting circulating glucose level",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.421
+    }
+  },
+  {
+    "data": {
+      "source": "Trim37",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.353
+    }
+  },
+  {
+    "data": {
+      "source": "Trim37",
+      "target": "Herc1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal retina morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased fasting circulating glucose level",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.32
+    }
+  },
+  {
+    "data": {
+      "source": "Trim37",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.353
+    }
+  },
+  {
+    "data": {
+      "source": "Trim37",
+      "target": "Clpp",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased red blood cell distribution width",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.31
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Cep19",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.294
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Nexmif",
+      "annotation": [
+        "abnormal skin morphology",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "enlarged urinary bladder",
+        "increased total body fat amount",
+        "male infertility",
+        "small kidney"
+      ],
+      "edge_size": 0.28
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Dnd1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.467
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Stag3",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.533
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.316
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.583
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Ube2j2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small epididymis",
+        "small testis"
+      ],
+      "edge_size": 0.32
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Spata22",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.312
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Tle4",
+      "annotation": [
+        "abnormal skin morphology",
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.261
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.462
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.312
+    }
+  },
+  {
+    "data": {
+      "source": "Syce2",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Dnd1",
+      "annotation": [
+        "abnormal retina outer nuclear layer morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Stag3",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.4
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Trappc2l",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.417
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Ube2j2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.292
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Spata22",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.357
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.417
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Clpp",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.28
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Ccnt2",
+      "annotation": [
+        "abnormal retina outer nuclear layer morphology",
+        "decreased total retina thickness",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.308
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Cep19",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Dnd1",
+      "target": "Stag3",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Dnd1",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.353
+    }
+  },
+  {
+    "data": {
+      "source": "Dnd1",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.7
+    }
+  },
+  {
+    "data": {
+      "source": "Dnd1",
+      "target": "Spata22",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Dnd1",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.545
+    }
+  },
+  {
+    "data": {
+      "source": "Dnd1",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.357
+    }
+  },
+  {
+    "data": {
+      "source": "Dnd1",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Gas2l2",
+      "target": "Cep250",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "absent pinna reflex",
+        "male infertility"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Gas2l2",
+      "target": "Pank2",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Gas2l2",
+      "target": "Mcidas",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Gas2l2",
+      "target": "Fbxo24",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Gas2l2",
+      "target": "Dctd",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "Spag17",
+      "target": "Igsf11",
+      "annotation": [
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Spag17",
+      "target": "Idh3b",
+      "annotation": [
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "Chsy3",
+      "target": "Kpna2",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.4
+    }
+  },
+  {
+    "data": {
+      "source": "Chsy3",
+      "target": "Resf1",
+      "annotation": [
+        "abnormal eye morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Chsy3",
+      "target": "Cdk4",
+      "annotation": [
+        "decreased body length",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Chsy3",
+      "target": "Tmc7",
+      "annotation": [
+        "abnormal eye morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Chsy3",
+      "target": "Adgb",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Fndc9",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.636
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Ube2j2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Spata22",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Herc1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased fasting circulating glucose level",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Clpp",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.269
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "male infertility"
+      ],
+      "edge_size": 0.308
+    }
+  },
+  {
+    "data": {
+      "source": "Stag3",
+      "target": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Katnal2",
+      "target": "Hook1",
+      "annotation": [
+        "enlarged lymph nodes",
+        "male infertility",
+        "small spleen"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Trappc2l",
+      "target": "Bicral",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "male infertility"
+      ],
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Trappc2l",
+      "target": "Spata22",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "decreased bone mineral content",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.353
+    }
+  },
+  {
+    "data": {
+      "source": "Trappc2l",
+      "target": "Pank2",
+      "annotation": [
+        "abnormal heart morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Hsp90aa1",
+      "target": "Zc3hc1",
+      "annotation": [
+        "abnormal cranium morphology",
+        "abnormal snout morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Cfap91",
+      "target": "Kpna2",
+      "annotation": [
+        "abnormal eye morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Cfap91",
+      "target": "Upf3a",
+      "annotation": [
+        "abnormal eye morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Fndc9",
+      "target": "4930447C04Rik",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Fndc9",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Fndc9",
+      "target": "AU040320",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "hyperactivity",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Gnl1",
+      "target": "Ube2j2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased erythrocyte cell number",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Ezh1",
+      "target": "Lca5l",
+      "annotation": [
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Dusp7",
+      "annotation": [
+        "abnormal cholesterol homeostasis",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Resf1",
+      "annotation": [
+        "abnormal eye morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Upf3a",
+      "annotation": [
+        "abnormal eye morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Cnot7",
+      "annotation": [
+        "abnormal kidney morphology",
+        "decreased locomotor activity",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.4
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Ccnb1ip1",
+      "annotation": [
+        "decreased locomotor activity",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Tmc7",
+      "annotation": [
+        "abnormal eye morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Adgb",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Kif6",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Kpna2",
+      "target": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Stx2",
+      "target": "Baz1a",
+      "annotation": [
+        "decreased mean corpuscular hemoglobin",
+        "decreased mean corpuscular hemoglobin concentration",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "Ube2j2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "Spata22",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "Tle4",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "Herc1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "Clpp",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.261
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "AU040320",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.455
+    }
+  },
+  {
+    "data": {
+      "source": "4930447C04Rik",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "male infertility"
+      ],
+      "edge_size": 0.444
+    }
+  },
+  {
+    "data": {
+      "source": "Lmtk2",
+      "target": "Zfp541",
+      "annotation": [
+        "decreased heart rate",
+        "male infertility",
+        "prolonged RR interval"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Resf1",
+      "target": "Tmc7",
+      "annotation": [
+        "abnormal eye morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Ube2j2",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Ube2j2",
+      "target": "Clpp",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased mean corpuscular hemoglobin",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.265
+    }
+  },
+  {
+    "data": {
+      "source": "Cldn11",
+      "target": "Bicral",
+      "annotation": [
+        "increased blood urea nitrogen level",
+        "increased startle reflex",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Bicral",
+      "target": "Arrdc5",
+      "annotation": [
+        "abnormal retina morphology",
+        "increased mean corpuscular hemoglobin",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Upf3a",
+      "target": "Hormad2",
+      "annotation": [
+        "decreased exploration in new environment",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Lrrc56",
+      "target": "Hook1",
+      "annotation": [
+        "abnormal skin morphology",
+        "enlarged lymph nodes",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Lrrc56",
+      "target": "Xdh",
+      "annotation": [
+        "abnormal lung morphology",
+        "abnormal skin morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Fam227b",
+      "target": "Reln",
+      "annotation": [
+        "abnormal lymph node morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.357
+    }
+  },
+  {
+    "data": {
+      "source": "Cnot7",
+      "target": "Tmc7",
+      "annotation": [
+        "abnormal liver morphology",
+        "abnormal ovary morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Spata22",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Spata22",
+      "target": "Pank2",
+      "annotation": [
+        "abnormal heart morphology",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Spata22",
+      "target": "Gas2l1",
+      "annotation": [
+        "enlarged epididymis",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Spata22",
+      "target": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Bag5",
+      "target": "Tbc1d8",
+      "annotation": [
+        "abnormal retina morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Bag5",
+      "target": "Xdh",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Bag5",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Bag5",
+      "target": "Tulp2",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Tle4",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Tle4",
+      "target": "Tmc7",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal liver morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnb1ip1",
+      "target": "Usp15",
+      "annotation": [
+        "decreased locomotor activity",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Enkur",
+      "target": "Tbc1d20",
+      "annotation": [
+        "abnormal skin morphology",
+        "hemorrhage",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Herc1",
+      "target": "Sms",
+      "annotation": [
+        "decreased bone mineral density",
+        "decreased circulating glucose level",
+        "decreased lean body mass",
+        "increased circulating amylase level",
+        "increased circulating sodium level",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Herc1",
+      "target": "Ythdc2",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.263
+    }
+  },
+  {
+    "data": {
+      "source": "Herc1",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased circulating amylase level",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "S1pr3",
+      "target": "Tbccd1",
+      "annotation": [
+        "abnormal skin coloration",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "S1pr3",
+      "target": "Ccnt2",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "abnormal skin coloration",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Fbxo7",
+      "target": "Usp15",
+      "annotation": [
+        "decreased circulating fructosamine level",
+        "increased circulating sodium level",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Tmem225",
+      "target": "Xdh",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Tmem225",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Tmem225",
+      "target": "Tulp2",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Tbccd1",
+      "target": "Ccnt2",
+      "annotation": [
+        "abnormal skin coloration",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Erich2",
+      "target": "Usp15",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.444
+    }
+  },
+  {
+    "data": {
+      "source": "Erich2",
+      "target": "Fbxo24",
+      "annotation": [
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Erich2",
+      "target": "Bbof1",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Setx",
+      "target": "Rnf216",
+      "annotation": [
+        "decreased lymphocyte cell number",
+        "increased monocyte cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Brwd1",
+      "target": "Tmc7",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.364
+    }
+  },
+  {
+    "data": {
+      "source": "Brwd1",
+      "target": "Pank2",
+      "annotation": [
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Brwd1",
+      "target": "Reln",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.4
+    }
+  },
+  {
+    "data": {
+      "source": "Brwd1",
+      "target": "Kif6",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Brwd1",
+      "target": "Pgap6",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Brwd1",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Brwd1",
+      "target": "Gas2l1",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Brwd1",
+      "target": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Sms",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased circulating amylase level",
+        "male infertility"
+      ],
+      "edge_size": 0.267
+    }
+  },
+  {
+    "data": {
+      "source": "Ythdc2",
+      "target": "Clpp",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.261
+    }
+  },
+  {
+    "data": {
+      "source": "Ythdc2",
+      "target": "Ube2j1",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased total body fat amount",
+        "male infertility"
+      ],
+      "edge_size": 0.455
+    }
+  },
+  {
+    "data": {
+      "source": "Ythdc2",
+      "target": "Tnrc6b",
+      "annotation": [
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Gga1",
+      "target": "Pank2",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Tmc7",
+      "target": "Reln",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.444
+    }
+  },
+  {
+    "data": {
+      "source": "Tmc7",
+      "target": "Cib4",
+      "annotation": [
+        "abnormal eye morphology",
+        "abnormal skin morphology",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Pank2",
+      "target": "Mcidas",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Pank2",
+      "target": "Fbxo24",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Pank2",
+      "target": "Dctd",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Pank2",
+      "target": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Reln",
+      "target": "Mcidas",
+      "annotation": [
+        "abnormal spleen morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Reln",
+      "target": "Kif6",
+      "annotation": [
+        "abnormal uterus morphology",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Adgb",
+      "target": "Kif6",
+      "annotation": [
+        "abnormal uterus morphology",
+        "hydrocephaly",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Usp15",
+      "target": "Fbxo24",
+      "annotation": [
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Usp15",
+      "target": "Bbof1",
+      "annotation": [
+        "female infertility",
+        "increased basophil cell number",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Mcidas",
+      "target": "Fbxo24",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Mcidas",
+      "target": "Dctd",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "AU040320",
+      "target": "Igsf11",
+      "annotation": [
+        "hyperactivity",
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "AU040320",
+      "target": "Idh3b",
+      "annotation": [
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Kif9",
+      "target": "Hook1",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small spleen"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Kif6",
+      "target": "Scube1",
+      "annotation": [
+        "female infertility",
+        "hydrocephaly",
+        "male infertility"
+      ],
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Kif6",
+      "target": "Cntd1",
+      "annotation": [
+        "female infertility",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Igsf11",
+      "target": "Idh3b",
+      "annotation": [
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Fbxo24",
+      "target": "Dctd",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "Xdh",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.571
+    }
+  },
+  {
+    "data": {
+      "source": "Xdh",
+      "target": "Tulp2",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Pgap6",
+      "target": "Pramel13",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Pgap6",
+      "target": "Gas2l1",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "Pramel13",
+      "target": "Gas2l1",
+      "annotation": [
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Pramel13",
+      "target": "Tulp2",
+      "annotation": [
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
+      ],
+      "edge_size": 0.6
+    }
+  }
+]

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Visualization</title>
+    <link href="https://fonts.googleapis.com/css?family=Cabin" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <h1 style="text-align:center;">Phenotypic similarity gene network of 'Male infertility'</h1>
+    <div class="control-panel">
+        <div class="slider-container">
+            <span class="control-label">Select Network layout:</span>
+            <select id="layout-dropdown">
+                <option value="cose" selected>Cose</option>
+                <option value="circle">Circle</option>
+                <option value="grid">Grid</option>
+                <option value="random">Random</option>
+                <option value="concentric">Concentric</option>
+            </select>
+        </div>
+        <div class="slider-container">
+            <span class="control-label">Filter by Effect Size:</span>
+            <input type="range" id="node-color-slider" min="1" max="10" value="1">
+            <span id="node-color-value" class="slider-value">1</span>
+        </div>
+        <div class="slider-container">
+            <span class="control-label">Filter by No.Shared Phenotypes:</span>
+            <input type="range" id="edge-size-slider" min="1" max="10" value="1">
+            <span id="edge-size-value" class="slider-value">1</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="cy-container">
+            <div class="cy"></div>
+            <div class="color-scale-container">
+                <svg width="400" height="30" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:rgb(248,229,140);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgb(255,140,0);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="400" height="30" fill="url(#colorGradient)" />
+                    <text x="0" y="25" font-family="Arial" font-size="12px" fill="#000">Low</text>
+                    <text x="370" y="25" font-family="Arial" font-size="12px" fill="#000">High</text>
+                </svg>
+                <p class="scale-label">Node color: Scaled effect size. Strength of the effect on the phenotype </p>
+            </div>
+            <div class="edge-scale-container">
+                <svg width="400" height="30" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="0,15 400,0 400,30" style="fill:gray;stroke:none;" />
+                    <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
+                    <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
+                </svg>
+                <p class="scale-label">Edge size: Scaled number of shared phenotypes</p>
+            </div>
+        </div>
+        <div class="tooltip-container"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+    <script src="js/scripts.js"></script>
+</body>
+
+</html>

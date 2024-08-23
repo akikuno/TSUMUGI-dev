@@ -18,7 +18,8 @@ const elements = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false);
+    req.open("GET", "https://example.net/increased_circulating_glucose_level.json", false);
+    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false);
     req.send(null);
     return result;
 })();

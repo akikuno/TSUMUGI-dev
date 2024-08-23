@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Phenotype</title>
+</head>
+
+<body>
+    <h1>Select a Phenotype</h1>
+    <form id="phenotypeForm">
+        <label for="phenotype">Choose a phenotype:</label>
+        <select id="phenotype" name="phenotype">
+            <option value="increased_circulating_glucose_level">Increased circulating glucose level</option>
+            <option value="male_infertility">Male infertility</option>
+            <!-- 他の選択肢もここに追加可能 -->
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById('phenotypeForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const selectedPhenotype = document.getElementById('phenotype').value;
+
+            // form actionをnetworkディレクトリのphenotype-specific HTMLに変更する
+            window.location.href = `network/${selectedPhenotype}.html`;
+        });
+    </script>
+</body>
+
+</html>

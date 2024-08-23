@@ -1,0 +1,328 @@
+[
+  {
+    "data": {
+      "id": "Zfyve19",
+      "label": "Zfyve19",
+      "annotation": [
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "decreased thigmotaxis",
+        "increased circulating glucose level"
+      ],
+      "node_color": 0.695783774710263
+    }
+  },
+  {
+    "data": {
+      "id": "Bbs5",
+      "label": "Bbs5",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal gait",
+        "abnormal retina morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased circulating triglyceride level",
+        "decreased grip strength",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "decreased respiratory quotient",
+        "impaired glucose tolerance",
+        "increased circulating alanine transaminase level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level",
+        "increased hematocrit",
+        "increased hemoglobin content",
+        "increased leukocyte cell number",
+        "increased lymphocyte cell number",
+        "increased mean corpuscular volume",
+        "increased monocyte cell number",
+        "increased total body fat amount",
+        "short tibia",
+        "tremors"
+      ],
+      "node_color": 1.90267688381064
+    }
+  },
+  {
+    "data": {
+      "id": "Mrpl39",
+      "label": "Mrpl39",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "decreased circulating creatinine level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 0.147887160470071
+    }
+  },
+  {
+    "data": {
+      "id": "Dtnbp1",
+      "label": "Dtnbp1",
+      "annotation": [
+        "abnormal coat/hair pigmentation",
+        "abnormal iris pigmentation",
+        "abnormal retina morphology",
+        "abnormal uterus morphology",
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased fasting circulating glucose level"
+      ],
+      "node_color": 0.85860039659937
+    }
+  },
+  {
+    "data": {
+      "id": "Eid2b",
+      "label": "Eid2b",
+      "annotation": [
+        "decreased mean corpuscular volume",
+        "embryonic lethality prior to organogenesis",
+        "increased bone mineral density",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased leukocyte cell number",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 0.980395450388513
+    }
+  },
+  {
+    "data": {
+      "id": "Znhit2",
+      "label": "Znhit2",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "embryonic lethality prior to organogenesis",
+        "increased circulating glucose level",
+        "increased leukocyte cell number",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 1.14763529916209
+    }
+  },
+  {
+    "data": {
+      "id": "Gcn1",
+      "label": "Gcn1",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 1.06205024674342
+    }
+  },
+  {
+    "data": {
+      "id": "Ky",
+      "label": "Ky",
+      "annotation": [
+        "abnormal behavior",
+        "abnormal gait",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "impaired righting response",
+        "increased circulating glucose level",
+        "increased leukocyte cell number",
+        "tremors"
+      ],
+      "node_color": 1.38805985218564
+    }
+  },
+  {
+    "data": {
+      "id": "Bscl2",
+      "label": "Bscl2",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal gait",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased erythrocyte cell number",
+        "decreased prepulse inhibition",
+        "decreased respiratory quotient",
+        "decreased total body fat amount",
+        "decreased total retina thickness",
+        "improved glucose tolerance",
+        "increased circulating HDL cholesterol level",
+        "increased circulating alanine transaminase level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating calcium level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased circulating serum albumin level",
+        "increased circulating total protein level",
+        "increased cornea thickness",
+        "increased fasting circulating glucose level",
+        "increased fluid intake",
+        "increased food intake",
+        "increased lean body mass",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased monocyte cell number",
+        "short tibia"
+      ],
+      "node_color": 3.42769562431737
+    }
+  },
+  {
+    "data": {
+      "id": "Thap12",
+      "label": "Thap12",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 1.23888432600794
+    }
+  },
+  {
+    "data": {
+      "id": "Slc25a46",
+      "label": "Slc25a46",
+      "annotation": [
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level"
+      ],
+      "node_color": 1.5075791529553
+    }
+  },
+  {
+    "data": {
+      "source": "Zfyve19",
+      "target": "Ky",
+      "annotation": [
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Bscl2",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal gait",
+        "decreased bone mineral content",
+        "decreased respiratory quotient",
+        "increased circulating alanine transaminase level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level",
+        "increased mean corpuscular volume",
+        "increased monocyte cell number",
+        "short tibia"
+      ],
+      "edge_size": 0.262
+    }
+  },
+  {
+    "data": {
+      "source": "Mrpl39",
+      "target": "Znhit2",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Mrpl39",
+      "target": "Gcn1",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "Mrpl39",
+      "target": "Thap12",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "Dtnbp1",
+      "target": "Slc25a46",
+      "annotation": [
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Eid2b",
+      "target": "Znhit2",
+      "annotation": [
+        "embryonic lethality prior to organogenesis",
+        "increased circulating glucose level",
+        "increased leukocyte cell number",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Znhit2",
+      "target": "Gcn1",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Znhit2",
+      "target": "Thap12",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Gcn1",
+      "target": "Thap12",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 1.0
+    }
+  }
+]
