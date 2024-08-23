@@ -11,18 +11,18 @@ body {
 
 .cy-container {
     flex: 3;
-    /* 75%の幅を占める */
+    height: 100%;
     display: flex;
     flex-direction: column;
-    height: 100%;
     position: relative;
+    margin: 10px;
 }
 
 .tooltip-container {
     flex: 1;
-    /* 25%の幅を占める */
     background: #fff;
     padding: 20px;
+    margin: 10px;
     border-radius: 5px;
     font-size: 20px;
     overflow-y: auto;
@@ -53,13 +53,11 @@ body {
 
 .control-panel {
     width: 73%;
-    /* 75%の幅 */
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
-    padding: 15px;
-    /* background-color: #f9f9f9;
-    border-bottom: 1px solid #ccc; */
+    padding: 10px;
+    margin: 10px;
     z-index: 10;
 }
 
@@ -77,5 +75,5 @@ body {
 }
 
 .slider {
-    width: 150px;
+    width: 200px;
 }
