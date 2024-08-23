@@ -2,13 +2,26 @@
 // Input handling
 // ========================================================
 
-const elements = [
-    { data: { id: 'a', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 3 } },
-    { data: { id: 'b', label: 'Pou5f1', annotation: 'fuga', node_color: 10 } },
-    { data: { id: 'c', label: 'Sox2', annotation: 'foo', node_color: 1 } },
-    { data: { source: 'a', target: 'b', annotation: 'Foo', edge_size: 0.5 } },
-    { data: { source: 'a', target: 'c', annotation: 'FooBar', edge_size: 1.5 } },
-];
+// const elements = [
+//     { data: { id: 'a', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 3 } },
+//     { data: { id: 'b', label: 'Pou5f1', annotation: 'fuga', node_color: 10 } },
+//     { data: { id: 'c', label: 'Sox2', annotation: 'foo', node_color: 1 } },
+//     { data: { source: 'a', target: 'b', annotation: 'Foo', edge_size: 0.5 } },
+//     { data: { source: 'a', target: 'c', annotation: 'FooBar', edge_size: 1.5 } },
+// ];
+
+const elements = (function () {
+    var req = new XMLHttpRequest();  // XMLHttpRequest オブジェクトを生成する
+    var result = null;
+    req.onreadystatechange = function () {  // XMLHttpRequest オブジェクトの状態が変化した際に呼び出されるイベントハンドラ
+        if (req.readyState == 4 && req.status == 200) {  // サーバーからのレスポンスが完了し、かつ、通信が正常に終了した場合
+            result = JSON.parse(req.responseText);  // 取得した JSON をパースしてresultに代入
+        }
+    };
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false); // HTTPメソッドとアクセスするサーバーのURLを指定
+    req.send(null);  // 実際にサーバーへリクエストを送信
+    return result;  // パースされたJSONデータを返す
+})();
 
 // ========================================================
 // Normalize node color and edge sizes
@@ -75,10 +88,17 @@ function filterElements() {
         }
     });
 
-    // 次数が0になってもノードを残す（この部分は削除されました）
-    // この部分を削除することで、次数が0になってもノードが残ります。
-}
+    // エッジのフィルタリング後に、次数が0のノードを非表示にする
+    cy.nodes().forEach(function (node) {
+        const connectedEdges = node.connectedEdges().filter(edge => edge.style('display') === 'element');
+        if (connectedEdges.length === 0) {
+            node.style('display', 'none');
+        }
+    });
 
+    // レイアウトの再実行
+    cy.layout({ name: 'cose', componentSpacing: 100, nodeRepulsion: 100000 }).run();  // 現在使用しているレイアウトを再実行
+}
 
 // スライダーの初期設定
 document.getElementById('node-color-slider').value = 1;
@@ -104,7 +124,7 @@ const cy = cytoscape({
                 'text-valign': 'center',
                 'text-halign': 'center',
                 'font-family': 'Roboto',
-                'font-size': 5,
+                'font-size': "20px",
                 'width': 10,
                 'height': 10,
                 'background-color': function (ele) {
@@ -122,7 +142,7 @@ const cy = cytoscape({
             }
         }
     ],
-    layout: { name: 'cose' }
+    layout: { name: 'cose', }
 });
 
 
@@ -164,7 +184,7 @@ cy.on('mouseover', 'node, edge', function (event) {
         const annotations = Array.isArray(data.annotation)
             ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
             : '・ ' + data.annotation;
-        tooltipText = "<b>Shared phenotypes of " + sourceNode + " and " + targetNode + "</b><br>" + annotations;
+        tooltipText = "<b>Shared phenotypes of " + sourceNode + " and " + targetNode + " KOs</b><br>" + annotations;
     }
 
     document.querySelector('.tooltip-container').innerHTML = tooltipText;
