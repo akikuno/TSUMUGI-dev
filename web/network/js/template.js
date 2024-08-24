@@ -171,7 +171,8 @@ filterElements();
 // Tooltip handling
 // ========================================================
 
-cy.on('mouseover', 'node, edge', function (event) {
+// Tooltip handling for desktop (mouseover) and mobile (tap)
+cy.on('mouseover tap', 'node, edge', function (event) {
     const data = event.target.data();
     let tooltipText = '';
 
@@ -191,6 +192,5 @@ cy.on('mouseover', 'node, edge', function (event) {
 
     document.querySelector('.tooltip-container').innerHTML = tooltipText;
 });
-
 // Initial filtering and node color setup
 filterElements();
