@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XXX</title>
-    <link rel="icon" type="image/png" href="icon-tsumugi.png">
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -25,14 +23,19 @@
             </select>
         </div>
         <div class="slider-container">
-            <span class="control-label">Filter by Effect Size:</span>
-            <input type="range" id="node-color-slider" min="1" max="10" value="1">
-            <span id="node-color-value" class="slider-value">1</span>
+            <span class="control-label">Change node font size:</span>
+            <input type="range" id="font-size-slider" min="5" max="50" value="20">
+            <span id="font-size-value">20</span>px
         </div>
         <div class="slider-container">
             <span class="control-label">Filter by No.Shared Phenotypes:</span>
             <input type="range" id="edge-size-slider" min="1" max="10" value="1">
             <span id="edge-size-value" class="slider-value">1</span>
+        </div>
+        <div class="slider-container">
+            <span class="control-label">Filter by Effect Size:</span>
+            <input type="range" id="node-color-slider" min="1" max="10" value="1">
+            <span id="node-color-value" class="slider-value">1</span>
         </div>
     </div>
 
