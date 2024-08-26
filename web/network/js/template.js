@@ -2,28 +2,28 @@
 // Input handling
 // ========================================================
 
-const elements = [
-    { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50 } },
-    { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100 } },
-    { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3 } },
-    { data: { source: 'Nanog', target: 'Pou5f1', annotation: 'Foo', edge_size: 5 } },
-    { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
-    { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
-];
+// const elements = [
+//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50 } },
+//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100 } },
+//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3 } },
+//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: 'Foo', edge_size: 5 } },
+//     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
+//     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
+// ];
 
-// const elements = (function () {
-//     const req = new XMLHttpRequest();
-//     let result = null;
-//     req.onreadystatechange = function () {
-//         if (req.readyState === 4 && req.status === 200) {
-//             result = JSON.parse(req.responseText);
-//         }
-//     };
-//     req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX.json", false);
-//     // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false);
-//     req.send(null);
-//     return result;
-// })();
+const elements = (function () {
+    const req = new XMLHttpRequest();
+    let result = null;
+    req.onreadystatechange = function () {
+        if (req.readyState === 4 && req.status === 200) {
+            result = JSON.parse(req.responseText);
+        }
+    };
+    // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX.json", false);
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false);
+    req.send(null);
+    return result;
+})();
 
 // ========================================================
 // Normalize node color and edge sizes
@@ -37,6 +37,8 @@ const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
 const edgeMax = Math.max(...edgeSizes);
 
+const nodeRepulsionMin = 100;
+const nodeRepulsionMax = 10000;
 
 function scaleToOriginalRange(value, minValue, maxValue) {
     return minValue + (value - 1) * (maxValue - minValue) / 9;
@@ -44,6 +46,9 @@ function scaleToOriginalRange(value, minValue, maxValue) {
 
 function scaleValue(value, minValue, maxValue, minScale, maxScale) {
     // スケール範囲をminScaleとmaxScaleに合わせて変換
+    if (minValue == maxValue) {
+        return (maxScale + minScale) / 2;
+    }
     return minScale + (value - minValue) * (maxScale - minScale) / (maxValue - minValue);
 }
 
@@ -96,10 +101,13 @@ const cy = cytoscape({
             }
         }
     ],
-    layout: { name: currentLayout }
+    layout: { name: currentLayout, componentSpacing: 100 }
 });
 
-// Event listener for layout change
+// ========================================================
+// Visualization handling
+// ========================================================
+
 document.getElementById('layout-dropdown').addEventListener('change', function () {
     currentLayout = this.value;
     cy.layout({ name: currentLayout }).run();
@@ -114,12 +122,30 @@ document.getElementById('font-size-slider').addEventListener('input', function (
         .update();
 });
 
+document.getElementById('edge-width-slider').addEventListener('input', function () {
+    const edgeWidthScale = this.value;
+    document.getElementById('edge-width-value').textContent = this.value;
+    cy.style()
+        .selector('edge')
+        .style('width', function (ele) {
+            return scaleValue(ele.data('edge_size'), edgeMin, edgeMax, 0.5, 2) * edgeWidthScale;
+        })
+        .update();
+});
+
+document.getElementById('nodeRepulsion-slider').addEventListener('input', function () {
+    const nodeRepulsionValue = parseFloat(this.value);
+    const originalValue = scaleToOriginalRange(nodeRepulsionValue, nodeRepulsionMin, nodeRepulsionMax);
+    document.getElementById('node-repulsion-value').textContent = this.value;
+    cy.layout({ name: currentLayout, nodeRepulsion: originalValue }).run();
+});
+
 // ========================================================
-// Filtering function for nodes (node-color-slider)
+// Filtering function for nodes (filter-node-slider)
 // ========================================================
 
 function filterNodesByColor() {
-    const nodeColorSliderValue = parseFloat(document.getElementById('node-color-slider').value);
+    const nodeColorSliderValue = parseFloat(document.getElementById('filter-node-slider').value);
     const nodeThreshold = scaleToOriginalRange(nodeColorSliderValue, nodeMin, nodeMax);
 
     cy.nodes().forEach(function (node) {
@@ -127,23 +153,26 @@ function filterNodesByColor() {
         node.style('display', nodeColor >= nodeThreshold ? 'element' : 'none');
     });
 
-    // Apply layout after node filtering
-    cy.layout({ name: currentLayout, componentSpacing: 100, nodeRepulsion: 100 }).run();
+    cy.layout({ name: currentLayout, nodeRepulsion: nodeRepulsionValue }).run();
+
 }
 
-// Event listeners for sliders
-document.getElementById('node-color-slider').addEventListener('input', function () {
+document.getElementById('filter-node-slider').addEventListener('input', function () {
     document.getElementById('node-color-value').textContent = this.value;
+    // Check if nodeMin is equal to nodeMax
+    if (nodeMin == nodeMax) {
+        // Disable slider or just return to prevent any filtering
+        return;
+    }
     filterNodesByColor();
 });
 
-
 // ========================================================
-// Filtering function for edges (edge-size-slider)
+// Filtering function for edges (filter-edge-slider)
 // ========================================================
 
 function filterEdgesBySize() {
-    const edgeSizeSliderValue = parseFloat(document.getElementById('edge-size-slider').value);
+    const edgeSizeSliderValue = parseFloat(document.getElementById('filter-edge-slider').value);
     const edgeThreshold = scaleToOriginalRange(edgeSizeSliderValue, edgeMin, edgeMax);
 
     // Reset all nodes and edges to visible before applying the filter
@@ -176,10 +205,10 @@ function filterEdgesBySize() {
     });
 
     // Apply layout after edge filtering
-    cy.layout({ name: currentLayout, componentSpacing: 100, nodeRepulsion: 100 }).run();
+    cy.layout({ name: currentLayout, nodeRepulsion: nodeRepulsionValue }).run();
 }
 
-document.getElementById('edge-size-slider').addEventListener('input', function () {
+document.getElementById('filter-edge-slider').addEventListener('input', function () {
     document.getElementById('edge-size-value').textContent = this.value;
     filterEdgesBySize();
 });
@@ -193,11 +222,22 @@ cy.on('tap', 'node, edge', function (event) {
     const data = event.target.data();
     let tooltipText = '';
 
+    // Remove any existing tooltips
+    document.querySelectorAll('.cy-tooltip').forEach(function (el) {
+        el.remove();
+    });
+
+    let pos;
+
     if (event.target.isNode()) {
         const annotations = Array.isArray(data.annotation)
             ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
             : '・ ' + data.annotation;
         tooltipText = "<b>Phenotypes of " + data.label + " KO</b><br>" + annotations;
+
+        // Get position of the tapped node
+        pos = event.target.renderedPosition();
+
     } else if (event.target.isEdge()) {
         const sourceNode = cy.getElementById(data.source).data('label');
         const targetNode = cy.getElementById(data.target).data('label');
@@ -205,7 +245,30 @@ cy.on('tap', 'node, edge', function (event) {
             ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
             : '・ ' + data.annotation;
         tooltipText = "<b>Shared phenotypes of " + sourceNode + " and " + targetNode + " KOs</b><br>" + annotations;
+
+        // Calculate the midpoint of the edge for tooltip positioning
+        const sourcePos = cy.getElementById(data.source).renderedPosition();
+        const targetPos = cy.getElementById(data.target).renderedPosition();
+        pos = {
+            x: (sourcePos.x + targetPos.x) / 2,
+            y: (sourcePos.y + targetPos.y) / 2
+        };
     }
 
-    document.querySelector('.tooltip-container').innerHTML = tooltipText;
+    // Create a tooltip element
+    const tooltip = document.createElement('div');
+    tooltip.classList.add('cy-tooltip');
+    tooltip.innerHTML = tooltipText;
+    tooltip.style.position = 'absolute';
+    tooltip.style.left = (pos.x + 10) + 'px';  // Position to the right of the element
+    tooltip.style.top = (pos.y + 10) + 'px';   // Position slightly below the element
+    tooltip.style.padding = '5px';
+    tooltip.style.background = 'white';
+    tooltip.style.border = '1px solid #ccc';
+    tooltip.style.borderRadius = '5px';
+    tooltip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+    tooltip.style.zIndex = '1000';
+
+    // Append the tooltip to the container
+    document.querySelector('.cy').appendChild(tooltip);
 });
