@@ -20,7 +20,10 @@ const elements = (function () {
         }
     };
     // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX.json", false);
-    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false);
+
+    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false); // male infertility
+
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/59593039eb836eb989d4d47102da3c731ba0498e/gist_increased_circulating_glucose_level.json", false);
     req.send(null);
     return result;
 })();
@@ -37,8 +40,8 @@ const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
 const edgeMax = Math.max(...edgeSizes);
 
-const nodeRepulsionMin = 100;
-const nodeRepulsionMax = 10000;
+const nodeRepulsionMin = 10;
+const nodeRepulsionMax = 20000;
 
 function scaleToOriginalRange(value, minValue, maxValue) {
     return minValue + (value - 1) * (maxValue - minValue) / 9;
@@ -71,6 +74,8 @@ function getColorForValue(value) {
 
 let currentLayout = 'cose';
 
+let currentNodeRepulsionValue = scaleToOriginalRange(parseFloat(document.getElementById('nodeRepulsion-slider').value), nodeRepulsionMin, nodeRepulsionMax);
+
 const cy = cytoscape({
     container: document.querySelector('.cy'),
     elements: elements,
@@ -101,7 +106,7 @@ const cy = cytoscape({
             }
         }
     ],
-    layout: { name: currentLayout, componentSpacing: 100 }
+    layout: { name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }
 });
 
 // ========================================================
@@ -134,10 +139,9 @@ document.getElementById('edge-width-slider').addEventListener('input', function 
 });
 
 document.getElementById('nodeRepulsion-slider').addEventListener('input', function () {
-    const nodeRepulsionValue = parseFloat(this.value);
-    const originalValue = scaleToOriginalRange(nodeRepulsionValue, nodeRepulsionMin, nodeRepulsionMax);
+    currentNodeRepulsionValue = scaleToOriginalRange(parseFloat(this.value), nodeRepulsionMin, nodeRepulsionMax);
     document.getElementById('node-repulsion-value').textContent = this.value;
-    cy.layout({ name: currentLayout, nodeRepulsion: originalValue }).run();
+    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
 });
 
 // ========================================================
@@ -153,7 +157,7 @@ function filterNodesByColor() {
         node.style('display', nodeColor >= nodeThreshold ? 'element' : 'none');
     });
 
-    cy.layout({ name: currentLayout, nodeRepulsion: nodeRepulsionValue }).run();
+    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
 
 }
 
@@ -205,7 +209,7 @@ function filterEdgesBySize() {
     });
 
     // Apply layout after edge filtering
-    cy.layout({ name: currentLayout, nodeRepulsion: nodeRepulsionValue }).run();
+    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
 }
 
 document.getElementById('filter-edge-slider').addEventListener('input', function () {
