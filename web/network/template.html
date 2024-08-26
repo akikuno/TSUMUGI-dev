@@ -24,17 +24,12 @@
             </select>
         </div>
         <div class="slider-container">
-            <span class="control-label">Change node font size:</span>
-            <input type="range" id="font-size-slider" min="5" max="50" value="20">
-            <span id="font-size-value">20</span>px
-        </div>
-        <div class="slider-container">
-            <span class="control-label">Filter by No.Shared Phenotypes:</span>
+            <span class="control-label">Filter by Scaled number of Shared Phenotypes:</span>
             <input type="range" id="edge-size-slider" min="1" max="10" value="1">
             <span id="edge-size-value" class="slider-value">1</span>
         </div>
         <div class="slider-container">
-            <span class="control-label">Filter by Effect Size:</span>
+            <span class="control-label">Filter by Scaled Effect Size:</span>
             <input type="range" id="node-color-slider" min="1" max="10" value="1">
             <span id="node-color-value" class="slider-value">1</span>
         </div>
@@ -42,6 +37,11 @@
 
     <div class="container">
         <div class="cy-container">
+            <div class="slider-container">
+                <span class="control-label">Change node font size:</span>
+                <input type="range" id="font-size-slider" min="5" max="50" value="20">
+                <span id="font-size-value">20</span>px
+            </div>
             <div class="cy"></div>
             <div class="color-scale-container">
                 <svg width="400" height="30" xmlns="http://www.w3.org/2000/svg">
@@ -70,7 +70,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
-    <script src="js/XXX.js"></script>
+    <script src="js/template.js"></script>
 </body>
 
 </html>
