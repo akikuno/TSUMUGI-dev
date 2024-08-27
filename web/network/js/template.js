@@ -3,30 +3,41 @@
 // ========================================================
 
 // const elements = [
-//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50 } },
-//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100 } },
-//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3 } },
-//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: 'Foo', edge_size: 5 } },
+//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, marker_id: "MGI:97281" } },
+//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, marker_id: "MGI:1352748" } },
+//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, marker_id: "MGI:96217" } },
+//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
 //     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
 //     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
 // ];
 
-const elements = (function () {
-    const req = new XMLHttpRequest();
-    let result = null;
-    req.onreadystatechange = function () {
-        if (req.readyState === 4 && req.status === 200) {
-            result = JSON.parse(req.responseText);
-        }
-    };
-    // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX.json", false);
+const elements = [
+    { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
+    { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
+    { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, } },
+    { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
+    { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
+    { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
+];
 
-    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false); // male infertility
+const map_symbol_mgi = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
 
-    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
-    req.send(null);
-    return result;
-})();
+// const elements = (function () {
+//     const req = new XMLHttpRequest();
+//     let result = null;
+//     req.onreadystatechange = function () {
+//         if (req.readyState === 4 && req.status === 200) {
+//             result = JSON.parse(req.responseText);
+//         }
+//     };
+//     // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX.json", false);
+
+//     // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false); // male infertility
+
+//     req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
+//     req.send(null);
+//     return result;
+// })();
 
 // ========================================================
 // Normalize node color and edge sizes
@@ -236,7 +247,14 @@ cy.on('tap', 'node, edge', function (event) {
         const annotations = Array.isArray(data.annotation)
             ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
             : '・ ' + data.annotation;
-        tooltipText = "<b>Phenotypes of " + data.label + " KO</b><br>" + annotations;
+
+        // Get the MGI link from the map_symbol_mgi
+        const mgiLink = map_symbol_mgi[data.label];
+        const message = `<b>Significant Phenotypes of ${data.label} KO mice</b>`;
+        const link_to_impc = `https://www.mousephenotype.org/data/genes/${mgiLink}`;
+
+        // Construct the tooltipText with the hyperlink
+        tooltipText = `<a href="${link_to_impc}" target="_blank">${message}</a><br>` + annotations;
 
         // Get position of the tapped node
         pos = event.target.renderedPosition();
@@ -247,7 +265,8 @@ cy.on('tap', 'node, edge', function (event) {
         const annotations = Array.isArray(data.annotation)
             ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
             : '・ ' + data.annotation;
-        tooltipText = "<b>Shared phenotypes of " + sourceNode + " and " + targetNode + " KOs</b><br>" + annotations;
+
+        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>` + annotations;
 
         // Calculate the midpoint of the edge for tooltip positioning
         const sourcePos = cy.getElementById(data.source).renderedPosition();
