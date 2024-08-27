@@ -217,7 +217,6 @@ document.getElementById('filter-edge-slider').addEventListener('input', function
     filterEdgesBySize();
 });
 
-
 // ========================================================
 // Tooltip handling
 // ========================================================
@@ -272,7 +271,36 @@ cy.on('tap', 'node, edge', function (event) {
     tooltip.style.borderRadius = '5px';
     tooltip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
     tooltip.style.zIndex = '1000';
+    tooltip.style.cursor = 'move';  // Show the move cursor
+    tooltip.style.userSelect = 'text';  // Allow text selection
 
     // Append the tooltip to the container
     document.querySelector('.cy').appendChild(tooltip);
+
+    // Handle drag events to move the tooltip
+    let isDragging = false;
+    let offset = { x: 0, y: 0 };
+
+    tooltip.addEventListener('mousedown', function (e) {
+        e.stopPropagation(); // Prevent Cytoscape from receiving this event
+        isDragging = true;
+        const rect = tooltip.getBoundingClientRect();
+        offset.x = e.clientX - rect.left;
+        offset.y = e.clientY - rect.top;
+        tooltip.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (isDragging) {
+            const containerRect = document.querySelector('.cy').getBoundingClientRect();
+            // Adjust the tooltip's position, keeping the offset constant
+            tooltip.style.left = (e.clientX - offset.x - containerRect.left) + 'px';
+            tooltip.style.top = (e.clientY - offset.y - containerRect.top) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', function () {
+        isDragging = false;
+        tooltip.style.cursor = 'move';
+    });
 });
