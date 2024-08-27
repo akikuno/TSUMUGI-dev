@@ -55,10 +55,14 @@
                     <input type="range" id="nodeRepulsion-slider" min="1" max="10" value="5">
                     <span id="node-repulsion-value">5</span>
                 </div>
+                <button id="export-png">Export as PNG</button>
+
             </div>
             <!-- ↑↑↑ Cytoscape's visualization setting -->
 
             <div class="cy"></div>
+
+            <!-- ↓↓↓ SVG's scale bars -->
             <div class="color-scale-container">
                 <svg width="400" height="30" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -81,10 +85,12 @@
                 </svg>
                 <p class="scale-label">Scaled number of shared phenotypes</p>
             </div>
+            <!-- ↑↑↑ SVG's scale bars -->
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+    <!-- <script src="js/XXX.js"></script> -->
     <script src="js/template.js"></script>
 </body>
 

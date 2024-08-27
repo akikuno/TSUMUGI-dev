@@ -304,3 +304,21 @@ cy.on('tap', 'node, edge', function (event) {
         tooltip.style.cursor = 'move';
     });
 });
+
+// ========================================================
+// Exporter
+// ========================================================
+
+document.getElementById('export-png').addEventListener('click', function () {
+    const pngContent = cy.png({
+        scale: 6.25,   // Scale to achieve 600 DPI
+        full: true     // Set to true to include the entire graph, even the offscreen parts
+    });
+
+    const a = document.createElement('a');
+    a.href = pngContent;
+    a.download = 'TSUMUBI_XXX.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+});
