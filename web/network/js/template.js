@@ -11,33 +11,49 @@
 //     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
 // ];
 
-const elements = [
-    { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
-    { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
-    { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, } },
-    { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
-    { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
-    { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
-];
+// const elements = [
+//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
+//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
+//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, } },
+//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
+//     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
+//     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
+// ];
 
-const map_symbol_mgi = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
+// const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
 
-// const elements = (function () {
-//     const req = new XMLHttpRequest();
-//     let result = null;
-//     req.onreadystatechange = function () {
-//         if (req.readyState === 4 && req.status === 200) {
-//             result = JSON.parse(req.responseText);
-//         }
-//     };
-//     // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX.json", false);
+const elements = (function () {
+    const req = new XMLHttpRequest();
+    let result = null;
+    req.onreadystatechange = function () {
+        if (req.readyState === 4 && req.status === 200) {
+            result = JSON.parse(req.responseText);
+        }
+    };
+    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX_snake_case.json", false);
 
-//     // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/3615e66d75627351f3b3c2300cc27101d46cd749/network.json", false); // male infertility
+    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false);
+    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
 
-//     req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
-//     req.send(null);
-//     return result;
-// })();
+    req.send(null);
+    return result;
+})();
+
+
+const map_symbol_to_id = (function () {
+    const req = new XMLHttpRequest();
+    let result = null;
+    req.onreadystatechange = function () {
+        if (req.readyState === 4 && req.status === 200) {
+            result = JSON.parse(req.responseText);
+        }
+    };
+    // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX_snake_case.json", false);
+
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false);
+    req.send(null);
+    return result;
+})();
 
 // ========================================================
 // Normalize node color and edge sizes
@@ -248,8 +264,8 @@ cy.on('tap', 'node, edge', function (event) {
             ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
             : '・ ' + data.annotation;
 
-        // Get the MGI link from the map_symbol_mgi
-        const mgiLink = map_symbol_mgi[data.label];
+        // Get the MGI link from the map_symbol_to_id
+        const mgiLink = map_symbol_to_id[data.label];
         const message = `<b>Significant Phenotypes of ${data.label} KO mice</b>`;
         const link_to_impc = `https://www.mousephenotype.org/data/genes/${mgiLink}`;
 
@@ -336,7 +352,7 @@ document.getElementById('export-png').addEventListener('click', function () {
 
     const a = document.createElement('a');
     a.href = pngContent;
-    a.download = 'TSUMUBI_XXX.png';
+    a.download = 'TSUMUGI_XXX_snake_case.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
