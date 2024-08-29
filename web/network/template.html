@@ -11,55 +11,57 @@
 </head>
 
 <body>
-    <h1 style="text-align:center;">Phenotypic similarity gene network of 'XXX_capital_case'</h1>
-    <div class="control-panel">
-        <div class="slider-container">
-            <span class="control-label">Network layout:</span>
-            <select id="layout-dropdown">
-                <option value="cose" selected>Cose</option>
-                <option value="circle">Circle</option>
-                <option value="grid">Grid</option>
-                <option value="random">Random</option>
-                <option value="concentric">Concentric</option>
-            </select>
-        </div>
-        <div class="slider-container">
-            <span class="control-label">Filter edges by scaled number of shared phenotypes:</span>
-            <input type="range" id="filter-edge-slider" min="1" max="10" value="1">
-            <span id="edge-size-value" class="slider-value">1</span>
-        </div>
-        <div class="slider-container">
-            <span class="control-label">Filter nodes by severity of phenotypes:</span>
-            <input type="range" id="filter-node-slider" min="1" max="10" value="1">
-            <span id="node-color-value" class="slider-value">1</span>
-        </div>
-    </div>
+    <header class="header-container">
+        <h1>Phenotypic similarity gene network of 'XXX_capital_case'</h1>
+    </header>
 
-    <div class="container">
-        <div class="cy-container">
+    <div class="body-container">
+        <div class="control-panel-container">
+
+            <h2 style="text-align: center;"> Control Panel </h2>
+
+            <div class="slider-container">
+                <span class="control-label">Network layout:</span>
+                <select id="layout-dropdown">
+                    <option value="cose" selected>Cose</option>
+                    <option value="circle">Circle</option>
+                    <option value="grid">Grid</option>
+                    <option value="random">Random</option>
+                    <option value="concentric">Concentric</option>
+                </select>
+            </div>
+            <div class="slider-container">
+                <span class="control-label">Filter edges by scaled number of shared phenotypes:</span>
+                <input type="range" id="filter-edge-slider" min="1" max="10" value="1">
+                <span id="edge-size-value" class="slider-value">1</span>
+            </div>
+            <div class="slider-container">
+                <span class="control-label">Filter nodes by severity of phenotypes:</span>
+                <input type="range" id="filter-node-slider" min="1" max="10" value="1">
+                <span id="node-color-value" class="slider-value">1</span>
+            </div>
 
             <!-- ↓↓↓ Cytoscape's visualization setting -->
-            <div class="control-panel">
-                <div class="slider-container">
-                    <span class="control-label">Font size:</span>
-                    <input type="range" id="font-size-slider" min="1" max="50" value="20">
-                    <span id="font-size-value" class="slider-value">20</span>
-                </div>
-                <div class="slider-container">
-                    <span class="control-label">Edge width:</span>
-                    <input type="range" id="edge-width-slider" min="1" max="10" value="5">
-                    <span id="edge-width-value" class="slider-value">5</span>
-                </div>
-                <div>
-                    <span class="control-label">Node repulsion:</span>
-                    <input type="range" id="nodeRepulsion-slider" min="1" max="10" value="5">
-                    <span id="node-repulsion-value">5</span>
-                </div>
-                <button id="export-png">Export as PNG</button>
-
+            <div class="slider-container">
+                <span class="control-label">Font size:</span>
+                <input type="range" id="font-size-slider" min="1" max="50" value="20">
+                <span id="font-size-value" class="slider-value">20</span>
             </div>
+            <div class="slider-container">
+                <span class="control-label">Edge width:</span>
+                <input type="range" id="edge-width-slider" min="1" max="10" value="5">
+                <span id="edge-width-value" class="slider-value">5</span>
+            </div>
+            <div class="slider-container">
+                <span class="control-label">Node repulsion:</span>
+                <input type="range" id="nodeRepulsion-slider" min="1" max="10" value="5">
+                <span id="node-repulsion-value">5</span>
+            </div>
+            <button id="export-png">Export PNG</button>
             <!-- ↑↑↑ Cytoscape's visualization setting -->
+        </div>
 
+        <div class="cy-container">
             <div class="cy"></div>
 
             <!-- ↓↓↓ SVG's scale bars -->
@@ -91,7 +93,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
     <script src="js/XXX_snake_case.js"></script>
-    <!-- <script src="js/template.js"></script> -->
 </body>
 
 </html>
