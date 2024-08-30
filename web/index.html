@@ -668,28 +668,108 @@
         const suggestions = document.getElementById('suggestions');
         const submitBtn = document.getElementById('submitBtn');
 
+
+        function jaroWinkler(s1, s2) {
+            const m = 0.1;
+            const scalingFactor = 0.1;
+            const s1Len = s1.length;
+            const s2Len = s2.length;
+
+            if (s1Len === 0 || s2Len === 0) return 0;
+
+            const matchWindow = Math.floor(Math.max(s1Len, s2Len) / 2) - 1;
+            const s1Matches = new Array(s1Len).fill(false);
+            const s2Matches = new Array(s2Len).fill(false);
+            let matches = 0;
+
+            for (let i = 0; i < s1Len; i++) {
+                const start = Math.max(0, i - matchWindow);
+                const end = Math.min(i + matchWindow + 1, s2Len);
+
+                for (let j = start; j < end; j++) {
+                    if (s2Matches[j]) continue;
+                    if (s1[i] !== s2[j]) continue;
+                    s1Matches[i] = true;
+                    s2Matches[j] = true;
+                    matches++;
+                    break;
+                }
+            }
+
+            if (matches === 0) return 0;
+
+            let transpositions = 0;
+            let k = 0;
+
+            for (let i = 0; i < s1Len; i++) {
+                if (!s1Matches[i]) continue;
+                while (!s2Matches[k]) k++;
+                if (s1[i] !== s2[k]) transpositions++;
+                k++;
+            }
+
+            transpositions /= 2;
+
+            const jaroScore = ((matches / s1Len) + (matches / s2Len) + ((matches - transpositions) / matches)) / 3;
+
+            let prefixLength = 0;
+            for (let i = 0; i < Math.min(4, s1Len, s2Len); i++) {
+                if (s1[i] === s2[i]) prefixLength++;
+                else break;
+            }
+
+            return jaroScore + (prefixLength * scalingFactor * (1 - jaroScore));
+        }
+
+        function wordMatchScore(input, phenotype) {
+            const inputWords = input.split(' ').filter(Boolean);
+            const phenotypeWords = phenotype.split(' ').filter(Boolean);
+            let score = 0;
+
+            inputWords.forEach(inputWord => {
+                let maxScore = 0;
+                phenotypeWords.forEach(phenotypeWord => {
+                    const similarity = jaroWinkler(inputWord.toLowerCase(), phenotypeWord.toLowerCase());
+                    maxScore = Math.max(maxScore, similarity);
+                });
+
+                score += maxScore;  // そのまま最大の類似度スコアを加算
+            });
+
+            return score;
+        }
+
         input.addEventListener('input', function () {
             const query = input.value.toLowerCase();
             suggestions.innerHTML = '';
             let validInput = false;
 
             if (query) {
-                const filtered = phenotypes.filter(function (phenotype) {
-                    return phenotype.toLowerCase().includes(query);
-                });
+                const filtered = phenotypes
+                    .map(phenotype => {
+                        return {
+                            text: phenotype,
+                            score: wordMatchScore(query, phenotype)
+                        };
+                    })
+                    .sort((a, b) => b.score - a.score) // スコアが高い順にソート
+                    .filter(item => item.score > 0) // スコアが0より大きいものだけを表示
+                    .slice(0, 10); // 上位10件を表示
 
-                filtered.forEach(function (phenotype) {
+                filtered.forEach(function (item) {
                     const li = document.createElement('li');
-                    li.textContent = phenotype;
+                    li.textContent = item.text;
                     li.addEventListener('click', function () {
-                        input.value = phenotype;
+                        input.value = item.text;
                         suggestions.innerHTML = '';
                         checkValidInput();
                     });
                     suggestions.appendChild(li);
                 });
 
-                validInput = filtered.includes(input.value);
+                validInput = filtered.some(function (item) {
+                    return item.text.toLowerCase() === query;
+                });
             }
 
             submitBtn.disabled = !validInput;
