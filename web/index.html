@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TSUMUGI</title>
-    <link rel="icon" type="image/png" href="network/icon-tsumugi.png">
+    <link rel="icon" type="image/png" href="image/icon-tsumugi.png">
+    <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet'>
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
     <!-- <link href='https://fonts.googleapis.com/css?family=Macondo' rel='stylesheet'> -->
     <!-- <link href='https://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet'> -->
-    <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=SUSE' rel='stylesheet'>
     <style>
         body {
-            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-family: 'SUSE', 'Arial', 'Helvetica', sans-serif;
             background-color: #FFEBD8;
             color: #333;
             display: flex;
@@ -21,18 +23,11 @@
             height: 100vh;
         }
 
-        h1 {
-            font-family: 'Quicksand', serif;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
         p.subtitle {
-            font-family: 'Quicksand', serif;
+            font-family: 'Lora', serif;
             font-size: 1.2em;
             margin-bottom: 20px;
-            color: #666;
+            color: #333;
             text-align: center;
         }
 
@@ -90,7 +85,7 @@
             padding: 12px 20px;
             font-size: 1em;
             color: #fff;
-            background-color: #007BFF;
+            background-color: #ff7800;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -103,19 +98,20 @@
         }
 
         button:hover:enabled {
-            background-color: #0056b3;
+            background-color: #ff7800;
         }
 
         footer {
             text-align: center;
             margin-top: auto;
+            margin-bottom: 10px;
             padding: 20px;
             width: 100%;
         }
 
         footer a {
             margin: 0 10px;
-            color: #007BFF;
+            color: #333;
             text-decoration: none;
             font-weight: bold;
         }
@@ -129,12 +125,20 @@
             font-size: 0.9em;
             color: #666;
         }
+
+        img {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
+        }
     </style>
 </head>
 
 <body>
     <form id="phenotypeForm">
-        <h1>TSUMUGI</h1>
+        <img src="image/tsumugi-logo.png" alt="TSUMUGI">
         <p class="subtitle">Trait-driven Surveillance for Mutation-based Gene module Identification</p>
         <label for="phenotype">Choose a phenotype of your interest</label>
         <input type="text" id="phenotype" name="phenotype" placeholder="e.g: infertility">
@@ -143,9 +147,8 @@
     </form>
 
     <footer>
-        <a href="https://example.com" target="_blank">Article</a>
-        <a href="https://example.com" target="_blank">Documentation</a>
-        <a href="https://example.com/" target="_blank">GitHub</a>
+        <i class="fa-brands fa-github"></i><a href="https://example.com/" target="_blank">GitHub</a>
+        <i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a>
         <p>&copy; 2024 Laboratory Animal Resource Center, University of Tsukuba</p>
     </footer>
 
