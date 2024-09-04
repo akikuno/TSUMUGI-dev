@@ -23,8 +23,8 @@ const elements = (function () {
     };
     // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX_snake_case.json", false);
 
-    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false);
-    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false);
+    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
 
     req.send(null);
     return result;
@@ -58,9 +58,6 @@ const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
 const edgeMax = Math.max(...edgeSizes);
 
-const nodeRepulsionMin = 10;
-const nodeRepulsionMax = 20000;
-
 function scaleToOriginalRange(value, minValue, maxValue) {
     return minValue + (value - 1) * (maxValue - minValue) / 9;
 }
@@ -90,9 +87,24 @@ function getColorForValue(value) {
 // Cytoscape handling
 // ========================================================
 
+
+function getLayoutOptions() {
+    return {
+        name: currentLayout,
+        nodeRepulsion: nodeRepulsionValue,
+        componentSpacing: componentSpacingValue
+    };
+}
+
 let currentLayout = 'cose';
 
-let currentNodeRepulsionValue = scaleToOriginalRange(parseFloat(document.getElementById('nodeRepulsion-slider').value), nodeRepulsionMin, nodeRepulsionMax);
+const nodeRepulsionMin = 10;
+const nodeRepulsionMax = 20000;
+const componentSpacingMin = 10;
+const componentSpacingMax = 1000;
+
+let nodeRepulsionValue = scaleToOriginalRange(parseFloat(document.getElementById('nodeRepulsion-slider').value), nodeRepulsionMin, nodeRepulsionMax);
+let componentSpacingValue = scaleToOriginalRange(parseFloat(this.value), componentSpacingMin, componentSpacingMax);
 
 const cy = cytoscape({
     container: document.querySelector('.cy'),
@@ -124,7 +136,7 @@ const cy = cytoscape({
             }
         }
     ],
-    layout: { name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }
+    layout: getLayoutOptions()
 });
 
 // ========================================================
@@ -157,9 +169,10 @@ document.getElementById('edge-width-slider').addEventListener('input', function 
 });
 
 document.getElementById('nodeRepulsion-slider').addEventListener('input', function () {
-    currentNodeRepulsionValue = scaleToOriginalRange(parseFloat(this.value), nodeRepulsionMin, nodeRepulsionMax);
+    nodeRepulsionValue = scaleToOriginalRange(parseFloat(this.value), nodeRepulsionMin, nodeRepulsionMax);
+    componentSpacingValue = scaleToOriginalRange(parseFloat(this.value), componentSpacingMin, componentSpacingMax);
     document.getElementById('node-repulsion-value').textContent = this.value;
-    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
+    cy.layout(getLayoutOptions()).run();
 });
 
 // ========================================================
@@ -212,7 +225,7 @@ function filterElements() {
     });
 
     // Reapply layout after filtering
-    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
+    cy.layout(getLayoutOptions()).run();
 }
 
 // Event listeners for sliders
@@ -247,12 +260,10 @@ cy.on('tap', 'node, edge', function (event) {
             : '・ ' + data.annotation;
 
         // Get the MGI link from the map_symbol_to_id
-        const mgiLink = map_symbol_to_id[data.label];
-        const message = `<b>Significant Phenotypes of ${data.label} KO mice</b>`;
-        const link_to_impc = `https://www.mousephenotype.org/data/genes/${mgiLink}`;
+        const url_impc = `https://www.mousephenotype.org/data/genes/${map_symbol_to_id[data.label]}`;
 
         // Construct the tooltipText with the hyperlink
-        tooltipText = `<a href="${link_to_impc}" target="_blank">${message}</a><br>` + annotations;
+        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>` + annotations;
 
         // Get position of the tapped node
         pos = event.target.renderedPosition();

@@ -11,8 +11,11 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
 
-    /* 中央揃え */
+a {
+    color: #FF8C00;
+    text-decoration: none;
 }
 
 .header-container {
