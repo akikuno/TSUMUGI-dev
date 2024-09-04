@@ -21,10 +21,10 @@ const elements = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX_snake_case.json", false);
+    // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX_snake_case.json", false);
 
     // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false);
-    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
 
     req.send(null);
     return result;
@@ -39,9 +39,9 @@ const map_symbol_to_id = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/marker_symbol_accession_id.json", false);
+    // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/marker_symbol_accession_id.json", false);
 
-    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false);
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false);
     req.send(null);
     return result;
 })();
@@ -163,41 +163,19 @@ document.getElementById('nodeRepulsion-slider').addEventListener('input', functi
 });
 
 // ========================================================
-// Filtering function for nodes (filter-node-slider)
+// Filtering function for nodes and edges
 // ========================================================
 
-function filterNodesByColor() {
+function filterElements() {
+    // Get the slider values for both node color and edge size
     const nodeColorSliderValue = parseFloat(document.getElementById('filter-node-slider').value);
-    const nodeThreshold = scaleToOriginalRange(nodeColorSliderValue, nodeMin, nodeMax);
-
-    cy.nodes().forEach(function (node) {
-        const nodeColor = node.data('node_color');
-        node.style('display', nodeColor >= nodeThreshold ? 'element' : 'none');
-    });
-
-    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
-
-}
-
-document.getElementById('filter-node-slider').addEventListener('input', function () {
-    document.getElementById('node-color-value').textContent = this.value;
-    // Check if nodeMin is equal to nodeMax
-    if (nodeMin == nodeMax) {
-        // Disable slider or just return to prevent any filtering
-        return;
-    }
-    filterNodesByColor();
-});
-
-// ========================================================
-// Filtering function for edges (filter-edge-slider)
-// ========================================================
-
-function filterEdgesBySize() {
     const edgeSizeSliderValue = parseFloat(document.getElementById('filter-edge-slider').value);
+
+    // Calculate the thresholds based on the slider values
+    const nodeThreshold = scaleToOriginalRange(nodeColorSliderValue, nodeMin, nodeMax);
     const edgeThreshold = scaleToOriginalRange(edgeSizeSliderValue, edgeMin, edgeMax);
 
-    // Reset all nodes and edges to visible before applying the filter
+    // Reset all nodes and edges to visible before applying the filters
     cy.nodes().forEach(function (node) {
         node.style('display', 'element');
     });
@@ -206,6 +184,13 @@ function filterEdgesBySize() {
         edge.style('display', 'element');
     });
 
+    // Filter nodes based on color
+    cy.nodes().forEach(function (node) {
+        const nodeColor = node.data('node_color');
+        node.style('display', nodeColor >= nodeThreshold ? 'element' : 'none');
+    });
+
+    // Filter edges based on size and ensure both source and target nodes are visible
     cy.edges().forEach(function (edge) {
         const edgeSize = edge.data('edge_size');
         const sourceNode = cy.getElementById(edge.data('source'));
@@ -218,21 +203,27 @@ function filterEdgesBySize() {
         }
     });
 
-    // After filtering edges, check for nodes with no connected edges
+    // After filtering, remove nodes with no connected visible edges
     cy.nodes().forEach(function (node) {
         const connectedEdges = node.connectedEdges().filter(edge => edge.style('display') === 'element');
         if (connectedEdges.length === 0) {
-            node.style('display', 'none');  // Remove node if no connected edges
+            node.style('display', 'none');  // Hide node if no connected edges
         }
     });
 
-    // Apply layout after edge filtering
+    // Reapply layout after filtering
     cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
 }
 
+// Event listeners for sliders
+document.getElementById('filter-node-slider').addEventListener('input', function () {
+    document.getElementById('node-color-value').textContent = this.value;
+    filterElements();
+});
+
 document.getElementById('filter-edge-slider').addEventListener('input', function () {
     document.getElementById('edge-size-value').textContent = this.value;
-    filterEdgesBySize();
+    filterElements();
 });
 
 // ========================================================
