@@ -1,0 +1,8 @@
+# すべてのファイルを無視する
+network/css/*
+network/html/*
+network/js/*
+network/data/*
+
+# 「template」で始まるファイルを無視しない（追跡する）
+!index.html

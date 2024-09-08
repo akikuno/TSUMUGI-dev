@@ -4,29 +4,31 @@
       "id": "Camsap3",
       "label": "Camsap3",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal bone structure",
-        "Abnormal cornea morphology",
-        "Abnormal lens morphology",
-        "Absent pinna reflex",
-        "Cataract",
-        "Corneal opacity",
-        "Decreased blood urea nitrogen level",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased circulating cholesterol level",
-        "Decreased lean body mass",
-        "Female infertility",
-        "Fused cornea and lens",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating thyroxine level",
-        "Increased gamma-delta t cell number",
-        "Increased leukocyte cell number",
-        "Increased neutrophil cell number",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Trunk curl"
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "abnormal cornea morphology",
+        "abnormal lens morphology",
+        "absent pinna reflex",
+        "cataract",
+        "corneal opacity",
+        "decreased blood urea nitrogen level",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating cholesterol level",
+        "decreased lean body mass",
+        "female infertility",
+        "fused cornea and lens",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating chloride level",
+        "increased circulating glycerol level",
+        "increased circulating sodium level",
+        "increased circulating thyroxine level",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility",
+        "trunk curl"
       ],
       "node_color": 1.0
     }
@@ -36,21 +38,21 @@
       "id": "Vgf",
       "label": "Vgf",
       "annotation": [
-        "Abnormal locomotor behavior",
-        "Decreased circulating fructosamine level",
-        "Decreased circulating glucose level",
-        "Decreased prepulse inhibition",
-        "Decreased spleen weight",
-        "Hyperactivity",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating total protein level",
-        "Increased exploration in new environment",
-        "Increased grip strength",
-        "Limb grasping",
-        "Male infertility",
-        "Short tibia",
-        "Tremors"
+        "abnormal locomotor behavior",
+        "decreased circulating fructosamine level",
+        "decreased circulating glucose level",
+        "decreased prepulse inhibition",
+        "decreased spleen weight",
+        "hyperactivity",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating total protein level",
+        "increased exploration in new environment",
+        "increased grip strength",
+        "limb grasping",
+        "male infertility",
+        "short tibia",
+        "tremors"
       ],
       "node_color": 1.0
     }
@@ -60,18 +62,20 @@
       "id": "Fbxo38",
       "label": "Fbxo38",
       "annotation": [
-        "Decreased body length",
-        "Decreased bone mineral density",
-        "Female infertility",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased heart rate",
-        "Increased leukocyte cell number",
-        "Increased lymphocyte cell number",
-        "Increased mean platelet volume",
-        "Increased red blood cell distribution width",
-        "Male infertility",
-        "Small liver"
+        "decreased body length",
+        "decreased bone mineral density",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased basophil cell number",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased heart rate",
+        "increased leukocyte cell number",
+        "increased lymphocyte cell number",
+        "increased mean platelet volume",
+        "increased red blood cell distribution width",
+        "male infertility",
+        "small liver"
       ],
       "node_color": 1.0
     }
@@ -81,11 +85,12 @@
       "id": "Dnmt3l",
       "label": "Dnmt3l",
       "annotation": [
-        "Female infertility",
-        "Increased bone mineral density",
-        "Increased mean corpuscular hemoglobin",
-        "Male infertility",
-        "Small testis"
+        "female infertility",
+        "increased bone mineral density",
+        "increased mean corpuscular hemoglobin",
+        "male infertility",
+        "persistence of hyaloid vascular system",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -95,33 +100,35 @@
       "id": "Sox14",
       "label": "Sox14",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal behavior",
-        "Abnormal eye morphology",
-        "Abnormal gait",
-        "Abnormal heart morphology",
-        "Abnormal lymph node morphology",
-        "Abnormal seminal vesicle morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Abnormal vocalization",
-        "Decreased locomotor activity",
-        "Decreased respiratory quotient",
-        "Decreased startle reflex",
-        "Decreased thigmotaxis",
-        "Enlarged thymus",
-        "Hyperactivity",
-        "Increased aggression",
-        "Increased freezing behavior",
-        "Increased grip strength",
-        "Increased lung tissue damping",
-        "Increased prepulse inhibition",
-        "Limb grasping",
-        "Male infertility",
-        "Microphthalmia",
-        "Small heart",
-        "Small kidney",
-        "Trunk curl"
+        "abnormal auditory brainstem response",
+        "abnormal behavior",
+        "abnormal eye morphology",
+        "abnormal gait",
+        "abnormal heart morphology",
+        "abnormal lymph node morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal vocalization",
+        "decreased body weight",
+        "decreased locomotor activity",
+        "decreased respiratory quotient",
+        "decreased startle reflex",
+        "decreased thigmotaxis",
+        "enlarged thymus",
+        "hyperactivity",
+        "increased aggression",
+        "increased airway resistance",
+        "increased freezing behavior",
+        "increased grip strength",
+        "increased lung tissue damping",
+        "increased prepulse inhibition",
+        "limb grasping",
+        "male infertility",
+        "microphthalmia",
+        "small heart",
+        "small kidney",
+        "trunk curl"
       ],
       "node_color": 1.0
     }
@@ -131,30 +138,31 @@
       "id": "Gatm",
       "label": "Gatm",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal qt variability",
-        "Abnormal sinus arrhythmia",
-        "Cardiovascular system phenotype",
-        "Decreased circulating alkaline phosphatase level",
-        "Decreased circulating cholesterol level",
-        "Decreased exploration in new environment",
-        "Decreased food intake",
-        "Decreased grip strength",
-        "Decreased heart rate",
-        "Decreased locomotor activity",
-        "Decreased prepulse inhibition",
-        "Decreased red blood cell distribution width",
-        "Decreased respiratory quotient",
-        "Female infertility",
-        "Increased circulating amylase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating potassium level",
-        "Increased heart rate variability",
-        "Male infertility",
-        "Prolonged qrs complex duration",
-        "Prolonged qt interval",
-        "Prolonged rr interval",
-        "Prolonged st segment"
+        "abnormal QT variability",
+        "abnormal behavior",
+        "abnormal sinus arrhythmia",
+        "cardiovascular system phenotype",
+        "decreased circulating alkaline phosphatase level",
+        "decreased circulating cholesterol level",
+        "decreased exploration in new environment",
+        "decreased food intake",
+        "decreased grip strength",
+        "decreased heart rate",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "decreased red blood cell distribution width",
+        "decreased respiratory quotient",
+        "female infertility",
+        "increased circulating amylase level",
+        "increased circulating potassium level",
+        "increased heart rate variability",
+        "increased mean corpuscular hemoglobin",
+        "male infertility",
+        "prolonged QRS complex duration",
+        "prolonged QT interval",
+        "prolonged RR interval",
+        "prolonged ST segment",
+        "thrombocytopenia"
       ],
       "node_color": 1.0
     }
@@ -164,22 +172,22 @@
       "id": "Hectd3",
       "label": "Hectd3",
       "annotation": [
-        "Abnormal bone structure",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased brain size",
-        "Decreased grip strength",
-        "Female infertility",
-        "Increased cardiac muscle contractility",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Small heart",
-        "Small liver",
-        "Small lung",
-        "Small spleen",
-        "Small stomach",
-        "Small thymus"
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased brain size",
+        "decreased grip strength",
+        "female infertility",
+        "increased cardiac muscle contractility",
+        "increased total body fat amount",
+        "male infertility",
+        "small heart",
+        "small liver",
+        "small lung",
+        "small spleen",
+        "small stomach",
+        "small thymus"
       ],
       "node_color": 1.0
     }
@@ -189,20 +197,20 @@
       "id": "Pou2af3",
       "label": "Pou2af3",
       "annotation": [
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased fasting circulating glucose level",
-        "Decreased prepulse inhibition",
-        "Decreased startle reflex",
-        "Increased blood urea nitrogen level",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating phosphate level",
-        "Increased grip strength",
-        "Increased heart rate variability",
-        "Increased leukocyte cell number",
-        "Increased neutrophil cell number",
-        "Male infertility",
-        "Short tibia"
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lymphocyte cell number",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "increased blood urea nitrogen level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating phosphate level",
+        "increased grip strength",
+        "increased heart rate variability",
+        "increased leukocyte cell number",
+        "increased neutrophil cell number",
+        "male infertility",
+        "short tibia"
       ],
       "node_color": 1.0
     }
@@ -212,25 +220,29 @@
       "id": "Celsr1",
       "label": "Celsr1",
       "annotation": [
-        "Abnormal head morphology",
-        "Abnormal retina morphology",
-        "Abnormal skin morphology",
-        "Abnormal snout morphology",
-        "Abnormal spleen morphology",
-        "Abnormal tail morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract",
-        "Corneal opacity",
-        "Enlarged testis",
-        "Female infertility",
-        "Increased brain size",
-        "Increased circulating cholesterol level",
-        "Increased circulating hdl cholesterol level",
-        "Increased lean body mass",
-        "Increased total body fat amount",
-        "Male infertility",
-        "No spontaneous movement",
-        "Preweaning lethality, complete penetrance"
+        "abnormal head morphology",
+        "abnormal retina morphology",
+        "abnormal skin morphology",
+        "abnormal snout morphology",
+        "abnormal spleen morphology",
+        "abnormal startle reflex",
+        "abnormal tail morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "corneal opacity",
+        "decreased circulating amylase level",
+        "decreased circulating cholesterol level",
+        "decreased lean body mass",
+        "enlarged testis",
+        "female infertility",
+        "increased brain size",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased lean body mass",
+        "increased total body fat amount",
+        "male infertility",
+        "no spontaneous movement",
+        "preweaning lethality, complete penetrance"
       ],
       "node_color": 1.0
     }
@@ -240,11 +252,12 @@
       "id": "Stoml2",
       "label": "Stoml2",
       "annotation": [
-        "Decreased prepulse inhibition",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating bilirubin level",
-        "Male infertility"
+        "decreased prepulse inhibition",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating bilirubin level",
+        "increased circulating insulin level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -254,27 +267,32 @@
       "id": "Clcn1",
       "label": "Clcn1",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal cholesterol homeostasis",
-        "Abnormal eye morphology",
-        "Abnormal gait",
-        "Decreased body length",
-        "Decreased circulating hdl cholesterol level",
-        "Decreased exploration in new environment",
-        "Decreased grip strength",
-        "Decreased heart weight",
-        "Decreased locomotor activity",
-        "Decreased lymphocyte cell number",
-        "Decreased mean platelet volume",
-        "Decreased prepulse inhibition",
-        "Decreased startle reflex",
-        "Decreased vertical activity",
-        "Female infertility",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating bilirubin level",
-        "Increased eosinophil cell number",
-        "Male infertility",
-        "Tremors"
+        "abnormal auditory brainstem response",
+        "abnormal behavior",
+        "abnormal cholesterol homeostasis",
+        "abnormal eye morphology",
+        "abnormal gait",
+        "decreased body length",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating glucose level",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "decreased heart weight",
+        "decreased locomotor activity",
+        "decreased lymphocyte cell number",
+        "decreased mean platelet volume",
+        "decreased monocyte cell number",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "decreased thigmotaxis",
+        "decreased vertical activity",
+        "female infertility",
+        "increased circulating aspartate transaminase level",
+        "increased circulating bilirubin level",
+        "increased circulating serum albumin level",
+        "increased eosinophil cell number",
+        "male infertility",
+        "tremors"
       ],
       "node_color": 1.0
     }
@@ -284,21 +302,27 @@
       "id": "Sbf1",
       "label": "Sbf1",
       "annotation": [
-        "Abnormal heart morphology",
-        "Abnormal kidney morphology",
-        "Decreased body length",
-        "Decreased brain size",
-        "Decreased brain weight",
-        "Decreased circulating alkaline phosphatase level",
-        "Decreased fasting circulating glucose level",
-        "Decreased prepulse inhibition",
-        "Increased bone mineral content",
-        "Increased grip strength",
-        "Increased red blood cell distribution width",
-        "Male infertility",
-        "Small liver",
-        "Small testis",
-        "Urinary bladder obstruction"
+        "abnormal behavior",
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "decreased anxiety-related response",
+        "decreased body length",
+        "decreased brain size",
+        "decreased brain weight",
+        "decreased circulating alkaline phosphatase level",
+        "decreased fasting circulating glucose level",
+        "decreased lymphocyte cell number",
+        "decreased prepulse inhibition",
+        "decreased thigmotaxis",
+        "hyperactivity",
+        "increased bone mineral content",
+        "increased grip strength",
+        "increased neutrophil cell number",
+        "increased red blood cell distribution width",
+        "male infertility",
+        "small liver",
+        "small testis",
+        "urinary bladder obstruction"
       ],
       "node_color": 1.0
     }
@@ -308,19 +332,20 @@
       "id": "Kdm3a",
       "label": "Kdm3a",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal bone structure",
-        "Abnormal heart morphology",
-        "Abnormal kidney morphology",
-        "Abnormal skin morphology",
-        "Decreased anxiety-related response",
-        "Decreased bone mineral content",
-        "Decreased prepulse inhibition",
-        "Decreased thigmotaxis",
-        "Eye hemorrhage",
-        "Impaired glucose tolerance",
-        "Male infertility",
-        "Small spleen"
+        "abnormal behavior",
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal skin morphology",
+        "decreased anxiety-related response",
+        "decreased bone mineral content",
+        "decreased prepulse inhibition",
+        "decreased thigmotaxis",
+        "eye hemorrhage",
+        "hyperactivity",
+        "impaired glucose tolerance",
+        "male infertility",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -330,10 +355,11 @@
       "id": "Cyrib",
       "label": "Cyrib",
       "annotation": [
-        "Abnormal retina morphology",
-        "Decreased exploration in new environment",
-        "Edema",
-        "Male infertility"
+        "abnormal retina morphology",
+        "decreased circulating sodium level",
+        "decreased exploration in new environment",
+        "edema",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -343,11 +369,11 @@
       "id": "Nphp1",
       "label": "Nphp1",
       "annotation": [
-        "Abnormal skin morphology",
-        "Abnormal uterus morphology",
-        "Decreased exploration in new environment",
-        "Male infertility",
-        "Small testis"
+        "abnormal skin morphology",
+        "abnormal uterus morphology",
+        "decreased exploration in new environment",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -357,16 +383,16 @@
       "id": "Psma8",
       "label": "Psma8",
       "annotation": [
-        "Abnormal pancreas morphology",
-        "Abnormal seminal vesicle morphology",
-        "Abnormal skin morphology",
-        "Enlarged kidney",
-        "Enlarged urinary bladder",
-        "Increased monocyte cell number",
-        "Male infertility",
-        "Small epididymis",
-        "Small testis",
-        "Small thymus"
+        "abnormal pancreas morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal skin morphology",
+        "enlarged kidney",
+        "enlarged urinary bladder",
+        "increased monocyte cell number",
+        "male infertility",
+        "small epididymis",
+        "small testis",
+        "small thymus"
       ],
       "node_color": 1.0
     }
@@ -376,13 +402,12 @@
       "id": "Spidr",
       "label": "Spidr",
       "annotation": [
-        "Abnormal eye posterior chamber depth",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased lean body mass",
-        "Female infertility",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal eye posterior chamber depth",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -392,50 +417,48 @@
       "id": "Lepr",
       "label": "Lepr",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal gait",
-        "Abnormal locomotor behavior",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased circulating chloride level",
-        "Decreased exploration in new environment",
-        "Decreased heart weight",
-        "Decreased lean body mass",
-        "Decreased leukocyte cell number",
-        "Decreased locomotor activity",
-        "Decreased lymphocyte cell number",
-        "Decreased spleen weight",
-        "Enlarged liver",
-        "Female infertility",
-        "Impaired righting response",
-        "Increased anxiety-related response",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating calcium level",
-        "Increased circulating cholesterol level",
-        "Increased circulating fructosamine level",
-        "Increased circulating glucose level",
-        "Increased circulating hdl cholesterol level",
-        "Increased circulating iron level",
-        "Increased circulating phosphate level",
-        "Increased circulating potassium level",
-        "Increased circulating serum albumin level",
-        "Increased circulating total protein level",
-        "Increased circulating triglyceride level",
-        "Increased eosinophil cell number",
-        "Increased hematocrit",
-        "Increased hemoglobin content",
-        "Increased mean corpuscular volume",
-        "Increased monocyte cell number",
-        "Increased neutrophil cell number",
-        "Increased red blood cell distribution width",
-        "Increased total body fat amount",
-        "Limb grasping",
-        "Male infertility",
-        "Small seminal vesicle",
-        "Tremors",
-        "Trunk curl"
+        "abnormal bone structure",
+        "abnormal gait",
+        "abnormal locomotor behavior",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased circulating chloride level",
+        "decreased exploration in new environment",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "decreased leukocyte cell number",
+        "decreased locomotor activity",
+        "decreased lymphocyte cell number",
+        "decreased spleen weight",
+        "enlarged liver",
+        "female infertility",
+        "impaired righting response",
+        "increased anxiety-related response",
+        "increased circulating HDL cholesterol level",
+        "increased circulating alanine transaminase level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating amylase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating calcium level",
+        "increased circulating cholesterol level",
+        "increased circulating fructosamine level",
+        "increased circulating iron level",
+        "increased circulating phosphate level",
+        "increased circulating potassium level",
+        "increased circulating serum albumin level",
+        "increased circulating triglyceride level",
+        "increased hematocrit",
+        "increased mean platelet volume",
+        "increased monocyte cell number",
+        "increased neutrophil cell number",
+        "increased red blood cell distribution width",
+        "increased total body fat amount",
+        "limb grasping",
+        "male infertility",
+        "small seminal vesicle",
+        "thrombocytopenia",
+        "tremors",
+        "trunk curl"
       ],
       "node_color": 1.0
     }
@@ -445,13 +468,12 @@
       "id": "Fbxo43",
       "label": "Fbxo43",
       "annotation": [
-        "Female infertility",
-        "Increased basophil cell number",
-        "Increased eosinophil cell number",
-        "Increased erythrocyte cell number",
-        "Increased hematocrit",
-        "Increased mean platelet volume",
-        "Male infertility"
+        "female infertility",
+        "increased eosinophil cell number",
+        "increased heart weight",
+        "increased hematocrit",
+        "increased mean platelet volume",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -461,11 +483,11 @@
       "id": "Dpy19l1",
       "label": "Dpy19l1",
       "annotation": [
-        "Abnormal heart morphology",
-        "Abnormal kidney morphology",
-        "Abnormal seminal vesicle morphology",
-        "Female infertility",
-        "Male infertility"
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal seminal vesicle morphology",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -475,18 +497,17 @@
       "id": "Prdm14",
       "label": "Prdm14",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal eye anterior chamber depth",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased lean body mass",
-        "Decreased respiratory quotient",
-        "Female infertility",
-        "Impaired glucose tolerance",
-        "Increased effector memory t-helper cell number",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Short tibia"
+        "abnormal bone structure",
+        "abnormal eye anterior chamber depth",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased respiratory quotient",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
       ],
       "node_color": 1.0
     }
@@ -496,9 +517,9 @@
       "id": "Odf4",
       "label": "Odf4",
       "annotation": [
-        "Abnormal urinary bladder morphology",
-        "Enlarged heart",
-        "Male infertility"
+        "abnormal urinary bladder morphology",
+        "enlarged heart",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -508,9 +529,10 @@
       "id": "Poc1a",
       "label": "Poc1a",
       "annotation": [
-        "Decreased fasting circulating glucose level",
-        "Female infertility",
-        "Male infertility"
+        "decreased fasting circulating glucose level",
+        "female infertility",
+        "increased urine microalbumin level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -520,15 +542,15 @@
       "id": "Mapk6",
       "label": "Mapk6",
       "annotation": [
-        "Abnormal vitreous body morphology",
-        "Anophthalmia",
-        "Cataract",
-        "Decreased body length",
-        "Decreased brain size",
-        "Edema",
-        "Increased startle reflex",
-        "Male infertility",
-        "No spontaneous movement"
+        "abnormal vitreous body morphology",
+        "anophthalmia",
+        "cataract",
+        "decreased body length",
+        "decreased brain size",
+        "edema",
+        "increased startle reflex",
+        "male infertility",
+        "no spontaneous movement"
       ],
       "node_color": 1.0
     }
@@ -538,16 +560,16 @@
       "id": "Helq",
       "label": "Helq",
       "annotation": [
-        "Abnormal caudal vertebrae morphology",
-        "Abnormal eye morphology",
-        "Abnormal kidney morphology",
-        "Decreased bone mineral content",
-        "Decreased lean body mass",
-        "Enlarged spleen",
-        "Female infertility",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Small testis"
+        "abnormal caudal vertebrae morphology",
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "enlarged spleen",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -557,15 +579,16 @@
       "id": "Sun5",
       "label": "Sun5",
       "annotation": [
-        "Abnormal eye morphology",
-        "Abnormal liver morphology",
-        "Abnormal lymph node morphology",
-        "Abnormal spleen morphology",
-        "Decreased circulating calcium level",
-        "Enlarged seminal vesicle",
-        "Enlarged testis",
-        "Male infertility",
-        "Prolonged qt interval"
+        "abnormal eye morphology",
+        "abnormal liver morphology",
+        "abnormal lymph node morphology",
+        "abnormal spleen morphology",
+        "decreased circulating calcium level",
+        "enlarged seminal vesicle",
+        "enlarged testis",
+        "male infertility",
+        "prolonged QT interval",
+        "thrombocytopenia"
       ],
       "node_color": 1.0
     }
@@ -575,16 +598,16 @@
       "id": "Kash5",
       "label": "Kash5",
       "annotation": [
-        "Abnormal bone structure",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased lean body mass",
-        "Decreased locomotor activity",
-        "Female infertility",
-        "Increased circulating hdl cholesterol level",
-        "Increased leukocyte cell number",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased circulating HDL cholesterol level",
+        "increased leukocyte cell number",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -594,17 +617,17 @@
       "id": "Syce1",
       "label": "Syce1",
       "annotation": [
-        "Abnormal lens morphology",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased grip strength",
-        "Decreased locomotor activity",
-        "Female infertility",
-        "Improved glucose tolerance",
-        "Increased fasting circulating glucose level",
-        "Increased thigmotaxis",
-        "Limb grasping",
-        "Male infertility"
+        "abnormal lens morphology",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased locomotor activity",
+        "female infertility",
+        "improved glucose tolerance",
+        "increased fasting circulating glucose level",
+        "increased thigmotaxis",
+        "increased urine microalbumin level",
+        "limb grasping",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -614,21 +637,21 @@
       "id": "Wsb2",
       "label": "Wsb2",
       "annotation": [
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina vasculature morphology",
-        "Abnormal tooth morphology",
-        "Decreased cardiac muscle contractility",
-        "Decreased food intake",
-        "Decreased heart rate",
-        "Decreased locomotor activity",
-        "Decreased respiratory quotient",
-        "Decreased total retina thickness",
-        "Decreased vertical activity",
-        "Female infertility",
-        "Hyperactivity",
-        "Increased circulating alkaline phosphatase level",
-        "Increased grip strength",
-        "Male infertility"
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "abnormal tooth morphology",
+        "decreased cardiac muscle contractility",
+        "decreased food intake",
+        "decreased heart rate",
+        "decreased locomotor activity",
+        "decreased respiratory quotient",
+        "decreased total retina thickness",
+        "decreased vertical activity",
+        "female infertility",
+        "hyperactivity",
+        "increased circulating alkaline phosphatase level",
+        "increased grip strength",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -638,31 +661,32 @@
       "id": "Gh",
       "label": "Gh",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal heart morphology",
-        "Abnormal kidney morphology",
-        "Abnormal spleen morphology",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased brain weight",
-        "Decreased fasting circulating glucose level",
-        "Decreased grip strength",
-        "Decreased heart weight",
-        "Decreased kidney weight",
-        "Decreased lean body mass",
-        "Decreased liver weight",
-        "Decreased locomotor activity",
-        "Decreased lung weight",
-        "Decreased prepulse inhibition",
-        "Decreased spleen weight",
-        "Decreased thymus weight",
-        "Female infertility",
-        "Impaired glucose tolerance",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Small heart",
-        "Small spleen"
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal spleen morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased brain weight",
+        "decreased fasting circulating glucose level",
+        "decreased grip strength",
+        "decreased heart weight",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased liver weight",
+        "decreased locomotor activity",
+        "decreased lung weight",
+        "decreased prepulse inhibition",
+        "decreased spleen weight",
+        "decreased thymus weight",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility",
+        "small heart",
+        "small spleen",
+        "thrombocytopenia"
       ],
       "node_color": 1.0
     }
@@ -672,21 +696,23 @@
       "id": "Fndc3a",
       "label": "Fndc3a",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina vasculature morphology",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased exploration in new environment",
-        "Decreased heart weight",
-        "Decreased lean body mass",
-        "Decreased locomotor activity",
-        "Impaired pupillary reflex",
-        "Increased leukocyte cell number",
-        "Increased lymphocyte cell number",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Short tibia"
+        "abnormal bone structure",
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased circulating serum albumin level",
+        "decreased exploration in new environment",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "impaired pupillary reflex",
+        "increased freezing behavior",
+        "increased leukocyte cell number",
+        "increased lymphocyte cell number",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
       ],
       "node_color": 1.0
     }
@@ -696,24 +722,26 @@
       "id": "Sun1",
       "label": "Sun1",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal retina morphology",
-        "Abnormal retina outer nuclear layer morphology",
-        "Abnormal startle reflex",
-        "Decreased circulating total protein level",
-        "Decreased lean body mass",
-        "Decreased locomotor activity",
-        "Decreased prepulse inhibition",
-        "Decreased total retina thickness",
-        "Female infertility",
-        "Increased heart rate",
-        "Increased leukocyte cell number",
-        "Increased lymphocyte cell number",
-        "Increased monocyte cell number",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Small superior vagus ganglion",
-        "Small testis"
+        "abnormal auditory brainstem response",
+        "abnormal retina morphology",
+        "abnormal retina outer nuclear layer morphology",
+        "abnormal startle reflex",
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "decreased total retina thickness",
+        "female infertility",
+        "increased circulating phosphate level",
+        "increased heart rate",
+        "increased leukocyte cell number",
+        "increased lymphocyte cell number",
+        "increased total body fat amount",
+        "male infertility",
+        "small superior vagus ganglion",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -723,14 +751,14 @@
       "id": "Ube2g1",
       "label": "Ube2g1",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal joint morphology",
-        "Abnormal pelvic girdle bone morphology",
-        "Fusion of vertebral arches",
-        "Male infertility",
-        "Short tibia",
-        "Small liver",
-        "Vertebral fusion"
+        "abnormal auditory brainstem response",
+        "abnormal joint morphology",
+        "abnormal pelvic girdle bone morphology",
+        "fusion of vertebral arches",
+        "male infertility",
+        "short tibia",
+        "small liver",
+        "vertebral fusion"
       ],
       "node_color": 1.0
     }
@@ -740,19 +768,25 @@
       "id": "Marchf6",
       "label": "Marchf6",
       "annotation": [
-        "Decreased body weight",
-        "Decreased eosinophil cell number",
-        "Decreased exploration in new environment",
-        "Decreased grip strength",
-        "Decreased mean platelet volume",
-        "Hyperactivity",
-        "Impaired glucose tolerance",
-        "Increased circulating alkaline phosphatase level",
-        "Increased freezing behavior",
-        "Male infertility",
-        "Short tibia",
-        "Small testis",
-        "Thrombocytopenia"
+        "abnormal snout morphology",
+        "decreased airway resistance",
+        "decreased body weight",
+        "decreased eosinophil cell number",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "decreased lung elastance",
+        "decreased mean platelet volume",
+        "decreased prepulse inhibition",
+        "hyperactivity",
+        "impaired glucose tolerance",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "increased fasting circulating glucose level",
+        "increased freezing behavior",
+        "male infertility",
+        "short tibia",
+        "small testis",
+        "thrombocytopenia"
       ],
       "node_color": 1.0
     }
@@ -762,10 +796,10 @@
       "id": "Adad2",
       "label": "Adad2",
       "annotation": [
-        "Decreased circulating glucose level",
-        "Female infertility",
-        "Hyperactivity",
-        "Male infertility"
+        "decreased coping response",
+        "female infertility",
+        "hyperactivity",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -775,20 +809,23 @@
       "id": "Csnk2a2",
       "label": "Csnk2a2",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal bone structure",
-        "Abnormal heart morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Decreased anxiety-related response",
-        "Decreased exploration in new environment",
-        "Decreased thigmotaxis",
-        "Enlarged spleen",
-        "Increased circulating alkaline phosphatase level",
-        "Increased mean corpuscular volume",
-        "Increased vertical activity",
-        "Male infertility",
-        "Small testis"
+        "abnormal behavior",
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating glucose level",
+        "decreased circulating triglyceride level",
+        "decreased exploration in new environment",
+        "decreased thigmotaxis",
+        "enlarged spleen",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating bilirubin level",
+        "increased mean corpuscular volume",
+        "increased vertical activity",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -798,40 +835,44 @@
       "id": "Abcg8",
       "label": "Abcg8",
       "annotation": [
-        "Abnormal cholesterol homeostasis",
-        "Abnormal heart left ventricle morphology",
-        "Abnormal lens morphology",
-        "Abnormal liver morphology",
-        "Abnormal retina blood vessel morphology",
-        "Abnormal spleen morphology",
-        "Decreased cd4-negative nk t cell number",
-        "Decreased cd4-positive, alpha-beta t cell number",
-        "Decreased cd8-positive, alpha-beta t cell number",
-        "Decreased circulating iron level",
-        "Decreased circulating serum albumin level",
-        "Decreased hemoglobin content",
-        "Decreased mean corpuscular hemoglobin",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Decreased mean corpuscular volume",
-        "Decreased memory-marker cd4-negative nk t cell number",
-        "Decreased nk t cell number",
-        "Decreased t cell number",
-        "Enlarged liver",
-        "Enlarged spleen",
-        "Female infertility",
-        "Immune system phenotype",
-        "Impaired righting response",
-        "Increased cardiac muscle contractility",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating cholesterol level",
-        "Increased circulating creatinine level",
-        "Increased circulating potassium level",
-        "Increased circulating triglyceride level",
-        "Increased lung elastance",
-        "Increased mean platelet volume",
-        "Increased red blood cell distribution width",
-        "Male infertility"
+        "abnormal cholesterol homeostasis",
+        "abnormal heart left ventricle morphology",
+        "abnormal lens morphology",
+        "abnormal liver morphology",
+        "abnormal retina blood vessel morphology",
+        "abnormal spleen morphology",
+        "decreased B-2 B cell number",
+        "decreased CD4-negative NK T cell number",
+        "decreased CD4-positive, alpha-beta T cell number",
+        "decreased CD8-positive, alpha-beta T cell number",
+        "decreased NK T cell number",
+        "decreased T cell number",
+        "decreased circulating iron level",
+        "decreased circulating serum albumin level",
+        "decreased circulating sodium level",
+        "decreased hematocrit",
+        "decreased hemoglobin content",
+        "decreased mean corpuscular hemoglobin",
+        "decreased mean corpuscular hemoglobin concentration",
+        "decreased mean corpuscular volume",
+        "decreased memory-marker CD4-negative NK T cell number",
+        "enlarged liver",
+        "enlarged spleen",
+        "female infertility",
+        "immune system phenotype",
+        "impaired righting response",
+        "increased cardiac muscle contractility",
+        "increased circulating alanine transaminase level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating cholesterol level",
+        "increased circulating creatinine level",
+        "increased circulating potassium level",
+        "increased circulating triglyceride level",
+        "increased lung elastance",
+        "increased mean platelet volume",
+        "increased red blood cell distribution width",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -841,19 +882,19 @@
       "id": "Plcb1",
       "label": "Plcb1",
       "annotation": [
-        "Abnormal kidney morphology",
-        "Abnormal liver morphology",
-        "Abnormal lymph node morphology",
-        "Abnormal ovary morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract",
-        "Enlarged spleen",
-        "Female infertility",
-        "Hyperactivity",
-        "Male infertility",
-        "Microphthalmia"
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal lymph node morphology",
+        "abnormal ovary morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "enlarged spleen",
+        "female infertility",
+        "hyperactivity",
+        "male infertility",
+        "microphthalmia"
       ],
       "node_color": 1.0
     }
@@ -863,17 +904,18 @@
       "id": "Nek1",
       "label": "Nek1",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal cranium morphology",
-        "Abnormal pelvic girdle bone morphology",
-        "Abnormal retina outer nuclear layer morphology",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased grip strength",
-        "Decreased prepulse inhibition",
-        "Decreased total retina thickness",
-        "Male infertility",
-        "Short tibia"
+        "abnormal bone structure",
+        "abnormal cranium morphology",
+        "abnormal pelvic girdle bone morphology",
+        "abnormal retina outer nuclear layer morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased cardiac stroke volume",
+        "decreased grip strength",
+        "decreased prepulse inhibition",
+        "decreased total retina thickness",
+        "male infertility",
+        "short tibia"
       ],
       "node_color": 1.0
     }
@@ -883,13 +925,15 @@
       "id": "Ccdc28a",
       "label": "Ccdc28a",
       "annotation": [
-        "Decreased anxiety-related response",
-        "Decreased vertical activity",
-        "Hyperactivity",
-        "Increased grip strength",
-        "Increased lean body mass",
-        "Limb grasping",
-        "Male infertility"
+        "decreased anxiety-related response",
+        "decreased heart rate",
+        "decreased vertical activity",
+        "hyperactivity",
+        "increased grip strength",
+        "increased lean body mass",
+        "limb grasping",
+        "male infertility",
+        "prolonged RR interval"
       ],
       "node_color": 1.0
     }
@@ -899,24 +943,24 @@
       "id": "Fkbp4",
       "label": "Fkbp4",
       "annotation": [
-        "Abnormal body wall morphology",
-        "Abnormal cholesterol homeostasis",
-        "Abnormal lymph node morphology",
-        "Abnormal male genitalia morphology",
-        "Abnormal placenta morphology",
-        "Abnormal skin morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract",
-        "Decreased heart rate",
-        "Decreased mean corpuscular volume",
-        "Enlarged epididymis",
-        "Female infertility",
-        "Male infertility",
-        "No spontaneous movement",
-        "Prolonged rr interval",
-        "Small seminal vesicle",
-        "Small spleen",
-        "Small testis"
+        "abnormal body wall morphology",
+        "abnormal cholesterol homeostasis",
+        "abnormal lymph node morphology",
+        "abnormal male genitalia morphology",
+        "abnormal placenta morphology",
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "decreased heart rate",
+        "decreased mean corpuscular volume",
+        "enlarged epididymis",
+        "female infertility",
+        "male infertility",
+        "no spontaneous movement",
+        "prolonged RR interval",
+        "small seminal vesicle",
+        "small spleen",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -926,27 +970,29 @@
       "id": "Nhlh2",
       "label": "Nhlh2",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal cholesterol homeostasis",
-        "Abnormal ovary morphology",
-        "Abnormal seminal vesicle morphology",
-        "Abnormal testis morphology",
-        "Abnormal urinary bladder morphology",
-        "Abnormal uterus morphology",
-        "Absent epididymis",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased kidney weight",
-        "Decreased lean body mass",
-        "Decreased locomotor activity",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Eye hemorrhage",
-        "Female infertility",
-        "Impaired glucose tolerance",
-        "Increased mean corpuscular volume",
-        "Increased spleen weight",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal bone structure",
+        "abnormal cholesterol homeostasis",
+        "abnormal ovary morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal testis morphology",
+        "abnormal urinary bladder morphology",
+        "abnormal uterus morphology",
+        "absent epididymis",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "decreased mean corpuscular hemoglobin concentration",
+        "eye hemorrhage",
+        "female infertility",
+        "impaired glucose tolerance",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased mean corpuscular volume",
+        "increased spleen weight",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -956,21 +1002,21 @@
       "id": "Tmem209",
       "label": "Tmem209",
       "annotation": [
-        "Abnormal embryo size",
-        "Abnormal eyelid fusion",
-        "Abnormal head shape",
-        "Abnormal head size",
-        "Abnormal placenta morphology",
-        "Abnormal seminal vesicle morphology",
-        "Abnormal stomach morphology",
-        "Anophthalmia",
-        "Enlarged lymph nodes",
-        "Enlarged spleen",
-        "Exencephaly",
-        "Male infertility",
-        "Microphthalmia",
-        "Pallor",
-        "Protruding tongue"
+        "abnormal embryo size",
+        "abnormal eyelid fusion",
+        "abnormal head shape",
+        "abnormal head size",
+        "abnormal placenta morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal stomach morphology",
+        "anophthalmia",
+        "enlarged lymph nodes",
+        "enlarged spleen",
+        "exencephaly",
+        "male infertility",
+        "microphthalmia",
+        "pallor",
+        "protruding tongue"
       ],
       "node_color": 1.0
     }
@@ -980,20 +1026,20 @@
       "id": "Egr1",
       "label": "Egr1",
       "annotation": [
-        "Abnormal embryo size",
-        "Abnormal forebrain development",
-        "Abnormal hindbrain development",
-        "Abnormal midbrain development",
-        "Abnormal neural tube closure",
-        "Abnormal optic disk morphology",
-        "Absent seminal vesicle",
-        "Decreased body length",
-        "Embryonic growth retardation",
-        "Female infertility",
-        "Increased lymphocyte cell number",
-        "Male infertility",
-        "Short tibia",
-        "Small uterus"
+        "abnormal embryo size",
+        "abnormal forebrain development",
+        "abnormal hindbrain development",
+        "abnormal midbrain development",
+        "abnormal neural tube closure",
+        "abnormal optic disk morphology",
+        "absent seminal vesicle",
+        "decreased body length",
+        "embryonic growth retardation",
+        "female infertility",
+        "increased lymphocyte cell number",
+        "male infertility",
+        "short tibia",
+        "small uterus"
       ],
       "node_color": 1.0
     }
@@ -1003,12 +1049,13 @@
       "id": "Hipk4",
       "label": "Hipk4",
       "annotation": [
-        "Decreased blood urea nitrogen level",
-        "Decreased exploration in new environment",
-        "Impaired righting response",
-        "Increased circulating serum albumin level",
-        "Limb grasping",
-        "Male infertility"
+        "abnormal coat/hair pigmentation",
+        "decreased blood urea nitrogen level",
+        "decreased exploration in new environment",
+        "impaired righting response",
+        "increased circulating serum albumin level",
+        "limb grasping",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1018,18 +1065,23 @@
       "id": "Rxfp2",
       "label": "Rxfp2",
       "annotation": [
-        "Abnormal liver morphology",
-        "Abnormal optic disk morphology",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating calcium level",
-        "Increased circulating sodium level",
-        "Increased erythrocyte cell number",
-        "Increased hematocrit",
-        "Increased hemoglobin content",
-        "Increased pulmonary respiratory rate",
-        "Male infertility",
-        "Small testis",
-        "Urinary bladder obstruction"
+        "abnormal liver morphology",
+        "abnormal optic disk morphology",
+        "decreased locomotor activity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating calcium level",
+        "increased circulating lipase level",
+        "increased circulating sodium level",
+        "increased erythrocyte cell number",
+        "increased heart rate variability",
+        "increased hematocrit",
+        "increased hemoglobin content",
+        "increased pulmonary respiratory rate",
+        "male infertility",
+        "prolonged QT interval",
+        "small testis",
+        "urinary bladder obstruction"
       ],
       "node_color": 1.0
     }
@@ -1039,9 +1091,9 @@
       "id": "L2hgdh",
       "label": "L2hgdh",
       "annotation": [
-        "Abnormal eye morphology",
-        "Decreased exploration in new environment",
-        "Male infertility"
+        "abnormal eye morphology",
+        "decreased exploration in new environment",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1051,16 +1103,17 @@
       "id": "Sgms1",
       "label": "Sgms1",
       "annotation": [
-        "Decreased mean corpuscular hemoglobin",
-        "Decreased total body fat amount",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating creatinine level",
-        "Increased circulating magnesium level",
-        "Increased grip strength",
-        "Increased mean platelet volume",
-        "Male infertility",
-        "Thrombocytopenia",
-        "Tremors"
+        "decreased mean corpuscular hemoglobin",
+        "decreased total body fat amount",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating creatinine level",
+        "increased circulating magnesium level",
+        "increased grip strength",
+        "increased lean body mass",
+        "increased mean platelet volume",
+        "male infertility",
+        "thrombocytopenia",
+        "tremors"
       ],
       "node_color": 1.0
     }
@@ -1070,9 +1123,9 @@
       "id": "Foxo4",
       "label": "Foxo4",
       "annotation": [
-        "Abnormal heart morphology",
-        "Abnormal urinary bladder morphology",
-        "Male infertility"
+        "abnormal heart morphology",
+        "abnormal urinary bladder morphology",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1082,14 +1135,14 @@
       "id": "Usp42",
       "label": "Usp42",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal lens morphology",
-        "Cataract",
-        "Decreased body length",
-        "Decreased body weight",
-        "Decreased lean body mass",
-        "Hyperactivity",
-        "Male infertility"
+        "abnormal behavior",
+        "abnormal lens morphology",
+        "cataract",
+        "decreased body length",
+        "decreased body weight",
+        "decreased lean body mass",
+        "hyperactivity",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1099,24 +1152,25 @@
       "id": "Kiss1r",
       "label": "Kiss1r",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal kidney morphology",
-        "Abnormal seminal vesicle morphology",
-        "Abnormal testis morphology",
-        "Abnormal uterus morphology",
-        "Absent epididymis",
-        "Absent ovary",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased heart weight",
-        "Decreased kidney weight",
-        "Decreased lean body mass",
-        "Decreased liver weight",
-        "Decreased locomotor activity",
-        "Female infertility",
-        "Increased spleen weight",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal kidney morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal testis morphology",
+        "abnormal uterus morphology",
+        "absent epididymis",
+        "absent ovary",
+        "decreased body weight",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart weight",
+        "decreased kidney weight",
+        "decreased lean body mass",
+        "decreased liver weight",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased circulating creatinine level",
+        "increased spleen weight",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1126,10 +1180,12 @@
       "id": "Golga3",
       "label": "Golga3",
       "annotation": [
-        "Decreased hemoglobin content",
-        "Impaired glucose tolerance",
-        "Increased circulating alkaline phosphatase level",
-        "Male infertility"
+        "decreased hemoglobin content",
+        "impaired glucose tolerance",
+        "increased circulating alanine transaminase level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1139,17 +1195,18 @@
       "id": "Tg",
       "label": "Tg",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal coat/ hair morphology",
-        "Abnormal locomotor behavior",
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Decreased vertical activity",
-        "Improved glucose tolerance",
-        "Increased bone mineral content",
-        "Increased grip strength",
-        "Male infertility",
-        "Prolonged rr interval"
+        "abnormal auditory brainstem response",
+        "abnormal coat/ hair morphology",
+        "abnormal locomotor behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased vertical activity",
+        "improved glucose tolerance",
+        "increased bone mineral content",
+        "increased fasting circulating glucose level",
+        "increased grip strength",
+        "male infertility",
+        "prolonged RR interval"
       ],
       "node_color": 1.0
     }
@@ -1159,13 +1216,14 @@
       "id": "Wdr62",
       "label": "Wdr62",
       "annotation": [
-        "Enlarged lymph nodes",
-        "Increased circulating sodium level",
-        "Male infertility",
-        "Microphthalmia",
-        "Small kidney",
-        "Small seminal vesicle",
-        "Small testis"
+        "decreased prepulse inhibition",
+        "enlarged lymph nodes",
+        "increased circulating sodium level",
+        "male infertility",
+        "microphthalmia",
+        "small kidney",
+        "small seminal vesicle",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -1175,12 +1233,12 @@
       "id": "Zscan21",
       "label": "Zscan21",
       "annotation": [
-        "Abnormal retina inner nuclear layer morphology",
-        "Abnormal skin coloration",
-        "Decreased respiratory quotient",
-        "Decreased total retina thickness",
-        "Female infertility",
-        "Male infertility"
+        "abnormal retina inner nuclear layer morphology",
+        "abnormal skin coloration",
+        "decreased respiratory quotient",
+        "decreased total retina thickness",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1190,15 +1248,17 @@
       "id": "Tmem203",
       "label": "Tmem203",
       "annotation": [
-        "Abnormal retina morphology",
-        "Decreased heart rate",
-        "Decreased prepulse inhibition",
-        "Hyperactivity",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating calcium level",
-        "Increased heart weight",
-        "Male infertility",
-        "Prolonged rr interval"
+        "abnormal retina morphology",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating cholesterol level",
+        "decreased heart rate",
+        "decreased prepulse inhibition",
+        "hyperactivity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating calcium level",
+        "increased heart weight",
+        "male infertility",
+        "prolonged RR interval"
       ],
       "node_color": 1.0
     }
@@ -1208,23 +1268,26 @@
       "id": "Vps13b",
       "label": "Vps13b",
       "annotation": [
-        "Abnormal eye morphology",
-        "Abnormal lens morphology",
-        "Abnormal liver morphology",
-        "Abnormal skin morphology",
-        "Cataract",
-        "Decreased body length",
-        "Decreased circulating alkaline phosphatase level",
-        "Decreased exploration in new environment",
-        "Decreased leukocyte cell number",
-        "Decreased lymphocyte cell number",
-        "Enlarged lymph nodes",
-        "Impaired glucose tolerance",
-        "Increased grip strength",
-        "Increased mean corpuscular volume",
-        "Male infertility",
-        "Small heart",
-        "Small spleen"
+        "abnormal eye morphology",
+        "abnormal lens morphology",
+        "abnormal liver morphology",
+        "abnormal skin morphology",
+        "cataract",
+        "decreased body length",
+        "decreased circulating alkaline phosphatase level",
+        "decreased exploration in new environment",
+        "decreased lean body mass",
+        "decreased leukocyte cell number",
+        "decreased lymphocyte cell number",
+        "enlarged lymph nodes",
+        "impaired glucose tolerance",
+        "increased grip strength",
+        "increased mean corpuscular volume",
+        "increased startle reflex",
+        "increased total body fat amount",
+        "male infertility",
+        "small heart",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -1234,19 +1297,21 @@
       "id": "Wdr11",
       "label": "Wdr11",
       "annotation": [
-        "Abnormal heart morphology",
-        "Abnormal kidney morphology",
-        "Abnormal liver morphology",
-        "Abnormal skin morphology",
-        "Abnormal spinal cord morphology",
-        "Abnormal tail length",
-        "Abnormal uterus morphology",
-        "Absent adrenal gland",
-        "Anophthalmia",
-        "Enlarged seminal vesicle",
-        "Increased red blood cell distribution width",
-        "Male infertility",
-        "Small heart"
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal skin morphology",
+        "abnormal spinal cord morphology",
+        "abnormal tail length",
+        "abnormal uterus morphology",
+        "absent adrenal gland",
+        "anophthalmia",
+        "decreased exploration in new environment",
+        "enlarged seminal vesicle",
+        "improved glucose tolerance",
+        "increased red blood cell distribution width",
+        "male infertility",
+        "small heart"
       ],
       "node_color": 1.0
     }
@@ -1256,16 +1321,17 @@
       "id": "Tram1",
       "label": "Tram1",
       "annotation": [
-        "Abnormal bone structure",
-        "Decreased bone mineral content",
-        "Decreased circulating bilirubin level",
-        "Decreased circulating total protein level",
-        "Decreased exploration in new environment",
-        "Decreased lean body mass",
-        "Decreased locomotor activity",
-        "Decreased startle reflex",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased circulating bilirubin level",
+        "decreased circulating total protein level",
+        "decreased exploration in new environment",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "decreased startle reflex",
+        "increased blood urea nitrogen level",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1275,15 +1341,16 @@
       "id": "Tmem60",
       "label": "Tmem60",
       "annotation": [
-        "Abnormal kidney morphology",
-        "Decreased anxiety-related response",
-        "Decreased effector memory t-helper cell number",
-        "Decreased heart rate",
-        "Hyperactivity",
-        "Increased circulating total protein level",
-        "Male infertility",
-        "Prolonged qt interval",
-        "Prolonged st segment"
+        "abnormal kidney morphology",
+        "decreased anxiety-related response",
+        "decreased effector memory T-helper cell number",
+        "decreased heart rate",
+        "hyperactivity",
+        "increased circulating total protein level",
+        "male infertility",
+        "prolonged QT interval",
+        "prolonged RR interval",
+        "prolonged ST segment"
       ],
       "node_color": 1.0
     }
@@ -1293,11 +1360,9 @@
       "id": "Cabcoco1",
       "label": "Cabcoco1",
       "annotation": [
-        "Abnormal heart morphology",
-        "Abnormal uterus morphology",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating aspartate transaminase level",
-        "Male infertility"
+        "abnormal heart morphology",
+        "abnormal uterus morphology",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1307,22 +1372,23 @@
       "id": "Gcgr",
       "label": "Gcgr",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal kidney morphology",
-        "Decreased fasting circulating glucose level",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Decreased total body fat amount",
-        "Female infertility",
-        "Improved glucose tolerance",
-        "Increased blood urea nitrogen level",
-        "Increased bone mineral content",
-        "Increased circulating calcium level",
-        "Increased circulating cholesterol level",
-        "Increased kidney weight",
-        "Increased lean body mass",
-        "Increased mean corpuscular volume",
-        "Increased startle reflex",
-        "Male infertility"
+        "abnormal bone structure",
+        "abnormal kidney morphology",
+        "decreased circulating insulin level",
+        "decreased fasting circulating glucose level",
+        "decreased mean corpuscular hemoglobin concentration",
+        "decreased total body fat amount",
+        "female infertility",
+        "improved glucose tolerance",
+        "increased blood urea nitrogen level",
+        "increased bone mineral content",
+        "increased circulating calcium level",
+        "increased circulating cholesterol level",
+        "increased kidney weight",
+        "increased lean body mass",
+        "increased mean corpuscular volume",
+        "increased startle reflex",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1332,31 +1398,31 @@
       "id": "Trip13",
       "label": "Trip13",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal coat/hair pigmentation",
-        "Abnormal digit morphology",
-        "Abnormal lens morphology",
-        "Abnormal retina morphology",
-        "Abnormal sleep behavior",
-        "Abnormal tail morphology",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased erythrocyte cell number",
-        "Decreased grip strength",
-        "Decreased hematocrit",
-        "Decreased hemoglobin content",
-        "Decreased lean body mass",
-        "Decreased locomotor activity",
-        "Female infertility",
-        "Hyperactivity",
-        "Increased blood urea nitrogen level",
-        "Increased fasting circulating glucose level",
-        "Increased mean corpuscular hemoglobin",
-        "Increased thigmotaxis",
-        "Increased total body fat amount",
-        "Increased vertical activity",
-        "Male infertility",
-        "Prolonged rr interval"
+        "abnormal bone structure",
+        "abnormal coat/hair pigmentation",
+        "abnormal digit morphology",
+        "abnormal lens morphology",
+        "abnormal retina morphology",
+        "abnormal tail morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "decreased hemoglobin content",
+        "decreased locomotor activity",
+        "female infertility",
+        "hyperactivity",
+        "increased blood urea nitrogen level",
+        "increased circulating HDL cholesterol level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating cholesterol level",
+        "increased fasting circulating glucose level",
+        "increased leukocyte cell number",
+        "increased mean corpuscular hemoglobin",
+        "increased thigmotaxis",
+        "increased vertical activity",
+        "male infertility",
+        "prolonged RR interval"
       ],
       "node_color": 1.0
     }
@@ -1366,10 +1432,10 @@
       "id": "Spata16",
       "label": "Spata16",
       "annotation": [
-        "Female infertility",
-        "Increased basophil cell number",
-        "Increased eosinophil cell number",
-        "Male infertility"
+        "female infertility",
+        "increased basophil cell number",
+        "increased eosinophil cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1379,22 +1445,24 @@
       "id": "Lrig3",
       "label": "Lrig3",
       "annotation": [
-        "Abnormal cranium morphology",
-        "Abnormal digit morphology",
-        "Abnormal heart left ventricle morphology",
-        "Abnormal heart morphology",
-        "Abnormal skeletal muscle morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Abnormal vertebrae morphology",
-        "Abnormal vertebral arch morphology",
-        "Decreased circulating alkaline phosphatase level",
-        "Enlarged thymus",
-        "Female infertility",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating creatine kinase level",
-        "Increased circulating lactate dehydrogenase level",
-        "Male infertility"
+        "abnormal cranium morphology",
+        "abnormal digit morphology",
+        "abnormal gait",
+        "abnormal heart left ventricle morphology",
+        "abnormal heart morphology",
+        "abnormal skeletal muscle morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal vertebrae morphology",
+        "abnormal vertebral arch morphology",
+        "decreased circulating alkaline phosphatase level",
+        "enlarged thymus",
+        "female infertility",
+        "increased circulating alanine transaminase level",
+        "increased circulating creatine kinase level",
+        "increased circulating lactate dehydrogenase level",
+        "increased kidney weight",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1404,17 +1472,17 @@
       "id": "Arid1b",
       "label": "Arid1b",
       "annotation": [
-        "Abnormal freezing behavior",
-        "Abnormal spleen morphology",
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Decreased prepulse inhibition",
-        "Edema",
-        "Impaired cued conditioning behavior",
-        "Increased circulating creatinine level",
-        "Increased freezing behavior",
-        "Male infertility",
-        "Preweaning lethality, complete penetrance"
+        "abnormal freezing behavior",
+        "abnormal spleen morphology",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "edema",
+        "impaired cued conditioning behavior",
+        "increased circulating creatinine level",
+        "increased freezing behavior",
+        "male infertility",
+        "preweaning lethality, complete penetrance"
       ],
       "node_color": 1.0
     }
@@ -1424,13 +1492,13 @@
       "id": "Fbxo22",
       "label": "Fbxo22",
       "annotation": [
-        "Abnormal tail morphology",
-        "Decreased grip strength",
-        "Decreased heart left ventricle size",
-        "Decreased prepulse inhibition",
-        "Female infertility",
-        "Male infertility",
-        "Thin ventricular wall"
+        "abnormal tail morphology",
+        "decreased grip strength",
+        "decreased heart left ventricle size",
+        "decreased prepulse inhibition",
+        "female infertility",
+        "male infertility",
+        "thin ventricular wall"
       ],
       "node_color": 1.0
     }
@@ -1440,10 +1508,10 @@
       "id": "Zcwpw1",
       "label": "Zcwpw1",
       "annotation": [
-        "Abnormal pancreas morphology",
-        "Enlarged lymph nodes",
-        "Male infertility",
-        "Small testis"
+        "abnormal pancreas morphology",
+        "enlarged lymph nodes",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -1453,11 +1521,11 @@
       "id": "Pspc1",
       "label": "Pspc1",
       "annotation": [
-        "Abnormal spleen morphology",
-        "Decreased exploration in new environment",
-        "Increased startle reflex",
-        "Male infertility",
-        "Small spleen"
+        "abnormal spleen morphology",
+        "decreased exploration in new environment",
+        "increased startle reflex",
+        "male infertility",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -1467,23 +1535,24 @@
       "id": "Lep",
       "label": "Lep",
       "annotation": [
-        "Abnormal coat appearance",
-        "Abnormal eye posterior chamber depth",
-        "Abnormal retina inner nuclear layer morphology",
-        "Decreased exploration in new environment",
-        "Decreased grip strength",
-        "Decreased heart rate",
-        "Decreased heart weight",
-        "Decreased locomotor activity",
-        "Decreased spleen weight",
-        "Decreased total retina thickness",
-        "Decreased vertical activity",
-        "Female infertility",
-        "Increased anxiety-related response",
-        "Increased cardiac stroke volume",
-        "Male infertility",
-        "Prolonged qrs complex duration",
-        "Short tibia"
+        "abnormal coat appearance",
+        "abnormal eye posterior chamber depth",
+        "abnormal retina inner nuclear layer morphology",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "decreased heart rate",
+        "decreased heart weight",
+        "decreased locomotor activity",
+        "decreased spleen weight",
+        "decreased total retina thickness",
+        "decreased vertical activity",
+        "female infertility",
+        "increased anxiety-related response",
+        "increased cardiac stroke volume",
+        "increased cornea thickness",
+        "male infertility",
+        "prolonged QRS complex duration",
+        "short tibia"
       ],
       "node_color": 1.0
     }
@@ -1493,22 +1562,25 @@
       "id": "Trim37",
       "label": "Trim37",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal bone structure",
-        "Abnormal retina morphology",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased heart left ventricle size",
-        "Decreased lean body mass",
-        "Decreased mean platelet volume",
-        "Decreased red blood cell distribution width",
-        "Female infertility",
-        "Increased basophil cell number",
-        "Increased fasting circulating glucose level",
-        "Increased grip strength",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Thin ventricular wall"
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "abnormal retina morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart left ventricle size",
+        "decreased lean body mass",
+        "decreased leukocyte cell number",
+        "decreased lymphocyte cell number",
+        "decreased mean platelet volume",
+        "decreased red blood cell distribution width",
+        "female infertility",
+        "improved glucose tolerance",
+        "increased basophil cell number",
+        "increased fasting circulating glucose level",
+        "increased grip strength",
+        "increased total body fat amount",
+        "male infertility",
+        "thin ventricular wall"
       ],
       "node_color": 1.0
     }
@@ -1518,18 +1590,18 @@
       "id": "Syce2",
       "label": "Syce2",
       "annotation": [
-        "Abnormal skin morphology",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased grip strength",
-        "Decreased lean body mass",
-        "Enlarged urinary bladder",
-        "Female infertility",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Small epididymis",
-        "Small kidney",
-        "Small testis"
+        "abnormal skin morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "enlarged urinary bladder",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility",
+        "small epididymis",
+        "small kidney",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -1539,16 +1611,18 @@
       "id": "Cep19",
       "label": "Cep19",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal coat appearance",
-        "Abnormal retina outer nuclear layer morphology",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased total retina thickness",
-        "Female infertility",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal bone structure",
+        "abnormal coat appearance",
+        "abnormal retina outer nuclear layer morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased prepulse inhibition",
+        "decreased total retina thickness",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1558,27 +1632,26 @@
       "id": "Nexmif",
       "label": "Nexmif",
       "annotation": [
-        "Abnormal skin morphology",
-        "Abnormal sternum morphology",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased lean body mass",
-        "Enlarged urinary bladder",
-        "Hyperactivity",
-        "Impaired contextual conditioning behavior",
-        "Increased basophil cell number",
-        "Increased blood urea nitrogen level",
-        "Increased circulating triglyceride level",
-        "Increased eosinophil cell number",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean corpuscular volume",
-        "Increased monocyte cell number",
-        "Increased neutrophil cell number",
-        "Increased red blood cell distribution width",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Small kidney",
-        "Small spleen"
+        "abnormal skin morphology",
+        "abnormal sternum morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased lean body mass",
+        "enlarged urinary bladder",
+        "hyperactivity",
+        "impaired contextual conditioning behavior",
+        "increased basophil cell number",
+        "increased blood urea nitrogen level",
+        "increased circulating triglyceride level",
+        "increased eosinophil cell number",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased monocyte cell number",
+        "increased neutrophil cell number",
+        "increased total body fat amount",
+        "male infertility",
+        "small kidney",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -1588,16 +1661,16 @@
       "id": "Dnd1",
       "label": "Dnd1",
       "annotation": [
-        "Abnormal retina outer nuclear layer morphology",
-        "Abnormal retina vasculature morphology",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased grip strength",
-        "Decreased lean body mass",
-        "Female infertility",
-        "Increased heart left ventricle size",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal retina outer nuclear layer morphology",
+        "abnormal retina vasculature morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased heart left ventricle size",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1607,10 +1680,11 @@
       "id": "Gas2l2",
       "label": "Gas2l2",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Absent pinna reflex",
-        "Female infertility",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "absent pinna reflex",
+        "decreased total body fat amount",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1620,10 +1694,10 @@
       "id": "Spag17",
       "label": "Spag17",
       "annotation": [
-        "Decreased body length",
-        "Impaired righting response",
-        "Limb grasping",
-        "Male infertility"
+        "decreased body length",
+        "impaired righting response",
+        "limb grasping",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1633,13 +1707,16 @@
       "id": "Chsy3",
       "label": "Chsy3",
       "annotation": [
-        "Abnormal eye morphology",
-        "Abnormal kidney morphology",
-        "Decreased body length",
-        "Female infertility",
-        "Increased bone mineral density",
-        "Male infertility",
-        "Thick skin"
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "decreased body length",
+        "decreased grip strength",
+        "decreased total body fat amount",
+        "female infertility",
+        "increased bone mineral density",
+        "increased lean body mass",
+        "male infertility",
+        "thick skin"
       ],
       "node_color": 1.0
     }
@@ -1649,17 +1726,17 @@
       "id": "Stag3",
       "label": "Stag3",
       "annotation": [
-        "Abnormal bone structure",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased grip strength",
-        "Decreased lean body mass",
-        "Female infertility",
-        "Increased circulating total protein level",
-        "Increased fasting circulating glucose level",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Small testis"
+        "abnormal bone structure",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased circulating total protein level",
+        "increased fasting circulating glucose level",
+        "increased total body fat amount",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -1669,16 +1746,16 @@
       "id": "Katnal2",
       "label": "Katnal2",
       "annotation": [
-        "Abnormal pancreas morphology",
-        "Abnormal uterus morphology",
-        "Enlarged lymph nodes",
-        "Enlarged spleen",
-        "Enlarged stomach",
-        "Enlarged urinary bladder",
-        "Increased circulating alkaline phosphatase level",
-        "Increased monocyte cell number",
-        "Male infertility",
-        "Small spleen"
+        "abnormal pancreas morphology",
+        "abnormal uterus morphology",
+        "enlarged lymph nodes",
+        "enlarged spleen",
+        "enlarged stomach",
+        "enlarged urinary bladder",
+        "increased circulating alkaline phosphatase level",
+        "increased monocyte cell number",
+        "male infertility",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -1688,20 +1765,23 @@
       "id": "Trappc2l",
       "label": "Trappc2l",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal freezing behavior",
-        "Abnormal heart morphology",
-        "Abnormal spleen morphology",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased locomotor activity",
-        "Enlarged spleen",
-        "Female infertility",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean corpuscular volume",
-        "Increased mean platelet volume",
-        "Male infertility",
-        "Small testis"
+        "abnormal bone structure",
+        "abnormal freezing behavior",
+        "abnormal heart morphology",
+        "abnormal spleen morphology",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased erythrocyte cell number",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "enlarged spleen",
+        "female infertility",
+        "increased heart weight",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased mean platelet volume",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -1711,33 +1791,31 @@
       "id": "Atp13a3",
       "label": "Atp13a3",
       "annotation": [
-        "Abnormal cholesterol homeostasis",
-        "Abnormal retina blood vessel morphology",
-        "Abnormal skin coloration",
-        "Decreased blood urea nitrogen level",
-        "Decreased circulating cholesterol level",
-        "Decreased circulating glucose level",
-        "Decreased circulating hdl cholesterol level",
-        "Decreased circulating serum albumin level",
-        "Decreased circulating total protein level",
-        "Decreased exploration in new environment",
-        "Decreased fasting circulating glucose level",
-        "Decreased locomotor activity",
-        "Decreased mean corpuscular hemoglobin",
-        "Decreased mean corpuscular volume",
-        "Improved glucose tolerance",
-        "Increased anxiety-related response",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating bilirubin level",
-        "Increased erythrocyte cell number",
-        "Increased heart weight",
-        "Increased hematocrit",
-        "Increased leukocyte cell number",
-        "Increased startle reflex",
-        "Male infertility",
-        "Thrombocytopenia"
+        "abnormal retina blood vessel morphology",
+        "abnormal skin coloration",
+        "decreased blood urea nitrogen level",
+        "decreased circulating cholesterol level",
+        "decreased circulating glucose level",
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "decreased circulating triglyceride level",
+        "decreased exploration in new environment",
+        "decreased fasting circulating glucose level",
+        "decreased locomotor activity",
+        "decreased mean corpuscular volume",
+        "improved glucose tolerance",
+        "increased anxiety-related response",
+        "increased bone mineral content",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating bilirubin level",
+        "increased erythrocyte cell number",
+        "increased heart weight",
+        "increased hematocrit",
+        "increased leukocyte cell number",
+        "increased startle reflex",
+        "male infertility",
+        "thrombocytopenia"
       ],
       "node_color": 1.0
     }
@@ -1747,11 +1825,12 @@
       "id": "Hsp90aa1",
       "label": "Hsp90aa1",
       "annotation": [
-        "Abnormal cranium morphology",
-        "Abnormal incisor morphology",
-        "Abnormal snout morphology",
-        "Increased grip strength",
-        "Male infertility"
+        "abnormal cranium morphology",
+        "abnormal incisor morphology",
+        "abnormal snout morphology",
+        "increased circulating alkaline phosphatase level",
+        "increased grip strength",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1761,37 +1840,25 @@
       "id": "Hbs1l",
       "label": "Hbs1l",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal cranium morphology",
-        "Abnormal retina morphology",
-        "Abnormal snout morphology",
-        "Abnormal tail morphology",
-        "Decreased bone mineral content",
-        "Decreased effector memory cd8-positive, alpha-beta t cell number",
-        "Decreased langerhans cell number",
-        "Decreased mature b cell number",
-        "Decreased memory-marker cd4-negative nk t cell number",
-        "Decreased monocyte cell number",
-        "Decreased t-helper cell number",
-        "Decreased total body fat amount",
-        "Improved glucose tolerance",
-        "Increased cd4-positive, alpha-beta memory t cell number",
-        "Increased cd4-positive, cd25-positive, alpha-beta regulatory t cell number",
-        "Increased cd5-positive gamma-delta t cell number",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating cholesterol level",
-        "Increased circulating hdl cholesterol level",
-        "Increased circulating iron level",
-        "Increased circulating total protein level",
-        "Increased effector memory cd8-positive, alpha-beta t cell number",
-        "Increased leukocyte cell number",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean platelet volume",
-        "Increased memory cd4-positive, cd25-positive, alpha-beta regulatory t cell number",
-        "Increased regulatory t cell number",
-        "Male infertility",
-        "Thrombocytosis",
-        "Vertebral transformation"
+        "abnormal bone structure",
+        "abnormal cranium morphology",
+        "abnormal retina morphology",
+        "abnormal snout morphology",
+        "abnormal tail morphology",
+        "decreased bone mineral content",
+        "decreased total body fat amount",
+        "improved glucose tolerance",
+        "increased circulating HDL cholesterol level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating cholesterol level",
+        "increased circulating free fatty acids level",
+        "increased circulating iron level",
+        "increased circulating total protein level",
+        "increased leukocyte cell number",
+        "increased mean corpuscular hemoglobin",
+        "increased mean platelet volume",
+        "male infertility",
+        "vertebral transformation"
       ],
       "node_color": 1.0
     }
@@ -1801,18 +1868,18 @@
       "id": "Ubn2",
       "label": "Ubn2",
       "annotation": [
-        "Abnormal embryo size",
-        "Abnormal eyelid fusion",
-        "Abnormal facial morphology",
-        "Abnormal head shape",
-        "Abnormal head size",
-        "Anophthalmia",
-        "Decreased mean corpuscular hemoglobin",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Exencephaly",
-        "Male infertility",
-        "Pallor",
-        "Protruding tongue"
+        "abnormal embryo size",
+        "abnormal eyelid fusion",
+        "abnormal facial morphology",
+        "abnormal head shape",
+        "abnormal head size",
+        "anophthalmia",
+        "decreased exploration in new environment",
+        "decreased mean corpuscular hemoglobin",
+        "exencephaly",
+        "male infertility",
+        "pallor",
+        "protruding tongue"
       ],
       "node_color": 1.0
     }
@@ -1822,11 +1889,11 @@
       "id": "Cfap91",
       "label": "Cfap91",
       "annotation": [
-        "Abnormal brain morphology",
-        "Abnormal eye morphology",
-        "Increased brain size",
-        "Male infertility",
-        "Small testis"
+        "abnormal brain morphology",
+        "abnormal eye morphology",
+        "increased brain size",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -1836,19 +1903,20 @@
       "id": "Fndc9",
       "label": "Fndc9",
       "annotation": [
-        "Decreased bone mineral content",
-        "Decreased grip strength",
-        "Decreased lean body mass",
-        "Decreased lymphocyte cell number",
-        "Decreased prepulse inhibition",
-        "Decreased startle reflex",
-        "Female infertility",
-        "Hyperactivity",
-        "Increased circulating bilirubin level",
-        "Increased mean platelet volume",
-        "Increased neutrophil cell number",
-        "Increased total body fat amount",
-        "Male infertility"
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "decreased lymphocyte cell number",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "female infertility",
+        "hyperactivity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating bilirubin level",
+        "increased mean platelet volume",
+        "increased neutrophil cell number",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1858,24 +1926,25 @@
       "id": "Gnl1",
       "label": "Gnl1",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal cranium morphology",
-        "Decreased body length",
-        "Decreased erythrocyte cell number",
-        "Decreased hemoglobin content",
-        "Decreased lean body mass",
-        "Decreased locomotor activity",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Female infertility",
-        "Hydrocephaly",
-        "Impaired glucose tolerance",
-        "Increased grip strength",
-        "Increased mean platelet volume",
-        "Increased total body fat amount",
-        "Limb grasping",
-        "Male infertility",
-        "Short tibia",
-        "Thrombocytopenia"
+        "abnormal bone structure",
+        "abnormal cranium morphology",
+        "decreased body length",
+        "decreased erythrocyte cell number",
+        "decreased hemoglobin content",
+        "decreased lean body mass",
+        "decreased locomotor activity",
+        "female infertility",
+        "hydrocephaly",
+        "impaired glucose tolerance",
+        "increased grip strength",
+        "increased mean platelet volume",
+        "increased total body fat amount",
+        "increased vertical activity",
+        "limb grasping",
+        "male infertility",
+        "short tibia",
+        "shortened PR interval",
+        "thrombocytopenia"
       ],
       "node_color": 1.0
     }
@@ -1885,17 +1954,21 @@
       "id": "Efna5",
       "label": "Efna5",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal lens morphology",
-        "Cataract",
-        "Enlarged adrenal glands",
-        "Enlarged kidney",
-        "Enlarged uterus",
-        "Increased anxiety-related response",
-        "Increased thigmotaxis",
-        "Irregularly shaped pupil",
-        "Male infertility",
-        "Polycystic kidney"
+        "abnormal behavior",
+        "abnormal lens morphology",
+        "cataract",
+        "decreased grip strength",
+        "decreased locomotor activity",
+        "enlarged adrenal glands",
+        "enlarged kidney",
+        "enlarged uterus",
+        "hyperactivity",
+        "increased anxiety-related response",
+        "increased fasting circulating glucose level",
+        "increased thigmotaxis",
+        "irregularly shaped pupil",
+        "male infertility",
+        "polycystic kidney"
       ],
       "node_color": 1.0
     }
@@ -1905,11 +1978,12 @@
       "id": "Ezh1",
       "label": "Ezh1",
       "annotation": [
-        "Decreased erythrocyte cell number",
-        "Decreased hematocrit",
-        "Decreased prepulse inhibition",
-        "Increased circulating glucose level",
-        "Male infertility"
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "decreased prepulse inhibition",
+        "decreased red blood cell distribution width",
+        "increased circulating glucose level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1919,13 +1993,13 @@
       "id": "Kpna2",
       "label": "Kpna2",
       "annotation": [
-        "Abnormal cholesterol homeostasis",
-        "Abnormal eye morphology",
-        "Abnormal kidney morphology",
-        "Decreased locomotor activity",
-        "Female infertility",
-        "Male infertility",
-        "Small testis"
+        "abnormal cholesterol homeostasis",
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "decreased locomotor activity",
+        "female infertility",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -1935,36 +2009,34 @@
       "id": "Enpp1",
       "label": "Enpp1",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal caudal vertebrae morphology",
-        "Abnormal cranium morphology",
-        "Abnormal gait",
-        "Abnormal heart morphology",
-        "Abnormal joint morphology",
-        "Abnormal mammary gland morphology",
-        "Abnormal rib morphology",
-        "Abnormal scapula morphology",
-        "Abnormal sinus arrhythmia",
-        "Abnormal skin coloration",
-        "Abnormal spine curvature",
-        "Abnormal spleen morphology",
-        "Abnormal startle reflex",
-        "Abnormal thoracic cage shape",
-        "Abnormal vertebrae morphology",
-        "Cardiovascular system phenotype",
-        "Decreased body weight",
-        "Decreased exploration in new environment",
-        "Decreased heart rate",
-        "Decreased locomotor activity",
-        "Female infertility",
-        "Increased airway resistance",
-        "Increased freezing behavior",
-        "Long tibia",
-        "Lordosis",
-        "Male infertility",
-        "Prolonged rr interval",
-        "Small thymus",
-        "Vertebral fusion"
+        "abnormal auditory brainstem response",
+        "abnormal caudal vertebrae morphology",
+        "abnormal cranium morphology",
+        "abnormal gait",
+        "abnormal heart morphology",
+        "abnormal joint morphology",
+        "abnormal mammary gland morphology",
+        "abnormal rib morphology",
+        "abnormal scapula morphology",
+        "abnormal skin coloration",
+        "abnormal spine curvature",
+        "abnormal spleen morphology",
+        "abnormal startle reflex",
+        "abnormal thoracic cage shape",
+        "abnormal vertebrae morphology",
+        "decreased body weight",
+        "decreased exploration in new environment",
+        "decreased heart rate",
+        "decreased locomotor activity",
+        "female infertility",
+        "increased airway resistance",
+        "increased freezing behavior",
+        "long tibia",
+        "lordosis",
+        "male infertility",
+        "prolonged RR interval",
+        "small thymus",
+        "vertebral fusion"
       ],
       "node_color": 1.0
     }
@@ -1974,14 +2046,14 @@
       "id": "Hddc3",
       "label": "Hddc3",
       "annotation": [
-        "Abnormal kidney morphology",
-        "Abnormal liver morphology",
-        "Abnormal pancreas morphology",
-        "Enlarged heart",
-        "Enlarged spleen",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating aspartate transaminase level",
-        "Male infertility"
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal pancreas morphology",
+        "enlarged heart",
+        "enlarged spleen",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -1991,19 +2063,20 @@
       "id": "Cops7a",
       "label": "Cops7a",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal eye morphology",
-        "Abnormal heart morphology",
-        "Abnormal urinary bladder morphology",
-        "Abnormal uterus morphology",
-        "Decreased blood urea nitrogen level",
-        "Decreased prepulse inhibition",
-        "Decreased thigmotaxis",
-        "Enlarged heart",
-        "Hyperactivity",
-        "Increased heart weight",
-        "Increased monocyte cell number",
-        "Male infertility"
+        "abnormal behavior",
+        "abnormal eye morphology",
+        "abnormal heart morphology",
+        "abnormal urinary bladder morphology",
+        "abnormal uterus morphology",
+        "decreased blood urea nitrogen level",
+        "decreased prepulse inhibition",
+        "decreased thigmotaxis",
+        "enlarged heart",
+        "hyperactivity",
+        "improved glucose tolerance",
+        "increased heart weight",
+        "increased monocyte cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2013,14 +2086,14 @@
       "id": "Stx2",
       "label": "Stx2",
       "annotation": [
-        "Cataract",
-        "Decreased mean corpuscular hemoglobin",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Decreased mean corpuscular volume",
-        "Increased circulating cholesterol level",
-        "Increased circulating hdl cholesterol level",
-        "Increased erythrocyte cell number",
-        "Male infertility"
+        "cataract",
+        "decreased mean corpuscular hemoglobin",
+        "decreased mean corpuscular hemoglobin concentration",
+        "decreased mean corpuscular volume",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased erythrocyte cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2030,13 +2103,13 @@
       "id": "4930447C04Rik",
       "label": "4930447C04Rik",
       "annotation": [
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased grip strength",
-        "Decreased lean body mass",
-        "Female infertility",
-        "Increased total body fat amount",
-        "Male infertility"
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2046,17 +2119,16 @@
       "id": "Tpgs2",
       "label": "Tpgs2",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal nail morphology",
-        "Abnormal sleep behavior",
-        "Decreased circulating creatinine level",
-        "Decreased circulating free fatty acids level",
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Decreased thigmotaxis",
-        "Increased erythrocyte cell number",
-        "Male infertility",
-        "Prolonged rr interval"
+        "abnormal bone structure",
+        "abnormal nail morphology",
+        "abnormal sleep behavior",
+        "decreased circulating creatinine level",
+        "decreased circulating free fatty acids level",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased erythrocyte cell number",
+        "male infertility",
+        "prolonged RR interval"
       ],
       "node_color": 1.0
     }
@@ -2066,14 +2138,14 @@
       "id": "Lmtk2",
       "label": "Lmtk2",
       "annotation": [
-        "Abnormal kidney morphology",
-        "Decreased body length",
-        "Decreased heart rate",
-        "Enlarged heart",
-        "Increased circulating alkaline phosphatase level",
-        "Male infertility",
-        "Prolonged rr interval",
-        "Small testis"
+        "abnormal kidney morphology",
+        "decreased body length",
+        "decreased heart rate",
+        "enlarged heart",
+        "increased circulating alkaline phosphatase level",
+        "male infertility",
+        "prolonged RR interval",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2083,9 +2155,9 @@
       "id": "Resf1",
       "label": "Resf1",
       "annotation": [
-        "Abnormal eye morphology",
-        "Female infertility",
-        "Male infertility"
+        "abnormal eye morphology",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2095,27 +2167,30 @@
       "id": "Ube2j2",
       "label": "Ube2j2",
       "annotation": [
-        "Abnormal blood urea nitrogen level",
-        "Abnormal bone structure",
-        "Abnormal liver morphology",
-        "Abnormal mean corpuscular volume",
-        "Abnormal platelet cell number",
-        "Abnormal spatial working memory",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased erythrocyte cell number",
-        "Decreased lean body mass",
-        "Female infertility",
-        "Hyperactivity",
-        "Increased eosinophil cell number",
-        "Increased mean corpuscular hemoglobin",
-        "Increased startle reflex",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Short tibia",
-        "Small epididymis",
-        "Small testis"
+        "abnormal blood urea nitrogen level",
+        "abnormal bone structure",
+        "abnormal liver morphology",
+        "abnormal mean corpuscular volume",
+        "abnormal platelet cell number",
+        "abnormal spatial working memory",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased erythrocyte cell number",
+        "decreased lean body mass",
+        "decreased leukocyte cell number",
+        "decreased lymphocyte cell number",
+        "female infertility",
+        "hyperactivity",
+        "increased eosinophil cell number",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased startle reflex",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia",
+        "small epididymis",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2125,29 +2200,28 @@
       "id": "Cpe",
       "label": "Cpe",
       "annotation": [
-        "Abnormal behavior",
-        "Aorta stenosis",
-        "Decreased body length",
-        "Decreased circulating chloride level",
-        "Decreased exploration in new environment",
-        "Decreased food intake",
-        "Decreased grip strength",
-        "Decreased locomotor activity",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Decreased vertical activity",
-        "Hyperactivity",
-        "Impaired glucose tolerance",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating calcium level",
-        "Increased circulating glucose level",
-        "Increased fasting circulating glucose level",
-        "Increased hematocrit",
-        "Increased leukocyte cell number",
-        "Increased mean corpuscular volume",
-        "Increased thigmotaxis",
-        "Male infertility"
+        "abnormal behavior",
+        "abnormal locomotor behavior",
+        "aorta stenosis",
+        "decreased body length",
+        "decreased circulating chloride level",
+        "decreased exploration in new environment",
+        "decreased food intake",
+        "decreased grip strength",
+        "decreased locomotor activity",
+        "decreased mean corpuscular hemoglobin concentration",
+        "decreased vertical activity",
+        "hyperactivity",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating calcium level",
+        "increased fasting circulating glucose level",
+        "increased hematocrit",
+        "increased leukocyte cell number",
+        "increased mean corpuscular volume",
+        "increased startle reflex",
+        "increased thigmotaxis",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2157,11 +2231,11 @@
       "id": "Cldn11",
       "label": "Cldn11",
       "annotation": [
-        "Abnormal gait",
-        "Hyperactivity",
-        "Increased blood urea nitrogen level",
-        "Increased startle reflex",
-        "Male infertility"
+        "abnormal gait",
+        "hyperactivity",
+        "increased blood urea nitrogen level",
+        "increased startle reflex",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2171,15 +2245,18 @@
       "id": "Bicral",
       "label": "Bicral",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal retina morphology",
-        "Decreased bone mineral content",
-        "Decreased prepulse inhibition",
-        "Increased blood urea nitrogen level",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean corpuscular volume",
-        "Increased startle reflex",
-        "Male infertility"
+        "abnormal bone structure",
+        "abnormal retina morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "decreased prepulse inhibition",
+        "increased blood urea nitrogen level",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased startle reflex",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2189,10 +2266,10 @@
       "id": "Upf3a",
       "label": "Upf3a",
       "annotation": [
-        "Abnormal eye morphology",
-        "Decreased exploration in new environment",
-        "Male infertility",
-        "Small testis"
+        "abnormal eye morphology",
+        "decreased exploration in new environment",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2202,10 +2279,10 @@
       "id": "Cep250",
       "label": "Cep250",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Absent pinna reflex",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "absent pinna reflex",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2215,12 +2292,13 @@
       "id": "Lrrc56",
       "label": "Lrrc56",
       "annotation": [
-        "Abnormal heart position or orientation",
-        "Abnormal heartbeat",
-        "Abnormal lung morphology",
-        "Abnormal skin morphology",
-        "Enlarged lymph nodes",
-        "Male infertility"
+        "abnormal heart position or orientation",
+        "abnormal heartbeat",
+        "abnormal lung morphology",
+        "abnormal skin morphology",
+        "decreased body length",
+        "enlarged lymph nodes",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2230,19 +2308,20 @@
       "id": "Fam227b",
       "label": "Fam227b",
       "annotation": [
-        "Abnormal colon morphology",
-        "Abnormal jejunum morphology",
-        "Abnormal lymph node morphology",
-        "Abnormal mammary gland morphology",
-        "Abnormal skeletal muscle morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Abnormal tooth morphology",
-        "Enlarged epididymis",
-        "Enlarged heart",
-        "Enlarged thymus",
-        "Female infertility",
-        "Male infertility"
+        "abnormal colon morphology",
+        "abnormal jejunum morphology",
+        "abnormal lymph node morphology",
+        "abnormal mammary gland morphology",
+        "abnormal skeletal muscle morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal tooth morphology",
+        "enlarged epididymis",
+        "enlarged heart",
+        "enlarged thymus",
+        "female infertility",
+        "increased grip strength",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2252,15 +2331,13 @@
       "id": "Rimklb",
       "label": "Rimklb",
       "annotation": [
-        "Abnormal sleep behavior",
-        "Absent vibrissae",
-        "Decreased total body fat amount",
-        "Hyperactivity",
-        "Increased bone mineral content",
-        "Increased grip strength",
-        "Increased heart weight",
-        "Increased mean corpuscular hemoglobin",
-        "Male infertility"
+        "abnormal sleep behavior",
+        "absent vibrissae",
+        "decreased total body fat amount",
+        "hyperactivity",
+        "increased grip strength",
+        "increased mean corpuscular hemoglobin",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2270,23 +2347,20 @@
       "id": "Ubl7",
       "label": "Ubl7",
       "annotation": [
-        "Abnormal cornea morphology",
-        "Abnormal pancreas morphology",
-        "Abnormal sternum morphology",
-        "Decreased heart rate",
-        "Hyperactivity",
-        "Impaired contextual conditioning behavior",
-        "Increased blood urea nitrogen level",
-        "Increased hematocrit",
-        "Increased hemoglobin content",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean corpuscular volume",
-        "Increased startle reflex",
-        "Irregularly shaped pupil",
-        "Male infertility",
-        "Microphthalmia",
-        "Narrow eye opening",
-        "Prolonged rr interval"
+        "abnormal cornea morphology",
+        "abnormal pancreas morphology",
+        "abnormal sternum morphology",
+        "decreased heart rate",
+        "increased blood urea nitrogen level",
+        "increased hematocrit",
+        "increased hemoglobin content",
+        "increased mean corpuscular volume",
+        "increased startle reflex",
+        "irregularly shaped pupil",
+        "male infertility",
+        "microphthalmia",
+        "narrow eye opening",
+        "prolonged RR interval"
       ],
       "node_color": 1.0
     }
@@ -2296,13 +2370,20 @@
       "id": "Cnot7",
       "label": "Cnot7",
       "annotation": [
-        "Abnormal heart morphology",
-        "Abnormal kidney morphology",
-        "Abnormal liver morphology",
-        "Abnormal ovary morphology",
-        "Decreased locomotor activity",
-        "Male infertility",
-        "Small testis"
+        "abnormal behavior",
+        "abnormal heart morphology",
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal ovary morphology",
+        "decreased anxiety-related response",
+        "decreased locomotor activity",
+        "decreased thigmotaxis",
+        "decreased total body fat amount",
+        "increased bone mineral content",
+        "increased lean body mass",
+        "increased red blood cell distribution width",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2312,15 +2393,15 @@
       "id": "Spata22",
       "label": "Spata22",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal heart morphology",
-        "Abnormal pancreas morphology",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Enlarged epididymis",
-        "Female infertility",
-        "Male infertility",
-        "Small testis"
+        "abnormal bone structure",
+        "abnormal heart morphology",
+        "abnormal pancreas morphology",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "enlarged epididymis",
+        "female infertility",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2330,13 +2411,13 @@
       "id": "Bag5",
       "label": "Bag5",
       "annotation": [
-        "Abnormal brain morphology",
-        "Abnormal retina morphology",
-        "Abnormal vitreous body morphology",
-        "Anophthalmia",
-        "Cataract",
-        "Enlarged testis",
-        "Male infertility"
+        "abnormal brain morphology",
+        "abnormal retina morphology",
+        "abnormal vitreous body morphology",
+        "anophthalmia",
+        "cataract",
+        "enlarged testis",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2346,13 +2427,14 @@
       "id": "Cdk4",
       "label": "Cdk4",
       "annotation": [
-        "Abnormal cranium morphology",
-        "Abnormal embryo size",
-        "Decreased body length",
-        "Edema",
-        "Female infertility",
-        "Male infertility",
-        "Microphthalmia"
+        "abnormal cranium morphology",
+        "abnormal embryo size",
+        "decreased body length",
+        "edema",
+        "female infertility",
+        "increased mean corpuscular volume",
+        "male infertility",
+        "microphthalmia"
       ],
       "node_color": 1.0
     }
@@ -2362,10 +2444,11 @@
       "id": "Plcb2",
       "label": "Plcb2",
       "annotation": [
-        "Abnormal spleen morphology",
-        "Decreased locomotor activity",
-        "Decreased pulmonary ventilation",
-        "Male infertility"
+        "abnormal spleen morphology",
+        "abnormal vocalization",
+        "decreased locomotor activity",
+        "decreased pulmonary ventilation",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2375,20 +2458,20 @@
       "id": "Pramel12",
       "label": "Pramel12",
       "annotation": [
-        "Abnormal cecum morphology",
-        "Abnormal eye morphology",
-        "Abnormal heart morphology",
-        "Abnormal jejunum morphology",
-        "Abnormal kidney morphology",
-        "Abnormal pancreas morphology",
-        "Abnormal seminal vesicle morphology",
-        "Abnormal spleen morphology",
-        "Abnormal stomach morphology",
-        "Abnormal urinary bladder morphology",
-        "Enlarged spleen",
-        "Male infertility",
-        "Small heart",
-        "Small testis"
+        "abnormal cecum morphology",
+        "abnormal eye morphology",
+        "abnormal heart morphology",
+        "abnormal jejunum morphology",
+        "abnormal kidney morphology",
+        "abnormal pancreas morphology",
+        "abnormal seminal vesicle morphology",
+        "abnormal spleen morphology",
+        "abnormal stomach morphology",
+        "abnormal urinary bladder morphology",
+        "enlarged spleen",
+        "male infertility",
+        "small heart",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2398,24 +2481,23 @@
       "id": "Tle4",
       "label": "Tle4",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal cholesterol homeostasis",
-        "Abnormal eye morphology",
-        "Abnormal kidney morphology",
-        "Abnormal liver morphology",
-        "Abnormal lymph node morphology",
-        "Abnormal rectum morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Decreased bone mineral content",
-        "Decreased grip strength",
-        "Decreased heart weight",
-        "Decreased lean body mass",
-        "Decreased prepulse inhibition",
-        "Enlarged liver",
-        "Impaired glucose tolerance",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "abnormal cholesterol homeostasis",
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "abnormal liver morphology",
+        "abnormal lymph node morphology",
+        "abnormal rectum morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "decreased bone mineral content",
+        "decreased grip strength",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "enlarged liver",
+        "impaired glucose tolerance",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2425,13 +2507,16 @@
       "id": "Cul4a",
       "label": "Cul4a",
       "annotation": [
-        "Abnormal retina morphology",
-        "Decreased mean platelet volume",
-        "Decreased spleen weight",
-        "Enhanced cued conditioning behavior",
-        "Increased fasting circulating glucose level",
-        "Male infertility",
-        "Small testis"
+        "abnormal retina morphology",
+        "decreased circulating chloride level",
+        "decreased exploration in new environment",
+        "decreased mean platelet volume",
+        "decreased spleen weight",
+        "enhanced cued conditioning behavior",
+        "increased circulating potassium level",
+        "increased fasting circulating glucose level",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2441,10 +2526,11 @@
       "id": "Abhd16a",
       "label": "Abhd16a",
       "annotation": [
-        "Decreased body length",
-        "Decreased total body fat amount",
-        "Increased lean body mass",
-        "Male infertility"
+        "decreased circulating magnesium level",
+        "decreased fasting circulating glucose level",
+        "decreased total body fat amount",
+        "increased lean body mass",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2454,10 +2540,10 @@
       "id": "Ccnb1ip1",
       "label": "Ccnb1ip1",
       "annotation": [
-        "Decreased locomotor activity",
-        "Enlarged lymph nodes",
-        "Female infertility",
-        "Male infertility"
+        "decreased locomotor activity",
+        "enlarged lymph nodes",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2467,13 +2553,14 @@
       "id": "Prmt6",
       "label": "Prmt6",
       "annotation": [
-        "Abnormal retina morphology",
-        "Decreased heart left ventricle size",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating creatinine level",
-        "Increased eosinophil cell number",
-        "Male infertility"
+        "abnormal retina morphology",
+        "decreased heart left ventricle size",
+        "increased basophil cell number",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating creatinine level",
+        "increased eosinophil cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2483,15 +2570,15 @@
       "id": "Enkur",
       "label": "Enkur",
       "annotation": [
-        "Abnormal facial morphology",
-        "Abnormal head shape",
-        "Abnormal head size",
-        "Abnormal skin coloration",
-        "Abnormal skin morphology",
-        "Hemorrhage",
-        "Increased circulating alkaline phosphatase level",
-        "Male infertility",
-        "No spontaneous movement"
+        "abnormal facial morphology",
+        "abnormal head shape",
+        "abnormal head size",
+        "abnormal skin coloration",
+        "abnormal skin morphology",
+        "hemorrhage",
+        "increased circulating alkaline phosphatase level",
+        "male infertility",
+        "no spontaneous movement"
       ],
       "node_color": 1.0
     }
@@ -2501,28 +2588,26 @@
       "id": "Herc1",
       "label": "Herc1",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal lens morphology",
-        "Abnormal retina morphology",
-        "Cataract",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased circulating glucose level",
-        "Decreased lean body mass",
-        "Impaired glucose tolerance",
-        "Increased circulating amylase level",
-        "Increased circulating chloride level",
-        "Increased circulating sodium level",
-        "Increased eosinophil cell number",
-        "Increased fasting circulating glucose level",
-        "Increased leukocyte cell number",
-        "Increased ly6c high monocyte number",
-        "Increased ly6c low monocyte number",
-        "Increased mean platelet volume",
-        "Increased monocyte cell number",
-        "Increased red blood cell distribution width",
-        "Increased total body fat amount",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "abnormal lens morphology",
+        "abnormal retina morphology",
+        "cataract",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased circulating glucose level",
+        "decreased lean body mass",
+        "impaired glucose tolerance",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating amylase level",
+        "increased circulating chloride level",
+        "increased circulating insulin level",
+        "increased circulating sodium level",
+        "increased fasting circulating glucose level",
+        "increased leukocyte cell number",
+        "increased mean platelet volume",
+        "increased red blood cell distribution width",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2532,11 +2617,11 @@
       "id": "S1pr3",
       "label": "S1pr3",
       "annotation": [
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina morphology",
-        "Abnormal skin coloration",
-        "Female infertility",
-        "Male infertility"
+        "abnormal retina blood vessel morphology",
+        "abnormal retina morphology",
+        "abnormal skin coloration",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2546,16 +2631,16 @@
       "id": "Hormad2",
       "label": "Hormad2",
       "annotation": [
-        "Abnormal freezing behavior",
-        "Abnormal inspiratory capacity",
-        "Abnormal mammary gland morphology",
-        "Abnormal thymus morphology",
-        "Decreased exploration in new environment",
-        "Decreased lung elastance",
-        "Enlarged spleen",
-        "Enlarged thymus",
-        "Male infertility",
-        "Small testis"
+        "abnormal freezing behavior",
+        "abnormal inspiratory capacity",
+        "abnormal mammary gland morphology",
+        "abnormal thymus morphology",
+        "decreased exploration in new environment",
+        "decreased lung elastance",
+        "enlarged spleen",
+        "enlarged thymus",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2565,42 +2650,44 @@
       "id": "Xrcc5",
       "label": "Xrcc5",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal caudal vertebrae morphology",
-        "Abnormal cranium morphology",
-        "Abnormal heart left ventricle morphology",
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina morphology",
-        "Abnormal spine curvature",
-        "Abnormal spleen morphology",
-        "Abnormal thymus morphology",
-        "Abnormal vertebrae morphology",
-        "Abnormal vertebral arch morphology",
-        "Abnormal zygomatic bone morphology",
-        "Aorta stenosis",
-        "Decreased cardiac output",
-        "Decreased cardiac stroke volume",
-        "Decreased circulating serum albumin level",
-        "Decreased grip strength",
-        "Decreased heart left ventricle size",
-        "Decreased locomotor activity",
-        "Female infertility",
-        "Hyperactivity",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating triglyceride level",
-        "Increased grip strength",
-        "Increased kidney weight",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean platelet volume",
-        "Increased red blood cell distribution width",
-        "Kyphosis",
-        "Male infertility",
-        "Scoliosis",
-        "Short tibia",
-        "Small spleen",
-        "Small testis",
-        "Small thymus",
-        "Thin ventricular wall"
+        "abnormal auditory brainstem response",
+        "abnormal caudal vertebrae morphology",
+        "abnormal cranium morphology",
+        "abnormal heart left ventricle morphology",
+        "abnormal retina blood vessel morphology",
+        "abnormal retina morphology",
+        "abnormal spine curvature",
+        "abnormal spleen morphology",
+        "abnormal thymus morphology",
+        "abnormal vertebrae morphology",
+        "abnormal vertebral arch morphology",
+        "abnormal zygomatic bone morphology",
+        "aorta stenosis",
+        "decreased cardiac output",
+        "decreased cardiac stroke volume",
+        "decreased circulating serum albumin level",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "decreased heart left ventricle size",
+        "decreased locomotor activity",
+        "female infertility",
+        "hyperactivity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating triglyceride level",
+        "increased grip strength",
+        "increased kidney weight",
+        "increased mean corpuscular hemoglobin",
+        "increased mean platelet volume",
+        "increased red blood cell distribution width",
+        "increased thigmotaxis",
+        "kyphosis",
+        "male infertility",
+        "scoliosis",
+        "short tibia",
+        "small spleen",
+        "small testis",
+        "small thymus",
+        "thin ventricular wall"
       ],
       "node_color": 1.0
     }
@@ -2610,15 +2697,14 @@
       "id": "Fbxo7",
       "label": "Fbxo7",
       "annotation": [
-        "Decreased circulating fructosamine level",
-        "Decreased circulating iron level",
-        "Decreased erythrocyte cell number",
-        "Decreased hematocrit",
-        "Decreased hemoglobin content",
-        "Decreased leukocyte cell number",
-        "Increased circulating sodium level",
-        "Increased red blood cell distribution width",
-        "Male infertility"
+        "decreased circulating fructosamine level",
+        "decreased circulating iron level",
+        "increased circulating bilirubin level",
+        "increased circulating sodium level",
+        "increased mean corpuscular hemoglobin",
+        "increased red blood cell distribution width",
+        "male infertility",
+        "thrombocytosis"
       ],
       "node_color": 1.0
     }
@@ -2628,14 +2714,14 @@
       "id": "Tmem225",
       "label": "Tmem225",
       "annotation": [
-        "Abnormal freezing behavior",
-        "Abnormal heart morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract",
-        "Decreased prepulse inhibition",
-        "Male infertility",
-        "Small heart",
-        "Small spleen"
+        "abnormal freezing behavior",
+        "abnormal heart morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "decreased prepulse inhibition",
+        "male infertility",
+        "small heart",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -2645,10 +2731,10 @@
       "id": "Tbccd1",
       "label": "Tbccd1",
       "annotation": [
-        "Abnormal skin coloration",
-        "Female infertility",
-        "Impaired glucose tolerance",
-        "Male infertility"
+        "abnormal skin coloration",
+        "female infertility",
+        "impaired glucose tolerance",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2658,14 +2744,14 @@
       "id": "Lca5l",
       "label": "Lca5l",
       "annotation": [
-        "Decreased erythrocyte cell number",
-        "Decreased hematocrit",
-        "Decreased hemoglobin content",
-        "Increased circulating bilirubin level",
-        "Increased circulating cholesterol level",
-        "Increased total retina thickness",
-        "Male infertility",
-        "Thrombocytopenia"
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "decreased hemoglobin content",
+        "increased circulating bilirubin level",
+        "increased circulating cholesterol level",
+        "increased total retina thickness",
+        "male infertility",
+        "thrombocytopenia"
       ],
       "node_color": 1.0
     }
@@ -2675,18 +2761,20 @@
       "id": "Pcm1",
       "label": "Pcm1",
       "annotation": [
-        "Abnormal coat/hair pigmentation",
-        "Abnormal cranium morphology",
-        "Abnormal skin morphology",
-        "Decreased body length",
-        "Decreased prepulse inhibition",
-        "Decreased spleen weight",
-        "Hydrocephaly",
-        "Impaired glucose tolerance",
-        "Male infertility",
-        "Prolonged qrs complex duration",
-        "Prolonged rr interval",
-        "Small spleen"
+        "abnormal coat/hair pigmentation",
+        "abnormal cranium morphology",
+        "abnormal skin morphology",
+        "decreased body length",
+        "decreased lean body mass",
+        "decreased prepulse inhibition",
+        "decreased spleen weight",
+        "hydrocephaly",
+        "impaired glucose tolerance",
+        "increased startle reflex",
+        "male infertility",
+        "prolonged QRS complex duration",
+        "prolonged RR interval",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -2696,10 +2784,11 @@
       "id": "Erich2",
       "label": "Erich2",
       "annotation": [
-        "Female infertility",
-        "Increased basophil cell number",
-        "Increased eosinophil cell number",
-        "Male infertility"
+        "decreased grip strength",
+        "female infertility",
+        "increased basophil cell number",
+        "increased eosinophil cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2709,15 +2798,16 @@
       "id": "Setx",
       "label": "Setx",
       "annotation": [
-        "Decreased leukocyte cell number",
-        "Decreased lymphocyte cell number",
-        "Decreased total retina thickness",
-        "Increased eosinophil cell number",
-        "Increased monocyte cell number",
-        "Increased neutrophil cell number",
-        "Increased nk cell number",
-        "Male infertility",
-        "Small testis"
+        "decreased leukocyte cell number",
+        "decreased lymphocyte cell number",
+        "decreased total retina thickness",
+        "improved glucose tolerance",
+        "increased NK cell number",
+        "increased eosinophil cell number",
+        "increased monocyte cell number",
+        "increased neutrophil cell number",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2727,14 +2817,14 @@
       "id": "Brwd1",
       "label": "Brwd1",
       "annotation": [
-        "Abnormal seminal vesicle morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Female infertility",
-        "Increased circulating cholesterol level",
-        "Increased circulating hdl cholesterol level",
-        "Male infertility",
-        "Small testis"
+        "abnormal seminal vesicle morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2744,17 +2834,16 @@
       "id": "Sms",
       "label": "Sms",
       "annotation": [
-        "Decreased body length",
-        "Decreased body weight",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased circulating glucose level",
-        "Decreased circulating potassium level",
-        "Decreased lean body mass",
-        "Increased blood urea nitrogen level",
-        "Increased circulating amylase level",
-        "Increased circulating sodium level",
-        "Male infertility"
+        "decreased body length",
+        "decreased body weight",
+        "decreased bone mineral density",
+        "decreased circulating glucose level",
+        "decreased circulating potassium level",
+        "decreased lean body mass",
+        "increased blood urea nitrogen level",
+        "increased circulating amylase level",
+        "increased circulating sodium level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2764,13 +2853,13 @@
       "id": "Ythdc2",
       "label": "Ythdc2",
       "annotation": [
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased heart weight",
-        "Decreased lean body mass",
-        "Female infertility",
-        "Increased total body fat amount",
-        "Male infertility"
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "female infertility",
+        "increased total body fat amount",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2780,40 +2869,33 @@
       "id": "Clpp",
       "label": "Clpp",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal bone structure",
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased cd4-positive nk t cell number",
-        "Decreased circulating fructosamine level",
-        "Decreased effector memory cd8-positive, alpha-beta t cell number",
-        "Decreased gamma-delta t cell number",
-        "Decreased lean body mass",
-        "Decreased memory-marker cd4-negative nk t cell number",
-        "Decreased memory-marker cd4-positive nk t cell number",
-        "Decreased nk t cell number",
-        "Decreased red blood cell distribution width",
-        "Decreased total body fat amount",
-        "Female infertility",
-        "Increased b cell number",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating bilirubin level",
-        "Increased circulating cholesterol level",
-        "Increased circulating glycerol level",
-        "Increased hematocrit",
-        "Increased hemoglobin content",
-        "Increased klrg1-positive nk cell number",
-        "Increased lean body mass",
-        "Increased leukocyte cell number",
-        "Increased ly6c high monocyte number",
-        "Increased ly6c low monocyte number",
-        "Increased mature b cell number",
-        "Increased mean corpuscular hemoglobin",
-        "Increased monocyte cell number",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Tremors"
+        "abnormal auditory brainstem response",
+        "abnormal bone structure",
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased circulating fructosamine level",
+        "decreased circulating glucose level",
+        "decreased lean body mass",
+        "decreased red blood cell distribution width",
+        "decreased total body fat amount",
+        "female infertility",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating bilirubin level",
+        "increased circulating cholesterol level",
+        "increased circulating glycerol level",
+        "increased circulating iron level",
+        "increased circulating serum albumin level",
+        "increased hematocrit",
+        "increased hemoglobin content",
+        "increased lean body mass",
+        "increased leukocyte cell number",
+        "increased mean corpuscular hemoglobin",
+        "increased total body fat amount",
+        "male infertility",
+        "thrombocytopenia",
+        "tremors"
       ],
       "node_color": 1.0
     }
@@ -2823,14 +2905,14 @@
       "id": "Prkra",
       "label": "Prkra",
       "annotation": [
-        "Abnormal ear morphology",
-        "Decreased circulating alkaline phosphatase level",
-        "Decreased prepulse inhibition",
-        "Increased blood urea nitrogen level",
-        "Increased circulating cholesterol level",
-        "Increased freezing behavior",
-        "Increased grip strength",
-        "Male infertility"
+        "abnormal ear morphology",
+        "decreased circulating alkaline phosphatase level",
+        "decreased prepulse inhibition",
+        "increased blood urea nitrogen level",
+        "increased circulating cholesterol level",
+        "increased freezing behavior",
+        "increased grip strength",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2840,9 +2922,9 @@
       "id": "Gga1",
       "label": "Gga1",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Male infertility",
-        "Small testis"
+        "abnormal auditory brainstem response",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2852,13 +2934,14 @@
       "id": "Tmc7",
       "label": "Tmc7",
       "annotation": [
-        "Abnormal eye morphology",
-        "Abnormal liver morphology",
-        "Abnormal ovary morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Female infertility",
-        "Male infertility"
+        "abnormal eye morphology",
+        "abnormal liver morphology",
+        "abnormal ovary morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "female infertility",
+        "increased circulating cholesterol level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2868,16 +2951,17 @@
       "id": "Pank2",
       "label": "Pank2",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal digit morphology",
-        "Abnormal heart morphology",
-        "Abnormal spleen morphology",
-        "Female infertility",
-        "Immune system phenotype",
-        "Increased effector memory cd8-positive, alpha-beta t cell number",
-        "Increased freezing behavior",
-        "Male infertility",
-        "Small testis"
+        "abnormal auditory brainstem response",
+        "abnormal digit morphology",
+        "abnormal heart morphology",
+        "abnormal spleen morphology",
+        "decreased exploration in new environment",
+        "female infertility",
+        "immune system phenotype",
+        "increased effector memory CD8-positive, alpha-beta T cell number",
+        "increased freezing behavior",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -2887,12 +2971,12 @@
       "id": "Reln",
       "label": "Reln",
       "annotation": [
-        "Abnormal lymph node morphology",
-        "Abnormal skin morphology",
-        "Abnormal spleen morphology",
-        "Abnormal uterus morphology",
-        "Female infertility",
-        "Male infertility"
+        "abnormal lymph node morphology",
+        "abnormal skin morphology",
+        "abnormal spleen morphology",
+        "abnormal uterus morphology",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2902,13 +2986,14 @@
       "id": "Adgb",
       "label": "Adgb",
       "annotation": [
-        "Abnormal eye morphology",
-        "Abnormal kidney morphology",
-        "Abnormal uterus morphology",
-        "Hydrocephaly",
-        "Increased eosinophil cell number",
-        "Increased skeletal muscle mass",
-        "Male infertility"
+        "abnormal eye morphology",
+        "abnormal kidney morphology",
+        "abnormal uterus morphology",
+        "hydrocephaly",
+        "increased eosinophil cell number",
+        "increased freezing behavior",
+        "increased skeletal muscle mass",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2918,16 +3003,20 @@
       "id": "Usp15",
       "label": "Usp15",
       "annotation": [
-        "Decreased circulating fructosamine level",
-        "Decreased locomotor activity",
-        "Female infertility",
-        "Increased basophil cell number",
-        "Increased bone mineral content",
-        "Increased circulating sodium level",
-        "Increased eosinophil cell number",
-        "Increased leukocyte cell number",
-        "Increased mean platelet volume",
-        "Male infertility"
+        "decreased circulating fructosamine level",
+        "decreased circulating glucose level",
+        "decreased fasting circulating glucose level",
+        "decreased locomotor activity",
+        "decreased total body fat amount",
+        "female infertility",
+        "improved glucose tolerance",
+        "increased basophil cell number",
+        "increased bone mineral content",
+        "increased circulating sodium level",
+        "increased eosinophil cell number",
+        "increased lean body mass",
+        "increased leukocyte cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2937,14 +3026,18 @@
       "id": "Mcidas",
       "label": "Mcidas",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal spleen morphology",
-        "Decreased prepulse inhibition",
-        "Decreased startle reflex",
-        "Female infertility",
-        "Increased circulating total protein level",
-        "Increased grip strength",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "abnormal spleen morphology",
+        "decreased lean body mass",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "female infertility",
+        "increased circulating alanine transaminase level",
+        "increased circulating total protein level",
+        "increased grip strength",
+        "increased leukocyte cell number",
+        "increased vertical activity",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2954,18 +3047,19 @@
       "id": "AU040320",
       "label": "AU040320",
       "annotation": [
-        "Abnormal coat/hair pigmentation",
-        "Abnormal retina morphology",
-        "Absent vibrissae",
-        "Decreased bone mineral content",
-        "Decreased grip strength",
-        "Decreased lean body mass",
-        "Hyperactivity",
-        "Impaired righting response",
-        "Increased exploration in new environment",
-        "Increased total body fat amount",
-        "Limb grasping",
-        "Male infertility"
+        "abnormal coat/hair pigmentation",
+        "abnormal retina morphology",
+        "abnormal startle reflex",
+        "absent vibrissae",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased lean body mass",
+        "hyperactivity",
+        "impaired righting response",
+        "increased exploration in new environment",
+        "limb grasping",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -2975,11 +3069,11 @@
       "id": "Kif9",
       "label": "Kif9",
       "annotation": [
-        "Abnormal skin morphology",
-        "Blind uterus",
-        "Male infertility",
-        "Small liver",
-        "Small spleen"
+        "abnormal skin morphology",
+        "blind uterus",
+        "male infertility",
+        "small liver",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -2989,12 +3083,12 @@
       "id": "Kif6",
       "label": "Kif6",
       "annotation": [
-        "Abnormal uterus morphology",
-        "Female infertility",
-        "Hydrocephaly",
-        "Male infertility",
-        "Small heart",
-        "Small testis"
+        "abnormal uterus morphology",
+        "female infertility",
+        "hydrocephaly",
+        "male infertility",
+        "small heart",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -3004,11 +3098,11 @@
       "id": "Igsf11",
       "label": "Igsf11",
       "annotation": [
-        "Hyperactivity",
-        "Impaired righting response",
-        "Increased fasting circulating glucose level",
-        "Limb grasping",
-        "Male infertility"
+        "hyperactivity",
+        "impaired righting response",
+        "increased fasting circulating glucose level",
+        "limb grasping",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3018,15 +3112,15 @@
       "id": "Ube2j1",
       "label": "Ube2j1",
       "annotation": [
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased lean body mass",
-        "Increased circulating amylase level",
-        "Increased circulating cholesterol level",
-        "Increased fluid intake",
-        "Increased total body fat amount",
-        "Male infertility",
-        "Short tibia"
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased lean body mass",
+        "increased circulating amylase level",
+        "increased circulating cholesterol level",
+        "increased fluid intake",
+        "increased total body fat amount",
+        "male infertility",
+        "short tibia"
       ],
       "node_color": 1.0
     }
@@ -3036,10 +3130,10 @@
       "id": "Fbxo24",
       "label": "Fbxo24",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Female infertility",
-        "Increased eosinophil cell number",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "increased eosinophil cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3049,12 +3143,12 @@
       "id": "Xdh",
       "label": "Xdh",
       "annotation": [
-        "Abnormal lung morphology",
-        "Abnormal skin morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract",
-        "Male infertility",
-        "Persistence of hyaloid vascular system"
+        "abnormal lung morphology",
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility",
+        "persistence of hyaloid vascular system"
       ],
       "node_color": 1.0
     }
@@ -3064,9 +3158,9 @@
       "id": "Pgap6",
       "label": "Pgap6",
       "annotation": [
-        "Abnormal skin morphology",
-        "Male infertility",
-        "Small testis"
+        "abnormal skin morphology",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -3076,11 +3170,11 @@
       "id": "Pramel13",
       "label": "Pramel13",
       "annotation": [
-        "Abnormal skin morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract",
-        "Male infertility",
-        "Small testis"
+        "abnormal skin morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -3090,13 +3184,14 @@
       "id": "Zc3hc1",
       "label": "Zc3hc1",
       "annotation": [
-        "Abnormal cornea morphology",
-        "Abnormal cranium morphology",
-        "Abnormal posture",
-        "Abnormal snout morphology",
-        "Abnormal tooth morphology",
-        "Decreased lean body mass",
-        "Male infertility"
+        "abnormal cornea morphology",
+        "abnormal cranium morphology",
+        "abnormal posture",
+        "abnormal snout morphology",
+        "abnormal tooth morphology",
+        "decreased body weight",
+        "decreased lean body mass",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3106,9 +3201,9 @@
       "id": "Dctd",
       "label": "Dctd",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Female infertility",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3118,10 +3213,10 @@
       "id": "Bzw1",
       "label": "Bzw1",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Cataract",
-        "Hyperactivity",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "cataract",
+        "hyperactivity",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3131,12 +3226,12 @@
       "id": "Tnrc6b",
       "label": "Tnrc6b",
       "annotation": [
-        "Decreased body length",
-        "Decreased bone mineral content",
-        "Decreased bone mineral density",
-        "Decreased grip strength",
-        "Decreased thigmotaxis",
-        "Male infertility"
+        "decreased body length",
+        "decreased bone mineral content",
+        "decreased bone mineral density",
+        "decreased grip strength",
+        "decreased thigmotaxis",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3146,9 +3241,9 @@
       "id": "Cfap206",
       "label": "Cfap206",
       "annotation": [
-        "Cataract",
-        "Female infertility",
-        "Male infertility"
+        "cataract",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3158,13 +3253,14 @@
       "id": "Cib1",
       "label": "Cib1",
       "annotation": [
-        "Abnormal locomotor behavior",
-        "Decreased eosinophil cell number",
-        "Decreased neutrophil cell number",
-        "Increased grip strength",
-        "Increased large unstained cell number",
-        "Increased monocyte cell number",
-        "Male infertility"
+        "abnormal locomotor behavior",
+        "decreased eosinophil cell number",
+        "decreased neutrophil cell number",
+        "increased grip strength",
+        "increased hematocrit",
+        "increased large unstained cell number",
+        "increased monocyte cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3174,12 +3270,11 @@
       "id": "Faf1",
       "label": "Faf1",
       "annotation": [
-        "Abnormal gait",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating iron level",
-        "Increased freezing behavior",
-        "Male infertility",
-        "Tremors"
+        "abnormal gait",
+        "decreased circulating glucose level",
+        "increased circulating alanine transaminase level",
+        "male infertility",
+        "tremors"
       ],
       "node_color": 1.0
     }
@@ -3189,9 +3284,9 @@
       "id": "Cntd1",
       "label": "Cntd1",
       "annotation": [
-        "Female infertility",
-        "Male infertility",
-        "Small testis"
+        "female infertility",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -3201,9 +3296,10 @@
       "id": "Dnah2",
       "label": "Dnah2",
       "annotation": [
-        "Abnormal lymph node morphology",
-        "Abnormal seminal vesicle morphology",
-        "Male infertility"
+        "abnormal lymph node morphology",
+        "abnormal seminal vesicle morphology",
+        "hyperactivity",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3213,9 +3309,9 @@
       "id": "Cib4",
       "label": "Cib4",
       "annotation": [
-        "Abnormal eye morphology",
-        "Abnormal skin morphology",
-        "Male infertility"
+        "abnormal eye morphology",
+        "abnormal skin morphology",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3225,11 +3321,11 @@
       "id": "Dync1li2",
       "label": "Dync1li2",
       "annotation": [
-        "Abnormal coat/ hair morphology",
-        "Abnormal coat/hair pigmentation",
-        "Abnormal vocalization",
-        "Hyperactivity",
-        "Male infertility"
+        "abnormal coat/ hair morphology",
+        "abnormal coat/hair pigmentation",
+        "abnormal vocalization",
+        "hyperactivity",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3239,9 +3335,9 @@
       "id": "Zfp541",
       "label": "Zfp541",
       "annotation": [
-        "Decreased heart rate",
-        "Male infertility",
-        "Prolonged rr interval"
+        "decreased heart rate",
+        "male infertility",
+        "prolonged RR interval"
       ],
       "node_color": 1.0
     }
@@ -3251,13 +3347,13 @@
       "id": "Drc7",
       "label": "Drc7",
       "annotation": [
-        "Abnormal coat/hair pigmentation",
-        "Abnormal sinus arrhythmia",
-        "Cardiovascular system phenotype",
-        "Decreased grip strength",
-        "Decreased heart rate variability",
-        "Increased circulating alkaline phosphatase level",
-        "Male infertility"
+        "abnormal coat/hair pigmentation",
+        "abnormal sinus arrhythmia",
+        "cardiovascular system phenotype",
+        "decreased grip strength",
+        "decreased heart rate variability",
+        "increased circulating alkaline phosphatase level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3267,9 +3363,9 @@
       "id": "Tbc1d8",
       "label": "Tbc1d8",
       "annotation": [
-        "Abnormal retina morphology",
-        "Cataract",
-        "Male infertility"
+        "abnormal retina morphology",
+        "cataract",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3279,9 +3375,9 @@
       "id": "Tulp2",
       "label": "Tulp2",
       "annotation": [
-        "Abnormal vitreous body morphology",
-        "Cataract",
-        "Male infertility"
+        "abnormal vitreous body morphology",
+        "cataract",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3291,10 +3387,14 @@
       "id": "Dusp7",
       "label": "Dusp7",
       "annotation": [
-        "Abnormal cholesterol homeostasis",
-        "Abnormal coat/hair pigmentation",
-        "Female infertility",
-        "Male infertility"
+        "abnormal cholesterol homeostasis",
+        "abnormal coat/hair pigmentation",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating cholesterol level",
+        "dilated heart left ventricle",
+        "female infertility",
+        "increased startle reflex",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3304,9 +3404,11 @@
       "id": "Cfap119",
       "label": "Cfap119",
       "annotation": [
-        "Decreased locomotor activity",
-        "Decreased vertical activity",
-        "Male infertility"
+        "decreased locomotor activity",
+        "decreased vertical activity",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3316,12 +3418,13 @@
       "id": "Irgc",
       "label": "Irgc",
       "annotation": [
-        "Abnormal eye morphology",
-        "Decreased prepulse inhibition",
-        "Impaired pupillary reflex",
-        "Increased startle reflex",
-        "Male infertility",
-        "Persistence of hyaloid vascular system"
+        "abnormal eye morphology",
+        "decreased prepulse inhibition",
+        "impaired pupillary reflex",
+        "increased monocyte cell number",
+        "increased startle reflex",
+        "male infertility",
+        "persistence of hyaloid vascular system"
       ],
       "node_color": 1.0
     }
@@ -3331,11 +3434,10 @@
       "id": "Mkrn2",
       "label": "Mkrn2",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Decreased dendritic epidermal t cell number",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Increased circulating aspartate transaminase level",
-        "Male infertility"
+        "abnormal auditory brainstem response",
+        "decreased mean corpuscular hemoglobin concentration",
+        "increased circulating aspartate transaminase level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3345,10 +3447,10 @@
       "id": "Hook1",
       "label": "Hook1",
       "annotation": [
-        "Abnormal skin morphology",
-        "Enlarged lymph nodes",
-        "Male infertility",
-        "Small spleen"
+        "abnormal skin morphology",
+        "enlarged lymph nodes",
+        "male infertility",
+        "small spleen"
       ],
       "node_color": 1.0
     }
@@ -3358,10 +3460,10 @@
       "id": "Gas2l1",
       "label": "Gas2l1",
       "annotation": [
-        "Abnormal skin morphology",
-        "Enlarged epididymis",
-        "Male infertility",
-        "Small testis"
+        "abnormal skin morphology",
+        "enlarged epididymis",
+        "male infertility",
+        "small testis"
       ],
       "node_color": 1.0
     }
@@ -3371,10 +3473,11 @@
       "id": "Teddm1a",
       "label": "Teddm1a",
       "annotation": [
-        "Abnormal pancreas morphology",
-        "Abnormal seminal vesicle morphology",
-        "Decreased circulating alkaline phosphatase level",
-        "Male infertility"
+        "abnormal pancreas morphology",
+        "abnormal seminal vesicle morphology",
+        "decreased circulating alkaline phosphatase level",
+        "decreased leukocyte cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3384,9 +3487,11 @@
       "id": "Idh3b",
       "label": "Idh3b",
       "annotation": [
-        "Impaired righting response",
-        "Limb grasping",
-        "Male infertility"
+        "hyperactivity",
+        "impaired righting response",
+        "increased vertical activity",
+        "limb grasping",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3396,9 +3501,9 @@
       "id": "Odf1",
       "label": "Odf1",
       "annotation": [
-        "Increased circulating iron level",
-        "Increased circulating phosphate level",
-        "Male infertility"
+        "increased circulating iron level",
+        "increased circulating phosphate level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3408,11 +3513,11 @@
       "id": "Bbof1",
       "label": "Bbof1",
       "annotation": [
-        "Female infertility",
-        "Increased basophil cell number",
-        "Increased circulating iron level",
-        "Increased mean corpuscular hemoglobin concentration",
-        "Male infertility"
+        "female infertility",
+        "increased basophil cell number",
+        "increased circulating iron level",
+        "increased mean corpuscular hemoglobin concentration",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3422,10 +3527,10 @@
       "id": "Pacrg",
       "label": "Pacrg",
       "annotation": [
-        "Abnormal coat/hair pigmentation",
-        "Abnormal locomotor behavior",
-        "Increased circulating hdl cholesterol level",
-        "Male infertility"
+        "abnormal coat/hair pigmentation",
+        "abnormal locomotor behavior",
+        "increased circulating HDL cholesterol level",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3435,10 +3540,9 @@
       "id": "Rnf216",
       "label": "Rnf216",
       "annotation": [
-        "Decreased lymphocyte cell number",
-        "Increased fasting circulating glucose level",
-        "Increased monocyte cell number",
-        "Male infertility"
+        "decreased lymphocyte cell number",
+        "increased monocyte cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3448,10 +3552,11 @@
       "id": "Atp10a",
       "label": "Atp10a",
       "annotation": [
-        "Abnormal ovary morphology",
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina vasculature morphology",
-        "Male infertility"
+        "abnormal ovary morphology",
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "increased exploration in new environment",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3461,13 +3566,13 @@
       "id": "Ccnt2",
       "label": "Ccnt2",
       "annotation": [
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina outer nuclear layer morphology",
-        "Abnormal skin coloration",
-        "Decreased total retina thickness",
-        "Female infertility",
-        "Male infertility",
-        "Unresponsive to tactile stimuli"
+        "abnormal retina blood vessel morphology",
+        "abnormal retina outer nuclear layer morphology",
+        "abnormal skin coloration",
+        "decreased total retina thickness",
+        "female infertility",
+        "male infertility",
+        "unresponsive to tactile stimuli"
       ],
       "node_color": 1.0
     }
@@ -3477,12 +3582,13 @@
       "id": "Baz1a",
       "label": "Baz1a",
       "annotation": [
-        "Abnormal stomach morphology",
-        "Decreased exploration in new environment",
-        "Decreased mean corpuscular hemoglobin",
-        "Decreased mean corpuscular hemoglobin concentration",
-        "Increased mean platelet volume",
-        "Male infertility"
+        "abnormal stomach morphology",
+        "decreased exploration in new environment",
+        "decreased mean corpuscular hemoglobin",
+        "decreased mean corpuscular hemoglobin concentration",
+        "increased grip strength",
+        "increased mean platelet volume",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3492,9 +3598,9 @@
       "id": "Papolb",
       "label": "Papolb",
       "annotation": [
-        "Abnormal urinary bladder morphology",
-        "Abnormal uterus morphology",
-        "Male infertility"
+        "abnormal urinary bladder morphology",
+        "abnormal uterus morphology",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3504,11 +3610,11 @@
       "id": "Aimp1",
       "label": "Aimp1",
       "annotation": [
-        "Abnormal embryo size",
-        "Absent seminal vesicle",
-        "Enlarged spleen",
-        "Hydrometra",
-        "Male infertility"
+        "abnormal embryo size",
+        "absent seminal vesicle",
+        "enlarged spleen",
+        "hydrometra",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3518,9 +3624,9 @@
       "id": "Actl7b",
       "label": "Actl7b",
       "annotation": [
-        "Abnormal heart morphology",
-        "Abnormal urinary bladder morphology",
-        "Male infertility"
+        "abnormal heart morphology",
+        "abnormal urinary bladder morphology",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3530,10 +3636,11 @@
       "id": "Arrdc5",
       "label": "Arrdc5",
       "annotation": [
-        "Abnormal retina morphology",
-        "Increased circulating alkaline phosphatase level",
-        "Increased mean corpuscular hemoglobin",
-        "Male infertility"
+        "abnormal retina morphology",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating fructosamine level",
+        "increased mean corpuscular hemoglobin",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3543,13 +3650,13 @@
       "id": "Ptpn14",
       "label": "Ptpn14",
       "annotation": [
-        "Abnormal kidney morphology",
-        "Embryonic lethality prior to organogenesis",
-        "Enlarged heart",
-        "Hydrometra",
-        "Increased lean body mass",
-        "Male infertility",
-        "Small kidney"
+        "abnormal kidney morphology",
+        "embryonic lethality prior to organogenesis",
+        "enlarged heart",
+        "hydrometra",
+        "increased lean body mass",
+        "male infertility",
+        "small kidney"
       ],
       "node_color": 1.0
     }
@@ -3559,12 +3666,12 @@
       "id": "Il2rb",
       "label": "Il2rb",
       "annotation": [
-        "Abnormal autopod morphology",
-        "Abnormal coat appearance",
-        "Abnormal coat/ hair morphology",
-        "Abnormal ear morphology",
-        "Female infertility",
-        "Male infertility"
+        "abnormal autopod morphology",
+        "abnormal coat appearance",
+        "abnormal coat/ hair morphology",
+        "abnormal ear morphology",
+        "female infertility",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3574,9 +3681,9 @@
       "id": "Cep68",
       "label": "Cep68",
       "annotation": [
-        "Increased heart weight",
-        "Increased leukocyte cell number",
-        "Male infertility"
+        "increased heart weight",
+        "increased leukocyte cell number",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3586,9 +3693,9 @@
       "id": "Lrrcc1",
       "label": "Lrrcc1",
       "annotation": [
-        "Decreased erythrocyte cell number",
-        "Hydrocephaly",
-        "Male infertility"
+        "decreased erythrocyte cell number",
+        "hydrocephaly",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3598,10 +3705,10 @@
       "id": "Scube1",
       "label": "Scube1",
       "annotation": [
-        "Abnormal brain morphology",
-        "Female infertility",
-        "Hydrocephaly",
-        "Male infertility"
+        "abnormal brain morphology",
+        "female infertility",
+        "hydrocephaly",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3611,9 +3718,9 @@
       "id": "Sypl1",
       "label": "Sypl1",
       "annotation": [
-        "Abnormal cranium morphology",
-        "Decreased exploration in new environment",
-        "Male infertility"
+        "abnormal cranium morphology",
+        "decreased exploration in new environment",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3623,16 +3730,16 @@
       "id": "Bbox1",
       "label": "Bbox1",
       "annotation": [
-        "Abnormal craniofacial morphology",
-        "Abnormal forebrain morphology",
-        "Abnormal heart morphology",
-        "Abnormal hindbrain morphology",
-        "Abnormal midbrain morphology",
-        "Abnormal neural tube closure",
-        "Enlarged heart",
-        "Increased heart weight",
-        "Male infertility",
-        "Unresponsive to tactile stimuli"
+        "abnormal craniofacial morphology",
+        "abnormal forebrain morphology",
+        "abnormal heart morphology",
+        "abnormal hindbrain morphology",
+        "abnormal midbrain morphology",
+        "abnormal neural tube closure",
+        "enlarged heart",
+        "increased heart weight",
+        "male infertility",
+        "unresponsive to tactile stimuli"
       ],
       "node_color": 1.0
     }
@@ -3642,9 +3749,11 @@
       "id": "Tbc1d20",
       "label": "Tbc1d20",
       "annotation": [
-        "Abnormal skin morphology",
-        "Hemorrhage",
-        "Male infertility"
+        "abnormal skin morphology",
+        "hemorrhage",
+        "increased heart weight",
+        "increased red blood cell distribution width",
+        "male infertility"
       ],
       "node_color": 1.0
     }
@@ -3654,13 +3763,14 @@
       "id": "Mlx",
       "label": "Mlx",
       "annotation": [
-        "Decreased circulating glucose level",
-        "Decreased total body fat amount",
-        "Increased bone mineral content",
-        "Increased circulating sodium level",
-        "Increased lean body mass",
-        "Increased urine glucose level",
-        "Male infertility"
+        "decreased circulating glucose level",
+        "decreased mean corpuscular hemoglobin",
+        "decreased mean corpuscular volume",
+        "decreased total body fat amount",
+        "increased circulating sodium level",
+        "increased fasting circulating glucose level",
+        "increased urine glucose level",
+        "male infertility"
       ],
       "node_color": 1.0
     }

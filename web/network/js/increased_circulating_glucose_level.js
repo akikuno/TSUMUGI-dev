@@ -3,15 +3,6 @@
 // ========================================================
 
 // const elements = [
-//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, marker_id: "MGI:97281" } },
-//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, marker_id: "MGI:1352748" } },
-//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, marker_id: "MGI:96217" } },
-//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
-//     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
-//     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
-// ];
-
-// const elements = [
 //     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
 //     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
 //     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, } },
@@ -48,9 +39,9 @@ const map_symbol_to_id = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/marker_symbol_accession_id.json", false);
+    // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/marker_symbol_accession_id.json", false);
 
-    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false);
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false);
     req.send(null);
     return result;
 })();
@@ -66,9 +57,6 @@ const nodeMin = Math.min(...nodeSizes);
 const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
 const edgeMax = Math.max(...edgeSizes);
-
-const nodeRepulsionMin = 10;
-const nodeRepulsionMax = 20000;
 
 function scaleToOriginalRange(value, minValue, maxValue) {
     return minValue + (value - 1) * (maxValue - minValue) / 9;
@@ -99,9 +87,24 @@ function getColorForValue(value) {
 // Cytoscape handling
 // ========================================================
 
+
+function getLayoutOptions() {
+    return {
+        name: currentLayout,
+        nodeRepulsion: nodeRepulsionValue,
+        componentSpacing: componentSpacingValue
+    };
+}
+
 let currentLayout = 'cose';
 
-let currentNodeRepulsionValue = scaleToOriginalRange(parseFloat(document.getElementById('nodeRepulsion-slider').value), nodeRepulsionMin, nodeRepulsionMax);
+const nodeRepulsionMin = 10;
+const nodeRepulsionMax = 20000;
+const componentSpacingMin = 10;
+const componentSpacingMax = 1000;
+
+let nodeRepulsionValue = scaleToOriginalRange(parseFloat(document.getElementById('nodeRepulsion-slider').value), nodeRepulsionMin, nodeRepulsionMax);
+let componentSpacingValue = scaleToOriginalRange(parseFloat(this.value), componentSpacingMin, componentSpacingMax);
 
 const cy = cytoscape({
     container: document.querySelector('.cy'),
@@ -133,7 +136,7 @@ const cy = cytoscape({
             }
         }
     ],
-    layout: { name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }
+    layout: getLayoutOptions()
 });
 
 // ========================================================
@@ -166,47 +169,26 @@ document.getElementById('edge-width-slider').addEventListener('input', function 
 });
 
 document.getElementById('nodeRepulsion-slider').addEventListener('input', function () {
-    currentNodeRepulsionValue = scaleToOriginalRange(parseFloat(this.value), nodeRepulsionMin, nodeRepulsionMax);
+    nodeRepulsionValue = scaleToOriginalRange(parseFloat(this.value), nodeRepulsionMin, nodeRepulsionMax);
+    componentSpacingValue = scaleToOriginalRange(parseFloat(this.value), componentSpacingMin, componentSpacingMax);
     document.getElementById('node-repulsion-value').textContent = this.value;
-    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
+    cy.layout(getLayoutOptions()).run();
 });
 
 // ========================================================
-// Filtering function for nodes (filter-node-slider)
+// Filtering function for nodes and edges
 // ========================================================
 
-function filterNodesByColor() {
+function filterElements() {
+    // Get the slider values for both node color and edge size
     const nodeColorSliderValue = parseFloat(document.getElementById('filter-node-slider').value);
-    const nodeThreshold = scaleToOriginalRange(nodeColorSliderValue, nodeMin, nodeMax);
-
-    cy.nodes().forEach(function (node) {
-        const nodeColor = node.data('node_color');
-        node.style('display', nodeColor >= nodeThreshold ? 'element' : 'none');
-    });
-
-    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
-
-}
-
-document.getElementById('filter-node-slider').addEventListener('input', function () {
-    document.getElementById('node-color-value').textContent = this.value;
-    // Check if nodeMin is equal to nodeMax
-    if (nodeMin == nodeMax) {
-        // Disable slider or just return to prevent any filtering
-        return;
-    }
-    filterNodesByColor();
-});
-
-// ========================================================
-// Filtering function for edges (filter-edge-slider)
-// ========================================================
-
-function filterEdgesBySize() {
     const edgeSizeSliderValue = parseFloat(document.getElementById('filter-edge-slider').value);
+
+    // Calculate the thresholds based on the slider values
+    const nodeThreshold = scaleToOriginalRange(nodeColorSliderValue, nodeMin, nodeMax);
     const edgeThreshold = scaleToOriginalRange(edgeSizeSliderValue, edgeMin, edgeMax);
 
-    // Reset all nodes and edges to visible before applying the filter
+    // Reset all nodes and edges to visible before applying the filters
     cy.nodes().forEach(function (node) {
         node.style('display', 'element');
     });
@@ -215,6 +197,13 @@ function filterEdgesBySize() {
         edge.style('display', 'element');
     });
 
+    // Filter nodes based on color
+    cy.nodes().forEach(function (node) {
+        const nodeColor = node.data('node_color');
+        node.style('display', nodeColor >= nodeThreshold ? 'element' : 'none');
+    });
+
+    // Filter edges based on size and ensure both source and target nodes are visible
     cy.edges().forEach(function (edge) {
         const edgeSize = edge.data('edge_size');
         const sourceNode = cy.getElementById(edge.data('source'));
@@ -227,21 +216,27 @@ function filterEdgesBySize() {
         }
     });
 
-    // After filtering edges, check for nodes with no connected edges
+    // After filtering, remove nodes with no connected visible edges
     cy.nodes().forEach(function (node) {
         const connectedEdges = node.connectedEdges().filter(edge => edge.style('display') === 'element');
         if (connectedEdges.length === 0) {
-            node.style('display', 'none');  // Remove node if no connected edges
+            node.style('display', 'none');  // Hide node if no connected edges
         }
     });
 
-    // Apply layout after edge filtering
-    cy.layout({ name: currentLayout, nodeRepulsion: currentNodeRepulsionValue }).run();
+    // Reapply layout after filtering
+    cy.layout(getLayoutOptions()).run();
 }
+
+// Event listeners for sliders
+document.getElementById('filter-node-slider').addEventListener('input', function () {
+    document.getElementById('node-color-value').textContent = this.value;
+    filterElements();
+});
 
 document.getElementById('filter-edge-slider').addEventListener('input', function () {
     document.getElementById('edge-size-value').textContent = this.value;
-    filterEdgesBySize();
+    filterElements();
 });
 
 // ========================================================
@@ -265,12 +260,10 @@ cy.on('tap', 'node, edge', function (event) {
             : '・ ' + data.annotation;
 
         // Get the MGI link from the map_symbol_to_id
-        const mgiLink = map_symbol_to_id[data.label];
-        const message = `<b>Significant Phenotypes of ${data.label} KO mice</b>`;
-        const link_to_impc = `https://www.mousephenotype.org/data/genes/${mgiLink}`;
+        const url_impc = `https://www.mousephenotype.org/data/genes/${map_symbol_to_id[data.label]}`;
 
         // Construct the tooltipText with the hyperlink
-        tooltipText = `<a href="${link_to_impc}" target="_blank">${message}</a><br>` + annotations;
+        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>` + annotations;
 
         // Get position of the tapped node
         pos = event.target.renderedPosition();
