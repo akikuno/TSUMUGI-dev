@@ -85,8 +85,9 @@ a {
     margin-right: 10px;
 }
 
-.slider {
-    width: 200px;
+.slider-element {
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 .slider-value {
@@ -106,12 +107,6 @@ a {
     height: 10px;
 }
 
-.noUi-handle {
-    /* background-color: #ffc57e; */
-    border: 1px solid #ddd;
-    /* border-radius: 50%; */
-    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
-}
 
 .noUi-connect {
     background-color: #aaa;

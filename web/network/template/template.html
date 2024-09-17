@@ -25,8 +25,6 @@
     <div class="body-container">
         <div class="control-panel-container">
 
-            <h2 style="text-align: center;"> Control Panel </h2>
-
             <div class="slider-container">
                 <span class="control-label">Network layout:</span>
                 <select id="layout-dropdown">
@@ -40,37 +38,38 @@
 
             <div class="slider-container">
                 <span class="control-label" style="display: block;">Similarity of accessory phenotypes:</span>
-                <div id="filter-edge-slider" style="display: block; margin-top: 10px;"></div>
-                <span id="edge-size-value" style="display: block; margin-top: 5px;">0 - 10</span>
+                <span id="edge-size-value">0 - 10</span>
+                <div class="slider-element" id="filter-edge-slider"></div>
             </div>
 
             <div class="slider-container">
                 <span class="control-label" style="display: block;">Severity of target phenotype:</span>
-                <div id="filter-node-slider" style="display: block; margin-top: 10px;"></div>
-                <span id="node-color-value" style="display: block; margin-top: 5px;">0 - 10</span>
+                <span id="node-color-value">0 - 10</span>
+                <div class="slider-element" id="filter-node-slider"></div>
             </div>
 
 
             <!-- ↓↓↓ Cytoscape's visualization setting -->
             <div class="slider-container">
-                <span class="control-label">Font size:</span>
-                <div id="font-size-slider"></div>
+                <span class="control-label">Font size:
+                </span>
                 <span id="font-size-value">20</span>
+                <div class="slider-element" id="font-size-slider"></div>
             </div>
 
             <div class="slider-container">
                 <span class="control-label">Edge width:</span>
-                <div id="edge-width-slider"></div>
                 <span id="edge-width-value">5</span>
+                <div class="slider-element" id="edge-width-slider"></div>
             </div>
 
             <div class="slider-container">
-                <span class="control-label">Node repulsion:</span>
-                <div id="nodeRepulsion-slider"></div>
+                <span class="control-label">Node repulsion (Cose only):</span>
                 <span id="node-repulsion-value">5</span>
+                <div class="slider-element" id="nodeRepulsion-slider"></div>
             </div>
 
-            <button id="export-png">Export PNG</button>
+            <button class="exporter" id="export-png">Export as PNG</button>
             <!-- ↑↑↑ Cytoscape's visualization setting -->
         </div>
 
