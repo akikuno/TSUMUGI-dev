@@ -21,10 +21,12 @@ const elements = (function () {
             result = JSON.parse(req.responseText);
         }
     };
+    /* REMOVE_THIS_LINE
     req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX_snake_case.json", false);
+    REMOVE_THIS_LINE */
 
-    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false);
-    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false);
+    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false); // REMOVE_THIS_LINE
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false); // REMOVE_THIS_LINE
 
     req.send(null);
     return result;
@@ -39,9 +41,11 @@ const map_symbol_to_id = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    // req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/marker_symbol_accession_id.json", false);
+    /* REMOVE_THIS_LINE
+    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/marker_symbol_accession_id.json", false);
+    REMOVE_THIS_LINE */
 
-    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false);
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false); // REMOVE_THIS_LINE
     req.send(null);
     return result;
 })();
@@ -148,30 +152,55 @@ document.getElementById('layout-dropdown').addEventListener('change', function (
     cy.layout({ name: currentLayout }).run();
 });
 
-document.getElementById('font-size-slider').addEventListener('input', function () {
-    const fontSize = this.value + 'px';
-    document.getElementById('font-size-value').textContent = this.value;
-    cy.style()
-        .selector('node')
-        .style('font-size', fontSize)
-        .update();
+// Font size slider
+const fontSizeSlider = document.getElementById('font-size-slider');
+noUiSlider.create(fontSizeSlider, {
+    start: 20, // default value
+    connect: [true, false],
+    range: {
+        'min': 1,
+        'max': 50
+    },
+    step: 1
+});
+fontSizeSlider.noUiSlider.on('update', function (value) {
+    document.getElementById('font-size-value').textContent = value;
+    cy.style().selector('node').style('font-size', value + 'px').update();
 });
 
-document.getElementById('edge-width-slider').addEventListener('input', function () {
-    const edgeWidthScale = this.value;
-    document.getElementById('edge-width-value').textContent = this.value;
-    cy.style()
-        .selector('edge')
-        .style('width', function (ele) {
-            return scaleValue(ele.data('edge_size'), edgeMin, edgeMax, 0.5, 2) * edgeWidthScale;
-        })
-        .update();
+// Edge width slider
+const edgeWidthSlider = document.getElementById('edge-width-slider');
+noUiSlider.create(edgeWidthSlider, {
+    start: 5, // default value
+    connect: [true, false],
+    range: {
+        'min': 1,
+        'max': 10
+    },
+    step: 1
+});
+edgeWidthSlider.noUiSlider.on('update', function (value) {
+    document.getElementById('edge-width-value').textContent = value;
+    cy.style().selector('edge').style('width', function (ele) {
+        return scaleValue(ele.data('edge_size'), edgeMin, edgeMax, 0.5, 2) * value;
+    }).update();
 });
 
-document.getElementById('nodeRepulsion-slider').addEventListener('input', function () {
-    nodeRepulsionValue = scaleToOriginalRange(parseFloat(this.value), nodeRepulsionMin, nodeRepulsionMax);
-    componentSpacingValue = scaleToOriginalRange(parseFloat(this.value), componentSpacingMin, componentSpacingMax);
-    document.getElementById('node-repulsion-value').textContent = this.value;
+// Node repulsion slider
+const nodeRepulsionSlider = document.getElementById('nodeRepulsion-slider');
+noUiSlider.create(nodeRepulsionSlider, {
+    start: 5, // default value
+    connect: [true, false],
+    range: {
+        'min': 1,
+        'max': 10
+    },
+    step: 1
+});
+nodeRepulsionSlider.noUiSlider.on('update', function (value) {
+    nodeRepulsionValue = scaleToOriginalRange(parseFloat(value), nodeRepulsionMin, nodeRepulsionMax);
+    componentSpacingValue = scaleToOriginalRange(parseFloat(value), componentSpacingMin, componentSpacingMax);
+    document.getElementById('node-repulsion-value').textContent = value;
     cy.layout(getLayoutOptions()).run();
 });
 
@@ -179,37 +208,65 @@ document.getElementById('nodeRepulsion-slider').addEventListener('input', functi
 // Filtering function for nodes and edges
 // ========================================================
 
+// Initialize the dual-range slider for edge sizes
+const edgeSlider = document.getElementById('filter-edge-slider');
+noUiSlider.create(edgeSlider, {
+    start: [0, 10], // Set default values for the slider
+    connect: true,
+    range: {
+        'min': 0,
+        'max': 10
+    },
+    step: 1
+});
+
+// Initialize the dual-range slider for node colors
+const nodeSlider = document.getElementById('filter-node-slider');
+noUiSlider.create(nodeSlider, {
+    start: [0, 10], // Set default values for the slider
+    connect: true,
+    range: {
+        'min': 0,
+        'max': 10
+    },
+    step: 1
+});
+
+// Update slider value display
+edgeSlider.noUiSlider.on('update', function (values) {
+    document.getElementById('edge-size-value').textContent = values.join(' - ');
+    filterElements();
+});
+
+nodeSlider.noUiSlider.on('update', function (values) {
+    document.getElementById('node-color-value').textContent = values.join(' - ');
+    filterElements();
+});
+
+// Modify the filter function to handle upper and lower bounds
 function filterElements() {
-    // Get the slider values for both node color and edge size
-    const nodeColorSliderValue = parseFloat(document.getElementById('filter-node-slider').value);
-    const edgeSizeSliderValue = parseFloat(document.getElementById('filter-edge-slider').value);
+    const nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat);
+    const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
-    // Calculate the thresholds based on the slider values
-    const nodeThreshold = scaleToOriginalRange(nodeColorSliderValue, nodeMin, nodeMax);
-    const edgeThreshold = scaleToOriginalRange(edgeSizeSliderValue, edgeMin, edgeMax);
-
-    // Reset all nodes and edges to visible before applying the filters
-    cy.nodes().forEach(function (node) {
-        node.style('display', 'element');
-    });
-
-    cy.edges().forEach(function (edge) {
-        edge.style('display', 'element');
-    });
+    const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax);
+    const nodeMaxValue = scaleToOriginalRange(nodeSliderValues[1], nodeMin, nodeMax);
+    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
+    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
     // Filter nodes based on color
     cy.nodes().forEach(function (node) {
         const nodeColor = node.data('node_color');
-        node.style('display', nodeColor >= nodeThreshold ? 'element' : 'none');
+        node.style('display', (nodeColor >= nodeMinValue && nodeColor <= nodeMaxValue) ? 'element' : 'none');
     });
 
-    // Filter edges based on size and ensure both source and target nodes are visible
+    // Filter edges based on size
     cy.edges().forEach(function (edge) {
         const edgeSize = edge.data('edge_size');
         const sourceNode = cy.getElementById(edge.data('source'));
         const targetNode = cy.getElementById(edge.data('target'));
 
-        if (sourceNode.style('display') === 'element' && targetNode.style('display') === 'element' && edgeSize >= edgeThreshold) {
+        if (sourceNode.style('display') === 'element' && targetNode.style('display') === 'element' &&
+            edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue) {
             edge.style('display', 'element');
         } else {
             edge.style('display', 'none');
@@ -227,17 +284,6 @@ function filterElements() {
     // Reapply layout after filtering
     cy.layout(getLayoutOptions()).run();
 }
-
-// Event listeners for sliders
-document.getElementById('filter-node-slider').addEventListener('input', function () {
-    document.getElementById('node-color-value').textContent = this.value;
-    filterElements();
-});
-
-document.getElementById('filter-edge-slider').addEventListener('input', function () {
-    document.getElementById('edge-size-value').textContent = this.value;
-    filterElements();
-});
 
 // ========================================================
 // Tooltip handling

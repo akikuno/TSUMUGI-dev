@@ -76,7 +76,7 @@ a {
 }
 
 .slider-container {
-    display: flex;
+    display: block;
     align-items: center;
     margin-bottom: 15px;
 }
@@ -93,4 +93,26 @@ a {
     display: inline-block;
     width: 25px;
     text-align: center;
+}
+
+/* Custom styles for noUiSlider */
+.noUi-target {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.noUi-horizontal {
+    height: 10px;
+}
+
+.noUi-handle {
+    /* background-color: #ffc57e; */
+    border: 1px solid #ddd;
+    /* border-radius: 50%; */
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+}
+
+.noUi-connect {
+    background-color: #aaa;
 }
