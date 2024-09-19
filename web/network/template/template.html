@@ -9,7 +9,7 @@
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
     <link rel="stylesheet" href="../css/normalize.css">
 
-    <!-- Use noUiSlider -->
+    <!-- noUiSlider -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js"></script>
 
@@ -27,7 +27,7 @@
 
             <div class="slider-container">
                 <span class="control-label">Network layout:</span>
-                <select id="layout-dropdown">
+                <select class="exporter" id="layout-dropdown">
                     <option value="cose" selected>Cose</option>
                     <option value="circle">Circle</option>
                     <option value="grid">Grid</option>
@@ -69,8 +69,8 @@
                 <div class="slider-element" id="nodeRepulsion-slider"></div>
             </div>
 
-            <button class="exporter" id="export-png">Export Network as PNG</button>
-            <button class="exporter" id="export-csv">Export Network as CSV</button>
+            <button class="exporter" id="export-png">Export as PNG</button>
+            <button class="exporter" id="export-csv">Export as CSV</button>
             <!-- ↑↑↑ Cytoscape's visualization setting -->
         </div>
 
