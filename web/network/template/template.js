@@ -2,6 +2,18 @@
 // Input handling
 // ========================================================
 
+// const elements = [
+//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
+//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
+//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, } },
+//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
+//     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
+//     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
+// ];
+
+// const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
+
+
 const elements = (function () {
     const req = new XMLHttpRequest();
     let result = null;
@@ -131,6 +143,45 @@ const cy = cytoscape({
     ],
     layout: getLayoutOptions()
 });
+
+
+// レイアウトが変更されるか、フィルタリングが実行された際に連結成分を計算する関数
+function calculateConnectedComponents() {
+    // 表示されている要素のみを取得
+    const visibleElements = cy.elements(':visible');
+
+    // 可視状態の要素で連結成分を計算
+    const connectedComponents = visibleElements.components();
+
+    let connected_component = connectedComponents.map(component => {
+        let componentObject = {};
+
+        // ノードを処理
+        component.nodes().forEach(node => {
+            const nodeLabel = node.data('label');
+            const nodeAnnotations = Array.isArray(node.data('annotation'))
+                ? node.data('annotation')
+                : [node.data('annotation')]; // annotation が配列でない場合も考慮
+
+            // ノード名をキー、アノテーションを値とするオブジェクトを作成
+            componentObject[nodeLabel] = nodeAnnotations;
+        });
+
+        return componentObject;
+    });
+
+    // 結果をログに出力（デバッグ用）
+    console.log('Connected Components (Formatted):', connected_component);
+
+    // 必要に応じて connected_component を他の場所で利用可能にする
+    return connected_component;
+}
+
+// レイアウト変更後にイベントリスナーを設定
+cy.on('layoutstop', function () {
+    calculateConnectedComponents();
+});
+
 
 // ========================================================
 // Visualization handling
@@ -384,6 +435,10 @@ cy.on('tap', function (event) {
 // Exporter
 // ========================================================
 
+// --------------------------------------------------------
+// PNG Exporter
+// --------------------------------------------------------
+
 document.getElementById('export-png').addEventListener('click', function () {
     const pngContent = cy.png({
         scale: 6.25,   // Scale to achieve 600 DPI
@@ -396,4 +451,44 @@ document.getElementById('export-png').addEventListener('click', function () {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+});
+
+
+// --------------------------------------------------------
+// CSV Exporter
+// --------------------------------------------------------
+
+function exportConnectedComponentsToCSV() {
+    // calculateConnectedComponentsを利用して連結成分を取得
+    const connected_component = calculateConnectedComponents();
+
+    // CSVのヘッダー行
+    let csvContent = "cluster,gene,phenotypes\n";
+
+    // クラスター番号を割り当てて、CSVフォーマットに変換
+    connected_component.forEach((component, clusterIndex) => {
+        const clusterNumber = clusterIndex + 1;
+
+        Object.keys(component).forEach(gene => {
+            const phenotypes = component[gene].join(";"); // 表現型をセミコロン区切りで結合
+
+            // CSVの各行を生成
+            csvContent += `${clusterNumber},${gene},"${phenotypes}"\n`;
+        });
+    });
+
+    // CSVファイルを生成しダウンロード
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'TSUMUGI_XXX_snake_case.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// レイアウト変更後やフィルタリング後にCSVエクスポートのボタンを押したときに実行
+document.getElementById('export-csv').addEventListener('click', function () {
+    exportConnectedComponentsToCSV();
 });
