@@ -74,91 +74,6 @@
   },
   {
     "data": {
-      "id": "Dbnl",
-      "label": "Dbnl",
-      "annotation": [
-        "abnormal auditory brainstem response",
-        "abnormal optic disk morphology",
-        "abnormal retina blood vessel morphology",
-        "abnormal retina inner nuclear layer morphology",
-        "abnormal retina vasculature morphology",
-        "decreased circulating HDL cholesterol level",
-        "decreased circulating alkaline phosphatase level",
-        "decreased circulating cholesterol level",
-        "decreased circulating serum albumin level",
-        "decreased circulating total protein level",
-        "decreased circulating triglyceride level",
-        "decreased erythrocyte cell number",
-        "decreased hematocrit",
-        "decreased hemoglobin content",
-        "decreased locomotor activity",
-        "decreased total retina thickness",
-        "increased circulating glucose level",
-        "increased fluid intake",
-        "increased grip strength",
-        "increased heart weight",
-        "increased mean corpuscular hemoglobin",
-        "increased mean corpuscular volume",
-        "increased startle reflex",
-        "persistence of hyaloid vascular system"
-      ],
-      "node_color": 0.828538704664503
-    }
-  },
-  {
-    "data": {
-      "id": "Usp31",
-      "label": "Usp31",
-      "annotation": [
-        "abnormal gait",
-        "decreased exploration in new environment",
-        "decreased grip strength",
-        "decreased hematocrit",
-        "decreased locomotor activity",
-        "decreased mean corpuscular volume",
-        "decreased prepulse inhibition",
-        "decreased startle reflex",
-        "decreased total body fat amount",
-        "impaired pupillary reflex",
-        "increased basophil cell number",
-        "increased circulating creatinine level",
-        "increased circulating glucose level",
-        "increased circulating phosphate level",
-        "increased circulating potassium level",
-        "increased eosinophil cell number",
-        "increased lean body mass",
-        "increased mean corpuscular hemoglobin concentration",
-        "increased prepulse inhibition",
-        "tremors"
-      ],
-      "node_color": 1.52838719586269
-    }
-  },
-  {
-    "data": {
-      "id": "Ccnd2",
-      "label": "Ccnd2",
-      "annotation": [
-        "abnormal cranium morphology",
-        "abnormal spine curvature",
-        "decreased total body fat amount",
-        "hyperactivity",
-        "increased bone mineral content",
-        "increased circulating alkaline phosphatase level",
-        "increased circulating glucose level",
-        "increased circulating iron level",
-        "increased circulating phosphate level",
-        "increased fasting circulating glucose level",
-        "increased grip strength",
-        "increased lean body mass",
-        "increased mean corpuscular volume",
-        "small testis"
-      ],
-      "node_color": 1.34938915473412
-    }
-  },
-  {
-    "data": {
       "id": "Rnf10",
       "label": "Rnf10",
       "annotation": [
@@ -231,6 +146,110 @@
   },
   {
     "data": {
+      "id": "Dbnl",
+      "label": "Dbnl",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal optic disk morphology",
+        "abnormal retina blood vessel morphology",
+        "abnormal retina inner nuclear layer morphology",
+        "abnormal retina vasculature morphology",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating alkaline phosphatase level",
+        "decreased circulating cholesterol level",
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "decreased circulating triglyceride level",
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "decreased hemoglobin content",
+        "decreased locomotor activity",
+        "decreased total retina thickness",
+        "increased circulating glucose level",
+        "increased fluid intake",
+        "increased grip strength",
+        "increased heart weight",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume",
+        "increased startle reflex",
+        "persistence of hyaloid vascular system"
+      ],
+      "node_color": 0.828538704664503
+    }
+  },
+  {
+    "data": {
+      "id": "Grhl3",
+      "label": "Grhl3",
+      "annotation": [
+        "abnormal locomotor activation",
+        "decreased blood urea nitrogen level",
+        "decreased circulating alkaline phosphatase level",
+        "decreased circulating triglyceride level",
+        "increased circulating amylase level",
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased startle reflex",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 1.00639749769651
+    }
+  },
+  {
+    "data": {
+      "id": "Usp31",
+      "label": "Usp31",
+      "annotation": [
+        "abnormal gait",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "decreased hematocrit",
+        "decreased locomotor activity",
+        "decreased mean corpuscular volume",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "decreased total body fat amount",
+        "impaired pupillary reflex",
+        "increased basophil cell number",
+        "increased circulating creatinine level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased circulating potassium level",
+        "increased eosinophil cell number",
+        "increased lean body mass",
+        "increased mean corpuscular hemoglobin concentration",
+        "increased prepulse inhibition",
+        "tremors"
+      ],
+      "node_color": 1.52838719586269
+    }
+  },
+  {
+    "data": {
+      "id": "Ccnd2",
+      "label": "Ccnd2",
+      "annotation": [
+        "abnormal cranium morphology",
+        "abnormal spine curvature",
+        "decreased total body fat amount",
+        "hyperactivity",
+        "increased bone mineral content",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased circulating iron level",
+        "increased circulating phosphate level",
+        "increased fasting circulating glucose level",
+        "increased grip strength",
+        "increased lean body mass",
+        "increased mean corpuscular volume",
+        "small testis"
+      ],
+      "node_color": 1.34938915473412
+    }
+  },
+  {
+    "data": {
       "id": "Ky",
       "label": "Ky",
       "annotation": [
@@ -258,6 +277,23 @@
         "preweaning lethality, complete penetrance"
       ],
       "node_color": 0.147887160470071
+    }
+  },
+  {
+    "data": {
+      "id": "Elapor1",
+      "label": "Elapor1",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "abnormal vitreous body morphology",
+        "decreased exploration in new environment",
+        "decreased lymphocyte cell number",
+        "increased circulating glucose level",
+        "increased fluid intake",
+        "short tibia"
+      ],
+      "node_color": 1.16978601835688
     }
   },
   {
@@ -301,6 +337,58 @@
   },
   {
     "data": {
+      "id": "Dtnbp1",
+      "label": "Dtnbp1",
+      "annotation": [
+        "abnormal coat/hair pigmentation",
+        "abnormal iris pigmentation",
+        "abnormal retina morphology",
+        "abnormal uterus morphology",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased fasting circulating glucose level"
+      ],
+      "node_color": 0.85860039659937
+    }
+  },
+  {
+    "data": {
+      "id": "Tnfaip1",
+      "label": "Tnfaip1",
+      "annotation": [
+        "abnormal bone mineralization",
+        "abnormal tail movements",
+        "decreased grip strength",
+        "increased blood urea nitrogen level",
+        "increased bone mineral density",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased circulating triglyceride level",
+        "increased startle reflex",
+        "increased total body fat amount",
+        "short tibia"
+      ],
+      "node_color": 1.19310992837452
+    }
+  },
+  {
+    "data": {
+      "id": "Insyn2b",
+      "label": "Insyn2b",
+      "annotation": [
+        "decreased circulating phosphate level",
+        "hyperactivity",
+        "increased circulating alanine transaminase level",
+        "increased circulating glucose level",
+        "increased leukocyte cell number"
+      ],
+      "node_color": 1.36173377605257
+    }
+  },
+  {
+    "data": {
       "id": "Gbx1",
       "label": "Gbx1",
       "annotation": [
@@ -319,6 +407,35 @@
         "vertebral fusion"
       ],
       "node_color": 1.84744967574652
+    }
+  },
+  {
+    "data": {
+      "id": "Rhbdf2",
+      "label": "Rhbdf2",
+      "annotation": [
+        "abnormal bone mineralization",
+        "abnormal coat appearance",
+        "abnormal hair growth",
+        "abnormal response to new environment",
+        "abnormal response to tactile stimuli",
+        "abnormal vibrissa morphology",
+        "alopecia",
+        "decreased B cell number",
+        "decreased bone mineral density",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating alkaline phosphatase level",
+        "decreased circulating creatinine level",
+        "increased B cell number",
+        "increased bone mineral content",
+        "increased circulating glucose level",
+        "increased circulating magnesium level",
+        "increased mean corpuscular hemoglobin",
+        "increased total body fat amount",
+        "tremors",
+        "trunk curl"
+      ],
+      "node_color": 2.21809225272528
     }
   },
   {
@@ -379,20 +496,15 @@
   },
   {
     "data": {
-      "id": "Dtnbp1",
-      "label": "Dtnbp1",
+      "id": "Sap30",
+      "label": "Sap30",
       "annotation": [
-        "abnormal coat/hair pigmentation",
-        "abnormal iris pigmentation",
-        "abnormal retina morphology",
-        "abnormal uterus morphology",
-        "decreased exploration in new environment",
-        "decreased grip strength",
+        "abnormal auditory brainstem response",
         "increased circulating glucose level",
-        "increased circulating phosphate level",
-        "increased fasting circulating glucose level"
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume"
       ],
-      "node_color": 0.85860039659937
+      "node_color": 0.420135537439112
     }
   },
   {
@@ -427,6 +539,21 @@
         "increased startle reflex"
       ],
       "node_color": 1.88751485107818
+    }
+  },
+  {
+    "data": {
+      "id": "Dtx1",
+      "label": "Dtx1",
+      "annotation": [
+        "abnormal locomotor behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level"
+      ],
+      "node_color": 1.22741360244926
     }
   },
   {
@@ -500,106 +627,47 @@
   },
   {
     "data": {
-      "id": "Elapor1",
-      "label": "Elapor1",
+      "id": "Jakmip2",
+      "label": "Jakmip2",
       "annotation": [
-        "abnormal retina blood vessel morphology",
-        "abnormal retina vasculature morphology",
-        "abnormal vitreous body morphology",
-        "decreased exploration in new environment",
-        "decreased lymphocyte cell number",
+        "abnormal auditory brainstem response",
+        "decreased anxiety-related response",
+        "decreased circulating bilirubin level",
+        "decreased circulating calcium level",
+        "hyperactivity",
         "increased circulating glucose level",
-        "increased fluid intake",
-        "short tibia"
+        "increased startle reflex"
       ],
-      "node_color": 1.16978601835688
+      "node_color": 0.364746471337692
     }
   },
   {
     "data": {
-      "id": "Bltp1",
-      "label": "Bltp1",
+      "id": "Capn12",
+      "label": "Capn12",
       "annotation": [
-        "abnormal embryo size",
         "abnormal lens morphology",
-        "abnormal retina blood vessel morphology",
         "abnormal retina morphology",
-        "abnormal retina vasculature morphology",
         "abnormal vitreous body morphology",
         "cataract",
-        "embryonic growth retardation",
-        "hemorrhage",
-        "impaired glucose tolerance",
+        "decreased exploration in new environment",
+        "increased circulating amylase level",
         "increased circulating glucose level",
-        "increased heart weight",
-        "pallor",
-        "persistence of hyaloid vascular system",
-        "preweaning lethality, complete penetrance"
+        "increased circulating lipase level"
       ],
-      "node_color": 0.831842163191559
+      "node_color": 1.21534096376521
     }
   },
   {
     "data": {
-      "id": "Znhit2",
-      "label": "Znhit2",
+      "id": "Pigz",
+      "label": "Pigz",
       "annotation": [
-        "decreased circulating bilirubin level",
-        "embryonic lethality prior to organogenesis",
+        "decreased bone mineral content",
         "increased circulating glucose level",
-        "increased grip strength",
-        "increased leukocyte cell number",
-        "preweaning lethality, complete penetrance"
+        "increased total body fat amount"
       ],
-      "node_color": 1.14763529916209
-    }
-  },
-  {
-    "data": {
-      "id": "Gcn1",
-      "label": "Gcn1",
-      "annotation": [
-        "decreased circulating bilirubin level",
-        "increased circulating glucose level",
-        "preweaning lethality, complete penetrance"
-      ],
-      "node_color": 1.06205024674342
-    }
-  },
-  {
-    "data": {
-      "id": "Tnfaip1",
-      "label": "Tnfaip1",
-      "annotation": [
-        "abnormal bone mineralization",
-        "abnormal tail movements",
-        "decreased grip strength",
-        "increased blood urea nitrogen level",
-        "increased bone mineral density",
-        "increased circulating alkaline phosphatase level",
-        "increased circulating glucose level",
-        "increased circulating triglyceride level",
-        "increased startle reflex",
-        "increased total body fat amount",
-        "short tibia"
-      ],
-      "node_color": 1.19310992837452
-    }
-  },
-  {
-    "data": {
-      "id": "Mapkapk2",
-      "label": "Mapkapk2",
-      "annotation": [
-        "abnormal bone structure",
-        "abnormal clavicle morphology",
-        "abnormal joint morphology",
-        "abnormal optic disk morphology",
-        "increased circulating glucose level",
-        "increased large unstained cell number",
-        "increased leukocyte cell number"
-      ],
-      "node_color": 0.992925403204071
+      "node_color": 0.75823565283231
     }
   },
   {
@@ -630,6 +698,138 @@
   },
   {
     "data": {
+      "id": "Bltp1",
+      "label": "Bltp1",
+      "annotation": [
+        "abnormal embryo size",
+        "abnormal lens morphology",
+        "abnormal retina blood vessel morphology",
+        "abnormal retina morphology",
+        "abnormal retina vasculature morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "embryonic growth retardation",
+        "hemorrhage",
+        "impaired glucose tolerance",
+        "increased circulating glucose level",
+        "increased heart weight",
+        "pallor",
+        "persistence of hyaloid vascular system",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 0.831842163191559
+    }
+  },
+  {
+    "data": {
+      "id": "Fgl1",
+      "label": "Fgl1",
+      "annotation": [
+        "abnormal bone mineralization",
+        "abnormal bone structure",
+        "increased bone mineral content",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level",
+        "increased lean body mass",
+        "increased total body fat amount"
+      ],
+      "node_color": 1.51822461536444
+    }
+  },
+  {
+    "data": {
+      "id": "Znhit2",
+      "label": "Znhit2",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "embryonic lethality prior to organogenesis",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased leukocyte cell number",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 1.14763529916209
+    }
+  },
+  {
+    "data": {
+      "id": "Skor1",
+      "label": "Skor1",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "decreased circulating phosphate level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 1.14444713081738
+    }
+  },
+  {
+    "data": {
+      "id": "Gcn1",
+      "label": "Gcn1",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 1.06205024674342
+    }
+  },
+  {
+    "data": {
+      "id": "Ttbk1",
+      "label": "Ttbk1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased total body fat amount",
+        "increased anxiety-related response",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level",
+        "increased grip strength",
+        "increased lean body mass",
+        "increased startle reflex",
+        "increased thigmotaxis",
+        "tremors"
+      ],
+      "node_color": 1.32263612180407
+    }
+  },
+  {
+    "data": {
+      "id": "Mapkapk2",
+      "label": "Mapkapk2",
+      "annotation": [
+        "abnormal bone structure",
+        "abnormal clavicle morphology",
+        "abnormal joint morphology",
+        "abnormal optic disk morphology",
+        "increased circulating glucose level",
+        "increased large unstained cell number",
+        "increased leukocyte cell number"
+      ],
+      "node_color": 0.992925403204071
+    }
+  },
+  {
+    "data": {
+      "id": "Afmid",
+      "label": "Afmid",
+      "annotation": [
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume"
+      ],
+      "node_color": 0.935449210643427
+    }
+  },
+  {
+    "data": {
       "id": "Gck",
       "label": "Gck",
       "annotation": [
@@ -644,21 +844,17 @@
   },
   {
     "data": {
-      "id": "Grhl3",
-      "label": "Grhl3",
+      "id": "Trnt1",
+      "label": "Trnt1",
       "annotation": [
-        "abnormal locomotor activation",
-        "decreased blood urea nitrogen level",
-        "decreased circulating alkaline phosphatase level",
-        "decreased circulating triglyceride level",
-        "increased circulating amylase level",
-        "increased circulating calcium level",
-        "increased circulating glucose level",
-        "increased circulating phosphate level",
-        "increased startle reflex",
-        "preweaning lethality, complete penetrance"
+        "abnormal eye morphology",
+        "abnormal retina pigmentation",
+        "decreased mean corpuscular volume",
+        "increased body weight",
+        "increased bone mineral content",
+        "increased circulating glucose level"
       ],
-      "node_color": 1.00639749769651
+      "node_color": 0.642378766449016
     }
   },
   {
@@ -691,15 +887,48 @@
   },
   {
     "data": {
-      "id": "Sap30",
-      "label": "Sap30",
+      "id": "Triobp",
+      "label": "Triobp",
       "annotation": [
         "abnormal auditory brainstem response",
-        "increased circulating glucose level",
-        "increased mean corpuscular hemoglobin",
-        "increased mean corpuscular volume"
+        "absent vibrissae",
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "increased circulating glucose level"
       ],
-      "node_color": 0.420135537439112
+      "node_color": 1.20501273962836
+    }
+  },
+  {
+    "data": {
+      "id": "Ndufs3",
+      "label": "Ndufs3",
+      "annotation": [
+        "decreased circulating serum albumin level",
+        "decreased erythrocyte cell number",
+        "increased bone mineral density",
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased circulating sodium level",
+        "increased heart weight",
+        "increased lean body mass",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 0.854143578563493
+    }
+  },
+  {
+    "data": {
+      "id": "Fbxo2",
+      "label": "Fbxo2",
+      "annotation": [
+        "decreased fasting circulating glucose level",
+        "decreased locomotor activity",
+        "decreased startle reflex",
+        "increased circulating glucose level"
+      ],
+      "node_color": 4.35414353014477
     }
   },
   {
@@ -717,52 +946,29 @@
   },
   {
     "data": {
-      "id": "Ttbk1",
-      "label": "Ttbk1",
+      "id": "Ss18",
+      "label": "Ss18",
       "annotation": [
-        "abnormal auditory brainstem response",
-        "abnormal behavior",
-        "decreased exploration in new environment",
-        "decreased locomotor activity",
-        "decreased total body fat amount",
-        "increased anxiety-related response",
         "increased circulating glucose level",
-        "increased fasting circulating glucose level",
-        "increased grip strength",
-        "increased lean body mass",
         "increased startle reflex",
-        "increased thigmotaxis",
-        "tremors"
+        "preweaning lethality, complete penetrance"
       ],
-      "node_color": 1.32263612180407
+      "node_color": 0.740991495844211
     }
   },
   {
     "data": {
-      "id": "Dtx1",
-      "label": "Dtx1",
+      "id": "Chd7",
+      "label": "Chd7",
       "annotation": [
-        "abnormal locomotor behavior",
-        "decreased exploration in new environment",
-        "decreased locomotor activity",
-        "decreased prepulse inhibition",
-        "increased circulating cholesterol level",
-        "increased circulating glucose level"
+        "abnormal locomotor activation",
+        "decreased body length",
+        "decreased body weight",
+        "decreased lean body mass",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
       ],
-      "node_color": 1.22741360244926
-    }
-  },
-  {
-    "data": {
-      "id": "Fbxo2",
-      "label": "Fbxo2",
-      "annotation": [
-        "decreased fasting circulating glucose level",
-        "decreased locomotor activity",
-        "decreased startle reflex",
-        "increased circulating glucose level"
-      ],
-      "node_color": 4.35414353014477
+      "node_color": 0.599527478422969
     }
   },
   {
@@ -801,36 +1007,40 @@
   },
   {
     "data": {
-      "id": "Fgl1",
-      "label": "Fgl1",
+      "id": "Nras",
+      "label": "Nras",
       "annotation": [
-        "abnormal bone mineralization",
-        "abnormal bone structure",
-        "increased bone mineral content",
         "increased circulating HDL cholesterol level",
-        "increased circulating cholesterol level",
         "increased circulating glucose level",
-        "increased lean body mass",
-        "increased total body fat amount"
+        "preweaning lethality, complete penetrance",
+        "short tibia"
       ],
-      "node_color": 1.51822461536444
+      "node_color": 1.69506220844688
     }
   },
   {
     "data": {
-      "id": "Capn12",
-      "label": "Capn12",
+      "id": "Usp47",
+      "label": "Usp47",
       "annotation": [
-        "abnormal lens morphology",
-        "abnormal retina morphology",
-        "abnormal vitreous body morphology",
-        "cataract",
-        "decreased exploration in new environment",
-        "increased circulating amylase level",
-        "increased circulating glucose level",
-        "increased circulating lipase level"
+        "increased circulating HDL cholesterol level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level"
       ],
-      "node_color": 1.21534096376521
+      "node_color": 0.712802296554498
+    }
+  },
+  {
+    "data": {
+      "id": "Dbil5",
+      "label": "Dbil5",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased circulating total protein level"
+      ],
+      "node_color": 0.778436143519526
     }
   },
   {
@@ -847,15 +1057,43 @@
   },
   {
     "data": {
+      "id": "Lmbrd1",
+      "label": "Lmbrd1",
+      "annotation": [
+        "abnormal embryo size",
+        "decreased mean corpuscular hemoglobin",
+        "embryonic lethality prior to organogenesis",
+        "embryonic lethality prior to tooth bud stage",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "node_color": 0.674875896967929
+    }
+  },
+  {
+    "data": {
       "source": "Zfyve19",
       "target": "Rnf10",
       "annotation": [
-        "Abnormal behavior",
-        "Decreased exploration in new environment",
-        "Decreased thigmotaxis",
-        "Increased circulating glucose level"
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased thigmotaxis",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.074
+      "edge_size": 0.079
+    }
+  },
+  {
+    "data": {
+      "source": "Zfyve19",
+      "target": "Usp31",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.136
     }
   },
   {
@@ -863,11 +1101,49 @@
       "source": "Zfyve19",
       "target": "Ky",
       "annotation": [
-        "Abnormal behavior",
-        "Decreased exploration in new environment",
-        "Increased circulating glucose level"
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.333
+      "edge_size": 0.273
+    }
+  },
+  {
+    "data": {
+      "source": "Zfyve19",
+      "target": "Gbx1",
+      "annotation": [
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Zfyve19",
+      "target": "Dtx1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.375
+    }
+  },
+  {
+    "data": {
+      "source": "Zfyve19",
+      "target": "Ttbk1",
+      "annotation": [
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.286
     }
   },
   {
@@ -875,26 +1151,12 @@
       "source": "Csnk1g2",
       "target": "Bbs5",
       "annotation": [
-        "Abnormal retina morphology",
-        "Increased circulating aspartate transaminase level",
-        "Increased mean corpuscular volume"
+        "abnormal retina morphology",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level",
+        "increased mean corpuscular volume"
       ],
-      "edge_size": 0.088
-    }
-  },
-  {
-    "data": {
-      "source": "Csnk1g2",
-      "target": "Dbnl",
-      "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina vasculature morphology",
-        "Decreased total retina thickness",
-        "Increased mean corpuscular volume",
-        "Persistence of hyaloid vascular system"
-      ],
-      "edge_size": 0.214
+      "edge_size": 0.108
     }
   },
   {
@@ -902,12 +1164,65 @@
       "source": "Csnk1g2",
       "target": "Rnf10",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal retina blood vessel morphology",
-        "Decreased total retina thickness",
-        "Increased circulating aspartate transaminase level"
+        "abnormal auditory brainstem response",
+        "abnormal retina blood vessel morphology",
+        "decreased total retina thickness",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.063
+      "edge_size": 0.068
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Dbnl",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "decreased total retina thickness",
+        "increased circulating glucose level",
+        "increased mean corpuscular volume",
+        "persistence of hyaloid vascular system"
+      ],
+      "edge_size": 0.219
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Usp31",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased circulating potassium level"
+      ],
+      "edge_size": 0.094
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Ccnd2",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.115
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Elapor1",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.15
     }
   },
   {
@@ -915,12 +1230,73 @@
       "source": "Csnk1g2",
       "target": "Bscl2",
       "annotation": [
-        "Decreased total retina thickness",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating phosphate level",
-        "Increased mean corpuscular volume"
+        "decreased total retina thickness",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased mean corpuscular volume"
       ],
-      "edge_size": 0.105
+      "edge_size": 0.125
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Dtnbp1",
+      "annotation": [
+        "abnormal retina morphology",
+        "increased circulating glucose level",
+        "increased circulating phosphate level"
+      ],
+      "edge_size": 0.143
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Ggps1",
+      "annotation": [
+        "abnormal lens morphology",
+        "abnormal retina blood vessel morphology",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.136
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Sap30",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "increased circulating glucose level",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.188
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Vangl2",
+      "annotation": [
+        "abnormal retina morphology",
+        "increased circulating glucose level",
+        "persistence of hyaloid vascular system"
+      ],
+      "edge_size": 0.1
+    }
+  },
+  {
+    "data": {
+      "source": "Csnk1g2",
+      "target": "Capn12",
+      "annotation": [
+        "abnormal lens morphology",
+        "abnormal retina morphology",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.15
     }
   },
   {
@@ -928,49 +1304,14 @@
       "source": "Csnk1g2",
       "target": "Bltp1",
       "annotation": [
-        "Abnormal lens morphology",
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina morphology",
-        "Abnormal retina vasculature morphology",
-        "Persistence of hyaloid vascular system"
+        "abnormal lens morphology",
+        "abnormal retina blood vessel morphology",
+        "abnormal retina morphology",
+        "abnormal retina vasculature morphology",
+        "increased circulating glucose level",
+        "persistence of hyaloid vascular system"
       ],
-      "edge_size": 0.227
-    }
-  },
-  {
-    "data": {
-      "source": "Bbs5",
-      "target": "Dbnl",
-      "annotation": [
-        "Decreased circulating triglyceride level",
-        "Increased circulating glucose level",
-        "Increased mean corpuscular volume"
-      ],
-      "edge_size": 0.071
-    }
-  },
-  {
-    "data": {
-      "source": "Bbs5",
-      "target": "Usp31",
-      "annotation": [
-        "Abnormal gait",
-        "Increased circulating glucose level",
-        "Tremors"
-      ],
-      "edge_size": 0.077
-    }
-  },
-  {
-    "data": {
-      "source": "Bbs5",
-      "target": "Ccnd2",
-      "annotation": [
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating glucose level",
-        "Increased mean corpuscular volume"
-      ],
-      "edge_size": 0.088
+      "edge_size": 0.25
     }
   },
   {
@@ -978,16 +1319,54 @@
       "source": "Bbs5",
       "target": "Rnf10",
       "annotation": [
-        "Abnormal gait",
-        "Decreased bone mineral density",
-        "Decreased circulating triglyceride level",
-        "Decreased grip strength",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating glucose level",
-        "Increased monocyte cell number"
+        "abnormal gait",
+        "decreased bone mineral density",
+        "decreased circulating triglyceride level",
+        "decreased grip strength",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level",
+        "increased leukocyte cell number",
+        "increased monocyte cell number"
       ],
-      "edge_size": 0.114
+      "edge_size": 0.113
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Dbnl",
+      "annotation": [
+        "decreased circulating triglyceride level",
+        "increased circulating glucose level",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.064
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Usp31",
+      "annotation": [
+        "abnormal gait",
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "tremors"
+      ],
+      "edge_size": 0.095
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Ccnd2",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.081
     }
   },
   {
@@ -995,13 +1374,13 @@
       "source": "Bbs5",
       "target": "Ky",
       "annotation": [
-        "Abnormal gait",
-        "Decreased grip strength",
-        "Increased circulating glucose level",
-        "Increased leukocyte cell number",
-        "Tremors"
+        "abnormal gait",
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased leukocyte cell number",
+        "tremors"
       ],
-      "edge_size": 0.185
+      "edge_size": 0.167
     }
   },
   {
@@ -1009,44 +1388,19 @@
       "source": "Bbs5",
       "target": "Bscl2",
       "annotation": [
-        "Abnormal bone structure",
-        "Abnormal gait",
-        "Decreased bone mineral content",
-        "Decreased respiratory quotient",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating glucose level",
-        "Increased mean corpuscular volume",
-        "Increased monocyte cell number",
-        "Short tibia"
+        "abnormal bone structure",
+        "abnormal gait",
+        "decreased bone mineral content",
+        "decreased respiratory quotient",
+        "increased circulating alanine transaminase level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level",
+        "increased mean corpuscular volume",
+        "increased monocyte cell number",
+        "short tibia"
       ],
-      "edge_size": 0.262
-    }
-  },
-  {
-    "data": {
-      "source": "Bbs5",
-      "target": "Tnfaip1",
-      "annotation": [
-        "Decreased grip strength",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating glucose level",
-        "Short tibia"
-      ],
-      "edge_size": 0.154
-    }
-  },
-  {
-    "data": {
-      "source": "Bbs5",
-      "target": "Tars3",
-      "annotation": [
-        "Decreased bone mineral density",
-        "Increased circulating glucose level",
-        "Increased leukocyte cell number"
-      ],
-      "edge_size": 0.107
+      "edge_size": 0.244
     }
   },
   {
@@ -1054,23 +1408,23 @@
       "source": "Bbs5",
       "target": "Dtnbp1",
       "annotation": [
-        "Abnormal retina morphology",
-        "Decreased grip strength",
-        "Increased circulating glucose level"
+        "abnormal retina morphology",
+        "decreased grip strength",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.103
+      "edge_size": 0.094
     }
   },
   {
     "data": {
       "source": "Bbs5",
-      "target": "Akt2",
+      "target": "Tnfaip1",
       "annotation": [
-        "Decreased bone mineral density",
-        "Decreased circulating triglyceride level",
-        "Decreased lean body mass",
-        "Increased circulating alkaline phosphatase level",
-        "Increased total body fat amount"
+        "decreased grip strength",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased total body fat amount",
+        "short tibia"
       ],
       "edge_size": 0.156
     }
@@ -1078,11 +1432,11 @@
   {
     "data": {
       "source": "Bbs5",
-      "target": "Adora2a",
+      "target": "Insyn2b",
       "annotation": [
-        "Decreased lean body mass",
-        "Increased circulating glucose level",
-        "Increased total body fat amount"
+        "increased circulating alanine transaminase level",
+        "increased circulating glucose level",
+        "increased leukocyte cell number"
       ],
       "edge_size": 0.107
     }
@@ -1090,11 +1444,102 @@
   {
     "data": {
       "source": "Bbs5",
+      "target": "Gbx1",
+      "annotation": [
+        "abnormal gait",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.083
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Rhbdf2",
+      "annotation": [
+        "decreased bone mineral density",
+        "increased circulating glucose level",
+        "increased total body fat amount",
+        "tremors"
+      ],
+      "edge_size": 0.095
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Ggps1",
+      "annotation": [
+        "impaired glucose tolerance",
+        "increased circulating glucose level",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.091
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Tars3",
+      "annotation": [
+        "decreased bone mineral density",
+        "increased circulating glucose level",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.088
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Akt2",
+      "annotation": [
+        "abnormal bone structure",
+        "decreased bone mineral density",
+        "decreased circulating triglyceride level",
+        "decreased lean body mass",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.206
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Adora2a",
+      "annotation": [
+        "decreased lean body mass",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.167
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
       "target": "Mapkapk2",
       "annotation": [
-        "Abnormal bone structure",
-        "Increased circulating glucose level",
-        "Increased leukocyte cell number"
+        "abnormal bone structure",
+        "increased circulating glucose level",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.1
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Afmid",
+      "annotation": [
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased mean corpuscular volume"
       ],
       "edge_size": 0.111
     }
@@ -1102,15 +1547,52 @@
   {
     "data": {
       "source": "Bbs5",
+      "target": "Pigz",
+      "annotation": [
+        "decreased bone mineral content",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.115
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
       "target": "Topors",
       "annotation": [
-        "Decreased bone mineral content",
-        "Decreased lean body mass",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating glucose level",
-        "Increased total body fat amount"
+        "decreased bone mineral content",
+        "decreased heart weight",
+        "decreased lean body mass",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased total body fat amount"
       ],
-      "edge_size": 0.147
+      "edge_size": 0.162
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Bltp1",
+      "annotation": [
+        "abnormal retina morphology",
+        "impaired glucose tolerance",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.079
+    }
+  },
+  {
+    "data": {
+      "source": "Bbs5",
+      "target": "Fgl1",
+      "annotation": [
+        "abnormal bone structure",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.097
     }
   },
   {
@@ -1118,408 +1600,183 @@
       "source": "Bbs5",
       "target": "Gck",
       "annotation": [
-        "Impaired glucose tolerance",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.12
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Grhl3",
-      "annotation": [
-        "Decreased circulating alkaline phosphatase level",
-        "Decreased circulating triglyceride level",
-        "Increased startle reflex"
-      ],
-      "edge_size": 0.111
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Usp31",
-      "annotation": [
-        "Decreased hematocrit",
-        "Decreased locomotor activity",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.083
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Ccnd2",
-      "annotation": [
-        "Increased circulating glucose level",
-        "Increased grip strength",
-        "Increased mean corpuscular volume"
-      ],
-      "edge_size": 0.097
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Rnf10",
-      "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal retina blood vessel morphology",
-        "Decreased circulating alkaline phosphatase level",
-        "Decreased circulating cholesterol level",
-        "Decreased circulating serum albumin level",
-        "Decreased circulating triglyceride level",
-        "Decreased hematocrit",
-        "Decreased hemoglobin content",
-        "Decreased locomotor activity",
-        "Decreased total retina thickness",
-        "Increased circulating glucose level",
-        "Increased grip strength"
-      ],
-      "edge_size": 0.19
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Bscl2",
-      "annotation": [
-        "Decreased erythrocyte cell number",
-        "Decreased total retina thickness",
-        "Increased circulating glucose level",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean corpuscular volume"
-      ],
-      "edge_size": 0.111
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Klhdc10",
-      "annotation": [
-        "Decreased circulating alkaline phosphatase level",
-        "Increased circulating glucose level",
-        "Persistence of hyaloid vascular system"
-      ],
-      "edge_size": 0.136
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Ezh1",
-      "annotation": [
-        "Decreased erythrocyte cell number",
-        "Decreased hematocrit",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.13
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Sap30",
-      "annotation": [
-        "Abnormal auditory brainstem response",
-        "Increased circulating glucose level",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean corpuscular volume"
-      ],
-      "edge_size": 0.19
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Vangl2",
-      "annotation": [
-        "Decreased circulating cholesterol level",
-        "Increased circulating glucose level",
-        "Persistence of hyaloid vascular system"
-      ],
-      "edge_size": 0.086
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Adora2a",
-      "annotation": [
-        "Decreased hemoglobin content",
-        "Decreased locomotor activity",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.12
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Slc7a11",
-      "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal optic disk morphology",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.136
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Topors",
-      "annotation": [
-        "Abnormal auditory brainstem response",
-        "Decreased circulating serum albumin level",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.091
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Elapor1",
-      "annotation": [
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina vasculature morphology",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.125
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Ttbk1",
-      "annotation": [
-        "Abnormal auditory brainstem response",
-        "Decreased locomotor activity",
-        "Increased startle reflex"
-      ],
-      "edge_size": 0.115
-    }
-  },
-  {
-    "data": {
-      "source": "Dbnl",
-      "target": "Bltp1",
-      "annotation": [
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina vasculature morphology",
-        "Increased circulating glucose level",
-        "Increased heart weight",
-        "Persistence of hyaloid vascular system"
-      ],
-      "edge_size": 0.167
-    }
-  },
-  {
-    "data": {
-      "source": "Usp31",
-      "target": "Ccnd2",
-      "annotation": [
-        "Decreased total body fat amount",
-        "Increased circulating glucose level",
-        "Increased circulating phosphate level",
-        "Increased lean body mass"
+        "impaired glucose tolerance",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating fructosamine level",
+        "increased circulating glucose level"
       ],
       "edge_size": 0.148
     }
   },
   {
     "data": {
-      "source": "Usp31",
-      "target": "Rnf10",
+      "source": "Rnf10",
+      "target": "Dbnl",
       "annotation": [
-        "Abnormal gait",
-        "Decreased exploration in new environment",
-        "Decreased hematocrit",
-        "Decreased locomotor activity",
-        "Decreased mean corpuscular volume",
-        "Decreased prepulse inhibition",
-        "Increased circulating creatinine level",
-        "Increased circulating glucose level"
+        "abnormal auditory brainstem response",
+        "abnormal retina blood vessel morphology",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating alkaline phosphatase level",
+        "decreased circulating cholesterol level",
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "decreased circulating triglyceride level",
+        "decreased hematocrit",
+        "decreased hemoglobin content",
+        "decreased locomotor activity",
+        "decreased total retina thickness",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased heart weight"
       ],
-      "edge_size": 0.125
+      "edge_size": 0.208
     }
   },
   {
     "data": {
-      "source": "Usp31",
+      "source": "Rnf10",
+      "target": "Grhl3",
+      "annotation": [
+        "decreased circulating alkaline phosphatase level",
+        "decreased circulating triglyceride level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.043
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Usp31",
+      "annotation": [
+        "abnormal gait",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "decreased hematocrit",
+        "decreased locomotor activity",
+        "decreased mean corpuscular volume",
+        "decreased prepulse inhibition",
+        "decreased total body fat amount",
+        "increased circulating creatinine level",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.153
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Ccnd2",
+      "annotation": [
+        "decreased total body fat amount",
+        "hyperactivity",
+        "increased bone mineral content",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.085
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Trnt1",
+      "annotation": [
+        "decreased mean corpuscular volume",
+        "increased bone mineral content",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.045
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
       "target": "Ky",
       "annotation": [
-        "Abnormal gait",
-        "Decreased exploration in new environment",
-        "Increased circulating glucose level",
-        "Tremors"
+        "abnormal behavior",
+        "abnormal gait",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased leukocyte cell number"
       ],
-      "edge_size": 0.182
+      "edge_size": 0.108
     }
   },
   {
     "data": {
-      "source": "Usp31",
+      "source": "Rnf10",
+      "target": "Elapor1",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "decreased exploration in new environment",
+        "decreased lymphocyte cell number",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.06
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
       "target": "Bscl2",
       "annotation": [
-        "Abnormal gait",
-        "Decreased prepulse inhibition",
-        "Decreased total body fat amount",
-        "Increased circulating glucose level",
-        "Increased circulating phosphate level",
-        "Increased lean body mass"
+        "abnormal gait",
+        "decreased body length",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "decreased total body fat amount",
+        "decreased total retina thickness",
+        "improved glucose tolerance",
+        "increased circulating HDL cholesterol level",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level",
+        "increased lean body mass",
+        "increased monocyte cell number"
       ],
-      "edge_size": 0.146
+      "edge_size": 0.163
     }
   },
   {
     "data": {
-      "source": "Usp31",
-      "target": "Gbx1",
-      "annotation": [
-        "Abnormal gait",
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity"
-      ],
-      "edge_size": 0.111
-    }
-  },
-  {
-    "data": {
-      "source": "Usp31",
-      "target": "Ezh1",
-      "annotation": [
-        "Decreased hematocrit",
-        "Decreased prepulse inhibition",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.15
-    }
-  },
-  {
-    "data": {
-      "source": "Usp31",
-      "target": "Dtx1",
-      "annotation": [
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Decreased prepulse inhibition"
-      ],
-      "edge_size": 0.158
-    }
-  },
-  {
-    "data": {
-      "source": "Usp31",
-      "target": "Ttbk1",
-      "annotation": [
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Tremors"
-      ],
-      "edge_size": 0.13
-    }
-  },
-  {
-    "data": {
-      "source": "Usp31",
-      "target": "Fbxo2",
-      "annotation": [
-        "Decreased locomotor activity",
-        "Decreased startle reflex",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.158
-    }
-  },
-  {
-    "data": {
-      "source": "Ccnd2",
-      "target": "Bscl2",
-      "annotation": [
-        "Decreased total body fat amount",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating glucose level",
-        "Increased circulating phosphate level",
-        "Increased fasting circulating glucose level",
-        "Increased lean body mass",
-        "Increased mean corpuscular volume"
-      ],
-      "edge_size": 0.2
-    }
-  },
-  {
-    "data": {
-      "source": "Ccnd2",
+      "source": "Rnf10",
       "target": "Dtnbp1",
       "annotation": [
-        "Increased circulating glucose level",
-        "Increased circulating phosphate level",
-        "Increased fasting circulating glucose level"
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.167
-    }
-  },
-  {
-    "data": {
-      "source": "Ccnd2",
-      "target": "Fam221a",
-      "annotation": [
-        "Abnormal spine curvature",
-        "Increased circulating glucose level",
-        "Small testis"
-      ],
-      "edge_size": 0.15
-    }
-  },
-  {
-    "data": {
-      "source": "Ccnd2",
-      "target": "Akt2",
-      "annotation": [
-        "Increased bone mineral content",
-        "Increased circulating alkaline phosphatase level",
-        "Increased lean body mass"
-      ],
-      "edge_size": 0.13
+      "edge_size": 0.043
     }
   },
   {
     "data": {
       "source": "Rnf10",
-      "target": "Ky",
+      "target": "Tnfaip1",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal gait",
-        "Decreased exploration in new environment",
-        "Decreased grip strength",
-        "Increased circulating glucose level"
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased circulating triglyceride level"
       ],
-      "edge_size": 0.088
+      "edge_size": 0.042
     }
   },
   {
     "data": {
       "source": "Rnf10",
-      "target": "Bscl2",
+      "target": "Insyn2b",
       "annotation": [
-        "Abnormal gait",
-        "Decreased body length",
-        "Decreased prepulse inhibition",
-        "Decreased total retina thickness",
-        "Improved glucose tolerance",
-        "Increased circulating alanine transaminase level",
-        "Increased circulating aspartate transaminase level",
-        "Increased circulating glucose level",
-        "Increased circulating hdl cholesterol level",
-        "Increased monocyte cell number"
+        "hyperactivity",
+        "increased circulating alanine transaminase level",
+        "increased circulating glucose level",
+        "increased leukocyte cell number"
       ],
-      "edge_size": 0.137
+      "edge_size": 0.062
     }
   },
   {
@@ -1527,15 +1784,43 @@
       "source": "Rnf10",
       "target": "Gbx1",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal gait",
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Increased anxiety-related response",
-        "Limb grasping",
-        "Syndactyly"
+        "abnormal behavior",
+        "abnormal gait",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased anxiety-related response",
+        "increased circulating glucose level",
+        "limb grasping",
+        "syndactyly"
       ],
-      "edge_size": 0.119
+      "edge_size": 0.118
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Rhbdf2",
+      "annotation": [
+        "decreased bone mineral density",
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating alkaline phosphatase level",
+        "increased bone mineral content",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.064
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Ggps1",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "increased circulating HDL cholesterol level",
+        "increased circulating glucose level",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.058
     }
   },
   {
@@ -1543,12 +1828,17 @@
       "source": "Rnf10",
       "target": "Tars3",
       "annotation": [
-        "Decreased bone mineral density",
-        "Decreased vertical activity",
-        "Hyperactivity",
-        "Increased circulating glucose level"
+        "decreased bone mineral density",
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "decreased total body fat amount",
+        "decreased vertical activity",
+        "hyperactivity",
+        "increased circulating glucose level",
+        "increased lean body mass",
+        "increased leukocyte cell number"
       ],
-      "edge_size": 0.07
+      "edge_size": 0.138
     }
   },
   {
@@ -1556,81 +1846,9 @@
       "source": "Rnf10",
       "target": "Klhdc10",
       "annotation": [
-        "Decreased circulating alkaline phosphatase level",
-        "Hyperactivity",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.055
-    }
-  },
-  {
-    "data": {
-      "source": "Rnf10",
-      "target": "Ezh1",
-      "annotation": [
-        "Decreased hematocrit",
-        "Decreased prepulse inhibition",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.054
-    }
-  },
-  {
-    "data": {
-      "source": "Rnf10",
-      "target": "Eid2b",
-      "annotation": [
-        "Decreased mean corpuscular volume",
-        "Increased circulating glucose level",
-        "Increased grip strength"
-      ],
-      "edge_size": 0.052
-    }
-  },
-  {
-    "data": {
-      "source": "Rnf10",
-      "target": "Lrrc41",
-      "annotation": [
-        "Decreased vertical activity",
-        "Hyperactivity",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.051
-    }
-  },
-  {
-    "data": {
-      "source": "Rnf10",
-      "target": "Dtx1",
-      "annotation": [
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Decreased prepulse inhibition"
-      ],
-      "edge_size": 0.055
-    }
-  },
-  {
-    "data": {
-      "source": "Rnf10",
-      "target": "Vangl2",
-      "annotation": [
-        "Decreased circulating cholesterol level",
-        "Decreased circulating hdl cholesterol level",
-        "Increased circulating glucose level"
-      ],
-      "edge_size": 0.044
-    }
-  },
-  {
-    "data": {
-      "source": "Rnf10",
-      "target": "Akt2",
-      "annotation": [
-        "Decreased body length",
-        "Decreased bone mineral density",
-        "Decreased circulating triglyceride level"
+        "decreased circulating alkaline phosphatase level",
+        "hyperactivity",
+        "increased circulating glucose level"
       ],
       "edge_size": 0.047
     }
@@ -1638,14 +1856,149 @@
   {
     "data": {
       "source": "Rnf10",
+      "target": "Ezh1",
+      "annotation": [
+        "decreased hematocrit",
+        "decreased prepulse inhibition",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.045
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Eid2b",
+      "annotation": [
+        "decreased mean corpuscular volume",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.061
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Lrrc41",
+      "annotation": [
+        "decreased vertical activity",
+        "hyperactivity",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.059
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Dtx1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.062
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Vangl2",
+      "annotation": [
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating cholesterol level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.038
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Triobp",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "decreased prepulse inhibition",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.046
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Akt2",
+      "annotation": [
+        "decreased body length",
+        "decreased bone mineral density",
+        "decreased circulating triglyceride level",
+        "increased bone mineral content",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.083
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
       "target": "Adora2a",
       "annotation": [
-        "Decreased hemoglobin content",
-        "Decreased locomotor activity",
-        "Decreased lymphocyte cell number",
-        "Increased circulating glucose level"
+        "decreased hemoglobin content",
+        "decreased locomotor activity",
+        "decreased lymphocyte cell number",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.07
+      "edge_size": 0.091
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Jakmip2",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "decreased anxiety-related response",
+        "hyperactivity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.061
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Mapkapk2",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased large unstained cell number",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.045
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Ttbk1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased total body fat amount",
+        "increased anxiety-related response",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.134
     }
   },
   {
@@ -1653,40 +2006,705 @@
       "source": "Rnf10",
       "target": "Topors",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Decreased circulating serum albumin level",
-        "Decreased circulating total protein level",
-        "Hyperactivity",
-        "Increased circulating glucose level",
-        "Increased vertical activity"
+        "abnormal auditory brainstem response",
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "hyperactivity",
+        "increased circulating glucose level",
+        "increased vertical activity"
       ],
-      "edge_size": 0.095
+      "edge_size": 0.081
     }
   },
   {
     "data": {
       "source": "Rnf10",
+      "target": "Bltp1",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "increased circulating glucose level",
+        "increased heart weight"
+      ],
+      "edge_size": 0.04
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Ndufs3",
+      "annotation": [
+        "decreased circulating serum albumin level",
+        "increased circulating glucose level",
+        "increased circulating sodium level",
+        "increased heart weight",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.074
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Fgl1",
+      "annotation": [
+        "increased bone mineral content",
+        "increased circulating HDL cholesterol level",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.06
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Znhit2",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.045
+    }
+  },
+  {
+    "data": {
+      "source": "Rnf10",
+      "target": "Fbxo2",
+      "annotation": [
+        "decreased fasting circulating glucose level",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.047
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Grhl3",
+      "annotation": [
+        "decreased circulating alkaline phosphatase level",
+        "decreased circulating triglyceride level",
+        "increased circulating glucose level",
+        "increased startle reflex"
+      ],
+      "edge_size": 0.133
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Usp31",
+      "annotation": [
+        "decreased hematocrit",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.073
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Ccnd2",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.086
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
       "target": "Elapor1",
       "annotation": [
-        "Abnormal retina blood vessel morphology",
-        "Decreased lymphocyte cell number",
-        "Increased circulating glucose level"
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "increased circulating glucose level",
+        "increased fluid intake"
       ],
-      "edge_size": 0.053
+      "edge_size": 0.143
     }
   },
   {
     "data": {
-      "source": "Rnf10",
+      "source": "Dbnl",
+      "target": "Bscl2",
+      "annotation": [
+        "decreased erythrocyte cell number",
+        "decreased locomotor activity",
+        "decreased total retina thickness",
+        "increased circulating glucose level",
+        "increased fluid intake",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.149
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Rhbdf2",
+      "annotation": [
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased mean corpuscular hemoglobin"
+      ],
+      "edge_size": 0.1
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Tars3",
+      "annotation": [
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.094
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Klhdc10",
+      "annotation": [
+        "decreased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "persistence of hyaloid vascular system"
+      ],
+      "edge_size": 0.12
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Ezh1",
+      "annotation": [
+        "decreased erythrocyte cell number",
+        "decreased hematocrit",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.111
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Sap30",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "increased circulating glucose level",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.167
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Vangl2",
+      "annotation": [
+        "decreased circulating HDL cholesterol level",
+        "decreased circulating cholesterol level",
+        "increased circulating glucose level",
+        "persistence of hyaloid vascular system"
+      ],
+      "edge_size": 0.105
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Adora2a",
+      "annotation": [
+        "decreased hemoglobin content",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.1
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Jakmip2",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "increased circulating glucose level",
+        "increased startle reflex"
+      ],
+      "edge_size": 0.107
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
       "target": "Ttbk1",
       "annotation": [
-        "Abnormal auditory brainstem response",
-        "Abnormal behavior",
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Increased anxiety-related response"
+        "abnormal auditory brainstem response",
+        "decreased locomotor activity",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased startle reflex"
       ],
-      "edge_size": 0.088
+      "edge_size": 0.156
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Slc7a11",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "abnormal optic disk morphology",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.12
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Afmid",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.12
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Topors",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "decreased erythrocyte cell number",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.139
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Bltp1",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "increased circulating glucose level",
+        "increased heart weight",
+        "persistence of hyaloid vascular system"
+      ],
+      "edge_size": 0.147
+    }
+  },
+  {
+    "data": {
+      "source": "Dbnl",
+      "target": "Ndufs3",
+      "annotation": [
+        "decreased circulating serum albumin level",
+        "decreased erythrocyte cell number",
+        "increased circulating glucose level",
+        "increased heart weight"
+      ],
+      "edge_size": 0.133
+    }
+  },
+  {
+    "data": {
+      "source": "Grhl3",
+      "target": "Bscl2",
+      "annotation": [
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level"
+      ],
+      "edge_size": 0.081
+    }
+  },
+  {
+    "data": {
+      "source": "Grhl3",
+      "target": "Lrrc41",
+      "annotation": [
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased startle reflex"
+      ],
+      "edge_size": 0.188
+    }
+  },
+  {
+    "data": {
+      "source": "Grhl3",
+      "target": "Akt2",
+      "annotation": [
+        "decreased circulating triglyceride level",
+        "increased circulating calcium level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.136
+    }
+  },
+  {
+    "data": {
+      "source": "Grhl3",
+      "target": "Ss18",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased startle reflex",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Grhl3",
+      "target": "Ndufs3",
+      "annotation": [
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.25
+    }
+  },
+  {
+    "data": {
+      "source": "Grhl3",
+      "target": "Chd7",
+      "annotation": [
+        "abnormal locomotor activation",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.231
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Ccnd2",
+      "annotation": [
+        "decreased total body fat amount",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.133
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Ky",
+      "annotation": [
+        "abnormal gait",
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "tremors"
+      ],
+      "edge_size": 0.208
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Bscl2",
+      "annotation": [
+        "abnormal gait",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "decreased total body fat amount",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.163
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Dtnbp1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased circulating phosphate level"
+      ],
+      "edge_size": 0.16
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Gbx1",
+      "annotation": [
+        "abnormal gait",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.138
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Tars3",
+      "annotation": [
+        "decreased startle reflex",
+        "decreased total body fat amount",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.148
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Ezh1",
+      "annotation": [
+        "decreased hematocrit",
+        "decreased prepulse inhibition",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.13
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Dtx1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.182
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Triobp",
+      "annotation": [
+        "decreased prepulse inhibition",
+        "decreased startle reflex",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.136
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Ttbk1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "decreased total body fat amount",
+        "increased circulating glucose level",
+        "increased lean body mass",
+        "tremors"
+      ],
+      "edge_size": 0.222
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Ndufs3",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.111
+    }
+  },
+  {
+    "data": {
+      "source": "Usp31",
+      "target": "Fbxo2",
+      "annotation": [
+        "decreased locomotor activity",
+        "decreased startle reflex",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.143
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Bscl2",
+      "annotation": [
+        "decreased total body fat amount",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased fasting circulating glucose level",
+        "increased lean body mass",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.189
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Dtnbp1",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased fasting circulating glucose level"
+      ],
+      "edge_size": 0.15
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Tars3",
+      "annotation": [
+        "decreased total body fat amount",
+        "hyperactivity",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.19
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Fam221a",
+      "annotation": [
+        "abnormal spine curvature",
+        "increased circulating glucose level",
+        "small testis"
+      ],
+      "edge_size": 0.125
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Lrrc41",
+      "annotation": [
+        "hyperactivity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.211
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Akt2",
+      "annotation": [
+        "increased bone mineral content",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.16
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Ttbk1",
+      "annotation": [
+        "decreased total body fat amount",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level",
+        "increased grip strength",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.227
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Topors",
+      "annotation": [
+        "hyperactivity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.107
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Ndufs3",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.143
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Fgl1",
+      "annotation": [
+        "increased bone mineral content",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.158
+    }
+  },
+  {
+    "data": {
+      "source": "Ccnd2",
+      "target": "Gck",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level"
+      ],
+      "edge_size": 0.188
+    }
+  },
+  {
+    "data": {
+      "source": "Ky",
+      "target": "Dtnbp1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased grip strength",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.2
     }
   },
   {
@@ -1694,11 +2712,12 @@
       "source": "Ky",
       "target": "Gbx1",
       "annotation": [
-        "Abnormal behavior",
-        "Abnormal gait",
-        "Decreased exploration in new environment"
+        "abnormal behavior",
+        "abnormal gait",
+        "decreased exploration in new environment",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.176
+      "edge_size": 0.222
     }
   },
   {
@@ -1706,9 +2725,21 @@
       "source": "Ky",
       "target": "Brd7",
       "annotation": [
-        "Abnormal behavior",
-        "Increased circulating glucose level",
-        "Tremors"
+        "abnormal behavior",
+        "increased circulating glucose level",
+        "tremors"
+      ],
+      "edge_size": 0.214
+    }
+  },
+  {
+    "data": {
+      "source": "Ky",
+      "target": "Eid2b",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased leukocyte cell number"
       ],
       "edge_size": 0.231
     }
@@ -1718,11 +2749,25 @@
       "source": "Ky",
       "target": "Ttbk1",
       "annotation": [
-        "Abnormal behavior",
-        "Decreased exploration in new environment",
-        "Tremors"
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "tremors"
       ],
-      "edge_size": 0.231
+      "edge_size": 0.294
+    }
+  },
+  {
+    "data": {
+      "source": "Ky",
+      "target": "Znhit2",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.25
     }
   },
   {
@@ -1730,11 +2775,23 @@
       "source": "Mrpl39",
       "target": "Znhit2",
       "annotation": [
-        "Decreased circulating bilirubin level",
-        "Increased circulating glucose level",
-        "Preweaning lethality, complete penetrance"
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
       ],
-      "edge_size": 0.5
+      "edge_size": 0.429
+    }
+  },
+  {
+    "data": {
+      "source": "Mrpl39",
+      "target": "Skor1",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.6
     }
   },
   {
@@ -1742,9 +2799,9 @@
       "source": "Mrpl39",
       "target": "Gcn1",
       "annotation": [
-        "Decreased circulating bilirubin level",
-        "Increased circulating glucose level",
-        "Preweaning lethality, complete penetrance"
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
       ],
       "edge_size": 0.75
     }
@@ -1754,47 +2811,60 @@
       "source": "Mrpl39",
       "target": "Thap12",
       "annotation": [
-        "Decreased circulating bilirubin level",
-        "Increased circulating glucose level",
-        "Preweaning lethality, complete penetrance"
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
       ],
       "edge_size": 0.75
     }
   },
   {
     "data": {
-      "source": "Bscl2",
-      "target": "Tnfaip1",
+      "source": "Elapor1",
+      "target": "Bscl2",
       "annotation": [
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating glucose level",
-        "Short tibia"
+        "increased circulating glucose level",
+        "increased fluid intake",
+        "short tibia"
       ],
-      "edge_size": 0.094
+      "edge_size": 0.086
     }
   },
   {
     "data": {
-      "source": "Bscl2",
-      "target": "Ezh1",
+      "source": "Elapor1",
+      "target": "Ggps1",
       "annotation": [
-        "Decreased erythrocyte cell number",
-        "Decreased prepulse inhibition",
-        "Increased circulating glucose level"
+        "abnormal retina blood vessel morphology",
+        "abnormal vitreous body morphology",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.097
+      "edge_size": 0.2
     }
   },
   {
     "data": {
-      "source": "Bscl2",
-      "target": "Sap30",
+      "source": "Elapor1",
+      "target": "Capn12",
       "annotation": [
-        "Increased circulating glucose level",
-        "Increased mean corpuscular hemoglobin",
-        "Increased mean corpuscular volume"
+        "abnormal vitreous body morphology",
+        "decreased exploration in new environment",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.1
+      "edge_size": 0.231
+    }
+  },
+  {
+    "data": {
+      "source": "Elapor1",
+      "target": "Bltp1",
+      "annotation": [
+        "abnormal retina blood vessel morphology",
+        "abnormal retina vasculature morphology",
+        "abnormal vitreous body morphology",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.211
     }
   },
   {
@@ -1802,11 +2872,96 @@
       "source": "Bscl2",
       "target": "Dtnbp1",
       "annotation": [
-        "Increased circulating glucose level",
-        "Increased circulating phosphate level",
-        "Increased fasting circulating glucose level"
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased fasting circulating glucose level"
       ],
-      "edge_size": 0.088
+      "edge_size": 0.083
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Tnfaip1",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "short tibia"
+      ],
+      "edge_size": 0.079
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Nras",
+      "annotation": [
+        "increased circulating HDL cholesterol level",
+        "increased circulating glucose level",
+        "short tibia"
+      ],
+      "edge_size": 0.097
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Gbx1",
+      "annotation": [
+        "abnormal gait",
+        "decreased locomotor activity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.103
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Ggps1",
+      "annotation": [
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.081
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Tars3",
+      "annotation": [
+        "decreased total body fat amount",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.079
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Ezh1",
+      "annotation": [
+        "decreased erythrocyte cell number",
+        "decreased prepulse inhibition",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.091
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Sap30",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.097
     }
   },
   {
@@ -1814,11 +2969,25 @@
       "source": "Bscl2",
       "target": "Lrrc41",
       "annotation": [
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating calcium level",
-        "Increased circulating glucose level"
+        "increased circulating alkaline phosphatase level",
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased lean body mass"
       ],
-      "edge_size": 0.088
+      "edge_size": 0.114
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Dtx1",
+      "annotation": [
+        "decreased locomotor activity",
+        "decreased prepulse inhibition",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.125
     }
   },
   {
@@ -1826,12 +2995,53 @@
       "source": "Bscl2",
       "target": "Akt2",
       "annotation": [
-        "Decreased body length",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating calcium level",
-        "Increased lean body mass"
+        "abnormal bone structure",
+        "decreased body length",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased lean body mass"
       ],
-      "edge_size": 0.105
+      "edge_size": 0.154
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Adora2a",
+      "annotation": [
+        "decreased locomotor activity",
+        "increased circulating alanine transaminase level",
+        "increased circulating aspartate transaminase level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.114
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Ttbk1",
+      "annotation": [
+        "decreased locomotor activity",
+        "decreased total body fat amount",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.132
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Afmid",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.097
     }
   },
   {
@@ -1839,11 +3049,26 @@
       "source": "Bscl2",
       "target": "Topors",
       "annotation": [
-        "Decreased bone mineral content",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating glucose level"
+        "decreased bone mineral content",
+        "decreased erythrocyte cell number",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.073
+      "edge_size": 0.093
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Ndufs3",
+      "annotation": [
+        "decreased erythrocyte cell number",
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased circulating phosphate level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.143
     }
   },
   {
@@ -1851,11 +3076,171 @@
       "source": "Bscl2",
       "target": "Fgl1",
       "annotation": [
-        "Increased circulating cholesterol level",
-        "Increased circulating glucose level",
-        "Increased circulating hdl cholesterol level"
+        "abnormal bone structure",
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level",
+        "increased lean body mass"
       ],
-      "edge_size": 0.103
+      "edge_size": 0.152
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Gck",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level"
+      ],
+      "edge_size": 0.094
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Usp47",
+      "annotation": [
+        "increased circulating HDL cholesterol level",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.133
+    }
+  },
+  {
+    "data": {
+      "source": "Bscl2",
+      "target": "Dbil5",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased circulating total protein level"
+      ],
+      "edge_size": 0.1
+    }
+  },
+  {
+    "data": {
+      "source": "Dtnbp1",
+      "target": "Capn12",
+      "annotation": [
+        "abnormal retina morphology",
+        "decreased exploration in new environment",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.214
+    }
+  },
+  {
+    "data": {
+      "source": "Dtnbp1",
+      "target": "Ttbk1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level"
+      ],
+      "edge_size": 0.158
+    }
+  },
+  {
+    "data": {
+      "source": "Dtnbp1",
+      "target": "Slc25a46",
+      "annotation": [
+        "decreased grip strength",
+        "increased circulating glucose level",
+        "increased fasting circulating glucose level"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Tnfaip1",
+      "target": "Rhbdf2",
+      "annotation": [
+        "abnormal bone mineralization",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.107
+    }
+  },
+  {
+    "data": {
+      "source": "Tnfaip1",
+      "target": "Lrrc41",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased startle reflex"
+      ],
+      "edge_size": 0.176
+    }
+  },
+  {
+    "data": {
+      "source": "Tnfaip1",
+      "target": "Akt2",
+      "annotation": [
+        "abnormal bone mineralization",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.182
+    }
+  },
+  {
+    "data": {
+      "source": "Tnfaip1",
+      "target": "Topors",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.12
+    }
+  },
+  {
+    "data": {
+      "source": "Tnfaip1",
+      "target": "Fgl1",
+      "annotation": [
+        "abnormal bone mineralization",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.188
+    }
+  },
+  {
+    "data": {
+      "source": "Insyn2b",
+      "target": "Tars3",
+      "annotation": [
+        "hyperactivity",
+        "increased circulating glucose level",
+        "increased leukocyte cell number"
+      ],
+      "edge_size": 0.231
+    }
+  },
+  {
+    "data": {
+      "source": "Gbx1",
+      "target": "Dtx1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.188
     }
   },
   {
@@ -1863,23 +3248,39 @@
       "source": "Gbx1",
       "target": "Ttbk1",
       "annotation": [
-        "Abnormal behavior",
-        "Decreased exploration in new environment",
-        "Decreased locomotor activity",
-        "Increased anxiety-related response",
-        "Increased thigmotaxis"
+        "abnormal behavior",
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased anxiety-related response",
+        "increased circulating glucose level",
+        "increased thigmotaxis"
       ],
-      "edge_size": 0.333
+      "edge_size": 0.3
     }
   },
   {
     "data": {
-      "source": "Ggps1",
-      "target": "Bltp1",
+      "source": "Rhbdf2",
+      "target": "Akt2",
       "annotation": [
-        "Abnormal lens morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract"
+        "abnormal bone mineralization",
+        "decreased bone mineral density",
+        "increased bone mineral content",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.167
+    }
+  },
+  {
+    "data": {
+      "source": "Rhbdf2",
+      "target": "Fgl1",
+      "annotation": [
+        "abnormal bone mineralization",
+        "increased bone mineral content",
+        "increased circulating glucose level",
+        "increased total body fat amount"
       ],
       "edge_size": 0.167
     }
@@ -1889,11 +3290,51 @@
       "source": "Ggps1",
       "target": "Capn12",
       "annotation": [
-        "Abnormal lens morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract"
+        "abnormal lens morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.333
+      "edge_size": 0.286
+    }
+  },
+  {
+    "data": {
+      "source": "Ggps1",
+      "target": "Bltp1",
+      "annotation": [
+        "abnormal lens morphology",
+        "abnormal retina blood vessel morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "impaired glucose tolerance",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.316
+    }
+  },
+  {
+    "data": {
+      "source": "Ggps1",
+      "target": "Fgl1",
+      "annotation": [
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.2
+    }
+  },
+  {
+    "data": {
+      "source": "Ggps1",
+      "target": "Usp47",
+      "annotation": [
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.273
     }
   },
   {
@@ -1901,11 +3342,61 @@
       "source": "Tars3",
       "target": "Lrrc41",
       "annotation": [
-        "Decreased vertical activity",
-        "Hyperactivity",
-        "Increased circulating glucose level"
+        "decreased vertical activity",
+        "hyperactivity",
+        "increased circulating glucose level",
+        "increased lean body mass"
       ],
       "edge_size": 0.25
+    }
+  },
+  {
+    "data": {
+      "source": "Tars3",
+      "target": "Akt2",
+      "annotation": [
+        "decreased bone mineral density",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.13
+    }
+  },
+  {
+    "data": {
+      "source": "Tars3",
+      "target": "Ttbk1",
+      "annotation": [
+        "decreased total body fat amount",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.143
+    }
+  },
+  {
+    "data": {
+      "source": "Tars3",
+      "target": "Topors",
+      "annotation": [
+        "decreased circulating serum albumin level",
+        "decreased circulating total protein level",
+        "hyperactivity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.167
+    }
+  },
+  {
+    "data": {
+      "source": "Tars3",
+      "target": "Ndufs3",
+      "annotation": [
+        "decreased circulating serum albumin level",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.167
     }
   },
   {
@@ -1913,23 +3404,47 @@
       "source": "Brd7",
       "target": "Lrrc41",
       "annotation": [
-        "Abnormal coat/ hair morphology",
-        "Abnormal vocalization",
-        "Increased circulating glucose level"
+        "abnormal coat/ hair morphology",
+        "abnormal vocalization",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.231
+      "edge_size": 0.214
     }
   },
   {
     "data": {
-      "source": "Dtnbp1",
-      "target": "Slc25a46",
+      "source": "Brd7",
+      "target": "Ttbk1",
       "annotation": [
-        "Decreased grip strength",
-        "Increased circulating glucose level",
-        "Increased fasting circulating glucose level"
+        "abnormal behavior",
+        "increased circulating glucose level",
+        "tremors"
       ],
-      "edge_size": 0.375
+      "edge_size": 0.167
+    }
+  },
+  {
+    "data": {
+      "source": "Sap30",
+      "target": "Afmid",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased mean corpuscular hemoglobin",
+        "increased mean corpuscular volume"
+      ],
+      "edge_size": 0.6
+    }
+  },
+  {
+    "data": {
+      "source": "Eid2b",
+      "target": "Ndufs3",
+      "annotation": [
+        "increased bone mineral density",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.214
     }
   },
   {
@@ -1937,12 +3452,62 @@
       "source": "Eid2b",
       "target": "Znhit2",
       "annotation": [
-        "Embryonic lethality prior to organogenesis",
-        "Increased circulating glucose level",
-        "Increased leukocyte cell number",
-        "Preweaning lethality, complete penetrance"
+        "embryonic lethality prior to organogenesis",
+        "increased circulating glucose level",
+        "increased grip strength",
+        "increased leukocyte cell number",
+        "preweaning lethality, complete penetrance"
       ],
-      "edge_size": 0.5
+      "edge_size": 0.625
+    }
+  },
+  {
+    "data": {
+      "source": "Eid2b",
+      "target": "Lmbrd1",
+      "annotation": [
+        "embryonic lethality prior to organogenesis",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.3
+    }
+  },
+  {
+    "data": {
+      "source": "Lrrc41",
+      "target": "Akt2",
+      "annotation": [
+        "increased circulating alkaline phosphatase level",
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.2
+    }
+  },
+  {
+    "data": {
+      "source": "Lrrc41",
+      "target": "Jakmip2",
+      "annotation": [
+        "hyperactivity",
+        "increased circulating glucose level",
+        "increased startle reflex"
+      ],
+      "edge_size": 0.231
+    }
+  },
+  {
+    "data": {
+      "source": "Lrrc41",
+      "target": "Ttbk1",
+      "annotation": [
+        "increased circulating glucose level",
+        "increased lean body mass",
+        "increased startle reflex"
+      ],
+      "edge_size": 0.158
     }
   },
   {
@@ -1950,11 +3515,35 @@
       "source": "Lrrc41",
       "target": "Topors",
       "annotation": [
-        "Hyperactivity",
-        "Increased circulating alkaline phosphatase level",
-        "Increased circulating glucose level"
+        "hyperactivity",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.15
+      "edge_size": 0.13
+    }
+  },
+  {
+    "data": {
+      "source": "Lrrc41",
+      "target": "Ndufs3",
+      "annotation": [
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.188
+    }
+  },
+  {
+    "data": {
+      "source": "Dtx1",
+      "target": "Ttbk1",
+      "annotation": [
+        "decreased exploration in new environment",
+        "decreased locomotor activity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.188
     }
   },
   {
@@ -1962,13 +3551,37 @@
       "source": "Vangl2",
       "target": "Bltp1",
       "annotation": [
-        "Abnormal retina morphology",
-        "Embryonic growth retardation",
-        "Increased circulating glucose level",
-        "Persistence of hyaloid vascular system",
-        "Preweaning lethality, complete penetrance"
+        "abnormal retina morphology",
+        "embryonic growth retardation",
+        "increased circulating glucose level",
+        "persistence of hyaloid vascular system",
+        "preweaning lethality, complete penetrance"
       ],
-      "edge_size": 0.192
+      "edge_size": 0.179
+    }
+  },
+  {
+    "data": {
+      "source": "Vangl2",
+      "target": "Skor1",
+      "annotation": [
+        "decreased circulating phosphate level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.158
+    }
+  },
+  {
+    "data": {
+      "source": "Akt2",
+      "target": "Adora2a",
+      "annotation": [
+        "decreased lean body mass",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.143
     }
   },
   {
@@ -1976,11 +3589,52 @@
       "source": "Akt2",
       "target": "Topors",
       "annotation": [
-        "Decreased lean body mass",
-        "Increased circulating alkaline phosphatase level",
-        "Increased total body fat amount"
+        "decreased lean body mass",
+        "increased circulating alkaline phosphatase level",
+        "increased circulating glucose level",
+        "increased total body fat amount"
       ],
-      "edge_size": 0.12
+      "edge_size": 0.143
+    }
+  },
+  {
+    "data": {
+      "source": "Akt2",
+      "target": "Ndufs3",
+      "annotation": [
+        "increased circulating calcium level",
+        "increased circulating glucose level",
+        "increased lean body mass"
+      ],
+      "edge_size": 0.136
+    }
+  },
+  {
+    "data": {
+      "source": "Akt2",
+      "target": "Fgl1",
+      "annotation": [
+        "abnormal bone mineralization",
+        "abnormal bone structure",
+        "increased bone mineral content",
+        "increased circulating glucose level",
+        "increased lean body mass",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.353
+    }
+  },
+  {
+    "data": {
+      "source": "Akt2",
+      "target": "Chd7",
+      "annotation": [
+        "decreased body length",
+        "decreased body weight",
+        "decreased lean body mass",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.235
     }
   },
   {
@@ -1988,37 +3642,133 @@
       "source": "Adora2a",
       "target": "Topors",
       "annotation": [
-        "Decreased lean body mass",
-        "Increased circulating glucose level",
-        "Increased total body fat amount"
+        "decreased lean body mass",
+        "increased circulating glucose level",
+        "increased total body fat amount"
       ],
-      "edge_size": 0.158
+      "edge_size": 0.13
     }
   },
   {
     "data": {
-      "source": "Elapor1",
+      "source": "Jakmip2",
+      "target": "Ttbk1",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "increased circulating glucose level",
+        "increased startle reflex"
+      ],
+      "edge_size": 0.176
+    }
+  },
+  {
+    "data": {
+      "source": "Jakmip2",
+      "target": "Topors",
+      "annotation": [
+        "abnormal auditory brainstem response",
+        "hyperactivity",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.143
+    }
+  },
+  {
+    "data": {
+      "source": "Capn12",
       "target": "Bltp1",
       "annotation": [
-        "Abnormal retina blood vessel morphology",
-        "Abnormal retina vasculature morphology",
-        "Abnormal vitreous body morphology",
-        "Increased circulating glucose level"
+        "abnormal lens morphology",
+        "abnormal retina morphology",
+        "abnormal vitreous body morphology",
+        "cataract",
+        "increased circulating glucose level"
       ],
-      "edge_size": 0.25
+      "edge_size": 0.278
+    }
+  },
+  {
+    "data": {
+      "source": "Pigz",
+      "target": "Topors",
+      "annotation": [
+        "decreased bone mineral content",
+        "increased circulating glucose level",
+        "increased total body fat amount"
+      ],
+      "edge_size": 0.176
+    }
+  },
+  {
+    "data": {
+      "source": "Topors",
+      "target": "Ndufs3",
+      "annotation": [
+        "decreased circulating serum albumin level",
+        "decreased erythrocyte cell number",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.125
     }
   },
   {
     "data": {
       "source": "Bltp1",
-      "target": "Capn12",
+      "target": "Ndufs3",
       "annotation": [
-        "Abnormal lens morphology",
-        "Abnormal retina morphology",
-        "Abnormal vitreous body morphology",
-        "Cataract"
+        "increased circulating glucose level",
+        "increased heart weight",
+        "preweaning lethality, complete penetrance"
       ],
-      "edge_size": 0.267
+      "edge_size": 0.136
+    }
+  },
+  {
+    "data": {
+      "source": "Bltp1",
+      "target": "Lmbrd1",
+      "annotation": [
+        "abnormal embryo size",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.167
+    }
+  },
+  {
+    "data": {
+      "source": "Fgl1",
+      "target": "Usp47",
+      "annotation": [
+        "increased circulating HDL cholesterol level",
+        "increased circulating cholesterol level",
+        "increased circulating glucose level"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Znhit2",
+      "target": "Lmbrd1",
+      "annotation": [
+        "embryonic lethality prior to organogenesis",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.333
+    }
+  },
+  {
+    "data": {
+      "source": "Znhit2",
+      "target": "Skor1",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.429
     }
   },
   {
@@ -2026,11 +3776,11 @@
       "source": "Znhit2",
       "target": "Gcn1",
       "annotation": [
-        "Decreased circulating bilirubin level",
-        "Increased circulating glucose level",
-        "Preweaning lethality, complete penetrance"
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
       ],
-      "edge_size": 0.6
+      "edge_size": 0.5
     }
   },
   {
@@ -2038,11 +3788,35 @@
       "source": "Znhit2",
       "target": "Thap12",
       "annotation": [
-        "Decreased circulating bilirubin level",
-        "Increased circulating glucose level",
-        "Preweaning lethality, complete penetrance"
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
       ],
-      "edge_size": 0.6
+      "edge_size": 0.5
+    }
+  },
+  {
+    "data": {
+      "source": "Skor1",
+      "target": "Gcn1",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.75
+    }
+  },
+  {
+    "data": {
+      "source": "Skor1",
+      "target": "Thap12",
+      "annotation": [
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
+      ],
+      "edge_size": 0.75
     }
   },
   {
@@ -2050,9 +3824,9 @@
       "source": "Gcn1",
       "target": "Thap12",
       "annotation": [
-        "Decreased circulating bilirubin level",
-        "Increased circulating glucose level",
-        "Preweaning lethality, complete penetrance"
+        "decreased circulating bilirubin level",
+        "increased circulating glucose level",
+        "preweaning lethality, complete penetrance"
       ],
       "edge_size": 1.0
     }

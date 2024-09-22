@@ -159,7 +159,11 @@
 
         // Fetch JSON data from the URL and assign to phenotypes
 
+        /* REMOVE_THIS_LINE
         const URL = "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/available_mp_terms.json";
+        REMOVE_THIS_LINE */
+
+        const URL = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1fc723ee0ba29a7162fd56394f2d30751d752e4c/gist_available_mp_terms.json"; // REMOVE_THIS_LINE
 
         fetch(URL)
             .then(response => response.json())
