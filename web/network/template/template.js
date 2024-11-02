@@ -23,7 +23,7 @@ const elements = (function () {
         }
     };
     /* REMOVE_THIS_LINE
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX_snake_case.json", false);
+    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/XXX_mp_term_name_underscore.json", false);
     REMOVE_THIS_LINE */
 
     // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false); // REMOVE_THIS_LINE
@@ -447,7 +447,7 @@ document.getElementById('export-png').addEventListener('click', function () {
 
     const a = document.createElement('a');
     a.href = pngContent;
-    a.download = 'TSUMUGI_XXX_snake_case.png';
+    a.download = 'TSUMUGI_XXX_mp_term_name_underscore.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -482,7 +482,7 @@ function exportConnectedComponentsToCSV() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'TSUMUGI_XXX_snake_case.csv';
+    a.download = 'TSUMUGI_XXX_mp_term_name_underscore.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
