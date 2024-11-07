@@ -1,7 +1,9 @@
 [![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
 
 <p align="center">
-<img src="image/tsumugi-logo.jpg" alt="Tsumugi Logo" width="90%">
+    <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/" target="_blank">
+        <img src="image/tsumugi-logo.jpg" alt="Tsumugi Logo" width="90%">
+    </a>
 </p>
 
 TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification) is a web tool for visualizing phenotype-driven gene networks.
