@@ -1,4 +1,8 @@
-<img src="image/tsumugi-logo.svg" alt="Tsumugi Logo" width="200">
+[![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
+
+<p align="center">
+<img src="image/tsumugi-logo.jpg" alt="Tsumugi Logo" width="90%">
+</p>
 
 
 ## IMPC Dataset
