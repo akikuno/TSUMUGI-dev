@@ -15,10 +15,9 @@ TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification
 ## Setting
 
 ```bash
-conda update conda -y
-conda create -y -n env-impc -c conda-forge python=3.10 \
+conda create -y -n env-tsumugi -c conda-forge python=3.10 \
     pip pytest ipykernel numpy pandas scikit-learn matplotlib seaborn \
     networkx dash dash_cytoscape
-conda activate env-impc
+conda activate env-tsumugi
 ```
 
