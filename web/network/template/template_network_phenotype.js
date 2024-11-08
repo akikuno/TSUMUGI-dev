@@ -22,8 +22,12 @@ const elements = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/increased_circulating_glucose_level.json", false);
+    /* REMOVE_THIS_LINE
+    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/phenotype/data/XXX_mp_term_name_underscore.json", false);
+    REMOVE_THIS_LINE */
 
+    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false); // REMOVE_THIS_LINE
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false); // REMOVE_THIS_LINE
 
     req.send(null);
     return result;
@@ -38,8 +42,11 @@ const map_symbol_to_id = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/marker_symbol_accession_id.json", false);
+    /* REMOVE_THIS_LINE
+    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/data/marker_symbol_accession_id.json", false);
+    REMOVE_THIS_LINE */
 
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false); // REMOVE_THIS_LINE
     req.send(null);
     return result;
 })();
@@ -440,7 +447,7 @@ document.getElementById('export-png').addEventListener('click', function () {
 
     const a = document.createElement('a');
     a.href = pngContent;
-    a.download = 'TSUMUGI_increased_circulating_glucose_level.png';
+    a.download = 'TSUMUGI_XXX_mp_term_name_underscore.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -475,7 +482,7 @@ function exportConnectedComponentsToCSV() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'TSUMUGI_increased_circulating_glucose_level.csv';
+    a.download = 'TSUMUGI_XXX_mp_term_name_underscore.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

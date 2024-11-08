@@ -3,9 +3,9 @@
 // ========================================================
 
 // const elements = [
-//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
-//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
-//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, } },
+//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 1, } },
+//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 0, } },
+//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 0, } },
 //     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
 //     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
 //     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
@@ -22,8 +22,11 @@ const elements = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/male_infertility.json", false);
+    /* REMOVE_THIS_LINE
+    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/genesymbol/data/XXX_genesymbol.json", false);
+    REMOVE_THIS_LINE */
 
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/a5e224c8ef258a4329708d7070986aaf831c0a05/gist_Rab10.json", false); // REMOVE_THIS_LINE
 
     req.send(null);
     return result;
@@ -38,11 +41,16 @@ const map_symbol_to_id = (function () {
             result = JSON.parse(req.responseText);
         }
     };
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/test-tsumugi/network/data/marker_symbol_accession_id.json", false);
+    /* REMOVE_THIS_LINE
+    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/data/marker_symbol_accession_id.json", false);
+    REMOVE_THIS_LINE */
+
+    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false); // REMOVE_THIS_LINE
 
     req.send(null);
     return result;
 })();
+
 
 // ========================================================
 // Normalize node color and edge sizes
@@ -164,7 +172,7 @@ function calculateConnectedComponents() {
     });
 
     // 結果をログに出力（デバッグ用）
-    console.log('Connected Components (Formatted):', connected_component);
+    // console.log('Connected Components (Formatted):', connected_component);
 
     // 必要に応じて connected_component を他の場所で利用可能にする
     return connected_component;
@@ -253,17 +261,6 @@ noUiSlider.create(edgeSlider, {
     step: 1
 });
 
-// Initialize the dual-range slider for node colors
-const nodeSlider = document.getElementById('filter-node-slider');
-noUiSlider.create(nodeSlider, {
-    start: [0, 10], // Set default values for the slider
-    connect: true,
-    range: {
-        'min': 0,
-        'max': 10
-    },
-    step: 1
-});
 
 // Update slider value display
 edgeSlider.noUiSlider.on('update', function (values) {
@@ -271,25 +268,15 @@ edgeSlider.noUiSlider.on('update', function (values) {
     filterElements();
 });
 
-nodeSlider.noUiSlider.on('update', function (values) {
-    document.getElementById('node-color-value').textContent = values.join(' - ');
-    filterElements();
-});
-
 // Modify the filter function to handle upper and lower bounds
 function filterElements() {
-    const nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat);
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
-    const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax);
-    const nodeMaxValue = scaleToOriginalRange(nodeSliderValues[1], nodeMin, nodeMax);
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
-    // Filter nodes based on color
     cy.nodes().forEach(function (node) {
-        const nodeColor = node.data('node_color');
-        node.style('display', (nodeColor >= nodeMinValue && nodeColor <= nodeMaxValue) ? 'element' : 'none');
+        node.style('display', 'element');
     });
 
     // Filter edges based on size
@@ -306,7 +293,30 @@ function filterElements() {
         }
     });
 
-    // After filtering, remove nodes with no connected visible edges
+    // calculateConnectedComponentsを利用して連結成分を取得
+    const connected_component = calculateConnectedComponents();
+
+    // node_colorが1のノードを含む連結成分のみを選択
+    const componentsWithNodeColor1 = connected_component.filter(component => {
+        return Object.keys(component).some(nodeLabel => {
+            const node = cy.$(`node[label="${nodeLabel}"]`);
+            return node.data('node_color') === 1;
+        });
+    });
+
+    // すべてのノードとエッジを一旦非表示にする
+    cy.nodes().style('display', 'none');
+    cy.edges().style('display', 'none');
+
+    // node_colorが1のノードを含む連結成分のみ表示
+    componentsWithNodeColor1.forEach(component => {
+        Object.keys(component).forEach(nodeLabel => {
+            const node = cy.$(`node[label="${nodeLabel}"]`);
+            node.style('display', 'element');
+            node.connectedEdges().style('display', 'element');
+        });
+    });
+
     cy.nodes().forEach(function (node) {
         const connectedEdges = node.connectedEdges().filter(edge => edge.style('display') === 'element');
         if (connectedEdges.length === 0) {
@@ -440,7 +450,7 @@ document.getElementById('export-png').addEventListener('click', function () {
 
     const a = document.createElement('a');
     a.href = pngContent;
-    a.download = 'TSUMUGI_male_infertility.png';
+    a.download = 'TSUMUGI_XXX_genesymbol.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -475,7 +485,7 @@ function exportConnectedComponentsToCSV() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'TSUMUGI_male_infertility.csv';
+    a.download = 'TSUMUGI_XXX_genesymbol.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
