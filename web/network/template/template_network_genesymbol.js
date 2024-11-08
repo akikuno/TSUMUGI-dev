@@ -23,7 +23,11 @@ const elements = (function () {
         }
     };
     /* REMOVE_THIS_LINE
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/genesymbol/data/XXX_genesymbol.json", false);
+    req.open("GET", "../data/XXX_genesymbol.json", false);
+    REMOVE_THIS_LINE */
+
+    /* REMOVE_THIS_LINE
+    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/genesymbol/data/XXX_genesymbol.json", false); REMOVE_THIS_LINE
     REMOVE_THIS_LINE */
 
     req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/a5e224c8ef258a4329708d7070986aaf831c0a05/gist_Rab10.json", false); // REMOVE_THIS_LINE
