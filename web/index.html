@@ -163,6 +163,7 @@
         <input type="text" id="phenotype" name="phenotype" placeholder="e.g: infertility">
         <ul id="phenotypeSuggestions" class="suggestions"></ul>
         <button type="submit" id="phenotypeSubmitBtn" disabled>Submit</button>
+        <p>Version 0.1.0</p>
     </form>
 
     <!-- Gene Symbol Search Form (initially hidden) -->
@@ -181,6 +182,8 @@
         <input type="text" id="gene" name="gene" placeholder="e.g: Rac1">
         <ul id="geneSuggestions" class="suggestions"></ul>
         <button type="submit" id="geneSubmitBtn" disabled>Submit</button>
+
+        <p>Version 0.1.0</p>
     </form>
 
 
@@ -203,8 +206,8 @@
 
         // Fetch JSON data from the URL and assign to phenotypes
 
-        const URL_MP_TERMS = "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/data/available_mp_terms.json";
-        const URL_GENE_SYMBOLS = "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/data/available_gene_symbols.txt";
+        const URL_MP_TERMS = "./network/data/available_mp_terms.json";
+        const URL_GENE_SYMBOLS = "./network/data/available_gene_symbols.txt";
 
 
         let phenotypes = {};

@@ -16,9 +16,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TSUMUGI</title>
     <link rel="icon" type="image/png" href="image/icon-tsumugi.png">
+    <link rel="stylesheet" href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/network/css/normalize.css">
     <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet'>
-    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Lato', 'Arial', 'Helvetica', sans-serif;
@@ -88,7 +89,7 @@
             background-color: #f0f0f0;
         }
 
-        button {
+        button.submitBtn {
             margin-top: 20px;
             padding: 12px 20px;
             font-size: 1em;
@@ -101,14 +102,34 @@
             font-family: 'Lato', 'Arial', 'Helvetica', sans-serif;
         }
 
-        button:disabled {
+        button.submitBtn:disabled {
             background-color: #999;
             cursor: not-allowed;
         }
 
-        button:hover:enabled {
+        button.submitBtn:hover:enabled {
             background-color: #ff7800;
         }
+
+        /* Default tab styling */
+        button.Tab {
+            background-color: #eee;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 0;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Active tab styling */
+        .active-tab {
+            background-color: #ff7800 !important;
+            color: #fff !important;
+        }
+
 
         footer {
             text-align: center;
@@ -154,15 +175,20 @@
 
         <!-- Tabs for Phenotype and Gene -->
         <div>
-            <button id="phenotypeTab" onclick="showTab('phenotype')">Phenotype</button>
-            <button id="geneTab" onclick="showTab('gene')">Gene</button>
+            <button class="Tab phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
+            <button class="Tab geneTab" type="button" onclick="showTab('gene')">Gene</button>
         </div>
-        <br>
 
+        <!-- <div>
+            <button class="Tab" id="phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
+            <button class="Tab" id="geneTab" type="button" onclick="showTab('gene')">Gene</button>
+        </div> -->
+
+        <br>
         <label for="phenotype">Select a phenotype of interest</label>
         <input type="text" id="phenotype" name="phenotype" placeholder="e.g: infertility">
         <ul id="phenotypeSuggestions" class="suggestions"></ul>
-        <button type="submit" id="phenotypeSubmitBtn" disabled>Submit</button>
+        <button class="submitBtn" type="submit" id="phenotypeSubmitBtn" disabled>Submit</button>
     </form>
 
     <!-- Gene Symbol Search Form (initially hidden) -->
@@ -172,19 +198,26 @@
 
         <!-- Tabs for Phenotype and Gene -->
         <div>
-            <button id="phenotypeTab" onclick="showTab('phenotype')">Phenotype</button>
-            <button id="geneTab" onclick="showTab('gene')">Gene</button>
+            <button class="Tab phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
+            <button class="Tab geneTab" type="button" onclick="showTab('gene')">Gene</button>
         </div>
-        <br>
+        <!-- <div>
+            <button class="Tab" id="phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
+            <button class="Tab" id="geneTab" type="button" onclick="showTab('gene')">Gene</button>
+        </div> -->
 
+        <br>
         <label for="gene">Enter a gene symbol</label>
         <input type="text" id="gene" name="gene" placeholder="e.g: Rac1">
         <ul id="geneSuggestions" class="suggestions"></ul>
-        <button type="submit" id="geneSubmitBtn" disabled>Submit</button>
+        <button class="submitBtn" type="submit" id="geneSubmitBtn" disabled>Submit</button>
+
     </form>
 
 
     <footer>
+        TSUMUGI (version 0.1.0)
+        <br>
         <i class="fa-brands fa-github"></i><a href="https://github.com/akikuno/TSUMUGI" target="_blank">GitHub</a>
         <!-- <i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> -->
         <br>
@@ -195,17 +228,49 @@
 
     <script>
 
+        // ====================================================================
         // Toggle between phenotype and gene forms
+        // ====================================================================
+        // function showTab(tab) {
+        //     // Display the appropriate form
+        //     document.getElementById('phenotypeForm').style.display = tab === 'phenotype' ? 'block' : 'none';
+        //     document.getElementById('geneForm').style.display = tab === 'gene' ? 'block' : 'none';
+
+        //     // Remove 'active-tab' class from both tabs
+        //     document.getElementById('phenotypeTab').classList.remove('active-tab');
+        //     document.getElementById('geneTab').classList.remove('active-tab');
+
+        //     // Add 'active-tab' class to the selected tab
+        //     const selectedTab = document.getElementById(tab + 'Tab');
+        //     selectedTab.classList.add('active-tab');
+        // }
+
         function showTab(tab) {
+            // Display the appropriate form
             document.getElementById('phenotypeForm').style.display = tab === 'phenotype' ? 'block' : 'none';
             document.getElementById('geneForm').style.display = tab === 'gene' ? 'block' : 'none';
-        }
 
+            // Remove 'active-tab' class from all tabs
+            document.querySelectorAll('.Tab').forEach(tabButton => {
+                tabButton.classList.remove('active-tab');
+            });
+
+            // Add 'active-tab' class to the selected tab
+            const selectedTabs = document.querySelectorAll(`.${tab}Tab`);
+            selectedTabs.forEach(tabButton => {
+                tabButton.classList.add('active-tab');
+            });
+        }
+        // Initialize by showing the Phenotype tab as the default
+        showTab('phenotype');
+
+        // ====================================================================
         // Fetch JSON data from the URL and assign to phenotypes
+        // ====================================================================
 
         /* REMOVE_THIS_LINE
-        const URL_MP_TERMS = "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/data/available_mp_terms.json";
-        const URL_GENE_SYMBOLS = "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/data/available_gene_symbols.txt";
+        const URL_MP_TERMS = "./network/data/available_mp_terms.json";
+        const URL_GENE_SYMBOLS = "./network/data/available_gene_symbols.txt";
         REMOVE_THIS_LINE */
 
         const URL_MP_TERMS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1fc723ee0ba29a7162fd56394f2d30751d752e4c/gist_available_mp_terms.json"; // REMOVE_THIS_LINE
@@ -312,9 +377,16 @@
         // タブ切り替え用関数
         function setSearchMode(mode) {
             searchMode = mode;
+
+            // モードに応じて適切な要素を設定
+            const input = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
+            const suggestions = mode === 'phenotype' ? document.getElementById('phenotypeSuggestions') : document.getElementById('geneSuggestions');
+            const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
+
             input.value = '';            // 入力フィールドをリセット
             suggestions.innerHTML = '';  // サジェストリストをクリア
             submitBtn.disabled = true;   // 送信ボタンを無効化
+
         }
 
         // タブ切り替えボタンのイベントリスナー
