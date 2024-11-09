@@ -16,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TSUMUGI</title>
     <link rel="icon" type="image/png" href="image/icon-tsumugi.png">
-    <link rel="stylesheet" href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/network/css/normalize.css">
+    <link rel="stylesheet" href="./network/css/normalize.css">
     <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet'>
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
     <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
@@ -390,8 +390,12 @@
         }
 
         // タブ切り替えボタンのイベントリスナー
-        document.getElementById('phenotypeTab').addEventListener('click', () => setSearchMode('phenotype'));
-        document.getElementById('geneTab').addEventListener('click', () => setSearchMode('geneSymbol'));
+        document.querySelectorAll('.phenotypeTab').forEach(button => {
+            button.addEventListener('click', () => setSearchMode('phenotype'));
+        });
+        document.querySelectorAll('.geneTab').forEach(button => {
+            button.addEventListener('click', () => setSearchMode('geneSymbol'));
+        });
 
         // イベントリスナーの設定
         document.getElementById('phenotype').addEventListener('input', (event) => handleInput(event, 'phenotype'));

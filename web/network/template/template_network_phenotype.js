@@ -23,7 +23,7 @@ const elements = (function () {
         }
     };
     /* REMOVE_THIS_LINE
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/phenotype/data/XXX_mp_term_name_underscore.json", false);
+    req.open("GET", "./data/XXX_mp_term_name_underscore.json", false);
     REMOVE_THIS_LINE */
 
     // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false); // REMOVE_THIS_LINE
@@ -43,7 +43,7 @@ const map_symbol_to_id = (function () {
         }
     };
     /* REMOVE_THIS_LINE
-    req.open("GET", "https://www.md.tsukuba.ac.jp/LabAnimalResCNT/tsumugi/network/data/marker_symbol_accession_id.json", false);
+    req.open("GET", "../data/marker_symbol_accession_id.json", false);
     REMOVE_THIS_LINE */
 
     req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false); // REMOVE_THIS_LINE
