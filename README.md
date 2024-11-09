@@ -1,4 +1,3 @@
-[![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
 
 <p align="center">
     <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/" target="_blank">
