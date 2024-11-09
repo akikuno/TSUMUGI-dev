@@ -75,4 +75,3 @@ https://www.mousephenotype.org/help/programmatic-data-access/data-fields/
 1つの表現型だけが似ているというものを除くため、2つ以上のeffect_size != 0があるもの
 
 
-- Logo font: [Sitka](https://learn.microsoft.com/ja-jp/typography/font-list/sitka)
