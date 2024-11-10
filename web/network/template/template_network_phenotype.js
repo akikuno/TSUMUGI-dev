@@ -171,7 +171,7 @@ function calculateConnectedComponents() {
     });
 
     // 結果をログに出力（デバッグ用）
-    console.log('Connected Components (Formatted):', connected_component);
+    // console.log('Connected Components (Formatted):', connected_component);
 
     // 必要に応じて connected_component を他の場所で利用可能にする
     return connected_component;
