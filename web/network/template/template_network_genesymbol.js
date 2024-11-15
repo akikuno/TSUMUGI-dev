@@ -188,87 +188,29 @@ cy.on('layoutstop', function () {
 // Visualization handling
 // ========================================================
 
+// --------------------------------------------------------
+// Network layout dropdown
+// --------------------------------------------------------
+
 document.getElementById('layout-dropdown').addEventListener('change', function () {
     currentLayout = this.value;
     cy.layout({ name: currentLayout }).run();
 });
 
-// Font size slider
-const fontSizeSlider = document.getElementById('font-size-slider');
-noUiSlider.create(fontSizeSlider, {
-    start: 20, // default value
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 50
-    },
-    step: 1
-});
-fontSizeSlider.noUiSlider.on('update', function (value) {
-    document.getElementById('font-size-value').textContent = value;
-    cy.style().selector('node').style('font-size', value + 'px').update();
-});
-
-// Edge width slider
-const edgeWidthSlider = document.getElementById('edge-width-slider');
-noUiSlider.create(edgeWidthSlider, {
-    start: 5, // default value
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 10
-    },
-    step: 1
-});
-edgeWidthSlider.noUiSlider.on('update', function (value) {
-    document.getElementById('edge-width-value').textContent = value;
-    cy.style().selector('edge').style('width', function (ele) {
-        return scaleValue(ele.data('edge_size'), edgeMin, edgeMax, 0.5, 2) * value;
-    }).update();
-});
-
-// Node repulsion slider
-const nodeRepulsionSlider = document.getElementById('nodeRepulsion-slider');
-noUiSlider.create(nodeRepulsionSlider, {
-    start: 5, // default value
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 10
-    },
-    step: 1
-});
-nodeRepulsionSlider.noUiSlider.on('update', function (value) {
-    nodeRepulsionValue = scaleToOriginalRange(parseFloat(value), nodeRepulsionMin, nodeRepulsionMax);
-    componentSpacingValue = scaleToOriginalRange(parseFloat(value), componentSpacingMin, componentSpacingMax);
-    document.getElementById('node-repulsion-value').textContent = value;
-    cy.layout(getLayoutOptions()).run();
-});
-
-// ========================================================
-// Filtering function for nodes and edges
-// ========================================================
-
-// Initialize the dual-range slider for edge sizes
+// --------------------------------------------------------
+// Initialization of the Slider for Phenotypes similarity
+// --------------------------------------------------------
 const edgeSlider = document.getElementById('filter-edge-slider');
 noUiSlider.create(edgeSlider, {
-    start: [0, 10], // Set default values for the slider
+    start: [1, 10],
     connect: true,
     range: {
-        'min': 0,
+        'min': 1,
         'max': 10
     },
     step: 1
 });
 
-
-// Update slider value display
-edgeSlider.noUiSlider.on('update', function (values) {
-    document.getElementById('edge-size-value').textContent = values.join(' - ');
-    filterElements();
-});
-
-// Modify the filter function to handle upper and lower bounds
 function filterElements() {
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
@@ -327,6 +269,83 @@ function filterElements() {
     // Reapply layout after filtering
     cy.layout(getLayoutOptions()).run();
 }
+
+// --------------------------------------------------------
+// Update the slider values when the sliders are moved
+// --------------------------------------------------------
+
+edgeSlider.noUiSlider.on('update', function (values) {
+    const intValues = values.map(value => Math.round(value));
+    document.getElementById('edge-size-value').textContent = intValues.join(' - ');
+    filterElements();
+});
+
+
+// ========================================================
+// Cytoscape's visualization setting
+// ========================================================
+
+// --------------------------------------------------------
+// Slider for Font size
+// --------------------------------------------------------
+const fontSizeSlider = document.getElementById('font-size-slider');
+noUiSlider.create(fontSizeSlider, {
+    start: 20,
+    connect: [true, false],
+    range: {
+        'min': 1,
+        'max': 50
+    },
+    step: 1
+});
+fontSizeSlider.noUiSlider.on('update', function (value) {
+    const intValues = Math.round(value);
+    document.getElementById('font-size-value').textContent = intValues;
+    cy.style().selector('node').style('font-size', intValues + 'px').update();
+});
+
+// --------------------------------------------------------
+// Slider for Edge width
+// --------------------------------------------------------
+const edgeWidthSlider = document.getElementById('edge-width-slider');
+noUiSlider.create(edgeWidthSlider, {
+    start: 5,
+    connect: [true, false],
+    range: {
+        'min': 1,
+        'max': 10
+    },
+    step: 1
+});
+edgeWidthSlider.noUiSlider.on('update', function (value) {
+    const intValues = Math.round(value);
+    document.getElementById('edge-width-value').textContent = intValues;
+    cy.style().selector('edge').style('width', function (ele) {
+        return scaleValue(ele.data('edge_size'), edgeMin, edgeMax, 0.5, 2) * intValues;
+    }).update();
+});
+
+// --------------------------------------------------------
+// Slider for Node repulsion
+// --------------------------------------------------------
+const nodeRepulsionSlider = document.getElementById('nodeRepulsion-slider');
+noUiSlider.create(nodeRepulsionSlider, {
+    start: 5,
+    connect: [true, false],
+    range: {
+        'min': 1,
+        'max': 10
+    },
+    step: 1
+});
+nodeRepulsionSlider.noUiSlider.on('update', function (value) {
+    const intValues = Math.round(value);
+    nodeRepulsionValue = scaleToOriginalRange(parseFloat(intValues), nodeRepulsionMin, nodeRepulsionMax);
+    componentSpacingValue = scaleToOriginalRange(parseFloat(intValues), componentSpacingMin, componentSpacingMax);
+    document.getElementById('node-repulsion-value').textContent = intValues;
+    cy.layout(getLayoutOptions()).run();
+});
+
 
 // ========================================================
 // Tooltip handling
