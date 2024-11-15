@@ -179,14 +179,10 @@
             <button class="Tab geneTab" type="button" onclick="showTab('gene')">Gene</button>
         </div>
 
-        <!-- <div>
-            <button class="Tab" id="phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
-            <button class="Tab" id="geneTab" type="button" onclick="showTab('gene')">Gene</button>
-        </div> -->
-
         <br>
         <label for="phenotype">Select a phenotype of interest</label>
-        <input type="text" id="phenotype" name="phenotype" placeholder="e.g: increased fasting circulating glucose level">
+        <input type="text" id="phenotype" name="phenotype"
+            placeholder="e.g: increased fasting circulating glucose level">
         <ul id="phenotypeSuggestions" class="suggestions"></ul>
         <button class="submitBtn" type="submit" id="phenotypeSubmitBtn" disabled>Submit</button>
     </form>
@@ -201,10 +197,6 @@
             <button class="Tab phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
             <button class="Tab geneTab" type="button" onclick="showTab('gene')">Gene</button>
         </div>
-        <!-- <div>
-            <button class="Tab" id="phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
-            <button class="Tab" id="geneTab" type="button" onclick="showTab('gene')">Gene</button>
-        </div> -->
 
         <br>
         <label for="gene">Enter a gene symbol</label>
@@ -231,19 +223,6 @@
         // ====================================================================
         // Toggle between phenotype and gene forms
         // ====================================================================
-        // function showTab(tab) {
-        //     // Display the appropriate form
-        //     document.getElementById('phenotypeForm').style.display = tab === 'phenotype' ? 'block' : 'none';
-        //     document.getElementById('geneForm').style.display = tab === 'gene' ? 'block' : 'none';
-
-        //     // Remove 'active-tab' class from both tabs
-        //     document.getElementById('phenotypeTab').classList.remove('active-tab');
-        //     document.getElementById('geneTab').classList.remove('active-tab');
-
-        //     // Add 'active-tab' class to the selected tab
-        //     const selectedTab = document.getElementById(tab + 'Tab');
-        //     selectedTab.classList.add('active-tab');
-        // }
 
         function showTab(tab) {
             // Display the appropriate form
