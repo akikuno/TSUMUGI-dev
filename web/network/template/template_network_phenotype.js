@@ -1,6 +1,6 @@
-// ========================================================
-// Input handling
-// ========================================================
+// ****************************************************************************
+// Input handler
+// ****************************************************************************
 
 // const elements = [
 //     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
@@ -12,6 +12,34 @@
 // ];
 
 // const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
+
+// let cachedElements = null;
+
+// const getElements = async () => {
+//     if (cachedElements !== null) {
+//         return cachedElements;
+//     }
+
+//     try {
+//         const response = await fetch("https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json");
+//         if (!response.ok) {
+//             throw new Error("Network response was not ok");
+//         }
+//         cachedElements = await response.json();
+//         return cachedElements;
+//     } catch (error) {
+//         console.error("Fetch error: ", error);
+//         return null;
+//     }
+// };
+
+// // Usage example
+// getElements().then(elements => {
+//     if (elements) {
+//         console.log("getElements;", elements);
+//         console.log("cachedElements after fetching:", cachedElements);
+//     }
+// });
 
 
 const elements = (function () {
@@ -51,9 +79,9 @@ const map_symbol_to_id = (function () {
     return result;
 })();
 
-// ========================================================
+// ****************************************************************************
 // Normalize node color and edge sizes
-// ========================================================
+// ****************************************************************************
 
 const nodeSizes = elements.filter(ele => ele.data.node_color !== undefined).map(ele => ele.data.node_color);
 const edgeSizes = elements.filter(ele => ele.data.edge_size !== undefined).map(ele => ele.data.edge_size);
@@ -88,9 +116,9 @@ function getColorForValue(value) {
     return `rgb(${r}, ${g}, ${b})`;
 }
 
-// ========================================================
-// Cytoscape handling
-// ========================================================
+// ****************************************************************************
+// Cytoscape Elements handler
+// ****************************************************************************
 
 
 function getLayoutOptions() {
@@ -183,9 +211,128 @@ cy.on('layoutstop', function () {
 });
 
 
-// ========================================================
-// Visualization handling
-// ========================================================
+// ****************************************************************************
+// Cytoscape's Tooltip handler
+// ****************************************************************************
+
+// Utility function: Create a tooltip element
+function createTooltipElement(text, position) {
+    const tooltip = document.createElement('div');
+    tooltip.classList.add('cy-tooltip');
+    tooltip.innerHTML = text;
+    tooltip.style.position = 'absolute';
+    tooltip.style.left = (position.x + 10) + 'px';  // Position to the right of the element
+    tooltip.style.top = (position.y + 10) + 'px';   // Position slightly below the element
+    tooltip.style.padding = '5px';
+    tooltip.style.background = 'white';
+    tooltip.style.border = '1px solid #ccc';
+    tooltip.style.borderRadius = '5px';
+    tooltip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+    tooltip.style.zIndex = '1000';
+    tooltip.style.cursor = 'move';  // Show the move cursor
+    tooltip.style.userSelect = 'text';  // Allow text selection
+    return tooltip;
+}
+
+// Utility function: Add drag functionality to a tooltip
+function enableTooltipDrag(tooltip) {
+    let isDragging = false;
+    let offset = { x: 0, y: 0 };
+
+    tooltip.addEventListener('mousedown', function (e) {
+        e.stopPropagation(); // Prevent Cytoscape from receiving this event
+        isDragging = true;
+        const rect = tooltip.getBoundingClientRect();
+        offset.x = e.clientX - rect.left;
+        offset.y = e.clientY - rect.top;
+        tooltip.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (isDragging) {
+            const containerRect = document.querySelector('.cy').getBoundingClientRect();
+            tooltip.style.left = (e.clientX - offset.x - containerRect.left) + 'px';
+            tooltip.style.top = (e.clientY - offset.y - containerRect.top) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', function () {
+        isDragging = false;
+        tooltip.style.cursor = 'move';
+    });
+}
+
+// Function: Generate tooltip text for a node
+function getNodeTooltipText(data) {
+    const annotations = Array.isArray(data.annotation)
+        ? data.annotation.map(anno => '・ ' + anno).join('<br>')
+        : '・ ' + data.annotation;
+
+    const url_impc = `https://www.mousephenotype.org/data/genes/${map_symbol_to_id[data.label]}`;
+    return `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>` + annotations;
+}
+
+// Function: Generate tooltip text for an edge
+function getEdgeTooltipText(data) {
+    const sourceNode = cy.getElementById(data.source).data('label');
+    const targetNode = cy.getElementById(data.target).data('label');
+    const annotations = Array.isArray(data.annotation)
+        ? data.annotation.map(anno => '・ ' + anno).join('<br>')
+        : '・ ' + data.annotation;
+
+    return `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>` + annotations;
+}
+
+// Function: Calculate the midpoint of an edge
+function getEdgeMidpoint(sourceId, targetId) {
+    const sourcePos = cy.getElementById(sourceId).renderedPosition();
+    const targetPos = cy.getElementById(targetId).renderedPosition();
+    return {
+        x: (sourcePos.x + targetPos.x) / 2,
+        y: (sourcePos.y + targetPos.y) / 2
+    };
+}
+
+// Main Cytoscape event listener
+cy.on('tap', 'node, edge', function (event) {
+    const data = event.target.data();
+    let tooltipText = '';
+    let pos;
+
+    // Remove any existing tooltips
+    document.querySelectorAll('.cy-tooltip').forEach(el => el.remove());
+
+    if (event.target.isNode()) {
+        tooltipText = getNodeTooltipText(data);
+        pos = event.target.renderedPosition();
+    } else if (event.target.isEdge()) {
+        tooltipText = getEdgeTooltipText(data);
+        pos = getEdgeMidpoint(data.source, data.target);
+    }
+
+    // Create and display tooltip
+    const tooltip = createTooltipElement(tooltipText, pos);
+    document.querySelector('.cy').appendChild(tooltip);
+
+    // Enable drag functionality for the tooltip
+    enableTooltipDrag(tooltip);
+});
+
+
+// Hide tooltip when tapping on background
+cy.on('tap', function (event) {
+    // If the clicked element is not a node or edge, remove the tooltip
+    if (event.target === cy) {
+        document.querySelectorAll('.cy-tooltip').forEach(function (el) {
+            el.remove();
+        });
+    }
+});
+
+
+// ****************************************************************************
+// Control panel handler
+// ****************************************************************************
 
 // --------------------------------------------------------
 // Network layout dropdown
@@ -286,9 +433,9 @@ nodeSlider.noUiSlider.on('update', function (values) {
 });
 
 
-// ========================================================
+// ****************************************************************************
 // Cytoscape's visualization setting
-// ========================================================
+// ****************************************************************************
 
 // --------------------------------------------------------
 // Slider for Font size
@@ -352,115 +499,9 @@ nodeRepulsionSlider.noUiSlider.on('update', function (value) {
 });
 
 
-// ========================================================
-// Tooltip handling
-// ========================================================
-
-cy.on('tap', 'node, edge', function (event) {
-    const data = event.target.data();
-    let tooltipText = '';
-
-    // Remove any existing tooltips
-    document.querySelectorAll('.cy-tooltip').forEach(function (el) {
-        el.remove();
-    });
-
-    let pos;
-
-    if (event.target.isNode()) {
-        const annotations = Array.isArray(data.annotation)
-            ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
-            : '・ ' + data.annotation;
-
-        // Get the MGI link from the map_symbol_to_id
-        const url_impc = `https://www.mousephenotype.org/data/genes/${map_symbol_to_id[data.label]}`;
-
-        // Construct the tooltipText with the hyperlink
-        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>` + annotations;
-
-        // Get position of the tapped node
-        pos = event.target.renderedPosition();
-
-    } else if (event.target.isEdge()) {
-        const sourceNode = cy.getElementById(data.source).data('label');
-        const targetNode = cy.getElementById(data.target).data('label');
-        const annotations = Array.isArray(data.annotation)
-            ? data.annotation.map(function (anno) { return '・ ' + anno; }).join('<br>')
-            : '・ ' + data.annotation;
-
-        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>` + annotations;
-
-        // Calculate the midpoint of the edge for tooltip positioning
-        const sourcePos = cy.getElementById(data.source).renderedPosition();
-        const targetPos = cy.getElementById(data.target).renderedPosition();
-        pos = {
-            x: (sourcePos.x + targetPos.x) / 2,
-            y: (sourcePos.y + targetPos.y) / 2
-        };
-    }
-
-    // Create a tooltip element
-    const tooltip = document.createElement('div');
-    tooltip.classList.add('cy-tooltip');
-    tooltip.innerHTML = tooltipText;
-    tooltip.style.position = 'absolute';
-    tooltip.style.left = (pos.x + 10) + 'px';  // Position to the right of the element
-    tooltip.style.top = (pos.y + 10) + 'px';   // Position slightly below the element
-    tooltip.style.padding = '5px';
-    tooltip.style.background = 'white';
-    tooltip.style.border = '1px solid #ccc';
-    tooltip.style.borderRadius = '5px';
-    tooltip.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-    tooltip.style.zIndex = '1000';
-    tooltip.style.cursor = 'move';  // Show the move cursor
-    tooltip.style.userSelect = 'text';  // Allow text selection
-
-    // Append the tooltip to the container
-    document.querySelector('.cy').appendChild(tooltip);
-
-    // Handle drag events to move the tooltip
-    let isDragging = false;
-    let offset = { x: 0, y: 0 };
-
-    tooltip.addEventListener('mousedown', function (e) {
-        e.stopPropagation(); // Prevent Cytoscape from receiving this event
-        isDragging = true;
-        const rect = tooltip.getBoundingClientRect();
-        offset.x = e.clientX - rect.left;
-        offset.y = e.clientY - rect.top;
-        tooltip.style.cursor = 'grabbing';
-    });
-
-    document.addEventListener('mousemove', function (e) {
-        if (isDragging) {
-            const containerRect = document.querySelector('.cy').getBoundingClientRect();
-            // Adjust the tooltip's position, keeping the offset constant
-            tooltip.style.left = (e.clientX - offset.x - containerRect.left) + 'px';
-            tooltip.style.top = (e.clientY - offset.y - containerRect.top) + 'px';
-        }
-    });
-
-    document.addEventListener('mouseup', function () {
-        isDragging = false;
-        tooltip.style.cursor = 'move';
-    });
-});
-
-
-// Hide tooltip when tapping on background
-cy.on('tap', function (event) {
-    // If the clicked element is not a node or edge, remove the tooltip
-    if (event.target === cy) {
-        document.querySelectorAll('.cy-tooltip').forEach(function (el) {
-            el.remove();
-        });
-    }
-});
-
-
-// ========================================================
+// ****************************************************************************
 // Exporter
-// ========================================================
+// ****************************************************************************
 
 // --------------------------------------------------------
 // PNG Exporter
