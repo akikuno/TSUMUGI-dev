@@ -13,34 +13,6 @@
 
 // const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
 
-// let cachedElements = null;
-
-// const getElements = async () => {
-//     if (cachedElements !== null) {
-//         return cachedElements;
-//     }
-
-//     try {
-//         const response = await fetch("https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json");
-//         if (!response.ok) {
-//             throw new Error("Network response was not ok");
-//         }
-//         cachedElements = await response.json();
-//         return cachedElements;
-//     } catch (error) {
-//         console.error("Fetch error: ", error);
-//         return null;
-//     }
-// };
-
-// // Usage example
-// getElements().then(elements => {
-//     if (elements) {
-//         console.log("getElements;", elements);
-//         console.log("cachedElements after fetching:", cachedElements);
-//     }
-// });
-
 
 const elements = (function () {
     const req = new XMLHttpRequest();
