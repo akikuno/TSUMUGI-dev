@@ -7,7 +7,7 @@
 
 TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification) is a web tool for visualizing phenotype-driven gene networks.
 
-The name TSUMUGI is derived from the phrase **紡ぎ**, symbolizing the concept of *twisting various things together to create one unified entity*.  
+The name TSUMUGI is derived from the phrase **紡ぎ**, symbolizing the concept of *twisting various things (genes) together to create one unified entity (phenotype)*.  
 
 ## IMPC Dataset
 
