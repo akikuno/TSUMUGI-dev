@@ -1,13 +1,1 @@
-* text=auto
-
-*.txt text eol=lf
-*.sh text eol=lf
-*.R text eol=lf
-*.py text eol=lf
-*.md text eol=lf
-*.html text eol=lf
-*.svg text eol=lf
-*.fa text eol=lf
-*.fasta text eol=lf
-*.gz -text
-*.xmind -text
+* text=auto eol=lf
