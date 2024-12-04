@@ -13,7 +13,28 @@
 
 <!-- ############################################################# # -->
 
-# v0.1.1 (2024-12-04)
+# v0.1.2 (2025-MM-DD)
+
+## 🖼️ User Interface
+
++ Setting up OGP Issue: #40 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/2bf3c993642963ca39f3e8dd4a2d25ea1c7b3f32)]
+ 
+
+<!-- ############################################################# # -->
+
+
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- <details>
+<summary> v0.X.X (2024-MM-DD) </summary>
+
+</details> -->
+
+<details>
+<summary>v0.1.1 (2024-12-04)</summary>
 
 ## 💥 Breaking
 
@@ -31,18 +52,7 @@
 
 + Change the directory name from `web` to `TSUMUGI` Issue: #31 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/64266cbf323ae78ff969fd5d4484691cfa8e0c63)]
 
-<!-- ############################################################# # -->
-
-
-
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- <details>
-<summary> v0.X.X (2024-MM-DD) </summary>
-
-</details> -->
+</details>
 
 <details>
 <summary> v0.1.0 (2024-11-16) </summary>
