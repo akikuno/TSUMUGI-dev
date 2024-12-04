@@ -179,14 +179,10 @@
             <button class="Tab geneTab" type="button" onclick="showTab('gene')">Gene</button>
         </div>
 
-        <!-- <div>
-            <button class="Tab" id="phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
-            <button class="Tab" id="geneTab" type="button" onclick="showTab('gene')">Gene</button>
-        </div> -->
-
         <br>
         <label for="phenotype">Select a phenotype of interest</label>
-        <input type="text" id="phenotype" name="phenotype" placeholder="e.g: infertility">
+        <input type="text" id="phenotype" name="phenotype"
+            placeholder="e.g: increased fasting circulating glucose level">
         <ul id="phenotypeSuggestions" class="suggestions"></ul>
         <button class="submitBtn" type="submit" id="phenotypeSubmitBtn" disabled>Submit</button>
     </form>
@@ -201,14 +197,10 @@
             <button class="Tab phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
             <button class="Tab geneTab" type="button" onclick="showTab('gene')">Gene</button>
         </div>
-        <!-- <div>
-            <button class="Tab" id="phenotypeTab" type="button" onclick="showTab('phenotype')">Phenotype</button>
-            <button class="Tab" id="geneTab" type="button" onclick="showTab('gene')">Gene</button>
-        </div> -->
 
         <br>
         <label for="gene">Enter a gene symbol</label>
-        <input type="text" id="gene" name="gene" placeholder="e.g: Rac1">
+        <input type="text" id="gene" name="gene" placeholder="e.g: Rab10">
         <ul id="geneSuggestions" class="suggestions"></ul>
         <button class="submitBtn" type="submit" id="geneSubmitBtn" disabled>Submit</button>
 
@@ -216,7 +208,7 @@
 
 
     <footer>
-        TSUMUGI (version 0.1.0)
+        TSUMUGI (version 0.1.1)
         <br>
         <i class="fa-brands fa-github"></i><a href="https://github.com/akikuno/TSUMUGI" target="_blank">GitHub</a>
         <!-- <i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> -->
@@ -231,19 +223,6 @@
         // ====================================================================
         // Toggle between phenotype and gene forms
         // ====================================================================
-        // function showTab(tab) {
-        //     // Display the appropriate form
-        //     document.getElementById('phenotypeForm').style.display = tab === 'phenotype' ? 'block' : 'none';
-        //     document.getElementById('geneForm').style.display = tab === 'gene' ? 'block' : 'none';
-
-        //     // Remove 'active-tab' class from both tabs
-        //     document.getElementById('phenotypeTab').classList.remove('active-tab');
-        //     document.getElementById('geneTab').classList.remove('active-tab');
-
-        //     // Add 'active-tab' class to the selected tab
-        //     const selectedTab = document.getElementById(tab + 'Tab');
-        //     selectedTab.classList.add('active-tab');
-        // }
 
         function showTab(tab) {
             // Display the appropriate form
@@ -268,9 +247,13 @@
         // Fetch JSON data from the URL and assign to phenotypes
         // ====================================================================
 
-        const URL_MP_TERMS = "./network/data/available_mp_terms.json";
-        const URL_GENE_SYMBOLS = "./network/data/available_gene_symbols.txt";
+        /* REMOVE_THIS_LINE
+        const URL_MP_TERMS = "./data/available_mp_terms.json";
+        const URL_GENE_SYMBOLS = "./data/available_gene_symbols.txt";
+        REMOVE_THIS_LINE */
 
+        const URL_MP_TERMS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1fc723ee0ba29a7162fd56394f2d30751d752e4c/gist_available_mp_terms.json"; // REMOVE_THIS_LINE
+        const URL_GENE_SYMBOLS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/63468d6537120107ddf77568e5dabaaf59044902/gist_available_gene_symbols.txt"; // REMOVE_THIS_LINE
 
         let phenotypes = {};
         fetch(URL_MP_TERMS)

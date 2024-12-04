@@ -29,6 +29,7 @@
 
 + Decompose Cytoscape's Tooltip handler into functions for each element. [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/6482e5ba1cdc7861cb4b24663ea538588df651a7)]
 
++ Change the directory name from `web` to `TSUMUGI` Issue: #31 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/xxxxx)]
 
 <!-- ############################################################# # -->
 
