@@ -11,5 +11,5 @@ The name TSUMUGI is derived from the phrase **紡ぎ**, symbolizing the concept 
 
 ## IMPC Dataset
 
-- [Release-21.1 (2024-06-13)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-21.1/)
+- [Release-22.0 (2024-11-04)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.0/)
 
