@@ -17,21 +17,56 @@
 const elements = (function () {
     const req = new XMLHttpRequest();
     let result = null;
-    req.onreadystatechange = function () {
-        if (req.readyState === 4 && req.status === 200) {
-            result = JSON.parse(req.responseText);
+
+    try {
+        // gzipファイルを同期リクエスト
+
+        /* REMOVE_THIS_LINE
+        req.open("GET", "./data/XXX_mp_term_name_underscore.json.gz", false);
+        REMOVE_THIS_LINE */
+
+        req.open("GET", "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/increased_circulating_glucose_level.json.gz", false); // REMOVE_THIS_LINE
+
+        req.overrideMimeType("text/plain; charset=x-user-defined"); // バイナリデータとして扱うための設定
+
+        req.send(null);
+
+        if (req.status === 200) {
+            // gzipデータをUint8Arrayに変換
+            const compressedData = new Uint8Array(
+                req.responseText.split("").map(c => c.charCodeAt(0) & 0xff)
+            );
+            // pakoでデコード
+            const decompressedData = pako.ungzip(compressedData, { to: "string" });
+            result = JSON.parse(decompressedData);
+        } else {
+            console.error("HTTP error!! status:", req.status);
         }
-    };
-    /* REMOVE_THIS_LINE
-    req.open("GET", "./data/XXX_mp_term_name_underscore.json", false);
-    REMOVE_THIS_LINE */
+    } catch (error) {
+        console.error("Failed to load or decode JSON.gz:", error);
+    }
 
-    // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false); // REMOVE_THIS_LINE
-    req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false); // REMOVE_THIS_LINE
-
-    req.send(null);
     return result;
 })();
+
+// const elements = (function () {
+//     const req = new XMLHttpRequest();
+//     let result = null;
+//     req.onreadystatechange = function () {
+//         if (req.readyState === 4 && req.status === 200) {
+//             result = JSON.parse(req.responseText);
+//         }
+//     };
+//     /* REMOVE_THIS_LINE
+//     req.open("GET", "./data/XXX_mp_term_name_underscore.json", false);
+//     REMOVE_THIS_LINE */
+
+//     // req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/b33aa992d7950fbd6d302735f1251d83f554cccb/gist_male_infertility.json", false); // REMOVE_THIS_LINE
+//     req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/33cbe08513d54ef0ca3afc6f1fb1dd12b86c1901/gist_increased_circulating_glucose_level.json", false); // REMOVE_THIS_LINE
+
+//     req.send(null);
+//     return result;
+// })();
 
 
 const map_symbol_to_id = (function () {
