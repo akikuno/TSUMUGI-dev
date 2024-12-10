@@ -20,6 +20,10 @@
 + Setting up OGP Issue: #40 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/2bf3c993642963ca39f3e8dd4a2d25ea1c7b3f32)]
  
 
+ ## 🔧 Maintenance
+
++ Compress JSON files with Gzip to reduce server usage. Issue: #24 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/e1efc726b9beb5b4dc5dd2d6b785f1e9bf24c1ce)]
+
 <!-- ############################################################# # -->
 
 
