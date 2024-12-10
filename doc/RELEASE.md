@@ -15,6 +15,11 @@
 
 # v0.1.2 (2025-MM-DD)
 
+## 🌟 New Features
+
++ Specify Homo, Hetero, or Hemi for each phenotype. Issue: #38 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/b8cc572bc94da4796e53f8783fb4d1e862de3bf3)]
+
+
 ## 🖼️ User Interface
 
 + Setting up OGP Issue: #40 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/2bf3c993642963ca39f3e8dd4a2d25ea1c7b3f32)]
