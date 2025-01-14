@@ -34,6 +34,7 @@ const URL_MP_TERMS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc
 const URL_GENE_SYMBOLS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/63468d6537120107ddf77568e5dabaaf59044902/gist_available_gene_symbols.txt"; // REMOVE_THIS_LINE
 
 let phenotypes = {};
+
 fetch(URL_MP_TERMS)
     .then(response => response.json())
     .then(data => {
@@ -41,7 +42,7 @@ fetch(URL_MP_TERMS)
     })
     .catch(error => console.error('Error fetching phenotypes:', error));
 
-let geneSymbols = {}; // オブジェクトとして初期化
+let geneSymbols = {};
 
 fetch(URL_GENE_SYMBOLS)
     .then(response => response.text())

@@ -1,3 +1,4 @@
+/* General body styling */
 body {
     font-family: 'Lato', 'Arial', 'Helvetica', sans-serif;
     background-color: #FFEBD8;
@@ -7,8 +8,18 @@ body {
     align-items: center;
     flex-direction: column;
     height: 100vh;
+    margin: 0;
 }
 
+/* Inherit font settings for form elements */
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+/* Subtitle styling */
 p.subtitle {
     font-family: 'Lora', serif;
     font-size: 1.2em;
@@ -17,6 +28,18 @@ p.subtitle {
     text-align: center;
 }
 
+/* Image styling */
+img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+/* ======================================================== */
+/* Form container styling */
+/* ======================================================== */
 form {
     background-color: #fff;
     padding: 30px;
@@ -24,10 +47,10 @@ form {
     text-align: center;
     max-width: 400px;
     width: 100%;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    margin: 20px 0 40px;
 }
 
+/* Label styling */
 label {
     font-size: 1.2em;
     margin-bottom: 10px;
@@ -35,6 +58,7 @@ label {
     color: #555;
 }
 
+/* Text input field styling */
 input[type="text"] {
     width: 100%;
     padding: 10px;
@@ -43,11 +67,11 @@ input[type="text"] {
     border-radius: 5px;
     margin-bottom: 20px;
     box-sizing: border-box;
-    font-family: 'Lato', 'Arial', 'Helvetica', sans-serif;
 }
 
+/* Suggestions list styling */
 ul.suggestions {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
     margin: 0;
     border: 1px solid #ccc;
@@ -60,12 +84,14 @@ ul.suggestions li {
     padding: 10px;
     cursor: pointer;
     background-color: #fff;
+    transition: background-color 0.3s ease;
 }
 
 ul.suggestions li:hover {
     background-color: #f0f0f0;
 }
 
+/* Submit button styling */
 button.submitBtn {
     margin-top: 20px;
     padding: 12px 20px;
@@ -76,7 +102,6 @@ button.submitBtn {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    font-family: 'Lato', 'Arial', 'Helvetica', sans-serif;
 }
 
 button.submitBtn:disabled {
@@ -85,7 +110,7 @@ button.submitBtn:disabled {
 }
 
 button.submitBtn:hover:enabled {
-    background-color: #ff7800;
+    background-color: #e66900;
 }
 
 /* Default tab styling */
@@ -107,17 +132,22 @@ button.Tab {
     color: #fff !important;
 }
 
+/* ======================================================== */
+/* Footer styling */
+/* ======================================================== */
 
 footer {
     text-align: center;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin: 20px 0 10px;
     padding: 20px;
     width: 100%;
+    color: #666;
+    font-size: 0.9em;
 }
 
 footer a {
-    color: #333;
+    color: #666;
+    font-size: 0.9em;
     text-decoration: none;
     font-weight: bold;
 }
@@ -128,14 +158,5 @@ footer a:hover {
 
 footer p {
     margin: 5px 0 0;
-    font-size: 0.9em;
     color: #666;
-}
-
-img {
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-    display: block;
-    margin: 0 auto;
 }
