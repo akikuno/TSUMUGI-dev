@@ -26,7 +26,8 @@
 
 ## 🐛 Bug Fixes
 
-+ The number of nodes was set to 200 (arbitrary) because too many nodes would make rendering impossible. Issue: #45
++ The number of nodes was set to 200 (arbitrary) because too many nodes would make rendering impossible. Issue: #45 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/0212b6077fda7940f24b9e771a99f5b075c2fb21)]
+
 
  ## 🔧 Maintenance
 
