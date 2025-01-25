@@ -23,7 +23,10 @@
 ## 🖼️ User Interface
 
 + Setting up OGP Issue: #40 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/2bf3c993642963ca39f3e8dd4a2d25ea1c7b3f32)]
- 
+
+## 🐛 Bug Fixes
+
++ The number of nodes was set to 200 (arbitrary) because too many nodes would make rendering impossible. Issue: #45
 
  ## 🔧 Maintenance
 

@@ -7,17 +7,17 @@
     <title>XXX_mp_term_name_space</title>
     <link rel="icon" type="image/png" href="../../image/icon-tsumugi.png">
 
+    <!-- noUiSlider -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" defer></script>
+
+    <!-- pako for reading gzip JSON -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
+
     <!--- CSS -->
     <link rel="stylesheet" href="../css/sanitize.css">
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
     <link rel="stylesheet" href="../css/style.css">
-
-    <!-- noUiSlider -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js"></script>
-
-    <!-- pako for reading gzip JSON -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 
 </head>
 
@@ -31,7 +31,7 @@
         <div class="control-panel-container">
 
             <div class="slider-container">
-                <span class="control-label">Network layout:</span>
+                <label for="layout-dropdown" class="control-label">Network layout:</label>
                 <select class="exporter" id="layout-dropdown">
                     <option value="cose" selected>Cose</option>
                     <option value="circle">Circle</option>
@@ -77,7 +77,7 @@
 
             <!-- ↓↓↓ SVG's scale bars -->
             <div class="edge-scale-container">
-                <svg width="400" height="30" xmlns="http://www.w3.org/2000/svg">
+                <svg width="400" height="30">
                     <polygon points="0,15 400,0 400,30" style="fill:gray;stroke:none;" />
                     <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
                     <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
@@ -88,10 +88,10 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
-    <script src="template_network_genesymbol.js"></script> <!-- REMOVE_THIS_LINE -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js" defer></script>
+    <script src="template_network_genesymbol.js" defer></script> <!-- REMOVE_THIS_LINE -->
     <!-- REMOVE_THIS_LINE
-    <script src="js/XXX_genesymbol.js"></script>
+    <script src="js/XXX_genesymbol.js" defer></script>
     REMOVE_THIS_LINE -->
 </body>
 

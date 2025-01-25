@@ -3,7 +3,7 @@ tmp*
 data/*
 # Office temporary
 ~$*.*
-
+.vscode/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
