@@ -19,6 +19,7 @@
 
 + Specify Homo, Hetero, or Hemi for each phenotype. Issue: #38 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/b8cc572bc94da4796e53f8783fb4d1e862de3bf3)]
 
++ Indicate whether each phenotype is male- or female-specific. Issue: #22
 
 ## 🖼️ User Interface
 
