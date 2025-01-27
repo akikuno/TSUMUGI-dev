@@ -13,7 +13,29 @@
 
 <!-- ############################################################# # -->
 
-# v0.1.2 (2025-01-27)
+# v0.1.3 (2025-MM-DD)
+
+## 🖼️ User Interface
+
+- Modify the slider text and numbers to be displayed in a single column.  [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/f08ddd42691819dd28b821f4b9dc836c5184c066)]
+
+<!-- ############################################################# # -->
+
+
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- ============================================================= -->
+<!-- <details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details> -->
+<!-- ============================================================= -->
+
+<details>
+<summary> v0.1.2 (2025-01-27) </summary>
 
 ## 🌟 New Features
 
@@ -34,18 +56,8 @@
 
 + Compress JSON files with Gzip to reduce server usage. Issue: #24 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/e1efc726b9beb5b4dc5dd2d6b785f1e9bf24c1ce)]
 
-<!-- ############################################################# # -->
+</details>
 
-
-
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- <details>
-<summary> v0.X.X (2024-MM-DD) </summary>
-
-</details> -->
 
 <details>
 <summary>v0.1.1 (2024-12-04)</summary>
