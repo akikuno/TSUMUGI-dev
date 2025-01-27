@@ -30,13 +30,10 @@ a {
     width: 100%;
     max-width: 1200px;
     height: calc(100% - 60px);
-    /* 隕句�縺怜�縺ｮ鬮倥＆繧帝勁縺�◆谿九ｊ繧剃ｽｿ縺� */
     max-height: 800px;
     box-sizing: border-box;
     margin-top: 0;
-    /* 荳頑純縺� */
     align-items: flex-start;
-    /* 蝙ら峩譁ｹ蜷代�荳ｭ螟ｮ謠�∴繧定ｧ｣髯､縺励∽ｸ頑純縺医↓螟画峩 */
 }
 
 .control-panel-container {
@@ -57,6 +54,10 @@ a {
     height: 100%;
     position: relative;
     box-sizing: border-box;
+    border: 2px solid #AAA;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 20px;
 }
 
 .cy {
