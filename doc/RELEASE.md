@@ -13,13 +13,13 @@
 
 <!-- ############################################################# # -->
 
-# v0.1.2 (2025-MM-DD)
+# v0.1.2 (2025-01-27)
 
 ## 🌟 New Features
 
 + Specify Homo, Hetero, or Hemi for each phenotype. Issue: #38 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/b8cc572bc94da4796e53f8783fb4d1e862de3bf3)]
 
-+ Indicate whether each phenotype is male- or female-specific. Issue: #22
++ Indicate whether each phenotype is male- or female-specific. Issue: #22 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/42187872c7b1feae2bc6b4b0495a316cb9fbae00)]
 
 ## 🖼️ User Interface
 
@@ -27,7 +27,7 @@
 
 ## 🐛 Bug Fixes
 
-+ The number of nodes was set to 200 (arbitrary) because too many nodes would make rendering impossible. Issue: #45 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/0212b6077fda7940f24b9e771a99f5b075c2fb21)]
++ The number of nodes was set to 200 (arbitrary) because too many nodes would make rendering impossible. Issue: #45 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/0212b6077fda7940f24b9e771a99f5b075c2fb21)]. Many thanks to Dr. Hayate Suzuki (University of Tsukuba) for reporting this issue!
 
 
  ## 🔧 Maintenance
