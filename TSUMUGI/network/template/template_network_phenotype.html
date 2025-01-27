@@ -14,6 +14,13 @@
     <!-- pako for reading gzip JSON -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
 
+    <!-- Cytoscape -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
+    <script src="template_network_phenotype.js" defer></script> <!-- REMOVE_THIS_LINE -->
+    <!-- REMOVE_THIS_LINE
+    <script src="js/XXX_mp_term_name_underscore.js" defer></script>
+    REMOVE_THIS_LINE -->
+
     <!--- CSS -->
     <link rel="stylesheet" href="../css/sanitize.css">
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
@@ -72,7 +79,7 @@
 
             <div class="slider-container">
                 <span class="control-label">Node repulsion (Cose only):</span>
-                <span id="node-repulsion-value">1</span>
+                <span id="node-repulsion-value">5</span>
                 <div class="slider-element" id="nodeRepulsion-slider"></div>
             </div>
 
@@ -112,11 +119,6 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js" defer></script>
-    <script src="template_network_phenotype.js" defer></script> <!-- REMOVE_THIS_LINE -->
-    <!-- REMOVE_THIS_LINE
-    <script src="js/XXX_mp_term_name_underscore.js" defer></script>
-    REMOVE_THIS_LINE -->
 </body>
 
 </html>

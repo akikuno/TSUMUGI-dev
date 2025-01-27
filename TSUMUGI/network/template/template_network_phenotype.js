@@ -138,10 +138,10 @@ function getLayoutOptions() {
 
 let currentLayout = 'cose';
 
-const nodeRepulsionMin = 10;
-const nodeRepulsionMax = 20000;
-const componentSpacingMin = 10;
-const componentSpacingMax = 1000;
+const nodeRepulsionMin = 1;
+const nodeRepulsionMax = 10000;
+const componentSpacingMin = 1;
+const componentSpacingMax = 200;
 
 let nodeRepulsionValue = scaleToOriginalRange(parseFloat(document.getElementById('nodeRepulsion-slider').value), nodeRepulsionMin, nodeRepulsionMax);
 let componentSpacingValue = scaleToOriginalRange(parseFloat(this.value), componentSpacingMin, componentSpacingMax);
