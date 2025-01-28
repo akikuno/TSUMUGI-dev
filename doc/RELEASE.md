@@ -15,9 +15,11 @@
 
 # v0.1.3 (2025-MM-DD)
 
+- Add checkbox of genotype and sex specificity. Issue: #22 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/b7eddb33ebfc88bbd9e303e8b12765633b3e056d)]
+
 ## 🖼️ User Interface
 
-- Modify the slider text and numbers to be displayed in a single column.  [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/f08ddd42691819dd28b821f4b9dc836c5184c066)]
+- Modify the slider text and numbers to be displayed in a single column. [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/f08ddd42691819dd28b821f4b9dc836c5184c066)]
 
 <!-- ############################################################# # -->
 
