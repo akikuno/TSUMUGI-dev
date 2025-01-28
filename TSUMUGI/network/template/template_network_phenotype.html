@@ -62,6 +62,23 @@
                 <div class="slider-element" id="filter-node-slider"></div>
             </div>
 
+            <!-- ↓↓↓ Genotype filter -->
+            <div class="slider-container">
+                <p>Genotype specificity</p>
+                <form id="genotype-filter-form">
+                    <label><input type="checkbox" value="Homo" checked> Homo</label>
+                    <label><input type="checkbox" value="Hetero" checked> Hetero</label>
+                    <label><input type="checkbox" value="Hemi" checked> Hemi</label>
+                </form>
+            </div>
+
+            <div class="slider-container">
+                <p>Sex specificity</p>
+                <form id="sex-filter-form">
+                    <label><input type="checkbox" value="Female" checked> Female</label>
+                    <label><input type="checkbox" value="Male" checked> Male</label>
+                </form>
+            </div>
 
             <!-- ↓↓↓ Cytoscape's visualization setting -->
             <div class="slider-container">
@@ -88,6 +105,9 @@
             <!-- ↑↑↑ Cytoscape's visualization setting -->
         </div>
 
+        <!-- ============================================================ -->
+        <!-- ↓↓↓ Cytoscape's network visualization -->
+        <!-- ============================================================ -->
         <div class="cy-container">
             <div class="cy"></div>
 
@@ -117,6 +137,7 @@
             </div>
             <!-- ↑↑↑ SVG's scale bars -->
         </div>
+        <!-- ↑↑↑ Cytoscape's network visualization -->
     </div>
 
 </body>
