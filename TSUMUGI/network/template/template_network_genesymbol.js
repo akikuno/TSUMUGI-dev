@@ -1,6 +1,6 @@
-// ========================================================
+// ############################################################################
 // Input handling
-// ========================================================
+// ############################################################################
 
 // const elements = [
 //     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 1, } },
@@ -19,18 +19,12 @@ const elements = (function () {
     let result = null;
 
     try {
-        // gzipファイルを同期リクエスト
         /* REMOVE_THIS_LINE
         req.open("GET", "./data/XXX_genesymbol.json.gz", false);
         REMOVE_THIS_LINE */
-
         req.open("GET", "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/Rab10.json.gz", false); // REMOVE_THIS_LINE
-
-
         req.overrideMimeType("text/plain; charset=x-user-defined"); // バイナリデータとして扱うための設定
-
         req.send(null);
-
         if (req.status === 200) {
             // gzipデータをUint8Arrayに変換
             const compressedData = new Uint8Array(
@@ -48,25 +42,6 @@ const elements = (function () {
 
     return result;
 })();
-
-// const elements = (function () {
-//     const req = new XMLHttpRequest();
-//     let result = null;
-//     req.onreadystatechange = function () {
-//         if (req.readyState === 4 && req.status === 200) {
-//             result = JSON.parse(req.responseText);
-//         }
-//     };
-//     /* REMOVE_THIS_LINE
-//     req.open("GET", "./data/XXX_genesymbol.json", false);
-//     REMOVE_THIS_LINE */
-
-//     req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/a5e224c8ef258a4329708d7070986aaf831c0a05/gist_Rab10.json", false); // REMOVE_THIS_LINE
-
-//     req.send(null);
-//     return result;
-// })();
-
 
 const map_symbol_to_id = (function () {
     const req = new XMLHttpRequest();
@@ -87,9 +62,71 @@ const map_symbol_to_id = (function () {
 })();
 
 
-// ========================================================
+
+// ############################################################################
+// 遺伝型フィルタリング関数
+// ############################################################################
+const filterGenotypeForm = document.getElementById('genotype-filter-form');
+
+function filterGenotypes() {
+    const checkedGenotypes = Array.from(filterGenotypeForm.querySelectorAll('input:checked')).map(input => input.value);
+
+    // フィルタリングされたelementsを作成
+    const filteredElements = elements.map(item => {
+        if (item.data.annotation) {
+            const filteredAnnotations = item.data.annotation.filter(annotation => {
+                return checkedGenotypes.some(genotype => annotation.includes(`(${genotype}`));
+            });
+            return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
+        }
+        return item;
+    }).filter(item => item.data.annotation && item.data.annotation.length > 0);
+
+    // Cytoscapeのデータを更新
+    cy.elements().remove(); // 既存の要素を削除
+    cy.add(filteredElements); // 新しい要素を追加
+    cy.layout(getLayoutOptions()).run(); // レイアウトを再適用
+}
+
+// フォームに変更があった際にフィルタリング関数を呼び出す
+filterGenotypeForm.addEventListener('change', filterGenotypes);
+
+
+// ############################################################################
+// 性特異性フィルタリング関数
+// ############################################################################
+const filterSexForm = document.getElementById('sex-filter-form');
+
+// 元のデータを保持
+const originalElements = [...elements]; // 初期状態をコピー
+
+function filterSexs() {
+    const checkedSexs = Array.from(filterSexForm.querySelectorAll('input:checked')).map(input => input.value);
+
+    // フィルタリングされたelementsを作成
+    const filteredElements = originalElements.map(item => {
+        if (item.data.annotation) {
+            const filteredAnnotations = item.data.annotation.filter(annotation => {
+                return checkedSexs.some(sex => annotation.includes(`(${sex}`));
+            });
+            return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
+        }
+        return item;
+    }).filter(item => item.data.annotation && item.data.annotation.length > 0);
+
+    // Cytoscapeのデータを更新
+    cy.elements().remove(); // 既存の要素を削除
+    cy.add(filteredElements); // 新しい要素を追加
+    cy.layout(getLayoutOptions()).run(); // レイアウトを再適用
+}
+
+// フォームに変更があった際にフィルタリング関数を呼び出す
+filterSexForm.addEventListener('change', filterSexs);
+
+
+// ############################################################################
 // Normalize node color and edge sizes
-// ========================================================
+// ############################################################################
 
 const nodeSizes = elements.filter(ele => ele.data.node_color !== undefined).map(ele => ele.data.node_color);
 const edgeSizes = elements.filter(ele => ele.data.edge_size !== undefined).map(ele => ele.data.edge_size);
@@ -124,9 +161,9 @@ function getColorForValue(value) {
     return `rgb(${r}, ${g}, ${b})`;
 }
 
-// ========================================================
+// ############################################################################
 // Cytoscape handling
-// ========================================================
+// ############################################################################
 
 
 function getLayoutOptions() {
@@ -219,9 +256,9 @@ cy.on('layoutstop', function () {
 });
 
 
-// ========================================================
+// ############################################################################
 // Visualization handling
-// ========================================================
+// ############################################################################
 
 // --------------------------------------------------------
 // Network layout dropdown
@@ -316,9 +353,9 @@ edgeSlider.noUiSlider.on('update', function (values) {
 });
 
 
-// ========================================================
+// ############################################################################
 // Cytoscape's visualization setting
-// ========================================================
+// ############################################################################
 
 // --------------------------------------------------------
 // Slider for Font size
@@ -382,9 +419,9 @@ nodeRepulsionSlider.noUiSlider.on('update', function (value) {
 });
 
 
-// ========================================================
+// ############################################################################
 // Tooltip handling
-// ========================================================
+// ############################################################################
 
 cy.on('tap', 'node, edge', function (event) {
     const data = event.target.data();
@@ -488,9 +525,9 @@ cy.on('tap', function (event) {
 });
 
 
-// ========================================================
+// ############################################################################
 // Exporter
-// ========================================================
+// ############################################################################
 
 // --------------------------------------------------------
 // PNG Exporter
