@@ -23,6 +23,9 @@
 
 - Modify the slider text and numbers to be displayed in a single column. [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/f08ddd42691819dd28b821f4b9dc836c5184c066)]
 
+- Hide the Phenotype severity slider if the phenotype is binary (all effect sizes are 1). Issue #48 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/5d5d6a9ba7462fcb31ed746e01de503917577089)]
+
+
 <!-- ############################################################# # -->
 
 
