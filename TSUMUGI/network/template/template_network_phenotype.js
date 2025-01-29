@@ -64,64 +64,63 @@ const map_symbol_to_id = (function () {
 
 
 // ############################################################################
-// 遺伝型フィルタリング関数
+// 遺伝型・正特異的フィルタリング関数
 // ############################################################################
+
+// フィルターフォームの取得
 const filterGenotypeForm = document.getElementById('genotype-filter-form');
-
-function filterGenotypes() {
-    const checkedGenotypes = Array.from(filterGenotypeForm.querySelectorAll('input:checked')).map(input => input.value);
-
-    // フィルタリングされたelementsを作成
-    const filteredElements = elements.map(item => {
-        if (item.data.annotation) {
-            const filteredAnnotations = item.data.annotation.filter(annotation => {
-                return checkedGenotypes.some(genotype => annotation.includes(`(${genotype}`));
-            });
-            return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
-        }
-        return item;
-    }).filter(item => item.data.annotation && item.data.annotation.length > 0);
-
-    // Cytoscapeのデータを更新
-    cy.elements().remove(); // 既存の要素を削除
-    cy.add(filteredElements); // 新しい要素を追加
-    cy.layout(getLayoutOptions()).run(); // レイアウトを再適用
-}
-
-// フォームに変更があった際にフィルタリング関数を呼び出す
-filterGenotypeForm.addEventListener('change', filterGenotypes);
-
-
-// ############################################################################
-// 性特異性フィルタリング関数
-// ############################################################################
 const filterSexForm = document.getElementById('sex-filter-form');
 
-// 元のデータを保持
-const originalElements = [...elements]; // 初期状態をコピー
-
-function filterSexs() {
+// フィルタリング関数（遺伝型 + 性別）
+function filterElementsByGenotypeAndSex() {
+    const checkedGenotypes = Array.from(filterGenotypeForm.querySelectorAll('input:checked')).map(input => input.value);
     const checkedSexs = Array.from(filterSexForm.querySelectorAll('input:checked')).map(input => input.value);
 
-    // フィルタリングされたelementsを作成
-    const filteredElements = originalElements.map(item => {
+    console.log("検索キーワード (Genotype):", checkedGenotypes);
+    console.log("検索キーワード (Sex):", checkedSexs);
+
+    let targetElements;
+
+    // もし checkedSexs に Female と Male の両方が含まれていたら、性別のフィルターを無効にし、遺伝型のフィルターのみ適用
+    if (checkedSexs.includes("Female") && checkedSexs.includes("Male")) {
+        console.log("性別フィルター無効（遺伝型のみ適用）");
+        targetElements = elements;
+    } else {
+        targetElements = elements.map(item => {
+            if (item.data.annotation) {
+                const filteredAnnotations = item.data.annotation.filter(annotation => {
+                    const sexMatch = checkedSexs.some(sex => annotation.includes(`${sex}`));
+                    return sexMatch;
+                });
+
+                return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
+            }
+            return item;
+        }).filter(item => item.data.annotation && item.data.annotation.length > 0);
+    }
+
+    // 遺伝型フィルターの適用
+    const filteredElements = targetElements.map(item => {
         if (item.data.annotation) {
             const filteredAnnotations = item.data.annotation.filter(annotation => {
-                return checkedSexs.some(sex => annotation.includes(`(${sex}`));
+                const genotypeMatch = checkedGenotypes.some(genotype => annotation.includes(`${genotype}`));
+                return genotypeMatch;
             });
+
             return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
         }
         return item;
     }).filter(item => item.data.annotation && item.data.annotation.length > 0);
 
-    // Cytoscapeのデータを更新
+    // Cytoscape のデータを更新
     cy.elements().remove(); // 既存の要素を削除
     cy.add(filteredElements); // 新しい要素を追加
-    cy.layout(getLayoutOptions()).run(); // レイアウトを再適用
+    filterElements(); // 孤立ノードを削除
 }
 
-// フォームに変更があった際にフィルタリング関数を呼び出す
-filterSexForm.addEventListener('change', filterSexs);
+// フォーム変更時にフィルタリング関数を実行
+filterGenotypeForm.addEventListener('change', filterElementsByGenotypeAndSex);
+filterSexForm.addEventListener('change', filterElementsByGenotypeAndSex);
 
 
 // ############################################################################

@@ -15,6 +15,8 @@
 
 # v0.1.3 (2025-MM-DD)
 
+## 🌟 New Features
+
 - Add checkbox of genotype and sex specificity. Issue: #22 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/b7eddb33ebfc88bbd9e303e8b12765633b3e056d)]
 
 ## 🖼️ User Interface

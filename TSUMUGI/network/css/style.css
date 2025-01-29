@@ -41,9 +41,59 @@ a {
     display: flex;
     flex-direction: column;
     padding: 10px;
+    margin-left: 20px;
     box-sizing: border-box;
     min-width: 25%;
 }
+
+/* ======================================================== */
+/* slider-container */
+/* ======================================================== */
+
+.slider-container {
+    display: block;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.control-label {
+    margin-right: 10px;
+}
+
+.slider-element {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.slider-value {
+    display: inline-block;
+    width: 25px;
+    text-align: center;
+}
+
+/* ======================================================== */
+/* checkbox-container */
+/* ======================================================== */
+
+.checkbox-container {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.checkbox-container label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+    margin-right: 5px;
+    accent-color: #ff8c00;
+}
+
+/* ======================================================== */
+/* cy-container */
+/* ======================================================== */
 
 .cy-container {
     flex: 3;
@@ -76,26 +126,6 @@ a {
     margin-top: 5px;
 }
 
-.slider-container {
-    display: block;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.control-label {
-    margin-right: 10px;
-}
-
-.slider-element {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-.slider-value {
-    display: inline-block;
-    width: 25px;
-    text-align: center;
-}
 
 /* ======================================================== */
 /* Custom styles for noUiSlider */

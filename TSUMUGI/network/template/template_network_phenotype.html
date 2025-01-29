@@ -62,24 +62,6 @@
                 <div class="slider-element" id="filter-node-slider"></div>
             </div>
 
-            <!-- ↓↓↓ Genotype filter -->
-            <div class="slider-container">
-                <p>Genotype specificity</p>
-                <form id="genotype-filter-form">
-                    <label><input type="checkbox" value="Homo" checked> Homo</label>
-                    <label><input type="checkbox" value="Hetero" checked> Hetero</label>
-                    <label><input type="checkbox" value="Hemi" checked> Hemi</label>
-                </form>
-            </div>
-
-            <div class="slider-container">
-                <p>Sex specificity</p>
-                <form id="sex-filter-form">
-                    <label><input type="checkbox" value="Female" checked> Female</label>
-                    <label><input type="checkbox" value="Male" checked> Male</label>
-                </form>
-            </div>
-
             <!-- ↓↓↓ Cytoscape's visualization setting -->
             <div class="slider-container">
                 <span class="control-label">Font size:
@@ -99,11 +81,31 @@
                 <span id="node-repulsion-value">5</span>
                 <div class="slider-element" id="nodeRepulsion-slider"></div>
             </div>
+            <!-- ↑↑↑ Cytoscape's visualization setting -->
 
+            <!-- ↓↓↓ Genotype / Sex filter -->
+            <div class="checkbox-container">
+                <span>Genotype specificity:</span>
+                <form id="genotype-filter-form">
+                    <label><input type="checkbox" value="Homo" checked> Homo</label>
+                    <label><input type="checkbox" value="Hetero" checked> Hetero</label>
+                    <label><input type="checkbox" value="Hemi" checked> Hemi</label>
+                </form>
+            </div>
+
+            <div class="checkbox-container">
+                <span>Sex specificity:</span>
+                <form id="sex-filter-form">
+                    <label><input type="checkbox" value="Female" checked> Female</label>
+                    <label><input type="checkbox" value="Male" checked> Male</label>
+                </form>
+            </div>
+
+            <!-- ↓↓↓ Exporter -->
             <button class="exporter" id="export-png">Export as PNG</button>
             <button class="exporter" id="export-csv">Export as CSV</button>
-            <!-- ↑↑↑ Cytoscape's visualization setting -->
         </div>
+
 
         <!-- ============================================================ -->
         <!-- ↓↓↓ Cytoscape's network visualization -->
