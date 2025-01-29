@@ -13,6 +13,7 @@
 
 // const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
 
+const target_phenotype = 'XXX_mp_term_name_underscore'.replace(/_/g, " ");
 
 const elements = (function () {
     const req = new XMLHttpRequest();
@@ -76,14 +77,14 @@ function filterElementsByGenotypeAndSex() {
     const checkedGenotypes = Array.from(filterGenotypeForm.querySelectorAll('input:checked')).map(input => input.value);
     const checkedSexs = Array.from(filterSexForm.querySelectorAll('input:checked')).map(input => input.value);
 
-    console.log("検索キーワード (Genotype):", checkedGenotypes);
-    console.log("検索キーワード (Sex):", checkedSexs);
+    // console.log("検索キーワード (Genotype):", checkedGenotypes);
+    // console.log("検索キーワード (Sex):", checkedSexs);
 
     let targetElements;
 
     // もし checkedSexs に Female と Male の両方が含まれていたら、性別のフィルターを無効にし、遺伝型のフィルターのみ適用
     if (checkedSexs.includes("Female") && checkedSexs.includes("Male")) {
-        console.log("性別フィルター無効（遺伝型のみ適用）");
+        // console.log("性別フィルター無効（遺伝型のみ適用）");
         targetElements = elements;
     } else {
         targetElements = elements.map(item => {
@@ -100,7 +101,7 @@ function filterElementsByGenotypeAndSex() {
     }
 
     // 遺伝型フィルターの適用
-    const filteredElements = targetElements.map(item => {
+    let filteredElements = targetElements.map(item => {
         if (item.data.annotation) {
             const filteredAnnotations = item.data.annotation.filter(annotation => {
                 const genotypeMatch = checkedGenotypes.some(genotype => annotation.includes(`${genotype}`));
@@ -112,11 +113,21 @@ function filterElementsByGenotypeAndSex() {
         return item;
     }).filter(item => item.data.annotation && item.data.annotation.length > 0);
 
+    // console.log("標的表現型:", target_phenotype);
+    // `target_phenotype` をまったく含まないノードを削除
+    filteredElements = filteredElements.filter(item => {
+        if (item.data.annotation) {
+            return item.data.annotation.some(annotation => annotation.includes(target_phenotype));
+        }
+        return false;
+    }).filter(item => item.data.annotation && item.data.annotation.length > 2); // 3つ以上の表現型を持つノードのみを表示
+
     // Cytoscape のデータを更新
     cy.elements().remove(); // 既存の要素を削除
     cy.add(filteredElements); // 新しい要素を追加
     filterElements(); // 孤立ノードを削除
 }
+
 
 // フォーム変更時にフィルタリング関数を実行
 filterGenotypeForm.addEventListener('change', filterElementsByGenotypeAndSex);
@@ -396,7 +407,7 @@ document.getElementById('layout-dropdown').addEventListener('change', function (
 });
 
 // --------------------------------------------------------
-// Initialization of the Slider for Phenotypes similarity
+// Initialization and Update of the Slider for Phenotypes similarity
 // --------------------------------------------------------
 const edgeSlider = document.getElementById('filter-edge-slider');
 noUiSlider.create(edgeSlider, {
@@ -409,9 +420,13 @@ noUiSlider.create(edgeSlider, {
     step: 1
 });
 
+
+// <!-- REMOVE FROM THIS LINE IF BINARY -->
+
 // --------------------------------------------------------
 // Initialization of the Slider for Phenotypes severity
 // --------------------------------------------------------
+
 const nodeSlider = document.getElementById('filter-node-slider');
 noUiSlider.create(nodeSlider, {
     start: [1, 10],
@@ -422,13 +437,19 @@ noUiSlider.create(nodeSlider, {
     },
     step: 1
 });
+// <!-- REMOVE TO THIS LINE -->
+
 
 // --------------------------------------------------------
 // Modify the filter function to handle upper and lower bounds
 // --------------------------------------------------------
 
+let nodeSliderValues = [1, 10];
+
 function filterElements() {
-    const nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat);
+    // <!-- REMOVE FROM THIS LINE IF BINARY -->
+    nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat);
+    // <!-- REMOVE TO THIS LINE -->
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
     const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax);
@@ -469,7 +490,7 @@ function filterElements() {
 }
 
 // --------------------------------------------------------
-// Update the slider values when the sliders are moved
+// Update of the Slider
 // --------------------------------------------------------
 
 edgeSlider.noUiSlider.on('update', function (values) {
@@ -479,11 +500,13 @@ edgeSlider.noUiSlider.on('update', function (values) {
 });
 
 
+// <!-- REMOVE FROM THIS LINE IF BINARY -->
 nodeSlider.noUiSlider.on('update', function (values) {
     const intValues = values.map(value => Math.round(value));
     document.getElementById('node-color-value').textContent = intValues.join(' - ');
     filterElements();
 });
+// <!-- REMOVE TO THIS LINE -->
 
 
 // ############################################################################

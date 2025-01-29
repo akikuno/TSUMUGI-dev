@@ -75,14 +75,14 @@ function filterElementsByGenotypeAndSex() {
     const checkedGenotypes = Array.from(filterGenotypeForm.querySelectorAll('input:checked')).map(input => input.value);
     const checkedSexs = Array.from(filterSexForm.querySelectorAll('input:checked')).map(input => input.value);
 
-    console.log("検索キーワード (Genotype):", checkedGenotypes);
-    console.log("検索キーワード (Sex):", checkedSexs);
+    // console.log("検索キーワード (Genotype):", checkedGenotypes);
+    // console.log("検索キーワード (Sex):", checkedSexs);
 
     let targetElements;
 
     // もし checkedSexs に Female と Male の両方が含まれていたら、性別のフィルターを無効にし、遺伝型のフィルターのみ適用
     if (checkedSexs.includes("Female") && checkedSexs.includes("Male")) {
-        console.log("性別フィルター無効（遺伝型のみ適用）");
+        // console.log("性別フィルター無効（遺伝型のみ適用）");
         targetElements = elements;
     } else {
         targetElements = elements.map(item => {
