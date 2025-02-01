@@ -1,6 +1,7 @@
 # Ad hoc
 tmp*
 data/*
+TSUMUGI_raw_data.csv.gz
 # Office temporary
 ~$*.*
 .vscode/*
@@ -10,7 +11,6 @@ __pycache__/
 *$py.class
 # C extensions
 *.so
-
 # Distribution / packaging
 .Python
 build/
