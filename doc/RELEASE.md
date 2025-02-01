@@ -19,6 +19,8 @@
 
 - Add checkbox of genotype and sex specificity. Issue: #22 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/d165390dfc2022bf4b55a49051f939c884a4c2c0)]
 
+- Add `Download raw data` button for re-use of the TSUMUGI data. [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/d4f89f191a3e7edca4123307044149a54b2d0434)]
+
 ## 🖼️ User Interface
 
 - Modify the slider text and numbers to be displayed in a single column. [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/f08ddd42691819dd28b821f4b9dc836c5184c066)]
