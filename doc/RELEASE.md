@@ -27,6 +27,9 @@
 
 - Hide the Phenotype severity slider if the phenotype is binary (all effect sizes are 1). Issue #46 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/5d5d6a9ba7462fcb31ed746e01de503917577089)]
 
+## 🔧 Maintenanc
+
+- Add a function to manage the completion of data retrieval. [[Commit Detail](
 
 <!-- ############################################################# # -->
 

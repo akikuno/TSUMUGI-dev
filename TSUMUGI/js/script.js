@@ -33,29 +33,30 @@ REMOVE_THIS_LINE */
 const URL_MP_TERMS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1fc723ee0ba29a7162fd56394f2d30751d752e4c/gist_available_mp_terms.json"; // REMOVE_THIS_LINE
 const URL_GENE_SYMBOLS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/63468d6537120107ddf77568e5dabaaf59044902/gist_available_gene_symbols.txt"; // REMOVE_THIS_LINE
 
-let phenotypes = {};
-
-fetch(URL_MP_TERMS)
+// データ取得の完了を管理する Promise
+let phenotypesLoaded = fetch(URL_MP_TERMS)
     .then(response => response.json())
     .then(data => {
         phenotypes = data;
+        console.log("Phenotypes data loaded:", phenotypes);
     })
     .catch(error => console.error('Error fetching phenotypes:', error));
 
-let geneSymbols = {};
-
-fetch(URL_GENE_SYMBOLS)
+let geneSymbolsLoaded = fetch(URL_GENE_SYMBOLS)
     .then(response => response.text())
     .then(data => {
-        // 各シンボルをオブジェクトのキーとして設定し、値は null または空文字列などに設定
         geneSymbols = data.split('\n').reduce((acc, symbol) => {
-            acc[symbol.trim()] = null; // または acc[symbol.trim()] = "";
+            acc[symbol.trim()] = null;
             return acc;
         }, {});
+        console.log("Gene symbols data loaded:", geneSymbols);
     })
     .catch(error => console.error('Error fetching gene symbols:', error));
 
-
+// 両方のデータがロードされたことを確認する関数
+async function ensureDataLoaded() {
+    await Promise.all([phenotypesLoaded, geneSymbolsLoaded]);
+}
 // ====================================================================
 // タブ切り替え
 // ====================================================================
@@ -67,9 +68,10 @@ function setSearchMode(mode) {
     const suggestions = mode === 'phenotype' ? document.getElementById('phenotypeSuggestions') : document.getElementById('geneSuggestions');
     const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
 
-    userInput.value = '';            // 入力フィールドをリセット
-    suggestions.innerHTML = '';  // サジェストリストをクリア
-    submitBtn.disabled = true;   // 送信ボタンを無効化
+    // 入力欄を初期化
+    userInput.value = '';
+    suggestions.innerHTML = '';
+    submitBtn.disabled = true;
 }
 
 // --------------------------------------------------------------------
@@ -93,7 +95,9 @@ document.querySelectorAll('.geneTab').forEach(button => {
 // 検索モードの選択用変数 (初期状態を 'phenotype' に設定)
 let searchMode = 'phenotype';
 
-function handleInput(event, mode) {
+async function handleInput(event, mode) {
+    await ensureDataLoaded(); // データのロードを保証
+
     const userInput = event.target.value.toLowerCase();
     const suggestionList = mode === 'phenotype'
         ? document.getElementById('phenotypeSuggestions')
@@ -143,7 +147,9 @@ function handleInput(event, mode) {
 // --------------------------------------------------------------------
 // 入力の有効性を確認する関数
 // --------------------------------------------------------------------
-function checkValidInput(mode) {
+async function checkValidInput(mode) {
+    await ensureDataLoaded(); // データのロードを保証
+
     const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
     const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
 
@@ -157,12 +163,15 @@ function checkValidInput(mode) {
     submitBtn.disabled = !isValidSelection;
 }
 
-document.getElementById('phenotype').addEventListener('blur', () => checkValidInput('phenotype'));
-document.getElementById('gene').addEventListener('blur', () => checkValidInput('geneSymbol'));
-
-document.getElementById('phenotype').addEventListener('input', (event) => handleInput(event, 'phenotype'));
-document.getElementById('gene').addEventListener('input', (event) => handleInput(event, 'geneSymbol'));
-
+// --------------------------------------------------------------------
+// データ取得後にイベントリスナーを登録
+// --------------------------------------------------------------------
+ensureDataLoaded().then(() => {
+    document.getElementById('phenotype').addEventListener('input', (event) => handleInput(event, 'phenotype'));
+    document.getElementById('gene').addEventListener('input', (event) => handleInput(event, 'geneSymbol'));
+    document.getElementById('phenotype').addEventListener('blur', () => checkValidInput('phenotype'));
+    document.getElementById('gene').addEventListener('blur', () => checkValidInput('geneSymbol'));
+});
 
 // ====================================================================
 // フォームで選択された表現型に対応する詳細ページを新しいタブで表示する
@@ -176,7 +185,7 @@ function handleFormSubmit(event, mode) {
     const path = mode === 'phenotype' ? 'phenotype' : 'genesymbol';
 
     if (!submitBtn.disabled) {
-        window.open(`network/${path}/${selectedData}.html`, '_blank');
+        window.open(`app/${path}/${selectedData}.html`, '_blank');
     }
 }
 
