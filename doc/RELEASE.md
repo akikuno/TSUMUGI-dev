@@ -29,7 +29,7 @@
 
 ## 🔧 Maintenanc
 
-- Add a function to manage the completion of data retrieval. [[Commit Detail](
+- Add a function to manage the completion of data retrieval. [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/ac15868ee42703256c5721954f4cc3bb7dcb7d07)]
 
 <!-- ############################################################# # -->
 
