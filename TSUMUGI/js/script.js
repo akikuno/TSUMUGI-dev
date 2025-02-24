@@ -55,6 +55,35 @@ fetch(URL_GENE_SYMBOLS)
     })
     .catch(error => console.error('Error fetching gene symbols:', error));
 
+
+// ====================================================================
+// タブ切り替え
+// ====================================================================
+function setSearchMode(mode) {
+    searchMode = mode;
+
+    // モードに応じて適切な要素を設定
+    const input = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
+    const suggestions = mode === 'phenotype' ? document.getElementById('phenotypeSuggestions') : document.getElementById('geneSuggestions');
+    const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
+
+    input.value = '';            // 入力フィールドをリセット
+    suggestions.innerHTML = '';  // サジェストリストをクリア
+    submitBtn.disabled = true;   // 送信ボタンを無効化
+
+}
+
+// --------------------------------------------------------------------
+// タブ切り替えボタンのイベントリスナー
+// --------------------------------------------------------------------
+document.querySelectorAll('.phenotypeTab').forEach(button => {
+    button.addEventListener('click', () => setSearchMode('phenotype'));
+});
+document.querySelectorAll('.geneTab').forEach(button => {
+    button.addEventListener('click', () => setSearchMode('geneSymbol'));
+});
+
+
 // ====================================================================
 // Input handling
 // ====================================================================
@@ -76,99 +105,85 @@ const geneSubmitBtn = document.getElementById('geneSubmitBtn');
 let searchMode = 'phenotype';
 
 function handleInput(event, mode) {
-    const query = event.target.value.toLowerCase();
-    const suggestions = mode === 'phenotype' ? document.getElementById('phenotypeSuggestions') : document.getElementById('geneSuggestions');
-    const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
-    suggestions.innerHTML = '';
-    let validInput = false;
+    const userInput = event.target.value.toLowerCase();
+    const suggestionList = mode === 'phenotype'
+        ? document.getElementById('phenotypeSuggestions')
+        : document.getElementById('geneSuggestions');
+    const submitButton = mode === 'phenotype'
+        ? document.getElementById('phenotypeSubmitBtn')
+        : document.getElementById('geneSubmitBtn');
 
-    if (query) {
-        let filtered;
+    // サジェストリストをクリア
+    suggestionList.innerHTML = '';
+    let isValidSelection = false;
+
+    if (userInput) {
+        let matchingCandidates;
 
         // 入力された文字列との類似性スコアを計算
-        const sourceData = mode === 'phenotype' ? phenotypes : geneSymbols;
-        filtered = Object.keys(sourceData)
-            .map(item => ({
-                text: item,
-                score: wordMatchScore(query, item)
+        const dataDictionary = mode === 'phenotype' ? phenotypes : geneSymbols;
+        matchingCandidates = Object.keys(dataDictionary)
+            .map(candidate => ({
+                text: candidate,
+                score: wordMatchScore(userInput, candidate)
             }))
             .sort((a, b) => b.score - a.score)
-            .filter(item => item.score > 0)
-            .slice(0, 10);
+            .filter(candidate => candidate.score > 0)
+            .slice(0, 10); // 上位10件まで取得
 
-
-        filtered.forEach(function (item) {
-            const li = document.createElement('li');
-            li.textContent = item.text;
-            li.addEventListener('click', function () {
-                event.target.value = item.text;
-                suggestions.innerHTML = '';
+        // 候補をサジェストリストに追加
+        matchingCandidates.forEach(candidate => {
+            const listItem = document.createElement('li');
+            listItem.textContent = candidate.text;
+            listItem.addEventListener('click', function () {
+                event.target.value = candidate.text;
+                suggestionList.innerHTML = '';
                 checkValidInput(mode);
             });
-            suggestions.appendChild(li);
+            suggestionList.appendChild(listItem);
         });
 
-        validInput = filtered.some(item => item.text.toLowerCase() === query);
+        // 入力が候補と完全一致するか判定
+        isValidSelection = matchingCandidates.some(candidate => candidate.text.toLowerCase() === userInput);
     }
 
-    submitBtn.disabled = !validInput;
+    // 送信ボタンの有効/無効を設定
+    submitButton.disabled = !isValidSelection;
 }
 
+// --------------------------------------------------------------------
 // 入力の有効性を確認する関数
+// --------------------------------------------------------------------
 function checkValidInput(mode) {
-    const input = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
+    const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
     const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
-    let isValid = false;
 
+    let isValidSelection = false;
     if (mode === 'phenotype') {
-        isValid = phenotypes.hasOwnProperty(input.value);
+        isValidSelection = phenotypes.hasOwnProperty(userInput.value);
     } else if (mode === 'geneSymbol') {
-        isValid = geneSymbols.hasOwnProperty(input.value);
+        isValidSelection = geneSymbols.hasOwnProperty(userInput.value);
     }
-
-    submitBtn.disabled = !isValid;
+    // 送信ボタンの有効/無効を設定
+    submitBtn.disabled = !isValidSelection;
 }
 
-phenotypeInput.addEventListener('blur', () => checkValidInput('phenotype'));
-geneInput.addEventListener('blur', () => checkValidInput('geneSymbol'));
+document.getElementById('phenotype').addEventListener('blur', () => checkValidInput('phenotype'));
+document.getElementById('gene').addEventListener('blur', () => checkValidInput('geneSymbol'));
 
-// タブ切り替え用関数
-function setSearchMode(mode) {
-    searchMode = mode;
-
-    // モードに応じて適切な要素を設定
-    const input = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
-    const suggestions = mode === 'phenotype' ? document.getElementById('phenotypeSuggestions') : document.getElementById('geneSuggestions');
-    const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
-
-    input.value = '';            // 入力フィールドをリセット
-    suggestions.innerHTML = '';  // サジェストリストをクリア
-    submitBtn.disabled = true;   // 送信ボタンを無効化
-
-}
-
-// タブ切り替えボタンのイベントリスナー
-document.querySelectorAll('.phenotypeTab').forEach(button => {
-    button.addEventListener('click', () => setSearchMode('phenotype'));
-});
-document.querySelectorAll('.geneTab').forEach(button => {
-    button.addEventListener('click', () => setSearchMode('geneSymbol'));
-});
-
-// イベントリスナーの設定
 document.getElementById('phenotype').addEventListener('input', (event) => handleInput(event, 'phenotype'));
 document.getElementById('gene').addEventListener('input', (event) => handleInput(event, 'geneSymbol'));
 
-// --------------------------------------------------------------------
+
+// ====================================================================
 // フォームで選択された表現型に対応する詳細ページを新しいタブで表示する
-// --------------------------------------------------------------------
+// ====================================================================
 function handleFormSubmit(event, mode) {
     event.preventDefault();
 
-    const formId = mode === 'phenotype' ? 'phenotypeForm' : 'geneForm';
+    const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
     const submitBtn = mode === 'phenotype' ? phenotypeSubmitBtn : geneSubmitBtn;
-    const input = mode === 'phenotype' ? phenotypeInput : geneInput;
-    const selectedData = mode === 'phenotype' ? phenotypes[input.value] : input.value;
+    const selectedData = mode === 'phenotype' ? phenotypes[userInput.value] : userInput.value;
     const path = mode === 'phenotype' ? 'phenotype' : 'genesymbol';
 
     if (!submitBtn.disabled) {
