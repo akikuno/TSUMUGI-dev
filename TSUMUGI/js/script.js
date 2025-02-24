@@ -63,14 +63,13 @@ function setSearchMode(mode) {
     searchMode = mode;
 
     // モードに応じて適切な要素を設定
-    const input = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
+    const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
     const suggestions = mode === 'phenotype' ? document.getElementById('phenotypeSuggestions') : document.getElementById('geneSuggestions');
     const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
 
-    input.value = '';            // 入力フィールドをリセット
+    userInput.value = '';            // 入力フィールドをリセット
     suggestions.innerHTML = '';  // サジェストリストをクリア
     submitBtn.disabled = true;   // 送信ボタンを無効化
-
 }
 
 // --------------------------------------------------------------------
@@ -87,16 +86,6 @@ document.querySelectorAll('.geneTab').forEach(button => {
 // ====================================================================
 // Input handling
 // ====================================================================
-
-// Phenotype form elements
-const phenotypeInput = document.getElementById('phenotype');
-const phenotypeSuggestions = document.getElementById('phenotypeSuggestions');
-const phenotypeSubmitBtn = document.getElementById('phenotypeSubmitBtn');
-
-// Gene form elements
-const geneInput = document.getElementById('gene');
-const geneSuggestions = document.getElementById('geneSuggestions');
-const geneSubmitBtn = document.getElementById('geneSubmitBtn');
 
 // --------------------------------------------------------------------
 // 入力内容に基づいた検索候補を表示する
@@ -115,8 +104,8 @@ function handleInput(event, mode) {
 
     // サジェストリストをクリア
     suggestionList.innerHTML = '';
-    let isValidSelection = false;
 
+    let isValidSelection = false;
     if (userInput) {
         let matchingCandidates;
 
@@ -182,7 +171,7 @@ function handleFormSubmit(event, mode) {
     event.preventDefault();
 
     const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
-    const submitBtn = mode === 'phenotype' ? phenotypeSubmitBtn : geneSubmitBtn;
+    const submitBtn = mode === 'phenotype' ? document.getElementById('phenotypeSubmitBtn') : document.getElementById('geneSubmitBtn');
     const selectedData = mode === 'phenotype' ? phenotypes[userInput.value] : userInput.value;
     const path = mode === 'phenotype' ? 'phenotype' : 'genesymbol';
 
