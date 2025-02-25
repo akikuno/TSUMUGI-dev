@@ -32,6 +32,9 @@
 - Add a function to manage the completion of data retrieval. [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/ac15868ee42703256c5721954f4cc3bb7dcb7d07)]
 
 - Download Raw data from CloudFlare R2 repository. Issue: #47 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/d5b38d2069b559888b37acd5dbd5660972dd7230)]
+
+- Use a directory structure that separates Data and Frontend. Issue: #48 [[Commit Detail](https://github.com/akikuno/TSUMUGI/commit/1f7a2e5a70e6a4b7177a7b591adac8e4de5c16bd)]
+- 
 <!-- ############################################################# # -->
 
 
