@@ -20,7 +20,7 @@ const elements = (function () {
 
     try {
         /* REMOVE_THIS_LINE
-        req.open("GET", "./data/XXX_genesymbol.json.gz", false);
+        req.open("GET", "../../data/genesymbol/XXX_genesymbol.json.gz", false);
         REMOVE_THIS_LINE */
         req.open("GET", "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/Rab10.json.gz", false); // REMOVE_THIS_LINE
         req.overrideMimeType("text/plain; charset=x-user-defined"); // バイナリデータとして扱うための設定
@@ -52,7 +52,7 @@ const map_symbol_to_id = (function () {
         }
     };
     /* REMOVE_THIS_LINE
-    req.open("GET", "../data/marker_symbol_accession_id.json", false);
+    req.open("GET", "../../data/marker_symbol_accession_id.json", false);
     REMOVE_THIS_LINE */
 
     req.open("GET", "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json", false); // REMOVE_THIS_LINE
