@@ -2,6 +2,8 @@
 // Input handler
 // ############################################################################
 
+// REMOVE_FROM_THIS_LINE
+
 // const elements = [
 //     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
 //     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
@@ -12,6 +14,8 @@
 // ];
 
 // const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
+
+// REMOVE_TO_THIS_LINE
 
 const target_phenotype = 'XXX_mp_term_name_underscore'.replace(/_/g, " ");
 
@@ -421,7 +425,7 @@ noUiSlider.create(edgeSlider, {
 });
 
 
-// <!-- REMOVE FROM THIS LINE IF BINARY -->
+// REMOVE_FROM_THIS_LINE
 
 // --------------------------------------------------------
 // Initialization of the Slider for Phenotypes severity
@@ -437,7 +441,7 @@ noUiSlider.create(nodeSlider, {
     },
     step: 1
 });
-// <!-- REMOVE TO THIS LINE -->
+// REMOVE_TO_THIS_LINE
 
 
 // --------------------------------------------------------
@@ -447,9 +451,9 @@ noUiSlider.create(nodeSlider, {
 let nodeSliderValues = [1, 10];
 
 function filterElements() {
-    // <!-- REMOVE FROM THIS LINE IF BINARY -->
+    // REMOVE_FROM_THIS_LINE
     nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat);
-    // <!-- REMOVE TO THIS LINE -->
+    // REMOVE_TO_THIS_LINE
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
     const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax);
@@ -500,13 +504,13 @@ edgeSlider.noUiSlider.on('update', function (values) {
 });
 
 
-// <!-- REMOVE FROM THIS LINE IF BINARY -->
+// REMOVE_FROM_THIS_LINE
 nodeSlider.noUiSlider.on('update', function (values) {
     const intValues = values.map(value => Math.round(value));
     document.getElementById('node-color-value').textContent = intValues.join(' - ');
     filterElements();
 });
-// <!-- REMOVE TO THIS LINE -->
+// REMOVE_TO_THIS_LINE
 
 
 // ############################################################################

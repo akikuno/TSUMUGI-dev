@@ -2,6 +2,8 @@
 // Input handling
 // ############################################################################
 
+// REMOVE_FROM_THIS_LINE
+
 // const elements = [
 //     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 1, } },
 //     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 0, } },
@@ -13,6 +15,7 @@
 
 // const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
 
+// REMOVE_TO_THIS_LINE
 
 const elements = (function () {
     const req = new XMLHttpRequest();
