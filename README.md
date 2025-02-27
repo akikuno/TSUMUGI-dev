@@ -1,6 +1,6 @@
 
 <p align="center">
-    <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/" target="_blank">
+    <a href="https://larc-tsukuba.github.io/tsumugi/" target="_blank">
         <img src="image/tsumugi-logo.jpg" alt="Tsumugi Logo" width="90%">
     </a>
 </p>
