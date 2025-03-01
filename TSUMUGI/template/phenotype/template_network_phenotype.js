@@ -2,6 +2,7 @@ import { exportGraphAsPNG, exportGraphAsCSV } from '../js/exporter.js';
 import { scaleToOriginalRange, scaleValue, getColorForValue } from '../js/value_scaler.js';
 import { removeTooltips, showTooltip } from '../js/tooltips.js';
 import { calculateConnectedComponents } from '../js/components.js';
+import { createSlider } from '..js/slider.js';
 
 // ############################################################################
 // Input handler
@@ -343,18 +344,8 @@ nodeSlider.noUiSlider.on('update', function (values) {
 // --------------------------------------------------------
 // Slider for Font size
 // --------------------------------------------------------
-const fontSizeSlider = document.getElementById('font-size-slider');
-noUiSlider.create(fontSizeSlider, {
-    start: 20,
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 50
-    },
-    step: 1
-});
-fontSizeSlider.noUiSlider.on('update', function (value) {
-    const intValues = Math.round(value);
+
+createSlider('font-size-slider', 20, 1, 50, 1, (intValues) => {
     document.getElementById('font-size-value').textContent = intValues;
     cy.style().selector('node').style('font-size', intValues + 'px').update();
 });
@@ -362,44 +353,26 @@ fontSizeSlider.noUiSlider.on('update', function (value) {
 // --------------------------------------------------------
 // Slider for Edge width
 // --------------------------------------------------------
-const edgeWidthSlider = document.getElementById('edge-width-slider');
-noUiSlider.create(edgeWidthSlider, {
-    start: 5,
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 10
-    },
-    step: 1
-});
-edgeWidthSlider.noUiSlider.on('update', function (value) {
-    const intValues = Math.round(value);
+
+createSlider('edge-width-slider', 5, 1, 10, 1, (intValues) => {
     document.getElementById('edge-width-value').textContent = intValues;
     cy.style().selector('edge').style('width', function (ele) {
         return scaleValue(ele.data('edge_size'), edgeMin, edgeMax, 0.5, 2) * intValues;
     }).update();
 });
 
+
 // --------------------------------------------------------
 // Slider for Node repulsion
 // --------------------------------------------------------
-const nodeRepulsionSlider = document.getElementById('nodeRepulsion-slider');
-noUiSlider.create(nodeRepulsionSlider, {
-    start: 5,
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 10
-    },
-    step: 1
-});
-nodeRepulsionSlider.noUiSlider.on('update', function (value) {
-    const intValues = Math.round(value);
-    nodeRepulsionValue = scaleToOriginalRange(parseFloat(intValues), nodeRepulsionMin, nodeRepulsionMax);
-    componentSpacingValue = scaleToOriginalRange(parseFloat(intValues), componentSpacingMin, componentSpacingMax);
+
+createSlider('nodeRepulsion-slider', 5, 1, 10, 1, (intValues) => {
+    nodeRepulsionValue = scaleToOriginalRange(intValues, nodeRepulsionMin, nodeRepulsionMax);
+    componentSpacingValue = scaleToOriginalRange(intValues, componentSpacingMin, componentSpacingMax);
     document.getElementById('node-repulsion-value').textContent = intValues;
     cy.layout(getLayoutOptions()).run();
 });
+
 
 // ############################################################################
 // Tooltip handling
