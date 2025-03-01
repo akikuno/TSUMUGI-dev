@@ -28,13 +28,13 @@
 
 <body>
 
-    <h1>JSONデータのフィルタリング</h1>
+    <h2>JSONデータのフィルタリング</h2>
 
     <label for="geneInput">遺伝子名（カンマ区切りで入力）:</label>
     <input type="text" id="geneInput" value="Asxl1, Rab10">
     <button onclick="filterJson()">フィルタリング</button>
 
-    <h2>フィルタ結果</h2>
+    <h3>フィルタ結果</h3>
     <pre id="output"></pre>
 
     <script>
@@ -65,7 +65,19 @@
             // JSONデータをフィルタリング
             const filteredData = jsonData.filter(item => {
                 const data = item.data;
-                return geneKeys.has(data.id) || geneKeys.has(data.source) || geneKeys.has(data.target);
+
+                // 条件1: "node_color" がある場合、値が 1 のみを許可
+                if ("node_color" in data && data.node_color !== 1) {
+                    return false;
+                }
+
+                // 条件2: "source" と "target" の両方がキーの遺伝子名を持つ場合のみ許可
+                if ("source" in data && "target" in data) {
+                    return geneKeys.has(data.source) && geneKeys.has(data.target);
+                }
+
+                // 条件3: "id" がキーの遺伝子名を持つ場合のみ許可
+                return geneKeys.has(data.id);
             });
 
             // 結果を表示
