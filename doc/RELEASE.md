@@ -26,6 +26,8 @@
 
 - Ensure that the line endings of the raw data are LF. Issue: #50 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e70752a95c26f79b34699850163eb8ff9920bb7e)]
 
+- Add `tooltips.js`, `value_scaler.js`, and `exporter.js` to facilitate function reuse. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/250adf33792eac77d1a08c0ab5f84da3cf827571)]
+
 <!-- ############################################################# # -->
 
 

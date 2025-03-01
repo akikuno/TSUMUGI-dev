@@ -1,6 +1,7 @@
 import { exportGraphAsPNG, exportGraphAsCSV } from '../js/exporter.js';
 import { scaleToOriginalRange, scaleValue, getColorForValue } from '../js/value_scaler.js';
 import { removeTooltips, showTooltip } from '../js/tooltips.js';
+import { calculateConnectedComponents } from '../js/components.js';
 
 // ############################################################################
 // Input handling
@@ -193,41 +194,41 @@ const cy = cytoscape({
 });
 
 
-// レイアウトが変更されるか、フィルタリングが実行された際に連結成分を計算する関数
-function calculateConnectedComponents() {
-    // 表示されている要素のみを取得
-    const visibleElements = cy.elements(':visible');
+// // レイアウトが変更されるか、フィルタリングが実行された際に連結成分を計算する関数
+// function calculateConnectedComponents() {
+//     // 表示されている要素のみを取得
+//     const visibleElements = cy.elements(':visible');
 
-    // 可視状態の要素で連結成分を計算
-    const connectedComponents = visibleElements.components();
+//     // 可視状態の要素で連結成分を計算
+//     const connectedComponents = visibleElements.components();
 
-    let connected_component = connectedComponents.map(component => {
-        let componentObject = {};
+//     let connected_component = connectedComponents.map(component => {
+//         let componentObject = {};
 
-        // ノードを処理
-        component.nodes().forEach(node => {
-            const nodeLabel = node.data('label');
-            const nodeAnnotations = Array.isArray(node.data('annotation'))
-                ? node.data('annotation')
-                : [node.data('annotation')]; // annotation が配列でない場合も考慮
+//         // ノードを処理
+//         component.nodes().forEach(node => {
+//             const nodeLabel = node.data('label');
+//             const nodeAnnotations = Array.isArray(node.data('annotation'))
+//                 ? node.data('annotation')
+//                 : [node.data('annotation')]; // annotation が配列でない場合も考慮
 
-            // ノード名をキー、アノテーションを値とするオブジェクトを作成
-            componentObject[nodeLabel] = nodeAnnotations;
-        });
+//             // ノード名をキー、アノテーションを値とするオブジェクトを作成
+//             componentObject[nodeLabel] = nodeAnnotations;
+//         });
 
-        return componentObject;
-    });
+//         return componentObject;
+//     });
 
-    // 結果をログに出力（デバッグ用）
-    // console.log('Connected Components (Formatted):', connected_component);
+//     // 結果をログに出力（デバッグ用）
+//     // console.log('Connected Components (Formatted):', connected_component);
 
-    // 必要に応じて connected_component を他の場所で利用可能にする
-    return connected_component;
-}
+//     // 必要に応じて connected_component を他の場所で利用可能にする
+//     return connected_component;
+// }
 
 // レイアウト変更後にイベントリスナーを設定
 cy.on('layoutstop', function () {
-    calculateConnectedComponents();
+    calculateConnectedComponents(cy);
 });
 
 
@@ -283,7 +284,7 @@ function filterElements() {
     });
 
     // calculateConnectedComponentsを利用して連結成分を取得
-    const connected_component = calculateConnectedComponents();
+    const connected_component = calculateConnectedComponents(cy);
 
     // node_colorが1のノードを含む連結成分のみを選択
     const componentsWithNodeColor1 = connected_component.filter(component => {
@@ -414,16 +415,21 @@ cy.on('tap', function (event) {
 // Exporter
 // ############################################################################
 
+const file_name = 'TSUMUGI_XXX_genesymbol';
+
 // --------------------------------------------------------
 // PNG Exporter
 // --------------------------------------------------------
 
-document.getElementById('export-png').addEventListener('click', exportGraphAsPNG);
+document.getElementById('export-png').addEventListener('click', function () {
+    exportGraphAsPNG(cy, file_name);
+});
+
 
 // --------------------------------------------------------
 // CSV Exporter
 // --------------------------------------------------------
 
 document.getElementById('export-csv').addEventListener('click', function () {
-    exportGraphAsCSV();
+    exportGraphAsCSV(cy, file_name);
 });
