@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XXX_genesymbol</title>
+
+    <title>preweaning lethality, incomplete penetrance</title>
     <link rel="icon" type="image/png"
         href="https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/image/tsumugi-icon.png">
 
@@ -17,21 +18,21 @@
 
     <!-- Cytoscape -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
-    <script src="template_network_genesymbol.js" defer></script> <!-- REMOVE_THIS_LINE -->
-    <!-- REMOVE_THIS_LINE
-    <script src="js/XXX_genesymbol.js" defer></script>
-    REMOVE_THIS_LINE -->
 
     <!--- CSS -->
     <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css">
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
     <link rel="stylesheet" href="../css/app.css">
 
+    <!-- Custom JS -->
+    <script type="module" src="../js/exporter.js"></script>
+    <script type="module" src="preweaning_lethality,_incomplete_penetrance.js"></script>
+
 </head>
 
 <body>
     <header class="header-container">
-        <h1>Phenotype-similarity gene network of <br><a href="XXX_impc_url" target="_blank">XXX_genesymbol</a>
+        <h1>Phenotype-similarity gene network of <br><a href="https://www.mousephenotype.org/data/phenotypes/MP:0011110" target="_blank">preweaning lethality, incomplete penetrance</a>
         </h1>
     </header>
 
@@ -56,6 +57,7 @@
                 <div class="slider-element" id="filter-edge-slider"></div>
             </div>
 
+
             <!-- ↓↓↓ Cytoscape's visualization setting -->
             <div class="slider-container">
                 <span class="control-label">Font size:
@@ -76,7 +78,6 @@
                 <div class="slider-element" id="nodeRepulsion-slider"></div>
             </div>
             <!-- ↑↑↑ Cytoscape's visualization setting -->
-
 
             <!-- ↓↓↓ Genotype / Sex filter -->
             <div class="checkbox-container">
@@ -101,10 +102,10 @@
             <button class="exporter" id="export-csv">Export as CSV</button>
         </div>
 
+
         <!-- ============================================================ -->
         <!-- ↓↓↓ Cytoscape's network visualization -->
         <!-- ============================================================ -->
-
         <div class="cy-container">
             <div class="cy"></div>
 
@@ -117,8 +118,11 @@
                 </svg>
                 <p class="scale-label">Similarity of accessory phenotypes</p>
             </div>
+
+
             <!-- ↑↑↑ SVG's scale bars -->
         </div>
+        <!-- ↑↑↑ Cytoscape's network visualization -->
     </div>
 
 </body>

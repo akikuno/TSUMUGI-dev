@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XXX_mp_term_name_space</title>
+    <title>Rab10</title>
     <link rel="icon" type="image/png"
         href="https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/image/tsumugi-icon.png">
 
@@ -17,21 +17,21 @@
 
     <!-- Cytoscape -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
-    <script src="template_network_phenotype.js" defer></script> <!-- REMOVE_THIS_LINE -->
-    <!-- REMOVE_THIS_LINE
-    <script src="js/XXX_mp_term_name_underscore.js" defer></script>
-    REMOVE_THIS_LINE -->
 
     <!--- CSS -->
     <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css">
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
     <link rel="stylesheet" href="../css/app.css">
 
+    <!-- Custom JS -->
+    <script type="module" src="../js/exporter.js"></script>
+    <script type="module" src="Rab10.js"></script>
+
 </head>
 
 <body>
     <header class="header-container">
-        <h1>Phenotype-similarity gene network of <br><a href="XXX_impc_url" target="_blank">XXX_mp_term_name_space</a>
+        <h1>Phenotype-similarity gene network of <br><a href="https://www.mousephenotype.org/data/genes/" target="_blank">Rab10</a>
         </h1>
     </header>
 
@@ -56,15 +56,6 @@
                 <div class="slider-element" id="filter-edge-slider"></div>
             </div>
 
-            <!-- REMOVE_FROM_THIS_LINE_IF_BINARY -->
-            <!-- ↓↓↓ Slider for phenotypes severity -->
-            <div class="slider-container">
-                <span class="control-label" style="display: block;">Phenotype severity:
-                    <span id="node-color-value">1 - 10</span></span>
-                <div class="slider-element" id="filter-node-slider"></div>
-            </div>
-            <!-- REMOVE_TO_THIS_LINE -->
-
             <!-- ↓↓↓ Cytoscape's visualization setting -->
             <div class="slider-container">
                 <span class="control-label">Font size:
@@ -85,6 +76,7 @@
                 <div class="slider-element" id="nodeRepulsion-slider"></div>
             </div>
             <!-- ↑↑↑ Cytoscape's visualization setting -->
+
 
             <!-- ↓↓↓ Genotype / Sex filter -->
             <div class="checkbox-container">
@@ -109,10 +101,10 @@
             <button class="exporter" id="export-csv">Export as CSV</button>
         </div>
 
-
         <!-- ============================================================ -->
         <!-- ↓↓↓ Cytoscape's network visualization -->
         <!-- ============================================================ -->
+
         <div class="cy-container">
             <div class="cy"></div>
 
@@ -125,27 +117,8 @@
                 </svg>
                 <p class="scale-label">Similarity of accessory phenotypes</p>
             </div>
-
-            <!-- REMOVE_FROM_THIS_LINE_IF_BINARY -->
-            <div class="color-scale-container">
-                <svg width="400" height="30">
-                    <defs>
-                        <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:rgb(248,229,140);stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:rgb(255,140,0);stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect x="0" y="0" width="400" height="30" fill="url(#colorGradient)" />
-                    <text x="0" y="25" font-family="Arial" font-size="12px" fill="#000">Low</text>
-                    <text x="370" y="25" font-family="Arial" font-size="12px" fill="#000">High</text>
-                </svg>
-                <p class="scale-label">Severity of target phenotype</p>
-            </div>
-            <!-- REMOVE_TO_THIS_LINE -->
-
             <!-- ↑↑↑ SVG's scale bars -->
         </div>
-        <!-- ↑↑↑ Cytoscape's network visualization -->
     </div>
 
 </body>

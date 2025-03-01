@@ -1,0 +1,187 @@
+/* General body styling */
+body {
+    font-family: 'Lato', 'Arial', 'Helvetica', sans-serif;
+    background-color: #FFEBD8;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Inherit font settings for form elements */
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+/* Subtitle styling */
+p.subtitle {
+    font-family: 'Lora', serif;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Image styling */
+img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+/* ======================================================== */
+/* Form container styling */
+/* ======================================================== */
+form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    margin: 20px 0 40px;
+}
+
+/* Label styling */
+label {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    display: block;
+    color: #555;
+}
+
+/* Text input field styling */
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+/* Suggestions list styling */
+ul.suggestions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+ul.suggestions li {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+ul.suggestions li:hover {
+    background-color: #f0f0f0;
+}
+
+/* Submit button styling */
+button.submitBtn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #ff7800;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.submitBtn:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
+
+button.submitBtn:hover:enabled {
+    background-color: #e66900;
+}
+
+/* Default tab styling */
+button.Tab {
+    background-color: #eee;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+/* Active tab styling */
+.active-tab {
+    background-color: #ff7800 !important;
+    color: #fff !important;
+}
+
+/* ======================================================== */
+/* Download button */
+/* ======================================================== */
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    background-color: #eee;
+    color: #333;
+    border: 1px solid #666;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.download-btn:hover {
+    background-color: #f8e58c;
+}
+
+.download-btn:active {
+    transform: scale(0.95);
+}
+
+.download-btn i {
+    margin-right: 8px;
+}
+
+/* ======================================================== */
+/* Footer styling */
+/* ======================================================== */
+
+footer {
+    text-align: center;
+    margin: 20px 0 10px;
+    padding: 20px;
+    width: 100%;
+    color: #666;
+    font-size: 0.9em;
+}
+
+footer a {
+    color: #666;
+    font-size: 0.9em;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+footer p {
+    margin: 5px 0 0;
+    color: #666;
+}
