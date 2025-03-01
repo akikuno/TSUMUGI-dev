@@ -4,84 +4,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON フィルタリング</title>
+    <title>Gzip JSON データ取得</title>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
 
-        textarea {
-            width: 100%;
-            height: 150px;
-        }
-
         pre {
             background-color: #f4f4f4;
             padding: 10px;
             border-radius: 5px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
         }
     </style>
 </head>
 
 <body>
 
-    <h2>JSONデータのフィルタリング</h2>
+    <h1>遺伝子データ取得（gzip圧縮JSON対応）</h1>
 
     <label for="geneInput">遺伝子名（カンマ区切りで入力）:</label>
-    <input type="text" id="geneInput" value="Asxl1, Rab10">
-    <button onclick="filterJson()">フィルタリング</button>
+    <input type="text" id="geneInput" value="Asxl1, Rab10, Ddx46">
+    <button onclick="fetchGeneData()">データ取得</button>
 
-    <h3>フィルタ結果</h3>
-    <pre id="output"></pre>
+    <h2>フィルタリング後のデータ</h2>
+    <pre id="output">JSONを取得</pre>
 
     <script>
-        // JSONデータ
-        const jsonData = [
-            {
-                "data": { "id": "Asxl1", "label": "Asxl1", "node_color": 1 }
-            },
-            {
-                "data": { "id": "Rab10", "label": "Rab10", "node_color": 0 }
-            },
-            {
-                "data": { "id": "Rev3l", "label": "Rev3l", "node_color": 0 }
-            },
-            {
-                "data": { "source": "Asxl1", "target": "Rab10", "edge_size": 0.15 }
-            },
-            {
-                "data": { "source": "Atp6v1b2", "target": "Rab10", "edge_size": 0.214 }
+        async function fetchGzippedJson(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTPエラー: ${response.status}`);
+                }
+                const compressedData = await response.arrayBuffer();
+                const decompressedData = pako.inflate(compressedData, { to: "string" });
+                return JSON.parse(decompressedData);
+            } catch (error) {
+                console.error(`データ取得エラー (${url}):`, error);
+                return null; // エラー時はスキップ
             }
-        ];
+        }
 
-        function filterJson() {
-            // 入力された遺伝子名を取得し、配列に変換
+        async function fetchGeneData() {
+            let jsonDataList = []; // 取得したデータを格納
+
+            // 遺伝子名リストを取得
             const geneInput = document.getElementById("geneInput").value;
-            const geneKeys = new Set(geneInput.split(",").map(gene => gene.trim()));
+            const geneKeys = geneInput.split(",").map(gene => gene.trim());
 
-            // JSONデータをフィルタリング
-            const filteredData = jsonData.filter(item => {
-                const data = item.data;
+            // 各遺伝子のJSONを取得
+            const fetchPromises = geneKeys.map(gene => fetchGzippedJson(`https://akikuno.github.io/TSUMUGI-dev/test-tsumugi/data/genesymbol/${gene}.json.gz`));
+            const results = await Promise.all(fetchPromises);
 
-                // 条件1: "node_color" がある場合、値が 1 のみを許可
-                if ("node_color" in data && data.node_color !== 1) {
-                    return false;
-                }
+            // null でないデータを追加
+            jsonDataList = results.filter(data => data !== null);
 
-                // 条件2: "source" と "target" の両方がキーの遺伝子名を持つ場合のみ許可
-                if ("source" in data && "target" in data) {
-                    return geneKeys.has(data.source) && geneKeys.has(data.target);
-                }
-
-                // 条件3: "id" がキーの遺伝子名を持つ場合のみ許可
-                return geneKeys.has(data.id);
-            });
+            // フィルタリング処理
+            const filteredData = filterJson(jsonDataList, geneKeys);
 
             // 結果を表示
             document.getElementById("output").textContent = JSON.stringify(filteredData, null, 2);
+        }
+
+        function filterJson(jsonDataList, geneKeys) {
+            // フィルター後のデータを格納するセット（重複除去）
+            let filteredJsonSet = new Set();
+
+            // 各 JSON データセットを順次処理
+            jsonDataList.forEach(jsonData => {
+                jsonData.forEach(item => {
+                    const data = item.data;
+
+                    if (data.id === "Ddx46") {
+                        console.log("Ddx46", data);
+                    }
+
+                    // 条件1: "node_color" がある場合、値が 1 のみを許可
+                    if ("node_color" in data && data.node_color !== 1) {
+                        return;
+                    }
+
+                    // 条件2: "source" と "target" の両方がキーの遺伝子名を持つ場合のみ許可
+                    if ("source" in data && "target" in data) {
+                        if (!geneKeys.includes(data.source) || !geneKeys.includes(data.target)) {
+                            return;
+                        }
+                    }
+
+                    // 条件3: "id" がキーの遺伝子名を持つ場合のみ許可
+                    if ("id" in data && !geneKeys.includes(data.id)) {
+                        return;
+                    }
+
+                    // JSONオブジェクトを文字列に変換し、重複を避ける
+                    filteredJsonSet.add(JSON.stringify(item));
+                });
+            });
+
+            // Setを元のJSON形式に戻す
+            return Array.from(filteredJsonSet).map(item => JSON.parse(item));
         }
     </script>
 
