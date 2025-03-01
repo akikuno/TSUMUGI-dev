@@ -28,6 +28,8 @@
 
 - Add `tooltips.js`, `value_scaler.js`, and `exporter.js` to facilitate function reuse. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/250adf33792eac77d1a08c0ab5f84da3cf827571)]
 
+- Add `components.js` to facilitate function reuse. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/20c1910630cf13b42555d32c2b5349f156809725)]
+
 <!-- ############################################################# # -->
 
 
