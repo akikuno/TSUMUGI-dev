@@ -1,0 +1,84 @@
+[    {
+        "data": {
+            "id": "Asxl1",
+            "label": "Asxl1",
+            "node_color": 1,
+            "annotation": [
+                "abnormal cornea morphology (Hetero)",
+                "cornea opacity (Hetero)",
+                "decreased circulating glucose level (Hetero, \u2640)",
+                "decreased circulating iron level (Hetero, \u2640)",
+                "decreased hematocrit (Hetero, \u2640)",
+                "decreased hemoglobin content (Hetero)",
+                "decreased mean corpuscular hemoglobin (Hetero)",
+                "decreased mean corpuscular volume (Hetero)",
+                "decreased sacral vertebrae number (Hetero)",
+                "hyperactivity (Hetero)",
+                "impaired pupillary reflex (Hetero)",
+                "increased blood uric acid level (Hetero, \u2642)",
+                "increased bone mineral content (Hetero)",
+                "increased lumbar vertebrae number (Hetero)",
+                "preweaning lethality, complete penetrance (Homo)",
+                "vertebral fusion (Hetero)"
+            ]
+        }
+    },
+    {
+        "data": {
+            "id": "Rab10",
+            "label": "Rab10",
+            "node_color": 0,
+            "annotation": [
+                "abnormal auditory brainstem response (Hetero)",
+                "decreased mean corpuscular hemoglobin (Hetero)",
+                "decreased mean corpuscular volume (Hetero)",
+                "embryonic lethality prior to organogenesis (Homo)",
+                "increased startle reflex (Hetero, \u2640)",
+                "iris synechia (Hetero)",
+                "preweaning lethality, complete penetrance (Homo)"
+            ]
+        }
+    },
+    {
+        "data": {
+            "id": "Rev3l",
+            "label": "Rev3l",
+            "node_color": 0,
+            "annotation": [
+                "abnormal retina morphology (Hetero)",
+                "cataract (Hetero)",
+                "decreased blood urea nitrogen level (Hetero)",
+                "decreased circulating creatinine level (Hetero, \u2640)",
+                "decreased mean corpuscular volume (Hetero)",
+                "hyperactivity (Hetero)",
+                "hyperactivity (Hetero, \u2642)",
+                "increased mean corpuscular hemoglobin concentration (Hetero)",
+                "preweaning lethality, complete penetrance (Homo)"
+            ]
+        }
+    },
+    {
+        "data": {
+            "source": "Asxl1",
+            "target": "Rab10",
+            "edge_size": 0.15,
+            "annotation": [
+                "decreased mean corpuscular hemoglobin (Hetero)",
+                "decreased mean corpuscular volume (Hetero)",
+                "preweaning lethality, complete penetrance (Homo)"
+            ]
+        }
+    },
+    {
+        "data": {
+            "source": "Atp6v1b2",
+            "target": "Rab10",
+            "edge_size": 0.214,
+            "annotation": [
+                "decreased mean corpuscular hemoglobin (Hetero)",
+                "embryonic lethality prior to organogenesis (Homo)",
+                "preweaning lethality, complete penetrance (Homo)"
+            ]
+        }
+    }
+]

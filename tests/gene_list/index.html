@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON フィルタリング</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>JSONデータのフィルタリング</h1>
+
+    <label for="geneInput">遺伝子名（カンマ区切りで入力）:</label>
+    <input type="text" id="geneInput" value="Asxl1, Rab10">
+    <button onclick="filterJson()">フィルタリング</button>
+
+    <h2>フィルタ結果</h2>
+    <pre id="output"></pre>
+
+    <script>
+        // JSONデータ
+        const jsonData = [
+            {
+                "data": { "id": "Asxl1", "label": "Asxl1", "node_color": 1 }
+            },
+            {
+                "data": { "id": "Rab10", "label": "Rab10", "node_color": 0 }
+            },
+            {
+                "data": { "id": "Rev3l", "label": "Rev3l", "node_color": 0 }
+            },
+            {
+                "data": { "source": "Asxl1", "target": "Rab10", "edge_size": 0.15 }
+            },
+            {
+                "data": { "source": "Atp6v1b2", "target": "Rab10", "edge_size": 0.214 }
+            }
+        ];
+
+        function filterJson() {
+            // 入力された遺伝子名を取得し、配列に変換
+            const geneInput = document.getElementById("geneInput").value;
+            const geneKeys = new Set(geneInput.split(",").map(gene => gene.trim()));
+
+            // JSONデータをフィルタリング
+            const filteredData = jsonData.filter(item => {
+                const data = item.data;
+                return geneKeys.has(data.id) || geneKeys.has(data.source) || geneKeys.has(data.target);
+            });
+
+            // 結果を表示
+            document.getElementById("output").textContent = JSON.stringify(filteredData, null, 2);
+        }
+    </script>
+
+</body>
+
+</html>
