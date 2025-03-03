@@ -22,20 +22,8 @@
 
 <!-- ############################################################# # -->
 
-# v0.1.4 (2025-03-03)
+# v0.1.5 (2025-03-DD)
 
-## 🐛 Bug Fixes
-
-- Fix to show sliders for phenotype severity. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/311a708d9da6fe8947bda1e4ca1fba29dc0df428)]
-
-## 🔧 Maintenance
-
-- Ensure that the line endings of the raw data are LF. Issue: #50 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e70752a95c26f79b34699850163eb8ff9920bb7e)]
-
-- For code reusability, the function has been moved to an external module.
-  - Add `tooltips.js`, `value_scaler.js`, and `exporter.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/250adf33792eac77d1a08c0ab5f84da3cf827571)]
-  - Add `components.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/20c1910630cf13b42555d32c2b5349f156809725)]
-  - Add `filteres.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a968781bdb4622c491d140c76af3053d51e95ec1)]
 
 <!-- ############################################################# # -->
 
@@ -51,6 +39,25 @@
 
 </details> -->
 <!-- ============================================================= -->
+
+
+<details>
+<summary> v0.1.4 (2025-03-03) </summary>
+
+## 🐛 Bug Fixes
+
+- Fix to show sliders for phenotype severity. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/311a708d9da6fe8947bda1e4ca1fba29dc0df428)]
+
+## 🔧 Maintenance
+
+- Ensure that the line endings of the raw data are LF. Issue: #50 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e70752a95c26f79b34699850163eb8ff9920bb7e)]
+
+- For code reusability, the function has been moved to an external module.
+  - Add `tooltips.js`, `value_scaler.js`, and `exporter.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/250adf33792eac77d1a08c0ab5f84da3cf827571)]
+  - Add `components.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/20c1910630cf13b42555d32c2b5349f156809725)]
+  - Add `filteres.js`.
+
+</details>
 
 
 <details>
