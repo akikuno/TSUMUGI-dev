@@ -2,6 +2,8 @@ import { exportGraphAsPNG, exportGraphAsCSV } from '../js/exporter.js';
 import { scaleToOriginalRange, scaleValue, getColorForValue } from '../js/value_scaler.js';
 import { removeTooltips, showTooltip } from '../js/tooltips.js';
 import { calculateConnectedComponents } from '../js/components.js';
+import { createSlider } from '../js/slider.js';
+import { filterElementsByGenotypeAndSex } from '../js/filters.js';
 
 // ############################################################################
 // Input handler
@@ -81,63 +83,6 @@ const map_symbol_to_id = (function () {
 const filterGenotypeForm = document.getElementById('genotype-filter-form');
 const filterSexForm = document.getElementById('sex-filter-form');
 
-// フィルタリング関数（遺伝型 + 性別）
-function filterElementsByGenotypeAndSex() {
-    const checkedGenotypes = Array.from(filterGenotypeForm.querySelectorAll('input:checked')).map(input => input.value);
-    const checkedSexs = Array.from(filterSexForm.querySelectorAll('input:checked')).map(input => input.value);
-
-    // console.log("検索キーワード (Genotype):", checkedGenotypes);
-    // console.log("検索キーワード (Sex):", checkedSexs);
-
-    let targetElements;
-
-    // もし checkedSexs に Female と Male の両方が含まれていたら、性別のフィルターを無効にし、遺伝型のフィルターのみ適用
-    if (checkedSexs.includes("Female") && checkedSexs.includes("Male")) {
-        // console.log("性別フィルター無効（遺伝型のみ適用）");
-        targetElements = elements;
-    } else {
-        targetElements = elements.map(item => {
-            if (item.data.annotation) {
-                const filteredAnnotations = item.data.annotation.filter(annotation => {
-                    const sexMatch = checkedSexs.some(sex => annotation.includes(`${sex}`));
-                    return sexMatch;
-                });
-
-                return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
-            }
-            return item;
-        }).filter(item => item.data.annotation && item.data.annotation.length > 0);
-    }
-
-    // 遺伝型フィルターの適用
-    let filteredElements = targetElements.map(item => {
-        if (item.data.annotation) {
-            const filteredAnnotations = item.data.annotation.filter(annotation => {
-                const genotypeMatch = checkedGenotypes.some(genotype => annotation.includes(`${genotype}`));
-                return genotypeMatch;
-            });
-
-            return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
-        }
-        return item;
-    }).filter(item => item.data.annotation && item.data.annotation.length > 0);
-
-    // console.log("標的表現型:", target_phenotype);
-    // `target_phenotype` をまったく含まないノードを削除
-    filteredElements = filteredElements.filter(item => {
-        if (item.data.annotation) {
-            return item.data.annotation.some(annotation => annotation.includes(target_phenotype));
-        }
-        return false;
-    }).filter(item => item.data.annotation && item.data.annotation.length > 2); // 3つ以上の表現型を持つノードのみを表示
-
-    // Cytoscape のデータを更新
-    cy.elements().remove(); // 既存の要素を削除
-    cy.add(filteredElements); // 新しい要素を追加
-    filterElements(); // 孤立ノードを削除
-}
-
-
 // フォーム変更時にフィルタリング関数を実行
 filterGenotypeForm.addEventListener('change', filterElementsByGenotypeAndSex);
 filterSexForm.addEventListener('change', filterElementsByGenotypeAndSex);
@@ -215,39 +160,6 @@ const cy = cytoscape({
     ],
     layout: getLayoutOptions()
 });
-
-
-// // レイアウトが変更されるか、フィルタリングが実行された際に連結成分を計算する関数
-// function calculateConnectedComponents() {
-//     // 表示されている要素のみを取得
-//     const visibleElements = cy.elements(':visible');
-
-//     // 可視状態の要素で連結成分を計算
-//     const connectedComponents = visibleElements.components();
-
-//     let connected_component = connectedComponents.map(component => {
-//         let componentObject = {};
-
-//         // ノードを処理
-//         component.nodes().forEach(node => {
-//             const nodeLabel = node.data('label');
-//             const nodeAnnotations = Array.isArray(node.data('annotation'))
-//                 ? node.data('annotation')
-//                 : [node.data('annotation')]; // annotation が配列でない場合も考慮
-
-//             // ノード名をキー、アノテーションを値とするオブジェクトを作成
-//             componentObject[nodeLabel] = nodeAnnotations;
-//         });
-
-//         return componentObject;
-//     });
-
-//     // 結果をログに出力（デバッグ用）
-//     // console.log('Connected Components (Formatted):', connected_component);
-
-//     // 必要に応じて connected_component を他の場所で利用可能にする
-//     return connected_component;
-// }
 
 // レイアウト変更後にイベントリスナーを設定
 cy.on('layoutstop', function () {
@@ -376,18 +288,8 @@ nodeSlider.noUiSlider.on('update', function (values) {
 // --------------------------------------------------------
 // Slider for Font size
 // --------------------------------------------------------
-const fontSizeSlider = document.getElementById('font-size-slider');
-noUiSlider.create(fontSizeSlider, {
-    start: 20,
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 50
-    },
-    step: 1
-});
-fontSizeSlider.noUiSlider.on('update', function (value) {
-    const intValues = Math.round(value);
+
+createSlider('font-size-slider', 20, 1, 50, 1, (intValues) => {
     document.getElementById('font-size-value').textContent = intValues;
     cy.style().selector('node').style('font-size', intValues + 'px').update();
 });
@@ -395,44 +297,26 @@ fontSizeSlider.noUiSlider.on('update', function (value) {
 // --------------------------------------------------------
 // Slider for Edge width
 // --------------------------------------------------------
-const edgeWidthSlider = document.getElementById('edge-width-slider');
-noUiSlider.create(edgeWidthSlider, {
-    start: 5,
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 10
-    },
-    step: 1
-});
-edgeWidthSlider.noUiSlider.on('update', function (value) {
-    const intValues = Math.round(value);
+
+createSlider('edge-width-slider', 5, 1, 10, 1, (intValues) => {
     document.getElementById('edge-width-value').textContent = intValues;
     cy.style().selector('edge').style('width', function (ele) {
         return scaleValue(ele.data('edge_size'), edgeMin, edgeMax, 0.5, 2) * intValues;
     }).update();
 });
 
+
 // --------------------------------------------------------
 // Slider for Node repulsion
 // --------------------------------------------------------
-const nodeRepulsionSlider = document.getElementById('nodeRepulsion-slider');
-noUiSlider.create(nodeRepulsionSlider, {
-    start: 5,
-    connect: [true, false],
-    range: {
-        'min': 1,
-        'max': 10
-    },
-    step: 1
-});
-nodeRepulsionSlider.noUiSlider.on('update', function (value) {
-    const intValues = Math.round(value);
-    nodeRepulsionValue = scaleToOriginalRange(parseFloat(intValues), nodeRepulsionMin, nodeRepulsionMax);
-    componentSpacingValue = scaleToOriginalRange(parseFloat(intValues), componentSpacingMin, componentSpacingMax);
+
+createSlider('nodeRepulsion-slider', 5, 1, 10, 1, (intValues) => {
+    nodeRepulsionValue = scaleToOriginalRange(intValues, nodeRepulsionMin, nodeRepulsionMax);
+    componentSpacingValue = scaleToOriginalRange(intValues, componentSpacingMin, componentSpacingMax);
     document.getElementById('node-repulsion-value').textContent = intValues;
     cy.layout(getLayoutOptions()).run();
 });
+
 
 // ############################################################################
 // Tooltip handling
