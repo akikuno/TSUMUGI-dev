@@ -9,6 +9,20 @@ import { filterElementsByGenotypeAndSex } from '../js/filters.js';
 // Input handler
 // ############################################################################
 
+// REMOVE_FROM_THIS_LINE
+
+// const elements = [
+//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
+//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
+//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, } },
+//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
+//     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
+//     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
+// ];
+
+// const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
+
+// REMOVE_TO_THIS_LINE
 
 const target_phenotype = 'increased_fasting_circulating_glucose_level'.replace(/_/g, " ");
 
@@ -62,63 +76,6 @@ const map_symbol_to_id = (function () {
 // フィルターフォームの取得
 const filterGenotypeForm = document.getElementById('genotype-filter-form');
 const filterSexForm = document.getElementById('sex-filter-form');
-
-// フィルタリング関数（遺伝型 + 性別）
-// function filterElementsByGenotypeAndSex() {
-//     const checkedGenotypes = Array.from(filterGenotypeForm.querySelectorAll('input:checked')).map(input => input.value);
-//     const checkedSexs = Array.from(filterSexForm.querySelectorAll('input:checked')).map(input => input.value);
-
-//     // console.log("検索キーワード (Genotype):", checkedGenotypes);
-//     // console.log("検索キーワード (Sex):", checkedSexs);
-
-//     let targetElements;
-
-//     // もし checkedSexs に Female と Male の両方が含まれていたら、性別のフィルターを無効にし、遺伝型のフィルターのみ適用
-//     if (checkedSexs.includes("Female") && checkedSexs.includes("Male")) {
-//         // console.log("性別フィルター無効（遺伝型のみ適用）");
-//         targetElements = elements;
-//     } else {
-//         targetElements = elements.map(item => {
-//             if (item.data.annotation) {
-//                 const filteredAnnotations = item.data.annotation.filter(annotation => {
-//                     const sexMatch = checkedSexs.some(sex => annotation.includes(`${sex}`));
-//                     return sexMatch;
-//                 });
-
-//                 return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
-//             }
-//             return item;
-//         }).filter(item => item.data.annotation && item.data.annotation.length > 0);
-//     }
-
-//     // 遺伝型フィルターの適用
-//     let filteredElements = targetElements.map(item => {
-//         if (item.data.annotation) {
-//             const filteredAnnotations = item.data.annotation.filter(annotation => {
-//                 const genotypeMatch = checkedGenotypes.some(genotype => annotation.includes(`${genotype}`));
-//                 return genotypeMatch;
-//             });
-
-//             return { ...item, data: { ...item.data, annotation: filteredAnnotations } };
-//         }
-//         return item;
-//     }).filter(item => item.data.annotation && item.data.annotation.length > 0);
-
-//     // console.log("標的表現型:", target_phenotype);
-//     // `target_phenotype` をまったく含まないノードを削除
-//     filteredElements = filteredElements.filter(item => {
-//         if (item.data.annotation) {
-//             return item.data.annotation.some(annotation => annotation.includes(target_phenotype));
-//         }
-//         return false;
-//     }).filter(item => item.data.annotation && item.data.annotation.length > 2); // 3つ以上の表現型を持つノードのみを表示
-
-//     // Cytoscape のデータを更新
-//     cy.elements().remove(); // 既存の要素を削除
-//     cy.add(filteredElements); // 新しい要素を追加
-//     filterElements(); // 孤立ノードを削除
-// }
-
 
 // フォーム変更時にフィルタリング関数を実行
 filterGenotypeForm.addEventListener('change', filterElementsByGenotypeAndSex);
@@ -230,6 +187,23 @@ noUiSlider.create(edgeSlider, {
 });
 
 
+// REMOVE_FROM_THIS_LINE
+
+// --------------------------------------------------------
+// Initialization of the Slider for Phenotypes severity
+// --------------------------------------------------------
+
+const nodeSlider = document.getElementById('filter-node-slider');
+noUiSlider.create(nodeSlider, {
+    start: [1, 10],
+    connect: true,
+    range: {
+        'min': 1,
+        'max': 10
+    },
+    step: 1
+});
+// REMOVE_TO_THIS_LINE
 
 
 // --------------------------------------------------------
@@ -239,6 +213,9 @@ noUiSlider.create(edgeSlider, {
 let nodeSliderValues = [1, 10];
 
 function filterElements() {
+    // REMOVE_FROM_THIS_LINE
+    nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat);
+    // REMOVE_TO_THIS_LINE
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
     const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax);
@@ -289,6 +266,13 @@ edgeSlider.noUiSlider.on('update', function (values) {
 });
 
 
+// REMOVE_FROM_THIS_LINE
+nodeSlider.noUiSlider.on('update', function (values) {
+    const intValues = values.map(value => Math.round(value));
+    document.getElementById('node-color-value').textContent = intValues.join(' - ');
+    filterElements();
+});
+// REMOVE_TO_THIS_LINE
 
 
 // ############################################################################
