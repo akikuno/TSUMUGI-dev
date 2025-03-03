@@ -3,9 +3,9 @@
 // ====================================================================
 
 function showTab(tab) {
-    // Display the appropriate form
-    document.getElementById('phenotypeForm').style.display = tab === 'phenotype' ? 'block' : 'none';
-    document.getElementById('geneForm').style.display = tab === 'gene' ? 'block' : 'none';
+    // Display the appropriate section
+    document.getElementById('phenotypeSection').style.display = tab === 'phenotype' ? 'block' : 'none';
+    document.getElementById('geneSection').style.display = tab === 'gene' ? 'block' : 'none';
 
     // Remove 'active-tab' class from all tabs
     document.querySelectorAll('.Tab').forEach(tabButton => {
@@ -13,13 +13,44 @@ function showTab(tab) {
     });
 
     // Add 'active-tab' class to the selected tab
-    const selectedTabs = document.querySelectorAll(`.${tab}Tab`);
-    selectedTabs.forEach(tabButton => {
+    document.querySelectorAll(`button[data-tab="${tab}"]`).forEach(tabButton => {
         tabButton.classList.add('active-tab');
     });
+
+    // 💡 タブ切り替え時に input の内容をリセットする
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+        input.value = '';
+    });
+
+    // 💡 もしサジェストリスト (`ul.suggestions`) もリセットしたい場合
+    document.querySelectorAll('ul.suggestions').forEach(ul => {
+        ul.innerHTML = '';
+    });
 }
+
 // Initialize by showing the Phenotype tab as the default
 showTab('phenotype');
+
+
+
+// function showTab(tab) {
+//     // Display the appropriate form
+//     document.getElementById('phenotypeForm').style.display = tab === 'phenotype' ? 'block' : 'none';
+//     document.getElementById('geneForm').style.display = tab === 'gene' ? 'block' : 'none';
+
+//     // Remove 'active-tab' class from all tabs
+//     document.querySelectorAll('.Tab').forEach(tabButton => {
+//         tabButton.classList.remove('active-tab');
+//     });
+
+//     // Add 'active-tab' class to the selected tab
+//     const selectedTabs = document.querySelectorAll(`.${tab}Tab`);
+//     selectedTabs.forEach(tabButton => {
+//         tabButton.classList.add('active-tab');
+//     });
+// }
+// // Initialize by showing the Phenotype tab as the default
+// showTab('phenotype');
 
 // ====================================================================
 // Fetch JSON data from the URL and assign to phenotypes
