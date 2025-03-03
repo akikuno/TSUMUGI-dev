@@ -1,3 +1,6 @@
+[![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
+[![DOI](https://zenodo.org/badge/441025227.svg)](https://doi.org/10.5281/zenodo.14957711)
+
 
 <p align="center">
     <a href="https://larc-tsukuba.github.io/tsumugi/" target="_blank">
