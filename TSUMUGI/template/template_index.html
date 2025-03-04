@@ -42,20 +42,21 @@
     <link rel="stylesheet" href="./css/top.css">
 
     <!-- JavaScript -->
-    <script src="./js/top.js" defer></script>
+    <script defer src="js/top.js"></script>
 
 </head>
 
 <body>
 
-    <form class="searchForm">
+    <form class="searchForm" id="searchForm">
         <img src="image/tsumugi-logo.png" alt="TSUMUGI" width="0" height="0">
         <p class="subtitle">Trait-driven Surveillance for <br> Mutation-based Gene module Identification</p>
 
         <!-- Tabs for Phenotype and Gene -->
         <div>
-            <button class="Tab" type="button" data-tab="phenotype" onclick="showTab('phenotype')">Phenotype</button>
-            <button class="Tab" type="button" data-tab="gene" onclick="showTab('gene')">Gene</button>
+            <button class="Tab" type="button" data-tab="phenotype"
+                onclick="setSearchMode('phenotype')">Phenotype</button>
+            <button class="Tab" type="button" data-tab="gene" onclick="setSearchMode('gene')">Gene</button>
         </div>
 
         <br>
