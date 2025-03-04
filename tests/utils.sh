@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-WORD="REMOVE FROM"
+WORD="phenotypeForm"
 
 find TSUMUGI/template -type f |
     xargs grep "$WORD"

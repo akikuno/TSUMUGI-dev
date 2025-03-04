@@ -24,6 +24,12 @@
 
 # v0.1.5 (2025-03-DD)
 
+## 🔧 Maintenance
+- The previously separated `phenotypeForm` and `geneForm` have been unified. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a07aa8a47540f6e6bd54ca2bbaa6f3cb315b0e79)]
+
+
+## 🖼️ User Interface
+- トップページの画面サイズを微調整
 
 <!-- ############################################################# # -->
 
