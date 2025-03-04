@@ -29,7 +29,8 @@
 
 
 ## 🖼️ User Interface
-- トップページの画面サイズを微調整
+- `searchForm` has been repositioned at the top and made scrollable when necessary to prevent it from being cut off on smaller screens. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab9ec38553be0dcd17c7dc9ae8c301ed1e5f48ab)]
+
 
 <!-- ############################################################# # -->
 
