@@ -107,6 +107,7 @@ button.submitBtn:hover:enabled {
 
 /* Default tab styling */
 button.Tab {
+    color: #333;
     background-color: #eee;
     border: none;
     padding: 10px 20px;
@@ -117,8 +118,8 @@ button.Tab {
 
 /* Active tab styling */
 button.Tab.active-tab {
-    background-color: #ff7800;
     color: #fff;
+    background-color: #ff7800;
 }
 
 /* ======================================================== */

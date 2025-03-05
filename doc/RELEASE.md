@@ -25,12 +25,15 @@
 # v0.1.5 (2025-03-DD)
 
 ## 🔧 Maintenance
+
 - The previously separated `phenotypeForm` and `geneForm` have been unified. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a07aa8a47540f6e6bd54ca2bbaa6f3cb315b0e79)]
 
 
 ## 🖼️ User Interface
+
 - `searchForm` has been repositioned at the top and made scrollable when necessary to prevent it from being cut off on smaller screens. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab9ec38553be0dcd17c7dc9ae8c301ed1e5f48ab)]
 
+- Make the favicon display correctly in Firefox. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab9ec38553be0dcd17c7dc9ae8c301ed1e5f48ab)]
 
 <!-- ############################################################# # -->
 
