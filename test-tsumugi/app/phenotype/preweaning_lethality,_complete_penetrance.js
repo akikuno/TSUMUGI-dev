@@ -4,69 +4,61 @@ import { removeTooltips, showTooltip } from '../js/tooltips.js';
 import { calculateConnectedComponents } from '../js/components.js';
 import { createSlider } from '../js/slider.js';
 import { filterElementsByGenotypeAndSex } from '../js/filters.js';
+import { loadJSONGz, loadJSON } from "../js/data_loader.js";
 
 // ############################################################################
 // Input handler
 // ############################################################################
 
 
-const target_phenotype = 'preweaning_lethality,_complete_penetrance'.replace(/_/g, " ");
+// const elements = (function () {
+//     const req = new XMLHttpRequest();
+//     let result = null;
 
-const elements = (function () {
-    const req = new XMLHttpRequest();
-    let result = null;
+//     try {
+//         req.open("GET", "../../data/phenotype/preweaning_lethality,_complete_penetrance.json.gz", false);
 
-    try {
-        req.open("GET", "../../data/phenotype/preweaning_lethality,_complete_penetrance.json.gz", false);
+//         req.overrideMimeType("text/plain; charset=x-user-defined"); // バイナリデータとして扱うための設定
+//         req.send(null);
 
-        req.overrideMimeType("text/plain; charset=x-user-defined"); // バイナリデータとして扱うための設定
-        req.send(null);
+//         if (req.status === 200) {
+//             // gzipデータをUint8Arrayに変換
+//             const compressedData = new Uint8Array(
+//                 req.responseText.split("").map(c => c.charCodeAt(0) & 0xff)
+//             );
+//             // pakoでデコード
+//             const decompressedData = pako.ungzip(compressedData, { to: "string" });
+//             result = JSON.parse(decompressedData);
+//         } else {
+//             console.error("HTTP error!! status:", req.status);
+//         }
+//     } catch (error) {
+//         console.error("Failed to load or decode JSON.gz:", error);
+//     }
 
-        if (req.status === 200) {
-            // gzipデータをUint8Arrayに変換
-            const compressedData = new Uint8Array(
-                req.responseText.split("").map(c => c.charCodeAt(0) & 0xff)
-            );
-            // pakoでデコード
-            const decompressedData = pako.ungzip(compressedData, { to: "string" });
-            result = JSON.parse(decompressedData);
-        } else {
-            console.error("HTTP error!! status:", req.status);
-        }
-    } catch (error) {
-        console.error("Failed to load or decode JSON.gz:", error);
-    }
+//     return result;
+// })();
 
-    return result;
-})();
+// const map_symbol_to_id = (function () {
+//     const req = new XMLHttpRequest();
+//     let result = null;
+//     req.onreadystatechange = function () {
+//         if (req.readyState === 4 && req.status === 200) {
+//             result = JSON.parse(req.responseText);
+//         }
+//     };
+//     req.open("GET", "../../data/marker_symbol_accession_id.json", false);
 
-const map_symbol_to_id = (function () {
-    const req = new XMLHttpRequest();
-    let result = null;
-    req.onreadystatechange = function () {
-        if (req.readyState === 4 && req.status === 200) {
-            result = JSON.parse(req.responseText);
-        }
-    };
-    req.open("GET", "../../data/marker_symbol_accession_id.json", false);
+//     req.send(null);
+//     return result;
+// })();
 
-    req.send(null);
-    return result;
-})();
+const url_elements = "../../data/phenotype/preweaning_lethality,_complete_penetrance.json.gz";
+const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
 
 
-// ############################################################################
-// 遺伝型・正特異的フィルタリング関数
-// ############################################################################
-
-// フィルターフォームの取得
-const filterGenotypeForm = document.getElementById('genotype-filter-form');
-const filterSexForm = document.getElementById('sex-filter-form');
-
-// フォーム変更時にフィルタリング関数を実行
-filterGenotypeForm.addEventListener('change', filterElementsByGenotypeAndSex);
-filterSexForm.addEventListener('change', filterElementsByGenotypeAndSex);
-
+const elements = loadJSONGz(url_elements);
+const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
 
 // ############################################################################
 // Cytoscape Elements handler
@@ -232,6 +224,23 @@ edgeSlider.noUiSlider.on('update', function (values) {
 });
 
 
+
+
+// ############################################################################
+// 遺伝型・正特異的フィルタリング関数
+// ############################################################################
+
+let target_phenotype = ""
+target_phenotype = 'preweaning_lethality,_complete_penetrance'.replace(/_/g, " ");
+
+// フィルタリング関数のラッパー
+function applyFiltering() {
+    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterElements);
+}
+
+// フォーム変更時にフィルタリング関数を実行
+document.getElementById('genotype-filter-form').addEventListener('change', applyFiltering);
+document.getElementById('sex-filter-form').addEventListener('change', applyFiltering);
 
 
 // ############################################################################

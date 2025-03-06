@@ -77,10 +77,6 @@
                 jsonData.forEach(item => {
                     const data = item.data;
 
-                    if (data.id === "Ddx46") {
-                        console.log("Ddx46", data);
-                    }
-
                     // 条件1: "node_color" がある場合、値が 1 のみを許可
                     if ("node_color" in data && data.node_color !== 1) {
                         return;
