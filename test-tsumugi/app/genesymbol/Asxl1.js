@@ -87,11 +87,6 @@ const cy = cytoscape({
     layout: getLayoutOptions(),
 });
 
-// レイアウト変更後にイベントリスナーを設定
-cy.on("layoutstop", function () {
-    calculateConnectedComponents(cy);
-});
-
 // ############################################################################
 // Visualization handling
 // ############################################################################
