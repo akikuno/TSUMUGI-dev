@@ -23,17 +23,17 @@ import { loadJSONGz, loadJSON } from "../js/data_loader.js";
 
 // const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
 
+const url_elements =
+    "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/increased_circulating_glucose_level.json.gz";
+const url_map_symbol_to_id =
+    "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json";
+
 // REMOVE_TO_THIS_LINE
 
 /* REMOVE_THIS_LINE
 const url_elements = "../../data/phenotype/XXX_mp_term_name_underscore.json.gz";
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
 REMOVE_THIS_LINE */
-
-const url_elements =
-    "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/increased_circulating_glucose_level.json.gz"; // REMOVE_THIS_LINE
-const url_map_symbol_to_id =
-    "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json"; // REMOVE_THIS_LINE
 
 const elements = loadJSONGz(url_elements);
 const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
