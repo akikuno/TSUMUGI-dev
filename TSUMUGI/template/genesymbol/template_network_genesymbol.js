@@ -1,9 +1,5 @@
 import { exportGraphAsPNG, exportGraphAsCSV } from "../js/exporter.js";
-import {
-    scaleToOriginalRange,
-    scaleValue,
-    getColorForValue,
-} from "../js/value_scaler.js";
+import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
 import { removeTooltips, showTooltip } from "../js/tooltips.js";
 import { calculateConnectedComponents } from "../js/components.js";
 import { createSlider } from "../js/slider.js";
@@ -71,12 +67,8 @@ function getLayoutOptions() {
     };
 }
 
-const nodeSizes = elements
-    .filter((ele) => ele.data.node_color !== undefined)
-    .map((ele) => ele.data.node_color);
-const edgeSizes = elements
-    .filter((ele) => ele.data.edge_size !== undefined)
-    .map((ele) => ele.data.edge_size);
+const nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
+const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
 
 const nodeMin = Math.min(...nodeSizes);
 const nodeMax = Math.max(...nodeSizes);
@@ -97,13 +89,7 @@ const cy = cytoscape({
                 width: 15,
                 height: 15,
                 "background-color": function (ele) {
-                    const color_value = scaleValue(
-                        ele.data("node_color"),
-                        nodeMin,
-                        nodeMax,
-                        1,
-                        10,
-                    );
+                    const color_value = scaleValue(ele.data("node_color"), nodeMin, nodeMax, 1, 10);
                     return getColorForValue(color_value);
                 },
             },
@@ -114,13 +100,7 @@ const cy = cytoscape({
                 "curve-style": "bezier",
                 "text-rotation": "autorotate",
                 width: function (ele) {
-                    return scaleValue(
-                        ele.data("edge_size"),
-                        edgeMin,
-                        edgeMax,
-                        0.5,
-                        2,
-                    );
+                    return scaleValue(ele.data("edge_size"), edgeMin, edgeMax, 0.5, 2);
                 },
             },
         },
@@ -141,40 +121,24 @@ cy.on("layoutstop", function () {
 // Network layout dropdown
 // --------------------------------------------------------
 
-document
-    .getElementById("layout-dropdown")
-    .addEventListener("change", function () {
-        currentLayout = this.value;
-        cy.layout({ name: currentLayout }).run();
-    });
+document.getElementById("layout-dropdown").addEventListener("change", function () {
+    currentLayout = this.value;
+    cy.layout({ name: currentLayout }).run();
+});
+
+// =============================================================================
+// スライダーによる初期化とフィルター関数
+// =============================================================================
 
 // --------------------------------------------------------
-// Initialization of the Slider for Phenotypes similarity
+// Modify the filter function to handle upper and lower bounds
 // --------------------------------------------------------
-const edgeSlider = document.getElementById("filter-edge-slider");
-noUiSlider.create(edgeSlider, {
-    start: [1, 10],
-    connect: true,
-    range: {
-        min: 1,
-        max: 10,
-    },
-    step: 1,
-});
 
 function filterElements() {
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
-    const edgeMinValue = scaleToOriginalRange(
-        edgeSliderValues[0],
-        edgeMin,
-        edgeMax,
-    );
-    const edgeMaxValue = scaleToOriginalRange(
-        edgeSliderValues[1],
-        edgeMin,
-        edgeMax,
-    );
+    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
+    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
     cy.nodes().forEach(function (node) {
         node.style("display", "element");
@@ -223,9 +187,7 @@ function filterElements() {
     });
 
     cy.nodes().forEach(function (node) {
-        const connectedEdges = node
-            .connectedEdges()
-            .filter((edge) => edge.style("display") === "element");
+        const connectedEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
         if (connectedEdges.length === 0) {
             node.style("display", "none"); // Hide node if no connected edges
         }
@@ -236,13 +198,18 @@ function filterElements() {
 }
 
 // --------------------------------------------------------
+// Initialization of the Slider for Phenotypes similarity
+// --------------------------------------------------------
+const edgeSlider = document.getElementById("filter-edge-slider");
+noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
+
+// --------------------------------------------------------
 // Update the slider values when the sliders are moved
 // --------------------------------------------------------
 
 edgeSlider.noUiSlider.on("update", function (values) {
     const intValues = values.map((value) => Math.round(value));
-    document.getElementById("edge-size-value").textContent =
-        intValues.join(" - ");
+    document.getElementById("edge-size-value").textContent = intValues.join(" - ");
     filterElements();
 });
 
@@ -254,21 +221,12 @@ let target_phenotype = "";
 
 // フィルタリング関数のラッパー
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(
-        elements,
-        target_phenotype,
-        cy,
-        filterElements,
-    );
+    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterElements);
 }
 
 // フォーム変更時にフィルタリング関数を実行
-document
-    .getElementById("genotype-filter-form")
-    .addEventListener("change", applyFiltering);
-document
-    .getElementById("sex-filter-form")
-    .addEventListener("change", applyFiltering);
+document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
+document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
 
 // ############################################################################
 // Cytoscape's visualization setting
@@ -295,10 +253,7 @@ createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
     cy.style()
         .selector("edge")
         .style("width", function (ele) {
-            return (
-                scaleValue(ele.data("edge_size"), edgeMin, edgeMax, 0.5, 2) *
-                intValues
-            );
+            return scaleValue(ele.data("edge_size"), edgeMin, edgeMax, 0.5, 2) * intValues;
         })
         .update();
 });
@@ -308,16 +263,8 @@ createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
 // --------------------------------------------------------
 
 createSlider("nodeRepulsion-slider", 5, 1, 10, 1, (intValues) => {
-    nodeRepulsionValue = scaleToOriginalRange(
-        intValues,
-        nodeRepulsionMin,
-        nodeRepulsionMax,
-    );
-    componentSpacingValue = scaleToOriginalRange(
-        intValues,
-        componentSpacingMin,
-        componentSpacingMax,
-    );
+    nodeRepulsionValue = scaleToOriginalRange(intValues, nodeRepulsionMin, nodeRepulsionMax);
+    componentSpacingValue = scaleToOriginalRange(intValues, componentSpacingMin, componentSpacingMax);
     document.getElementById("node-repulsion-value").textContent = intValues;
     cy.layout(getLayoutOptions()).run();
 });

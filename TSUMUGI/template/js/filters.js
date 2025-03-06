@@ -1,20 +1,11 @@
 // フィルタリング関数（遺伝型 + 性別）
-export function filterElementsByGenotypeAndSex(
-    elements,
-    target_phenotype,
-    cy,
-    filterElements,
-) {
+export function filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterElements) {
     // チェックボックスの状態を取得
-    const checkedSexs = Array.from(
-        document.querySelectorAll(
-            '#sex-filter-form input[type="checkbox"]:checked',
-        ),
-    ).map((input) => input.value);
+    const checkedSexs = Array.from(document.querySelectorAll('#sex-filter-form input[type="checkbox"]:checked')).map(
+        (input) => input.value,
+    );
     const checkedGenotypes = Array.from(
-        document.querySelectorAll(
-            '#genotype-filter-form input[type="checkbox"]:checked',
-        ),
+        document.querySelectorAll('#genotype-filter-form input[type="checkbox"]:checked'),
     ).map((input) => input.value);
 
     let targetElements;
@@ -27,11 +18,8 @@ export function filterElementsByGenotypeAndSex(
         targetElements = elements
             .map((item) => {
                 if (item.data.annotation) {
-                    const filteredAnnotations = item.data.annotation.filter(
-                        (annotation) =>
-                            checkedSexs.some((sex) =>
-                                annotation.includes(`${sex}`),
-                            ),
+                    const filteredAnnotations = item.data.annotation.filter((annotation) =>
+                        checkedSexs.some((sex) => annotation.includes(`${sex}`)),
                     );
 
                     return {
@@ -41,21 +29,15 @@ export function filterElementsByGenotypeAndSex(
                 }
                 return item;
             })
-            .filter(
-                (item) =>
-                    item.data.annotation && item.data.annotation.length > 0,
-            );
+            .filter((item) => item.data.annotation && item.data.annotation.length > 0);
     }
 
     // 遺伝型フィルター適用
     let filteredElements = targetElements
         .map((item) => {
             if (item.data.annotation) {
-                const filteredAnnotations = item.data.annotation.filter(
-                    (annotation) =>
-                        checkedGenotypes.some((genotype) =>
-                            annotation.includes(`${genotype}`),
-                        ),
+                const filteredAnnotations = item.data.annotation.filter((annotation) =>
+                    checkedGenotypes.some((genotype) => annotation.includes(`${genotype}`)),
                 );
 
                 return {
@@ -65,18 +47,12 @@ export function filterElementsByGenotypeAndSex(
             }
             return item;
         })
-        .filter(
-            (item) => item.data.annotation && item.data.annotation.length > 0,
-        );
+        .filter((item) => item.data.annotation && item.data.annotation.length > 0);
 
     // `target_phenotype` が指定されている場合、表現型フィルターを適用
     if (target_phenotype) {
         filteredElements = filteredElements
-            .filter((item) =>
-                item.data.annotation?.some((annotation) =>
-                    annotation.includes(target_phenotype),
-                ),
-            )
+            .filter((item) => item.data.annotation?.some((annotation) => annotation.includes(target_phenotype)))
             .filter((item) => item.data.annotation.length > 2); // 3つ以上の表現型を持つノードのみを表示
     }
 

@@ -21,8 +21,7 @@ function createTooltip(event, cy, map_symbol_to_id) {
         const geneID = map_symbol_to_id[data.label] || "UNKNOWN"; // undefined の場合に備える
         const url_impc = `https://www.mousephenotype.org/data/genes/${geneID}`;
         tooltipText =
-            `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>` +
-            annotations;
+            `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>` + annotations;
 
         pos = event.target.renderedPosition();
     } else if (event.target.isEdge()) {
@@ -32,9 +31,7 @@ function createTooltip(event, cy, map_symbol_to_id) {
             ? data.annotation.map((anno) => "・ " + anno).join("<br>")
             : "・ " + data.annotation;
 
-        tooltipText =
-            `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>` +
-            annotations;
+        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>` + annotations;
 
         const sourcePos = cy.getElementById(data.source).renderedPosition();
         const targetPos = cy.getElementById(data.target).renderedPosition();
@@ -90,9 +87,7 @@ function enableTooltipDrag(tooltip) {
 
     document.addEventListener("mousemove", function (e) {
         if (isDragging) {
-            const containerRect = document
-                .querySelector(".cy")
-                .getBoundingClientRect();
+            const containerRect = document.querySelector(".cy").getBoundingClientRect();
             tooltip.style.left = `${e.clientX - offset.x - containerRect.left}px`;
             tooltip.style.top = `${e.clientY - offset.y - containerRect.top}px`;
         }

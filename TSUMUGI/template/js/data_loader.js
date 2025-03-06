@@ -8,12 +8,8 @@ export function loadJSONGz(url) {
         req.send(null);
 
         if (req.status === 200) {
-            const compressedData = new Uint8Array(
-                req.responseText.split("").map((c) => c.charCodeAt(0) & 0xff),
-            );
-            result = JSON.parse(
-                window.pako.ungzip(compressedData, { to: "string" }),
-            );
+            const compressedData = new Uint8Array(req.responseText.split("").map((c) => c.charCodeAt(0) & 0xff));
+            result = JSON.parse(window.pako.ungzip(compressedData, { to: "string" }));
         } else {
             console.error("HTTP error!! status:", req.status);
         }

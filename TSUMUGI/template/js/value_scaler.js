@@ -8,10 +8,7 @@ export function scaleValue(value, minValue, maxValue, minScale, maxScale) {
     if (minValue == maxValue) {
         return (maxScale + minScale) / 2;
     }
-    return (
-        minScale +
-        ((value - minValue) * (maxScale - minScale)) / (maxValue - minValue)
-    );
+    return minScale + ((value - minValue) * (maxScale - minScale)) / (maxValue - minValue);
 }
 
 export function getColorForValue(value) {

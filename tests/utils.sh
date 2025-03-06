@@ -8,3 +8,4 @@ find TSUMUGI/template -type f |
 
 
 prettier --write "TSUMUGI/template/**/*.js" --tab-width 4
+prettier --write "TSUMUGI/template/**/*" --print-width 120 --prose-wrap never --tab-width 4
