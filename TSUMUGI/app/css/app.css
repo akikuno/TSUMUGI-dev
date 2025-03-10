@@ -5,7 +5,7 @@ body {
     height: 100%;
     width: 100%;
     font-size: 18px;
-    font-family: 'Lato', 'Arial', 'Helvetica', sans-serif;
+    font-family: "Lato", "Arial", "Helvetica", sans-serif;
     color: #333;
     box-sizing: border-box;
     display: flex;
@@ -14,7 +14,7 @@ body {
 }
 
 a {
-    color: #FF8C00;
+    color: #ff8c00;
     text-decoration: none;
 }
 
@@ -104,7 +104,7 @@ a {
     height: 100%;
     position: relative;
     box-sizing: border-box;
-    border: 2px solid #AAA;
+    border: 2px solid #aaa;
     border-radius: 10px;
     padding: 10px;
     margin: 20px;
@@ -126,7 +126,6 @@ a {
     margin-top: 5px;
 }
 
-
 /* ======================================================== */
 /* Custom styles for noUiSlider */
 /* ======================================================== */
@@ -141,11 +140,9 @@ a {
     height: 10px;
 }
 
-
 .noUi-connect {
     background-color: #aaa;
 }
-
 
 /* ======================================================== */
 /* Exporter */
