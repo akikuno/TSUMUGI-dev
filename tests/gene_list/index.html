@@ -56,7 +56,7 @@
 
         function filterJson(jsonDataList, geneKeys) {
             // フィルター後のデータを格納するセット（重複除去）
-            let filteredJsonSet = new Set();
+            let elements = new Set();
 
             // 各 JSON データセットを順次処理
             jsonDataList.forEach(jsonData => {
@@ -81,12 +81,12 @@
                     }
 
                     // JSONオブジェクトを文字列に変換し、重複を避ける
-                    filteredJsonSet.add(JSON.stringify(item));
+                    elements.add(JSON.stringify(item));
                 });
             });
 
             // Setを元のJSON形式に戻す
-            return Array.from(filteredJsonSet).map(item => JSON.parse(item));
+            return Array.from(elements).map(item => JSON.parse(item));
         }
 
         async function fetchGeneData() {
@@ -109,8 +109,6 @@
             localStorage.removeItem('elements');
             localStorage.setItem('elements', JSON.stringify(elements));
             window.open('./display.html', '_blank');
-            // // 結果を表示
-            // document.getElementById("output").textContent = JSON.stringify(elements, null, 2);
         }
 
     </script>
