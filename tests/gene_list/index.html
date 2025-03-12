@@ -24,8 +24,15 @@
 
     <h1>遺伝子データ取得（gzip圧縮JSON対応）</h1>
 
-    <label for="geneInput">遺伝子名（カンマ区切りで入力）:</label>
-    <input type="text" id="geneInput" value="Asxl1, Rab10, Ddx46">
+    <label for="geneInput">遺伝子名（改行区切りで入力）:</label>
+    <textarea id="geneInput" rows="5"></textarea>
+
+    <script>
+        document.getElementById("geneInput").value = "Asxl1\r\nRab10\r\nDdx46";
+    </script>
+
+
+
     <button onclick="fetchGeneData()">データ取得</button>
 
     <h2>フィルタリング後のデータ</h2>
@@ -45,27 +52,6 @@
                 console.error(`データ取得エラー (${url}):`, error);
                 return null; // エラー時はスキップ
             }
-        }
-
-        async function fetchGeneData() {
-            let jsonDataList = []; // 取得したデータを格納
-
-            // 遺伝子名リストを取得
-            const geneInput = document.getElementById("geneInput").value;
-            const geneKeys = geneInput.split(",").map(gene => gene.trim());
-
-            // 各遺伝子のJSONを取得
-            const fetchPromises = geneKeys.map(gene => fetchGzippedJson(`https://akikuno.github.io/TSUMUGI-dev/test-tsumugi/data/genesymbol/${gene}.json.gz`));
-            const results = await Promise.all(fetchPromises);
-
-            // null でないデータを追加
-            jsonDataList = results.filter(data => data !== null);
-
-            // フィルタリング処理
-            const filteredData = filterJson(jsonDataList, geneKeys);
-
-            // 結果を表示
-            document.getElementById("output").textContent = JSON.stringify(filteredData, null, 2);
         }
 
         function filterJson(jsonDataList, geneKeys) {
@@ -102,6 +88,31 @@
             // Setを元のJSON形式に戻す
             return Array.from(filteredJsonSet).map(item => JSON.parse(item));
         }
+
+        async function fetchGeneData() {
+            let jsonDataList = []; // 取得したデータを格納
+
+            // 遺伝子名リストを取得
+            const geneInput = document.getElementById("geneInput").value;
+            const geneKeys = geneInput.split(/\r?\n/).map(gene => gene.trim()).filter(gene => gene !== "");
+
+            // 各遺伝子のJSONを取得
+            const fetchPromises = geneKeys.map(gene => fetchGzippedJson(`https://akikuno.github.io/TSUMUGI-dev/test-tsumugi/data/genesymbol/${gene}.json.gz`));
+            const results = await Promise.all(fetchPromises);
+
+            // null でないデータを追加
+            jsonDataList = results.filter(data => data !== null);
+
+            // フィルタリング処理
+            const elements = filterJson(jsonDataList, geneKeys);
+
+            localStorage.removeItem('elements');
+            localStorage.setItem('elements', JSON.stringify(elements));
+            window.open('./display.html', '_blank');
+            // // 結果を表示
+            // document.getElementById("output").textContent = JSON.stringify(elements, null, 2);
+        }
+
     </script>
 
 </body>
