@@ -9,11 +9,11 @@ export function createSlider(id, start, min, max, step, updateCallback, isRange 
     noUiSlider.create(slider, {
         start: isRange ? start : [start], // isRangeなら[start, end]、単一なら[start]
         connect: true,
-        range: { 'min': min, 'max': max },
-        step: step
+        range: { min: min, max: max },
+        step: step,
     });
 
-    slider.noUiSlider.on('update', function (value) {
+    slider.noUiSlider.on("update", function (value) {
         const intValues = isRange ? value.map(Math.round) : Math.round(value);
         updateCallback(intValues);
     });

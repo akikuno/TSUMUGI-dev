@@ -13,7 +13,7 @@
 
 <!-- ## TODO -->
 
-<!-- 
+<!--
 - 複数遺伝子入力を可能にする #42
 - いま利用できる表現型および遺伝子の全リストを公開する #34
 - Edgeの太さがすべて同じに見える #27
@@ -22,20 +22,20 @@
 
 <!-- ############################################################# # -->
 
-# v0.1.4 (2025-03-03)
-
-## 🐛 Bug Fixes
-
-- Fix to show sliders for phenotype severity. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/311a708d9da6fe8947bda1e4ca1fba29dc0df428)]
+# v0.1.5 (2025-03-DD)
 
 ## 🔧 Maintenance
 
-- Ensure that the line endings of the raw data are LF. Issue: #50 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e70752a95c26f79b34699850163eb8ff9920bb7e)]
+- The previously separated `phenotypeForm` and `geneForm` have been unified. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a07aa8a47540f6e6bd54ca2bbaa6f3cb315b0e79)]
 
 - For code reusability, the function has been moved to an external module.
-  - Add `tooltips.js`, `value_scaler.js`, and `exporter.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/250adf33792eac77d1a08c0ab5f84da3cf827571)]
-  - Add `components.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/20c1910630cf13b42555d32c2b5349f156809725)]
-  - Add `filteres.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a968781bdb4622c491d140c76af3053d51e95ec1)]
+  - Add `data_loader.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/2898ab252606f78a01266fd324df3ca8fe045c90)]
+
+## 🖼️ User Interface
+
+- `searchForm` has been repositioned at the top and made scrollable when necessary to prevent it from being cut off on smaller screens. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab9ec38553be0dcd17c7dc9ae8c301ed1e5f48ab)]
+
+- Make the favicon display correctly in Firefox. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b336a91b4d7c81403770a69d2a40ec0bb21407a)]
 
 <!-- ############################################################# # -->
 
@@ -51,6 +51,25 @@
 
 </details> -->
 <!-- ============================================================= -->
+
+
+<details>
+<summary> v0.1.4 (2025-03-03) </summary>
+
+## 🐛 Bug Fixes
+
+- Fix to show sliders for phenotype severity. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/311a708d9da6fe8947bda1e4ca1fba29dc0df428)]
+
+## 🔧 Maintenance
+
+- Ensure that the line endings of the raw data are LF. Issue: #50 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e70752a95c26f79b34699850163eb8ff9920bb7e)]
+
+- For code reusability, the function has been moved to an external module.
+  - Add `tooltips.js`, `value_scaler.js`, and `exporter.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/250adf33792eac77d1a08c0ab5f84da3cf827571)]
+  - Add `components.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/20c1910630cf13b42555d32c2b5349f156809725)]
+  - Add `filteres.js`.
+
+</details>
 
 
 <details>
