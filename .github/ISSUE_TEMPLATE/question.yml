@@ -1,0 +1,30 @@
+name: ❓ Question
+description: Report your question here
+labels: ["question❓️"]
+
+body:
+    - type: textarea
+      id: description
+      attributes:
+          label: "📋 Description"
+          description: A clear and concise description of the question.
+      validations:
+          required: true
+
+    - type: input
+      id: TSUMUGI_version
+      attributes:
+          label: "🔖 TSUMUGI Version"
+          description: "Required: Specify the TSUMUGI version you are using. You can find this information in the `TSUMUGI --version` command."
+          placeholder: "e.g., 0.5.5"
+      validations:
+          required: true
+
+    - type: textarea
+      id: anything_else
+      attributes:
+          label: "📎 Anything else?"
+          description: |
+              Optional: Add any other contexts, links, or screenshots about the bug here.
+      validations:
+          required: false
