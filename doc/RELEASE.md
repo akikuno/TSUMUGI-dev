@@ -25,6 +25,11 @@
 
 # v0.1.6 (2025-04-DD)
 
+
+## 🐛 Bug Fixes
+
++ Fix a bug where gene links led to [Page Not Found](https://www.mousephenotype.org/data/genes). Issue: #53 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/fdacb58db89cf99c84a597cc85e0919152c4d2fa)]
+
 ## 🔧 Maintenance
 
 + Use the latest IMPC [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
