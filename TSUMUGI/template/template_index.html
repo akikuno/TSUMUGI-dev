@@ -1,8 +1,10 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <!-- ========================================  -->
         <!-- Google tag (gtag.js) -->
-        <script async defer src="https://www.googletagmanager.com/gtag/js?id=G-KHH6HGQTPM"></script>
+        <!-- ========================================  -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-KHH6HGQTPM"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag() {
@@ -13,6 +15,9 @@
             gtag("config", "G-KHH6HGQTPM");
         </script>
 
+        <!-- ========================================  -->
+        <!-- OGP -->
+        <!-- ========================================  -->
         <!-- OGP Meta Tags -->
         <meta property="og:title" content="TSUMUGI" />
         <meta property="og:site_name" content="TSUMUGI" />
@@ -33,15 +38,22 @@
             lang="en"
         />
 
+        <!-- ========================================  -->
+        <!-- Meta data -->
+        <!-- ========================================  -->
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>TSUMUGI</title>
         <link rel="icon" href="image/tsumugi-favicon.ico" />
 
+        <!-- ========================================  -->
         <!-- JavaScript -->
+        <!-- ========================================  -->
         <script defer src="./js/top.js"></script>
 
-        <!-- CSS  -->
+        <!-- ========================================  -->
+        <!-- CSS -->
+        <!-- ========================================  -->
         <link href="./css/sanitize.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
@@ -67,6 +79,9 @@
                     Phenotype
                 </button>
                 <button class="Tab" type="button" data-tab="gene" onclick="setSearchMode('gene')">Gene</button>
+                <button class="Tab" type="button" data-tab="geneList" onclick="setSearchMode('geneList')">
+                    Gene List
+                </button>
             </div>
 
             <br />
@@ -90,7 +105,15 @@
                 <ul id="geneSuggestions" class="suggestions" aria-busy="true"></ul>
             </div>
 
+            <!-- Gene List Input Section (Hidden Initially) -->
+            <div class="tab-content" id="geneListSection" style="display: none">
+                <label for="geneList">Enter gene symbols (one per line)</label>
+                <textarea class="geneList" id="geneList" rows="5"></textarea>
+                <ul id="geneListSuggestions" class="suggestions" aria-busy="true"></ul>
+            </div>
+
             <button class="submitBtn" type="submit" id="submitBtn" disabled>Submit</button>
+            <button class="submitBtn" type="submit" id="submitBtn_List" style="display: none">Submit</button>
         </form>
 
         <!-- ========================================  -->
