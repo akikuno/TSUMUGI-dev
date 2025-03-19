@@ -8,37 +8,63 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 
     <!-- Import the external JavaScript module -->
+    <script defer src="./js/top.js"></script>
     <script type="module" src="./js/genelist_formatter.js"></script>
 
-    <style>
-        body {
-            font-size: 1.2em;
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+    <!-- CSS  -->
+    <link href="./css/sanitize.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/top.css" />
 
-        textarea.geneList {
-            font-size: inherit;
-            font-family: inherit;
-            max-width: 600px;
-            height: 120px;
-            padding: 12px;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            outline: none;
-        }
-    </style>
 </head>
 
 <body>
 
-    <h1>Fetch Gene Data (Supports Gzip-Compressed JSON)</h1>
+    <form class="searchForm" id="searchForm">
+        <img src="image/tsumugi-logo.png" alt="TSUMUGI" width="0" height="0" />
+        <p class="subtitle">
+            Trait-driven Surveillance for <br />
+            Mutation-based Gene module Identification
+        </p>
 
-    <label for="geneList">Input Gene Symbols (Enter one per line)</label>
-    <br>
-    <textarea class="geneList" id="geneList" rows="5"></textarea>
-    <br>
-    <button>Submit</button>
+        <!-- Tabs for Phenotype and Gene -->
+        <div>
+            <button class="Tab" type="button" data-tab="phenotype" onclick="setSearchMode('phenotype')">
+                Phenotype
+            </button>
+            <button class="Tab" type="button" data-tab="gene" onclick="setSearchMode('gene')">Gene</button>
+            <button class="Tab" type="button" data-tab="geneList" onclick="setSearchMode('geneList')">Gene List</button>
+        </div>
+
+        <br />
+
+        <!-- Phenotype Input Section -->
+        <div class="tab-content" id="phenotypeSection">
+            <label for="phenotype">Select a phenotype of interest</label>
+            <input type="text" id="phenotype" name="phenotype"
+                placeholder="e.g: increased fasting circulating glucose level" />
+            <ul id="phenotypeSuggestions" class="suggestions" aria-busy="true"></ul>
+        </div>
+
+        <!-- Gene Input Section (Hidden Initially) -->
+        <div class="tab-content" id="geneSection" style="display: none">
+            <label for="gene">Enter a gene symbol</label>
+            <input type="text" id="gene" name="gene" placeholder="e.g: Rab10" />
+            <ul id="geneSuggestions" class="suggestions" aria-busy="true"></ul>
+        </div>
+
+        <!-- Gene List Input Section (Hidden Initially) -->
+        <div class="tab-content" id="geneListSection" style="display: none">
+            <label for="geneList">Enter gene symbols (one per line)</label>
+            <textarea class="geneList" id="geneList" rows="5"></textarea>
+            <ul id="geneListSuggestions" class="suggestions" aria-busy="true"></ul>
+        </div>
+
+        <button class="submitBtn" type="submit" id="submitBtn" disabled>Submit</button>
+        <button class="submitBtn" type="submit" id="submitBtn_List" style="display: none;">Submit</button>
+    </form>
 
 
 </body>

@@ -68,5 +68,5 @@ export async function fetchGeneData() {
 
 // Assign event listener to button
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelector("button").addEventListener("click", fetchGeneData);
+    document.getElementById("submitBtn_List").addEventListener("click", fetchGeneData);
 });
