@@ -22,20 +22,11 @@
 
 <!-- ############################################################# # -->
 
-# v0.1.5 (2025-03-DD)
+# v0.1.6 (2025-04-DD)
 
 ## 🔧 Maintenance
 
-- The previously separated `phenotypeForm` and `geneForm` have been unified. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a07aa8a47540f6e6bd54ca2bbaa6f3cb315b0e79)]
-
-- For code reusability, the function has been moved to an external module.
-  - Add `data_loader.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/2898ab252606f78a01266fd324df3ca8fe045c90)]
-
-## 🖼️ User Interface
-
-- `searchForm` has been repositioned at the top and made scrollable when necessary to prevent it from being cut off on smaller screens. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab9ec38553be0dcd17c7dc9ae8c301ed1e5f48ab)]
-
-- Make the favicon display correctly in Firefox. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b336a91b4d7c81403770a69d2a40ec0bb21407a)]
++ Use the latest IMPC [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
 
 <!-- ############################################################# # -->
 
@@ -50,6 +41,26 @@
 <summary> v0.X.X (2025-MM-DD) </summary>
 
 </details> -->
+<!-- ============================================================= -->
+
+<!-- ============================================================= -->
+<details>
+<summary> v0.1.5 (2025-03-18) </summary>
+
+## 🔧 Maintenance
+
+- The previously separated `phenotypeForm` and `geneForm` have been unified. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a07aa8a47540f6e6bd54ca2bbaa6f3cb315b0e79)]
+
+- For code reusability, the function has been moved to an external module.
+  - Add `data_loader.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/2898ab252606f78a01266fd324df3ca8fe045c90)]
+
+## 🖼️ User Interface
+
+- `searchForm` has been repositioned at the top and made scrollable when necessary to prevent it from being cut off on smaller screens. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab9ec38553be0dcd17c7dc9ae8c301ed1e5f48ab)]
+
+- Make the favicon display correctly in Firefox. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b336a91b4d7c81403770a69d2a40ec0bb21407a)]
+
+</details>
 <!-- ============================================================= -->
 
 
