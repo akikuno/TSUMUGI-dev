@@ -43,7 +43,7 @@ export async function fetchGeneData() {
     const geneKeys = geneList.split(/\r?\n/).map(gene => gene.trim()).filter(gene => gene !== "");
 
     const fetchPromises = geneKeys.map(gene =>
-        fetchGzippedJson(`https://akikuno.github.io/TSUMUGI-dev/test-tsumugi/data/genesymbol/${gene}.json.gz`)
+        fetchGzippedJson(`./data/genesymbol/${gene}.json.gz`)
     );
 
     const results = await Promise.all(fetchPromises);

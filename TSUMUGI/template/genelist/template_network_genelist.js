@@ -1,10 +1,10 @@
-import { exportGraphAsPNG, exportGraphAsCSV } from "./js/exporter.js";
-import { scaleToOriginalRange, scaleValue, getColorForValue } from "./js/value_scaler.js";
-import { removeTooltips, showTooltip } from "./js/tooltips.js";
-import { calculateConnectedComponents } from "./js/components.js";
-import { createSlider } from "./js/slider.js";
-import { filterElementsByGenotypeAndSex } from "./js/filters.js";
-import { loadJSONGz, loadJSON } from "./js/data_loader.js";
+import { exportGraphAsPNG, exportGraphAsCSV } from "../js/exporter.js";
+import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
+import { removeTooltips, showTooltip } from "../js/tooltips.js";
+import { calculateConnectedComponents } from "../js/components.js";
+import { createSlider } from "../js/slider.js";
+import { filterElementsByGenotypeAndSex } from "../js/filters.js";
+import { loadJSONGz, loadJSON } from "../js/data_loader.js";
 
 // ############################################################################
 // Input handling
