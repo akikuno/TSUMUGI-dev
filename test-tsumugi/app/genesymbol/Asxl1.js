@@ -109,67 +109,69 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 // --------------------------------------------------------
 
 function filterElements() {
-    const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
-
+    const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
-    cy.nodes().forEach(function (node) {
-        node.style("display", "element");
-    });
+    // すべてのノードを一旦表示状態にする
+    cy.nodes().forEach(node => node.style("display", "element"));
 
-    // Filter edges based on size
-    cy.edges().forEach(function (edge) {
+    // edge_sizeの範囲でエッジをフィルターし、表示/非表示を設定
+    cy.edges().forEach(edge => {
         const edgeSize = edge.data("edge_size");
-        const sourceNode = cy.getElementById(edge.data("source"));
-        const targetNode = cy.getElementById(edge.data("target"));
+        const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
+        const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
 
-        if (
-            sourceNode.style("display") === "element" &&
-            targetNode.style("display") === "element" &&
+        const isEdgeVisible = (
+            sourceVisible &&
+            targetVisible &&
             edgeSize >= edgeMinValue &&
             edgeSize <= edgeMaxValue
-        ) {
-            edge.style("display", "element");
-        } else {
-            edge.style("display", "none");
-        }
+        );
+
+        edge.style("display", isEdgeVisible ? "element" : "none");
     });
 
     // calculateConnectedComponentsを利用して連結成分を取得
     const connected_component = calculateConnectedComponents(cy);
 
-    // node_colorが1のノードを含む連結成分のみを選択
-    const componentsWithNodeColor1 = connected_component.filter((component) => {
-        return Object.keys(component).some((nodeLabel) => {
-            const node = cy.$(`node[label="${nodeLabel}"]`);
+
+    // 連結成分を取得し、node_color === 1 を含むものだけ残す
+    const connectedComponents = calculateConnectedComponents(cy);
+    const componentsWithColor1 = connectedComponents.filter(component =>
+        Object.keys(component).some(label => {
+            const node = cy.$(`node[label="${label}"]`);
             return node.data("node_color") === 1;
-        });
-    });
+        })
+    );
 
-    // すべてのノードとエッジを一旦非表示にする
-    cy.nodes().style("display", "none");
-    cy.edges().style("display", "none");
-
-    // node_colorが1のノードを含む連結成分のみ表示
-    componentsWithNodeColor1.forEach((component) => {
-        Object.keys(component).forEach((nodeLabel) => {
-            const node = cy.$(`node[label="${nodeLabel}"]`);
+    // 残すべきコンポーネント内のノードと、edge_size条件を満たすエッジを再表示
+    componentsWithColor1.forEach(component => {
+        Object.keys(component).forEach(label => {
+            const node = cy.$(`node[label="${label}"]`);
             node.style("display", "element");
-            node.connectedEdges().style("display", "element");
+
+            node.connectedEdges().forEach(edge => {
+                const edgeSize = edge.data("edge_size");
+                if (edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue) {
+                    edge.style("display", "element");
+                }
+            });
         });
     });
 
-    cy.nodes().forEach(function (node) {
-        const connectedEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
-        if (connectedEdges.length === 0) {
-            node.style("display", "none"); // Hide node if no connected edges
+    // 接続エッジがすべて非表示のノードは非表示にする（孤立ノードの除去）
+    cy.nodes().forEach(node => {
+        const visibleEdges = node.connectedEdges().filter(edge => edge.style("display") === "element");
+        if (visibleEdges.length === 0) {
+            node.style("display", "none");
         }
     });
 
-    // Reapply layout after filtering
+    // フィルタ後のレイアウトを再適用
     cy.layout(getLayoutOptions()).run();
 }
+
 
 // --------------------------------------------------------
 // Initialization of the Slider for Phenotypes similarity

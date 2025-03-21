@@ -195,19 +195,15 @@ ensureDataLoaded().then(() => {
 function handleFormSubmit(event) {
     event.preventDefault();
 
-    const mode = searchMode;
-
-    // geneListのときには、直接関数を実行を取得
-    if (mode === 'geneList') {
-        fetchGeneData(); // 🔥 ここで直接呼び出す
-        return;
-    }
-
-    // phenotype / gene のときには、特定のページを出力
+    const mode = searchMode;  // 最新の searchMode を取得
     const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
     const submitBtn = document.getElementById('submitBtn');
     const selectedData = mode === 'phenotype' ? phenotypes[userInput.value] : userInput.value;
     const path = mode === 'phenotype' ? 'phenotype' : 'genesymbol';
+
+    // console.log(`Submitting form with mode: ${mode}`);
+    // console.log(`path: ${path}`);
+    // console.log(`name: ${selectedData}`);
 
     if (!submitBtn.disabled) {
         window.open(`app/${path}/${selectedData}.html`, '_blank');

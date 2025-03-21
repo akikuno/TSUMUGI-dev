@@ -10,32 +10,18 @@ import { loadJSONGz, loadJSON } from "../js/data_loader.js";
 // Input handling
 // ############################################################################
 
+// localStorage からデータを取得
+const elements = JSON.parse(localStorage.getItem("elements"));
+
 // REMOVE_FROM_THIS_LINE
-
-// const elements = [
-//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 1, } },
-//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 0, } },
-//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 0, } },
-//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
-//     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
-//     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
-// ];
-
-// const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
-
-const url_elements =
-    "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/Rab10.json.gz";
 const url_map_symbol_to_id =
     "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json";
-
 // REMOVE_TO_THIS_LINE
 
 /* REMOVE_THIS_LINE
-const url_elements = "../../data/genesymbol/XXX_genesymbol.json.gz";
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
 REMOVE_THIS_LINE */
 
-const elements = loadJSONGz(url_elements);
 const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
 
 // ############################################################################
@@ -193,7 +179,6 @@ function filterElements() {
     cy.layout(getLayoutOptions()).run();
 }
 
-
 // --------------------------------------------------------
 // Initialization of the Slider for Phenotypes similarity
 // --------------------------------------------------------
@@ -286,7 +271,7 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = "TSUMUGI_XXX_genesymbol";
+const file_name = "TSUMUGI_geneList";
 
 // --------------------------------------------------------
 // PNG Exporter

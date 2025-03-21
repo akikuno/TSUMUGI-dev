@@ -18,24 +18,24 @@
 - いま利用できる表現型および遺伝子の全リストを公開する #34
 - Edgeの太さがすべて同じに見える #27
 - 類似度のフィルターをなだらかに段階的にしたい #29
+- ドキュメントの整備
 -->
 
 <!-- ############################################################# # -->
 
-# v0.1.5 (2025-03-DD)
+# v0.2.0 (2025-03-21)
+
+## 💥 Breaking
+
+- Allow users to input their intended gene lists. Issue #42 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a6850985c98941e7fbb3b992226eb7c755c6e7b2)]
+
+## 🐛 Bug Fixes
+
++ Fix a bug where gene links led to [Page Not Found](https://www.mousephenotype.org/data/genes). Issue: #53 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/fdacb58db89cf99c84a597cc85e0919152c4d2fa)]
 
 ## 🔧 Maintenance
 
-- The previously separated `phenotypeForm` and `geneForm` have been unified. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a07aa8a47540f6e6bd54ca2bbaa6f3cb315b0e79)]
-
-- For code reusability, the function has been moved to an external module.
-  - Add `data_loader.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/2898ab252606f78a01266fd324df3ca8fe045c90)]
-
-## 🖼️ User Interface
-
-- `searchForm` has been repositioned at the top and made scrollable when necessary to prevent it from being cut off on smaller screens. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab9ec38553be0dcd17c7dc9ae8c301ed1e5f48ab)]
-
-- Make the favicon display correctly in Firefox. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b336a91b4d7c81403770a69d2a40ec0bb21407a)]
++ Use the latest IMPC [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
 
 <!-- ############################################################# # -->
 
@@ -50,6 +50,26 @@
 <summary> v0.X.X (2025-MM-DD) </summary>
 
 </details> -->
+<!-- ============================================================= -->
+
+<!-- ============================================================= -->
+<details>
+<summary> v0.1.5 (2025-03-18) </summary>
+
+## 🔧 Maintenance
+
+- The previously separated `phenotypeForm` and `geneForm` have been unified. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a07aa8a47540f6e6bd54ca2bbaa6f3cb315b0e79)]
+
+- For code reusability, the function has been moved to an external module.
+  - Add `data_loader.js`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/2898ab252606f78a01266fd324df3ca8fe045c90)]
+
+## 🖼️ User Interface
+
+- `searchForm` has been repositioned at the top and made scrollable when necessary to prevent it from being cut off on smaller screens. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab9ec38553be0dcd17c7dc9ae8c301ed1e5f48ab)]
+
+- Make the favicon display correctly in Firefox. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b336a91b4d7c81403770a69d2a40ec0bb21407a)]
+
+</details>
 <!-- ============================================================= -->
 
 

@@ -9,7 +9,9 @@ function setSearchMode(mode) {
 
     document.getElementById('phenotypeSection').style.display = mode === 'phenotype' ? 'block' : 'none';
     document.getElementById('geneSection').style.display = mode === 'gene' ? 'block' : 'none';
+    document.getElementById('geneListSection').style.display = mode === 'geneList' ? 'block' : 'none';
 
+    // タブボタンのスタイル変更
     document.querySelectorAll('.Tab').forEach(tabButton => {
         tabButton.classList.remove('active-tab');
     });
@@ -17,12 +19,40 @@ function setSearchMode(mode) {
         tabButton.classList.add('active-tab');
     });
 
-    document.querySelectorAll('input[type="text"]').forEach(input => {
+    // 入力欄の初期化
+    document.querySelectorAll('input[type="text"], textarea').forEach(input => {
         input.value = '';
     });
     document.querySelectorAll('ul.suggestions').forEach(ul => {
         ul.innerHTML = '';
     });
+
+    // Gene List のタブが押されたときにプレースホルダーを設定
+    const geneListTextarea = document.getElementById("geneList");
+    if (mode === 'geneList') {
+        geneListTextarea.value = "Asxl1\nRab10\nDdx46";  // プレースホルダーとして例を入力
+    } else {
+        geneListTextarea.value = '';  // 他のタブでは空にする
+    }
+
+    // Submit ボタンの切り替え
+    document.getElementById('submitBtn').style.display = mode === 'geneList' ? 'none' : 'inline-block';
+    document.getElementById('submitBtn_List').style.display = mode === 'geneList' ? 'inline-block' : 'none';
+
+    // Gene List の入力チェックを実行
+    checkGeneListInput();
+}
+
+// Gene List の入力をチェックし、ボタンの有効・無効を切り替える
+function checkGeneListInput() {
+    const geneListTextarea = document.getElementById("geneList");
+    const submitBtnList = document.getElementById("submitBtn_List");
+
+    if (geneListTextarea.value.trim() === "") {
+        submitBtnList.disabled = true;
+    } else {
+        submitBtnList.disabled = false;
+    }
 }
 
 // 初期表示
@@ -33,6 +63,8 @@ document.querySelectorAll('.Tab').forEach(button => {
     button.addEventListener('click', () => setSearchMode(button.dataset.tab));
 });
 
+// Gene List のテキストエリアが変更されたらボタンを更新
+document.getElementById("geneList").addEventListener("input", checkGeneListInput);
 
 // ====================================================================
 // Fetch JSON data from the URL and assign to phenotypes
@@ -163,15 +195,19 @@ ensureDataLoaded().then(() => {
 function handleFormSubmit(event) {
     event.preventDefault();
 
-    const mode = searchMode;  // 最新の searchMode を取得
+    const mode = searchMode;
+
+    // geneListのときには、直接関数を実行を取得
+    if (mode === 'geneList') {
+        fetchGeneData(); // 🔥 ここで直接呼び出す
+        return;
+    }
+
+    // phenotype / gene のときには、特定のページを出力
     const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
     const submitBtn = document.getElementById('submitBtn');
     const selectedData = mode === 'phenotype' ? phenotypes[userInput.value] : userInput.value;
     const path = mode === 'phenotype' ? 'phenotype' : 'genesymbol';
-
-    // console.log(`Submitting form with mode: ${mode}`);
-    // console.log(`path: ${path}`);
-    // console.log(`name: ${selectedData}`);
 
     if (!submitBtn.disabled) {
         window.open(`app/${path}/${selectedData}.html`, '_blank');

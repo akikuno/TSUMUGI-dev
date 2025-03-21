@@ -1,116 +1,151 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <!-- Google tag (gtag.js) -->
-        <script async defer src="https://www.googletagmanager.com/gtag/js?id=G-KHH6HGQTPM"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag("js", new Date());
 
-            gtag("config", "G-KHH6HGQTPM");
-        </script>
+<head>
+    <!-- ========================================  -->
+    <!-- Google tag (gtag.js) -->
+    <!-- ========================================  -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KHH6HGQTPM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
 
-        <!-- OGP Meta Tags -->
-        <meta property="og:title" content="TSUMUGI" />
-        <meta property="og:site_name" content="TSUMUGI" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://larc-tsukuba.github.io/tsumugi/" />
-        <meta
-            property="og:image"
-            content="https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/image/tsumugi-icon.png"
-        />
-        <meta property="og:description" content="KOマウス表現型類似を指標とした遺伝子ネットワーク可視化ツールです" />
-        <meta property="og:locale" content="ja_JP" />
-        <!-- English OGP Meta Tags -->
-        <meta property="og:title" content="TSUMUGI" lang="en" />
-        <meta property="og:locale:alternate" content="en_US" />
-        <meta
-            property="og:description"
-            content="Tool for Visualizing Gene Networks Based on KO Mouse Phenotype Similarity"
-            lang="en"
-        />
+        gtag("config", "G-KHH6HGQTPM");
+    </script>
 
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>TSUMUGI</title>
-        <link rel="icon" href="image/tsumugi-favicon.ico" />
+    <!-- ========================================  -->
+    <!-- OGP -->
+    <!-- ========================================  -->
+    <!-- OGP Meta Tags -->
+    <meta property="og:title" content="TSUMUGI" />
+    <meta property="og:site_name" content="TSUMUGI" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://larc-tsukuba.github.io/tsumugi/" />
+    <meta property="og:image"
+        content="https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/image/tsumugi-icon.png" />
+    <meta property="og:description" content="KOマウス表現型類似を指標とした遺伝子ネットワーク可視化ツールです" />
+    <meta property="og:locale" content="ja_JP" />
+    <!-- English OGP Meta Tags -->
+    <meta property="og:title" content="TSUMUGI" lang="en" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:description" content="Tool for Visualizing Gene Networks Based on KO Mouse Phenotype Similarity"
+        lang="en" />
 
-        <!-- CSS  -->
-        <link href="./css/sanitize.css" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
-        <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
-        <link rel="stylesheet" href="./css/top.css" />
+    <!-- ========================================  -->
+    <!-- Meta data -->
+    <!-- ========================================  -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TSUMUGI</title>
+    <link rel="icon" href="image/tsumugi-favicon.ico" />
 
-        <!-- JavaScript -->
-        <script defer src="./js/top.js"></script>
-    </head>
+    <!-- ========================================  -->
+    <!-- JavaScript -->
+    <!-- ========================================  -->
 
-    <body>
-        <form class="searchForm" id="searchForm">
-            <img src="image/tsumugi-logo.png" alt="TSUMUGI" width="0" height="0" />
-            <p class="subtitle">
-                Trait-driven Surveillance for <br />
-                Mutation-based Gene module Identification
-            </p>
+    <!-- pako for reading gzip JSON -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
 
-            <!-- Tabs for Phenotype and Gene -->
-            <div>
-                <button class="Tab" type="button" data-tab="phenotype" onclick="setSearchMode('phenotype')">
-                    Phenotype
-                </button>
-                <button class="Tab" type="button" data-tab="gene" onclick="setSearchMode('gene')">Gene</button>
-            </div>
+    <!-- Custom JS -->
+    <script defer src="./js/top.js"></script>
+    <script type="module" src="./js/genelist_formatter.js"></script>
 
-            <br />
+    <!-- ========================================  -->
+    <!-- CSS -->
+    <!-- ========================================  -->
 
-            <!-- Phenotype Input Section -->
-            <div class="tab-content" id="phenotypeSection">
-                <label for="phenotype">Select a phenotype of interest</label>
-                <input
-                    type="text"
-                    id="phenotype"
-                    name="phenotype"
-                    placeholder="e.g: increased fasting circulating glucose level"
-                />
-                <ul id="phenotypeSuggestions" class="suggestions" aria-busy="true"></ul>
-            </div>
+    <!-- Sanitize -->
+    <link href="./css/sanitize.css" rel="stylesheet" />
 
-            <!-- Gene Input Section (Hidden Initially) -->
-            <div class="tab-content" id="geneSection" style="display: none">
-                <label for="gene">Enter a gene symbol</label>
-                <input type="text" id="gene" name="gene" placeholder="e.g: Rab10" />
-                <ul id="geneSuggestions" class="suggestions" aria-busy="true"></ul>
-            </div>
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
 
-            <button class="submitBtn" type="submit" id="submitBtn" disabled>Submit</button>
-        </form>
+    <!-- Fontawesome -->
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
 
-        <a
-            class="download-btn"
-            href="https://pub-e4f4fb56dde64c0cb9dccc747e84e5f9.r2.dev/TSUMUGI_raw_data.csv.gz"
-            download
-        >
-            <i class="fa-regular fa-circle-down"></i> Download raw data
-        </a>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/top.css" />
+</head>
 
-        <footer>
-            <p>TSUMUGI v0.1.5</p>
-            <div class="contact">
-                <i class="fa-brands fa-github"></i>
-                <a href="https://github.com/akikuno/TSUMUGI-dev" target="_blank">GitHub</a>
-                <i class="fa-regular fa-envelope"></i> akuno[at]md.tsukuba.ac.jp
-            </div>
-            <!-- <p><i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> </p>-->
-            <p>
-                &copy; 2024
-                <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/public_E/index.html" target="_blank"
-                    >Laboratory Animal Resource Center, University of Tsukuba</a
-                >
-            </p>
-        </footer>
-    </body>
+<body>
+    <!-- ========================================  -->
+    <!-- Main -->
+    <!-- ========================================  -->
+
+    <form class="searchForm" id="searchForm">
+        <h1><img src="image/tsumugi-logo.png" alt="TSUMUGI" width="0" height="0" /></h1>
+        <p class="subtitle">
+            Trait-driven Surveillance for <br />
+            Mutation-based Gene module Identification
+        </p>
+
+        <!-- Tabs for Phenotype and Gene -->
+        <div>
+            <button class="Tab" type="button" data-tab="phenotype" onclick="setSearchMode('phenotype')">
+                Phenotype
+            </button>
+            <button class="Tab" type="button" data-tab="gene" onclick="setSearchMode('gene')">Gene</button>
+            <button class="Tab" type="button" data-tab="geneList" onclick="setSearchMode('geneList')">
+                Gene List
+            </button>
+        </div>
+
+        <br />
+
+        <!-- Phenotype Input Section -->
+        <div class="tab-content" id="phenotypeSection">
+            <label for="phenotype">Select a phenotype of interest</label>
+            <input type="text" id="phenotype" name="phenotype"
+                placeholder="e.g: increased fasting circulating glucose level" />
+            <ul id="phenotypeSuggestions" class="suggestions" aria-busy="true"></ul>
+        </div>
+
+        <!-- Gene Input Section (Hidden Initially) -->
+        <div class="tab-content" id="geneSection" style="display: none">
+            <label for="gene">Enter a gene symbol</label>
+            <input type="text" id="gene" name="gene" placeholder="e.g: Rab10" />
+            <ul id="geneSuggestions" class="suggestions" aria-busy="true"></ul>
+        </div>
+
+        <!-- Gene List Input Section (Hidden Initially) -->
+        <div class="tab-content" id="geneListSection" style="display: none">
+            <label for="geneList">Enter gene symbols (one per line)</label>
+            <textarea class="geneList" id="geneList" rows="5"></textarea>
+            <ul id="geneListSuggestions" class="suggestions" aria-busy="true"></ul>
+        </div>
+
+        <button class="submitBtn" type="submit" id="submitBtn" disabled>Submit</button>
+        <button class="submitBtn" type="submit" id="submitBtn_List" style="display: none">Submit</button>
+    </form>
+
+    <!-- ========================================  -->
+    <!-- Download Raw Data -->
+    <!-- ========================================  -->
+    <a class="download-btn" href="https://pub-e4f4fb56dde64c0cb9dccc747e84e5f9.r2.dev/TSUMUGI_raw_data.csv.gz" download>
+        <i class="fa-regular fa-circle-down"></i> Download raw data
+    </a>
+
+    <!-- ========================================  -->
+    <!-- Footer -->
+    <!-- ========================================  -->
+    <footer>
+        <p>TSUMUGI v0.2.0</p>
+        <div class="contact">
+            <i class="fa-brands fa-github"></i>
+            <a href="https://github.com/akikuno/TSUMUGI-dev" target="_blank">GitHub</a>
+            <i class="fa-regular fa-envelope"></i> akuno[at]md.tsukuba.ac.jp
+        </div>
+        <!-- <p><i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> </p>-->
+        <p>
+            &copy; 2024
+            <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/public_E/index.html" target="_blank">Laboratory Animal
+                Resource Center, University of Tsukuba</a>
+        </p>
+    </footer>
+</body>
+
 </html>

@@ -1,0 +1,54 @@
+name: 🐞 Bug Report
+description: Create a report to help us improve
+labels: ["bug🐛"]
+
+body:
+    - type: textarea
+      id: description
+      attributes:
+          label: "📋 Description"
+          description: A clear and concise description of the bug.
+      validations:
+          required: true
+
+    - type: input
+      id: TSUMUGI_version
+      attributes:
+          label: "🔖 TSUMUGI Version"
+          description: "Required: Specify the TSUMUGI version you are using. You can find this information in the `TSUMUGI --version` command."
+          placeholder: "e.g., 0.1.5"
+      validations:
+          required: true
+
+    - type: textarea
+      attributes:
+          label: "💬 Current Behavior"
+          description: |
+              Optional: A concise description of what you're experiencing.
+      validations:
+          required: false
+
+    - type: textarea
+      attributes:
+          label: "🎯 Expected Behavior"
+          description: |
+              Optional: A concise description of what you expected to happen.
+      validations:
+          required: false
+
+    - type: textarea
+      attributes:
+          label: "⚠️ Error message"
+          description: |
+              Optional: If applicable, add the error message here.
+      validations:
+          required: false
+
+    - type: textarea
+      id: anything_else
+      attributes:
+          label: "📎 Anything else?"
+          description: |
+              Optional: Add any other contexts, links, or screenshots about the bug here.
+      validations:
+          required: false

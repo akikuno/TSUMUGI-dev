@@ -1,41 +1,22 @@
-import { exportGraphAsPNG, exportGraphAsCSV } from "../js/exporter.js";
-import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
-import { removeTooltips, showTooltip } from "../js/tooltips.js";
-import { calculateConnectedComponents } from "../js/components.js";
-import { createSlider } from "../js/slider.js";
-import { filterElementsByGenotypeAndSex } from "../js/filters.js";
-import { loadJSONGz, loadJSON } from "../js/data_loader.js";
+import { exportGraphAsPNG, exportGraphAsCSV } from "./js/exporter.js";
+import { scaleToOriginalRange, scaleValue, getColorForValue } from "./js/value_scaler.js";
+import { removeTooltips, showTooltip } from "./js/tooltips.js";
+import { calculateConnectedComponents } from "./js/components.js";
+import { createSlider } from "./js/slider.js";
+import { filterElementsByGenotypeAndSex } from "./js/filters.js";
+import { loadJSONGz, loadJSON } from "./js/data_loader.js";
 
 // ############################################################################
 // Input handling
 // ############################################################################
 
-// REMOVE_FROM_THIS_LINE
 
-// const elements = [
-//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 1, } },
-//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 0, } },
-//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 0, } },
-//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
-//     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
-//     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
-// ];
+// localStorage からデータを取得
+const elements = JSON.parse(localStorage.getItem('elements'));
 
-// const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
-
-const url_elements =
-    "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/Rab10.json.gz";
 const url_map_symbol_to_id =
     "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json";
 
-// REMOVE_TO_THIS_LINE
-
-/* REMOVE_THIS_LINE
-const url_elements = "../../data/genesymbol/XXX_genesymbol.json.gz";
-const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
-REMOVE_THIS_LINE */
-
-const elements = loadJSONGz(url_elements);
 const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
 
 // ############################################################################
@@ -130,69 +111,67 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 // --------------------------------------------------------
 
 function filterElements() {
-    const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
+    const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
+
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
-    // すべてのノードを一旦表示状態にする
-    cy.nodes().forEach(node => node.style("display", "element"));
+    cy.nodes().forEach(function (node) {
+        node.style("display", "element");
+    });
 
-    // edge_sizeの範囲でエッジをフィルターし、表示/非表示を設定
-    cy.edges().forEach(edge => {
+    // Filter edges based on size
+    cy.edges().forEach(function (edge) {
         const edgeSize = edge.data("edge_size");
-        const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
-        const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
+        const sourceNode = cy.getElementById(edge.data("source"));
+        const targetNode = cy.getElementById(edge.data("target"));
 
-        const isEdgeVisible = (
-            sourceVisible &&
-            targetVisible &&
+        if (
+            sourceNode.style("display") === "element" &&
+            targetNode.style("display") === "element" &&
             edgeSize >= edgeMinValue &&
             edgeSize <= edgeMaxValue
-        );
-
-        edge.style("display", isEdgeVisible ? "element" : "none");
+        ) {
+            edge.style("display", "element");
+        } else {
+            edge.style("display", "none");
+        }
     });
 
     // calculateConnectedComponentsを利用して連結成分を取得
     const connected_component = calculateConnectedComponents(cy);
 
-
-    // 連結成分を取得し、node_color === 1 を含むものだけ残す
-    const connectedComponents = calculateConnectedComponents(cy);
-    const componentsWithColor1 = connectedComponents.filter(component =>
-        Object.keys(component).some(label => {
-            const node = cy.$(`node[label="${label}"]`);
+    // node_colorが1のノードを含む連結成分のみを選択
+    const componentsWithNodeColor1 = connected_component.filter((component) => {
+        return Object.keys(component).some((nodeLabel) => {
+            const node = cy.$(`node[label="${nodeLabel}"]`);
             return node.data("node_color") === 1;
-        })
-    );
-
-    // 残すべきコンポーネント内のノードと、edge_size条件を満たすエッジを再表示
-    componentsWithColor1.forEach(component => {
-        Object.keys(component).forEach(label => {
-            const node = cy.$(`node[label="${label}"]`);
-            node.style("display", "element");
-
-            node.connectedEdges().forEach(edge => {
-                const edgeSize = edge.data("edge_size");
-                if (edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue) {
-                    edge.style("display", "element");
-                }
-            });
         });
     });
 
-    // 接続エッジがすべて非表示のノードは非表示にする（孤立ノードの除去）
-    cy.nodes().forEach(node => {
-        const visibleEdges = node.connectedEdges().filter(edge => edge.style("display") === "element");
-        if (visibleEdges.length === 0) {
-            node.style("display", "none");
+    // すべてのノードとエッジを一旦非表示にする
+    cy.nodes().style("display", "none");
+    cy.edges().style("display", "none");
+
+    // node_colorが1のノードを含む連結成分のみ表示
+    componentsWithNodeColor1.forEach((component) => {
+        Object.keys(component).forEach((nodeLabel) => {
+            const node = cy.$(`node[label="${nodeLabel}"]`);
+            node.style("display", "element");
+            node.connectedEdges().style("display", "element");
+        });
+    });
+
+    cy.nodes().forEach(function (node) {
+        const connectedEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
+        if (connectedEdges.length === 0) {
+            node.style("display", "none"); // Hide node if no connected edges
         }
     });
 
-    // フィルタ後のレイアウトを再適用
+    // Reapply layout after filtering
     cy.layout(getLayoutOptions()).run();
 }
-
 
 // --------------------------------------------------------
 // Initialization of the Slider for Phenotypes similarity
