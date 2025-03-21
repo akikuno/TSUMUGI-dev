@@ -26,7 +26,7 @@
 
 ## 🖼️ User Interface
 
-+ Improve the visibility of the top page tab. Issue: [#59](https://github.com/akikuno/TSUMUGI-dev/issues/59) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/xxxxx)]
++ Improve the visibility of the top page tab. Issue: [#59](https://github.com/akikuno/TSUMUGI-dev/issues/59) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9d9ea23cadbe1883983e78efe3702ff7a69efe33)]
 
 <!-- ############################################################# # -->
 
