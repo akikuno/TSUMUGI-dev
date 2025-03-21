@@ -145,9 +145,8 @@ textarea.geneList {
 .download-btn {
     display: inline-flex;
     align-items: center;
-    background-color: #ffead5;
+    background-color: #fff;
     color: #333;
-    border: 1px solid #666;
     padding: 12px 20px;
     border-radius: 10px;
     text-decoration: none;
@@ -155,6 +154,7 @@ textarea.geneList {
 }
 
 .download-btn:hover {
+    color: #fff;
     background-color: #ff7800;
 }
 
@@ -182,9 +182,13 @@ footer p {
     margin: 5px 0 0;
 }
 
+footer i {
+    margin-right: 8px;
+}
+
 footer a {
     color: #666;
-    font-size: 0.9em;
+    font-size: 1em;
     text-decoration: none;
     font-weight: bold;
 }
