@@ -24,6 +24,9 @@
 
 # v0.2.1 (2025-04-DD)
 
+## 🖼️ User Interface
+
++ Improve the visibility of the top page tab. Issue: [#59](https://github.com/akikuno/TSUMUGI-dev/issues/59) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/xxxxx)]
 
 <!-- ############################################################# # -->
 
