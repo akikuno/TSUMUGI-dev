@@ -265,7 +265,7 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = "TSUMUGI_XXX_genesymbol";
+const file_name = "TSUMUGI_geneList";
 
 // --------------------------------------------------------
 // PNG Exporter
