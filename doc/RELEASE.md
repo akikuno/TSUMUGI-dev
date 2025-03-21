@@ -23,8 +23,11 @@
 
 <!-- ############################################################# # -->
 
-# v0.1.6 (2025-04-DD)
+# v0.2.0 (2025-03-21)
 
+## 💥 Breaking
+
+- Allow users to input their intended gene lists. Issue #42 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a6850985c98941e7fbb3b992226eb7c755c6e7b2)]
 
 ## 🐛 Bug Fixes
 
