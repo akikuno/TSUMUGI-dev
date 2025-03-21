@@ -16,7 +16,7 @@ body:
       attributes:
           label: "🔖 TSUMUGI Version"
           description: "Required: Specify the TSUMUGI version you are using. You can find this information in the `TSUMUGI --version` command."
-          placeholder: "e.g., 0.1.5"
+          placeholder: "e.g., 0.2.1"
       validations:
           required: true
 
