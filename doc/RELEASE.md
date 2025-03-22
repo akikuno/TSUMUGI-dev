@@ -30,7 +30,7 @@
 
 + Modified to ensure that the Submit button is definitely disabled when the input is empty. Issue: [#61](https://github.com/akikuno/TSUMUGI-dev/issues/61) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/06641db2d7d1acacc97237a1515403394ef17283)]
 
-+ Phenotypes for which no phenotype-similar gene groups were detected have been removed from `available_mp_terms.json` to prevent them from being selected. Issue: [#58](https://github.com/akikuno/TSUMUGI-dev/issues/58) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/06641db2d7d1acacc97237a1515403394ef17283)]
++ Phenotypes for which no phenotype-similar gene groups were detected have been removed from `available_mp_terms.json` to prevent them from being selected. Issue: [#58](https://github.com/akikuno/TSUMUGI-dev/issues/58) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/31712b028108f1b1daf696f873f95c447deb118e)]
 
 ## 🖼️ User Interface
 
