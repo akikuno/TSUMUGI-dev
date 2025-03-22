@@ -5,6 +5,7 @@ let searchMode = 'phenotype';
 // タブ切り替え + searchMode の更新
 // ====================================================================
 function setSearchMode(mode) {
+
     searchMode = mode;
 
     document.getElementById('phenotypeSection').style.display = mode === 'phenotype' ? 'block' : 'none';
@@ -36,14 +37,28 @@ function setSearchMode(mode) {
     }
 
     // Submit ボタンの切り替え
-    document.getElementById('submitBtn').style.display = mode === 'geneList' ? 'none' : 'inline-block';
-    document.getElementById('submitBtn_List').style.display = mode === 'geneList' ? 'inline-block' : 'none';
+    const submitBtn = document.getElementById('submitBtn');
+    const submitBtnList = document.getElementById('submitBtn_List');
 
-    // Gene List の入力チェックを実行
-    checkGeneListInput();
+    submitBtn.style.display = mode === 'geneList' ? 'none' : 'inline-block';
+    submitBtnList.style.display = mode === 'geneList' ? 'inline-block' : 'none';
+
+
+    // 各モードに応じて Submit ボタンを無効化して初期化
+    if (mode === 'geneList') {
+        submitBtnList.disabled = true;
+    } else {
+        submitBtn.disabled = true;
+    }
+
+    if (mode === 'geneList') {
+        checkGeneListInput();
+    } else {
+        checkValidInput();
+    }
 }
 
-// Gene List の入力をチェックし、ボタンの有効・無効を切り替える
+// Gene Listが空の場合、Submitボタンを無効化する
 function checkGeneListInput() {
     const geneListTextarea = document.getElementById("geneList");
     const submitBtnList = document.getElementById("submitBtn_List");
@@ -70,13 +85,8 @@ document.getElementById("geneList").addEventListener("input", checkGeneListInput
 // Fetch JSON data from the URL and assign to phenotypes
 // ====================================================================
 
-/* REMOVE_THIS_LINE
 const URL_MP_TERMS = "./data/available_mp_terms.json";
 const URL_GENE_SYMBOLS = "./data/available_gene_symbols.txt";
-REMOVE_THIS_LINE */
-
-const URL_MP_TERMS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1fc723ee0ba29a7162fd56394f2d30751d752e4c/gist_available_mp_terms.json"; // REMOVE_THIS_LINE
-const URL_GENE_SYMBOLS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/63468d6537120107ddf77568e5dabaaf59044902/gist_available_gene_symbols.txt"; // REMOVE_THIS_LINE
 
 // データ取得の完了を管理する Promise
 let phenotypesLoaded = fetch(URL_MP_TERMS)
@@ -166,7 +176,7 @@ async function checkValidInput() {
         ? document.getElementById('phenotype')
         : document.getElementById('gene');
 
-    const submitBtn = document.getElementById('submitBtn');
+    let isEmptyInput = userInput.value.trim() === '';
 
     let isValidSelection = false;
     if (searchMode === 'phenotype') {
@@ -174,8 +184,10 @@ async function checkValidInput() {
     } else if (searchMode === 'gene') {
         isValidSelection = geneSymbols.hasOwnProperty(userInput.value);
     }
-    // console.log(`isValidSelection: ${isValidSelection}`);
-    submitBtn.disabled = !isValidSelection;
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = !isValidSelection || isEmptyInput;
+
 }
 
 
