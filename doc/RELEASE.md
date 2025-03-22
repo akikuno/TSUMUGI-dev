@@ -14,28 +14,19 @@
 <!-- ## TODO -->
 
 <!--
-- 複数遺伝子入力を可能にする #42
+- ドキュメントの整備 #60
 - いま利用できる表現型および遺伝子の全リストを公開する #34
 - Edgeの太さがすべて同じに見える #27
 - 類似度のフィルターをなだらかに段階的にしたい #29
-- ドキュメントの整備
 -->
 
 <!-- ############################################################# # -->
 
-# v0.2.0 (2025-03-21)
+# v0.2.1 (2025-04-DD)
 
-## 💥 Breaking
+## 🖼️ User Interface
 
-- Allow users to input their intended gene lists. Issue #42 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a6850985c98941e7fbb3b992226eb7c755c6e7b2)]
-
-## 🐛 Bug Fixes
-
-+ Fix a bug where gene links led to [Page Not Found](https://www.mousephenotype.org/data/genes). Issue: #53 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/fdacb58db89cf99c84a597cc85e0919152c4d2fa)]
-
-## 🔧 Maintenance
-
-+ Use the latest IMPC [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
++ Improve the visibility of the top page tab. Issue: [#59](https://github.com/akikuno/TSUMUGI-dev/issues/59) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9d9ea23cadbe1883983e78efe3702ff7a69efe33)]
 
 <!-- ############################################################# # -->
 
@@ -52,7 +43,22 @@
 </details> -->
 <!-- ============================================================= -->
 
-<!-- ============================================================= -->
+
+<details>
+<summary> v0.2.0 (2025-03-21) </summary>
+
+- Allow users to input their intended gene lists. Issue #42 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a6850985c98941e7fbb3b992226eb7c755c6e7b2)]
+
+## 🐛 Bug Fixes
+
++ Fix a bug where gene links led to [Page Not Found](https://www.mousephenotype.org/data/genes). Issue: #53 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/fdacb58db89cf99c84a597cc85e0919152c4d2fa)]
+
+## 🔧 Maintenance
+
++ Use the latest IMPC [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
+
+</details>
+
 <details>
 <summary> v0.1.5 (2025-03-18) </summary>
 

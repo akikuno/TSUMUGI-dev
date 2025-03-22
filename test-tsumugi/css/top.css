@@ -58,8 +58,8 @@ input[type="text"] {
     width: 80%;
     padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    border-radius: 10px;
+    margin-bottom: 10px;
     box-sizing: border-box;
 }
 
@@ -68,7 +68,7 @@ ul.suggestions {
     list-style: none;
     padding: 0;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 10px;
     max-height: 30vh;
     overflow-y: auto;
 }
@@ -91,7 +91,7 @@ button.submitBtn {
     color: #fff;
     background-color: #ff7800;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -108,18 +108,35 @@ button.submitBtn:hover:enabled {
 /* Default tab styling */
 button.Tab {
     color: #333;
-    background-color: #eee;
+    background-color: #ffead5;
     border: none;
     padding: 10px 20px;
-    border-radius: 5px;
+    margin: 0 5px;
+    border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+
+/*
+* Created with https://www.css-gradient.com
+* Gradient link: https://www.css-gradient.com/?c1=efd240&c2=f2da04&gt=l&gd=dtl
+*/
+
 
 /* Active tab styling */
 button.Tab.active-tab {
     color: #fff;
     background-color: #ff7800;
+}
+
+/* Input form of gene lists */
+textarea.geneList {
+    max-width: 1200px;
+    height: 120px;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    resize: both;
 }
 
 /* ======================================================== */
@@ -128,17 +145,17 @@ button.Tab.active-tab {
 .download-btn {
     display: inline-flex;
     align-items: center;
-    background-color: #eee;
+    background-color: #fff;
     color: #333;
-    border: 1px solid #666;
     padding: 12px 20px;
-    border-radius: 5px;
+    border-radius: 10px;
     text-decoration: none;
     transition: background-color 0.3s, transform 0.1s;
 }
 
 .download-btn:hover {
-    background-color: #f8e58c;
+    color: #fff;
+    background-color: #ff7800;
 }
 
 .download-btn:active {
@@ -165,9 +182,13 @@ footer p {
     margin: 5px 0 0;
 }
 
+footer i {
+    margin-right: 8px;
+}
+
 footer a {
     color: #666;
-    font-size: 0.9em;
+    font-size: 1em;
     text-decoration: none;
     font-weight: bold;
 }
