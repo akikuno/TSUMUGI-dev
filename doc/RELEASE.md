@@ -28,7 +28,7 @@
 
 ## 🐛 Bug Fixes
 
-+ Fix a bug: The Submit button could be pressed even when the input was empty Issue: [#61](https://github.com/akikuno/TSUMUGI-dev/issues/61) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9d9ea23cadbe1883983e78efe3702ff7a69efe33)]
++ Fix a bug: The Submit button could be pressed even when the input was empty Issue: [#61](https://github.com/akikuno/TSUMUGI-dev/issues/61) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/06641db2d7d1acacc97237a1515403394ef17283)]
 
 ## 🖼️ User Interface
 
