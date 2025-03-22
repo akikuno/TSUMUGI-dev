@@ -1,4 +1,6 @@
+/* ======================================================== */
 /* General body styling */
+/* ======================================================== */
 body {
     color: #333;
     background-color: #FFEBD8;
@@ -84,7 +86,39 @@ ul.suggestions li:hover {
     background-color: #f0f0f0;
 }
 
+/* -------------------------------------------------------- */
+/* Tab styling */
+/* -------------------------------------------------------- */
+button.Tab {
+    color: #333;
+    background-color: #ffead5;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Active tab styling */
+button.Tab.active-tab {
+    color: #fff;
+    background-color: #ff7800;
+}
+
+/* Input form of gene lists */
+textarea.geneList {
+    max-width: 1200px;
+    height: 120px;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    resize: both;
+}
+
+/* -------------------------------------------------------- */
 /* Submit button styling */
+/* -------------------------------------------------------- */
 button.submitBtn {
     margin-top: 20px;
     padding: 12px 20px;
@@ -105,39 +139,6 @@ button.submitBtn:hover:enabled {
     background-color: #e66900;
 }
 
-/* Default tab styling */
-button.Tab {
-    color: #333;
-    background-color: #ffead5;
-    border: none;
-    padding: 10px 20px;
-    margin: 0 5px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-/*
-* Created with https://www.css-gradient.com
-* Gradient link: https://www.css-gradient.com/?c1=efd240&c2=f2da04&gt=l&gd=dtl
-*/
-
-
-/* Active tab styling */
-button.Tab.active-tab {
-    color: #fff;
-    background-color: #ff7800;
-}
-
-/* Input form of gene lists */
-textarea.geneList {
-    max-width: 1200px;
-    height: 120px;
-    padding: 12px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    resize: both;
-}
 
 /* ======================================================== */
 /* Download button */
