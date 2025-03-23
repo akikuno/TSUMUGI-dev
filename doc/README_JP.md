@@ -15,6 +15,12 @@ https://larc-tsukuba.github.io/tsumugi/
 
 TSUMUGIという名称は、**表現型を織りなす遺伝子群を紡ぎ出す**という思いに由来しています。
 
+
+## 🧭 Webツールの使い方
+
+
+## 🔍 表現型類似遺伝子群の抽出法
+
 ## IMPC Dataset
 
 - [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
