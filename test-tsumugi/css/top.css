@@ -16,6 +16,10 @@ body {
     flex-direction: column;
 }
 
+h1 {
+    margin: 0 auto;
+}
+
 /* Inherit font settings for form elements */
 button,
 input,
@@ -59,13 +63,21 @@ label {
 input[type="text"] {
     width: 80%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 2px solid #ccc;
     border-radius: 10px;
     margin-bottom: 10px;
     box-sizing: border-box;
+    outline: none;
 }
 
+input[type="text"]:focus {
+    border-color: #ccc;
+}
+
+/* -------------------------------------------------------- */
 /* Suggestions list styling */
+/* -------------------------------------------------------- */
+
 ul.suggestions {
     list-style: none;
     padding: 0;
@@ -83,30 +95,51 @@ ul.suggestions li {
 }
 
 ul.suggestions li:hover {
-    background-color: #f0f0f0;
+    background-color: #FFEBD8;
 }
 
 /* -------------------------------------------------------- */
 /* Tab styling */
 /* -------------------------------------------------------- */
+
 button.Tab {
-    color: #333;
-    background-color: #ffead5;
-    border: none;
+    flex: 1;
     padding: 10px 20px;
-    margin: 0 10px;
+    margin: 0 5px;
+    border: 2px solid #ff7800;
     border-radius: 10px;
+    background-color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
-/* Active tab styling */
+button.Tab:hover {
+    background-color: #ffe2c2;
+}
+
 button.Tab.active-tab {
-    color: #fff;
     background-color: #ff7800;
+    color: #fff;
 }
 
+button.Tab.active-tab::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 10px 0 10px;
+    border-color: #ff7800 transparent transparent transparent;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    margin-left: -10px;
+}
+
+/* -------------------------------------------------------- */
 /* Input form of gene lists */
+/* -------------------------------------------------------- */
 textarea.geneList {
     max-width: 1200px;
     height: 120px;
@@ -120,7 +153,6 @@ textarea.geneList {
 /* Submit button styling */
 /* -------------------------------------------------------- */
 button.submitBtn {
-    margin-top: 20px;
     padding: 12px 20px;
     color: #fff;
     background-color: #ff7800;
