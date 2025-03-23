@@ -18,12 +18,34 @@ TSUMUGIという名称は、**表現型を織りなす遺伝子群を紡ぎ出�
 
 ## 🧭 Webツールの使い方
 
+### トップページ
+
+
+
+### 表現型
+
+
+
+> [!NOTE]
+> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)）には、効果量のスライドバーはありません
+
+
+### 遺伝子
+
+
+### 遺伝子リスト
 
 ## 🔍 表現型類似遺伝子群の抽出法
 
-## IMPC Dataset
+## データ
 
-- [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
+IMPCのデータセットは[Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results)の`statistical-results-ALL.csv.gz`を使用しています  
+
+## 前処理
+
+- KOマウスの表現型のP値が0.0001以下を抽出
+  - 表現型に性差がある場合は、`male` または `female`を注釈
+- 類似度の指標には、Jaccard係数を使用
 
 ## ✉️ お問い合わせ
 
