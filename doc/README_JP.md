@@ -19,3 +19,12 @@ TSUMUGIという名称は、**表現型を織りなす遺伝子群を紡ぎ出�
 
 - [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
 
+## ✉️ お問い合わせ
+
+ご質問やご要望は、以下の方法でお問い合わせいただけます（日本語での対応可）：
+
+- **Googleフォーム**から送信  
+  [お問い合わせフォーム](https://forms.gle/ME8EJZZHaRNgKZ979)
+
+- **GitHubアカウント**をお持ちの方は、**GitHub Issue**をご利用いただけます  
+  [GitHub Issue](https://github.com/akikuno/TSUMUGI-dev/issues/new/choose)

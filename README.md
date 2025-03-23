@@ -22,3 +22,12 @@ The name *TSUMUGI* is derived from the Japanese word **紡ぎ (tsumugi)**, symbo
 
 - [Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/)
 
+## ✉️ Contact
+
+If you have any questions or requests, please feel free to reach out using one of the following methods:
+
+- Submit via **Google Form**  
+  [Contact Form](https://forms.gle/ME8EJZZHaRNgKZ979)
+
+- If you have a **GitHub account**, you can also open a **GitHub Issue**  
+  [GitHub Issue](https://github.com/akikuno/TSUMUGI-dev/issues/new/choose)
