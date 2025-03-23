@@ -57,6 +57,8 @@ IMPCのデータセットは[Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pu
 
 ## 可視化
 
+- 可視化には[cytoscape.js](https://academic.oup.com/bioinformatics/article/32/2/309/1744007)を使用
+
 # ✉️ お問い合わせ
 
 ご質問やご要望は、以下の方法でお問い合わせいただけます（日本語での対応可）：
