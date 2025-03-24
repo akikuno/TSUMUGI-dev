@@ -234,7 +234,7 @@ document.getElementById("sex-filter-form").addEventListener("change", applyFilte
 // 遺伝子名検索
 // --------------------------------------------------------
 
-setupGeneSearch(cy);
+setupGeneSearch({ cy });
 
 // --------------------------------------------------------
 // Slider for Font size

@@ -12,20 +12,19 @@ export function setupGeneSearch({ cy, inputId = "gene-search", listId = "suggest
         }
 
         // いま現在表示されているノードだけに限定
-        const visibleLabels = cy.nodes()
-            .filter(n => n.style("display") !== "none")
-            .map(n => n.data("label"));
+        const visibleLabels = cy
+            .nodes()
+            .filter((n) => n.style("display") !== "none")
+            .map((n) => n.data("label"));
 
-        const matched = visibleLabels
-            .filter(label => label.toLowerCase().includes(query))
-            .slice(0, 10);
+        const matched = visibleLabels.filter((label) => label.toLowerCase().includes(query)).slice(0, 10);
 
         if (matched.length === 0) {
             suggestionsList.hidden = true;
             return;
         }
 
-        matched.forEach(label => {
+        matched.forEach((label) => {
             const li = document.createElement("li");
             li.textContent = label;
             li.addEventListener("mousedown", () => {
@@ -49,20 +48,20 @@ export function setupGeneSearch({ cy, inputId = "gene-search", listId = "suggest
         const query = input.value.trim().toLowerCase();
 
         // すべてのノードのハイライトをリセット
-        cy.nodes().forEach(node => {
+        cy.nodes().forEach((node) => {
             node.style("border-width", 0);
             node.style("border-color", "transparent");
         });
 
         // 遺伝子名でノードを検索し、見つけたらハイライト
-        const matchedNode = cy.nodes().filter(node => node.data("label").toLowerCase() === query);
+        const matchedNode = cy.nodes().filter((node) => node.data("label").toLowerCase() === query);
         if (matchedNode.length > 0) {
             matchedNode.style("border-width", 2);
             matchedNode.style("border-color", "#e66900");
             cy.center(matchedNode);
             cy.animate({
                 center: { eles: matchedNode },
-                duration: 500
+                duration: 500,
             });
         } else {
             alert("Gene not found in the network.");

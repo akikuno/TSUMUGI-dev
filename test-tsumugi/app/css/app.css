@@ -108,7 +108,7 @@ a {
     font-size: 14px;
     border: none;
     border-radius: 6px;
-    background-color: #FFEBD8;
+    background-color: #ffebd8;
     cursor: pointer;
 }
 
@@ -138,9 +138,8 @@ ul.suggestions li {
 }
 
 ul.suggestions li:hover {
-    background-color: #FFEBD8;
+    background-color: #ffebd8;
 }
-
 
 /* ======================================================== */
 /* checkbox-container */

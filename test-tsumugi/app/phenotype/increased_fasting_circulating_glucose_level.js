@@ -4,7 +4,7 @@ import { removeTooltips, showTooltip } from "../js/tooltips.js";
 import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
 import { loadJSONGz, loadJSON } from "../js/data_loader.js";
-import { setupGeneSearch } from '../js/searcher.js';
+import { setupGeneSearch } from "../js/searcher.js";
 
 // ############################################################################
 // Input handler
