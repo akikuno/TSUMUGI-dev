@@ -4,6 +4,7 @@ import { removeTooltips, showTooltip } from "../js/tooltips.js";
 import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
 import { loadJSONGz, loadJSON } from "../js/data_loader.js";
+import { setupGeneSearch } from '../js/searcher.js';
 
 // ############################################################################
 // Input handler
@@ -224,77 +225,11 @@ document.getElementById("sex-filter-form").addEventListener("change", applyFilte
 // Cytoscape's visualization setting
 // ############################################################################
 
-
 // --------------------------------------------------------
 // 遺伝子名検索
 // --------------------------------------------------------
 
-const input = document.getElementById("gene-search");
-const suggestionsList = document.getElementById("suggestions");
-
-// 入力ごとに候補を表示
-input.addEventListener("input", () => {
-    const query = input.value.trim().toLowerCase();
-    suggestionsList.innerHTML = "";
-
-    if (!query) {
-        suggestionsList.hidden = true;
-        return;
-    }
-
-    // 表示されているノードだけに限定
-    const visibleLabels = cy.nodes().filter(n => n.style("display") !== "none").map(n => n.data("label"));
-
-    const matched = visibleLabels.filter(label => label.toLowerCase().includes(query)).slice(0, 10);
-    if (matched.length === 0) {
-        suggestionsList.hidden = true;
-        return;
-    }
-
-    matched.forEach(label => {
-        const li = document.createElement("li");
-        li.textContent = label;
-        li.addEventListener("mousedown", () => {
-            input.value = label;
-            suggestionsList.hidden = true;
-        });
-        suggestionsList.appendChild(li);
-    });
-
-    suggestionsList.hidden = false;
-});
-
-// 入力欄からフォーカスを外したら非表示
-input.addEventListener("blur", () => {
-    setTimeout(() => {
-        suggestionsList.hidden = true;
-    }, 100);
-});
-
-
-document.getElementById("search-button").addEventListener("click", () => {
-    const query = document.getElementById("gene-search").value.trim().toLowerCase();
-
-    // すべてのノードのハイライトをリセット
-    cy.nodes().forEach(node => {
-        node.style("border-width", 0);
-        node.style("border-color", "transparent");
-    });
-
-    // 遺伝子名でノードを検索し、見つけたらハイライト
-    const matchedNode = cy.nodes().filter(node => node.data("label").toLowerCase() === query);
-    if (matchedNode.length > 0) {
-        matchedNode.style("border-width", 2);
-        matchedNode.style("border-color", "#e66900");
-        cy.center(matchedNode);
-        cy.animate({
-            center: { eles: matchedNode },
-            duration: 500
-        });
-    } else {
-        alert("Gene not found in the network.");
-    }
-});
+setupGeneSearch({ cy });
 
 // --------------------------------------------------------
 // Slider for Font size
