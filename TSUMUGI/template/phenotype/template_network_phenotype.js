@@ -238,12 +238,6 @@ document.getElementById("sex-filter-form").addEventListener("change", applyFilte
 const input = document.getElementById("gene-search");
 const suggestionsList = document.getElementById("suggestions");
 
-let geneLabels = [];
-
-cy.ready(() => {
-    geneLabels = cy.nodes().map(node => node.data("label"));
-});
-
 // 入力ごとに候補を表示
 input.addEventListener("input", () => {
     const query = input.value.trim().toLowerCase();
@@ -254,7 +248,10 @@ input.addEventListener("input", () => {
         return;
     }
 
-    const matched = geneLabels.filter(label => label.toLowerCase().includes(query)).slice(0, 10);
+    // 表示されているノードだけに限定
+    const visibleLabels = cy.nodes().filter(n => n.style("display") !== "none").map(n => n.data("label"));
+
+    const matched = visibleLabels.filter(label => label.toLowerCase().includes(query)).slice(0, 10);
     if (matched.length === 0) {
         suggestionsList.hidden = true;
         return;
