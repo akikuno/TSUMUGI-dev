@@ -4,7 +4,7 @@ import { removeTooltips, showTooltip } from "../js/tooltips.js";
 import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
 import { loadJSONGz, loadJSON } from "../js/data_loader.js";
-import { setupGeneSearch } from '../js/searcher.js';
+import { setupGeneSearch } from "../js/searcher.js";
 
 // ############################################################################
 // Input handling
@@ -56,25 +56,23 @@ const edgeMin = Math.min(...edgeSizes);
 // ############################################################################
 
 // node_color === 1 のノード(targetGene)を1つだけ取得
-const targetGene = elements.find(ele => ele.data.node_color === 1);
+const targetGene = elements.find((ele) => ele.data.node_color === 1);
 
 // targetGeneの ID (遺伝子シンボル)を取得
 const targetGeneId = targetGene?.data?.id;
 
 // targetGeneに接続されているエッジだけ抽出
-const connectedEdges = elements.filter(ele =>
-    (ele.data.source === targetGeneId || ele.data.target === targetGeneId)
-);
+const connectedEdges = elements.filter((ele) => ele.data.source === targetGeneId || ele.data.target === targetGeneId);
 
 // そのエッジたちの edge_size を集めて最大値を取得
 const edgeSizesTargetGene = connectedEdges
-    .filter(edge => edge.data.edge_size !== undefined)
-    .map(edge => edge.data.edge_size);
+    .filter((edge) => edge.data.edge_size !== undefined)
+    .map((edge) => edge.data.edge_size);
 
 const edgeMax = Math.max(...edgeSizesTargetGene);
 
 // elementsに含まれる全edge_sizeの最大値を、edgeMaxを上限とする
-connectedEdges.forEach(edge => {
+connectedEdges.forEach((edge) => {
     if (edge.data.edge_size > edgeMax) {
         edge.data.edge_size = edgeMax;
     }
@@ -170,7 +168,7 @@ function filterElements() {
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
     // 1. edge_size条件を満たすエッジを取得
-    const visibleEdges = cy.edges().filter(edge => {
+    const visibleEdges = cy.edges().filter((edge) => {
         const edgeSize = edge.data("edge_size");
         return edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
     });
@@ -182,21 +180,20 @@ function filterElements() {
     const components = candidateElements.components();
 
     // 4. 一旦すべて非表示にしてから…
-    cy.elements().forEach(ele => ele.style("display", "none"));
+    cy.elements().forEach((ele) => ele.style("display", "none"));
 
     // 5. node_color === 1 を含むクラスタだけ表示
-    components.forEach(comp => {
-        const hasColor1 = comp.nodes().some(node => node.data("node_color") === 1);
+    components.forEach((comp) => {
+        const hasColor1 = comp.nodes().some((node) => node.data("node_color") === 1);
         if (hasColor1) {
-            comp.nodes().forEach(node => node.style("display", "element"));
-            comp.edges().forEach(edge => edge.style("display", "element"));
+            comp.nodes().forEach((node) => node.style("display", "element"));
+            comp.edges().forEach((edge) => edge.style("display", "element"));
         }
     });
 
     // 6. レイアウト再適用
     cy.layout(getLayoutOptions()).run();
 }
-
 
 // --------------------------------------------------------
 // Initialization of the Slider for Phenotypes similarity
