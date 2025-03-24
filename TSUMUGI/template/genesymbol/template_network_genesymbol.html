@@ -41,6 +41,10 @@
 
     <div class="body-container">
         <div class="control-panel-container">
+
+            <!-- ===================================== -->
+            <!-- Network layout -->
+            <!-- ===================================== -->
             <div class="slider-container">
                 <label for="layout-dropdown" class="control-label">Network layout:</label>
                 <select class="exporter" id="layout-dropdown">
@@ -52,14 +56,18 @@
                 </select>
             </div>
 
-            <!-- ↓↓↓ Slider for phenotypes similarity -->
+            <!-- ===================================== -->
+            <!-- Slider for phenotypes similarity -->
+            <!-- ===================================== -->
             <div class="slider-container">
                 <span class="control-label" style="display: block">Phenotypes similarity: <span id="edge-size-value">1 -
                         10</span></span>
                 <div class="slider-element" id="filter-edge-slider"></div>
             </div>
 
-            <!-- ↓↓↓ Cytoscape's visualization setting -->
+            <!-- ===================================== -->
+            <!-- Cytoscape's visualization setting -->
+            <!-- ===================================== -->
             <div class="slider-container">
                 <span class="control-label">Font size: </span>
                 <span id="font-size-value">20</span>
@@ -77,9 +85,22 @@
                 <span id="node-repulsion-value">5</span>
                 <div class="slider-element" id="nodeRepulsion-slider"></div>
             </div>
-            <!-- ↑↑↑ Cytoscape's visualization setting -->
 
-            <!-- ↓↓↓ Genotype / Sex filter -->
+            <!-- ===================================== -->
+            <!-- Gene search box -->
+            <!-- ===================================== -->
+            <div class="slider-container">
+                <label for="gene-search" class="control-label">Search gene:</label>
+                <div class="search-container">
+                    <input type="text" id="gene-search" placeholder="" autocomplete="off" />
+                    <button id="search-button">Search</button>
+                    <ul id="suggestions" class="suggestions" hidden></ul>
+                </div>
+            </div>
+
+            <!-- ===================================== -->
+            <!-- Genotype / Sex filter -->
+            <!-- ===================================== -->
             <div class="checkbox-container">
                 <span>Genotype specificity:</span>
                 <form id="genotype-filter-form">

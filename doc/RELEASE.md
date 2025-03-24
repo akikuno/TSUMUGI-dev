@@ -30,6 +30,7 @@
 
 + Add a Google Form to allow anyone to submit inquiries. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/2db865949eb63716e8243ae0f998da6f45110731)]
 
++ Add a search box for a gene symbol in the network Issue. [#30](https://github.com/akikuno/TSUMUGI-dev/issues/30)
 ## 🐛 Bug Fixes
 
 + Modified to ensure that the Submit button is definitely disabled when the input is empty. Issue: [#61](https://github.com/akikuno/TSUMUGI-dev/issues/61) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/06641db2d7d1acacc97237a1515403394ef17283)]
