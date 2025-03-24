@@ -41,6 +41,49 @@ const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
 // ############################################################################
 // Cytoscape handling
 // ############################################################################
+
+const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
+
+const nodeMin = 0;
+const nodeMax = 1;
+const edgeMin = Math.min(...edgeSizes);
+
+// ############################################################################
+// edgeMaxの計算：
+// node_color === 1 のノードに接続されたエッジの中で最大のedge_sizeを取得
+// その値をedgeMaxとする
+// その後、elementsのedge_sizeをedgeMaxを上限として調整
+// ############################################################################
+
+// node_color === 1 のノード(targetGene)を1つだけ取得
+const targetGene = elements.find(ele => ele.data.node_color === 1);
+
+// targetGeneの ID (遺伝子シンボル)を取得
+const targetGeneId = targetGene?.data?.id;
+
+// targetGeneに接続されているエッジだけ抽出
+const connectedEdges = elements.filter(ele =>
+    (ele.data.source === targetGeneId || ele.data.target === targetGeneId)
+);
+
+// そのエッジたちの edge_size を集めて最大値を取得
+const edgeSizesTargetGene = connectedEdges
+    .filter(edge => edge.data.edge_size !== undefined)
+    .map(edge => edge.data.edge_size);
+
+const edgeMax = Math.max(...edgeSizesTargetGene);
+
+// elementsに含まれる全edge_sizeの最大値を、edgeMaxを上限とする
+connectedEdges.forEach(edge => {
+    if (edge.data.edge_size > edgeMax) {
+        edge.data.edge_size = edgeMax;
+    }
+});
+
+// ############################################################################
+// Cytoscapeの初期化
+// ############################################################################
+
 let currentLayout = "cose";
 
 const nodeRepulsionMin = 1;
@@ -66,14 +109,6 @@ function getLayoutOptions() {
         componentSpacing: componentSpacingValue,
     };
 }
-
-const nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
-const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
-
-const nodeMin = Math.min(...nodeSizes);
-const nodeMax = Math.max(...nodeSizes);
-const edgeMin = Math.min(...edgeSizes);
-const edgeMax = Math.max(...edgeSizes);
 
 const cy = cytoscape({
     container: document.querySelector(".cy"),
@@ -134,62 +169,31 @@ function filterElements() {
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
-    // すべてのノードを一旦表示状態にする
-    cy.nodes().forEach(node => node.style("display", "element"));
-
-    // edge_sizeの範囲でエッジをフィルターし、表示/非表示を設定
-    cy.edges().forEach(edge => {
+    // 1. edge_size条件を満たすエッジを取得
+    const visibleEdges = cy.edges().filter(edge => {
         const edgeSize = edge.data("edge_size");
-        const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
-        const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
-
-        const isEdgeVisible = (
-            sourceVisible &&
-            targetVisible &&
-            edgeSize >= edgeMinValue &&
-            edgeSize <= edgeMaxValue
-        );
-
-        edge.style("display", isEdgeVisible ? "element" : "none");
+        return edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
     });
 
-    // calculateConnectedComponentsを利用して連結成分を取得
-    const connected_component = calculateConnectedComponents(cy);
+    // 2. 条件を満たしたエッジ＋そのエッジに接続しているノードたちを取得
+    const candidateElements = visibleEdges.union(visibleEdges.connectedNodes());
 
+    // 3. 連結成分を取得
+    const components = candidateElements.components();
 
-    // 連結成分を取得し、node_color === 1 を含むものだけ残す
-    const connectedComponents = calculateConnectedComponents(cy);
-    const componentsWithColor1 = connectedComponents.filter(component =>
-        Object.keys(component).some(label => {
-            const node = cy.$(`node[label="${label}"]`);
-            return node.data("node_color") === 1;
-        })
-    );
+    // 4. 一旦すべて非表示にしてから…
+    cy.elements().forEach(ele => ele.style("display", "none"));
 
-    // 残すべきコンポーネント内のノードと、edge_size条件を満たすエッジを再表示
-    componentsWithColor1.forEach(component => {
-        Object.keys(component).forEach(label => {
-            const node = cy.$(`node[label="${label}"]`);
-            node.style("display", "element");
-
-            node.connectedEdges().forEach(edge => {
-                const edgeSize = edge.data("edge_size");
-                if (edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue) {
-                    edge.style("display", "element");
-                }
-            });
-        });
-    });
-
-    // 接続エッジがすべて非表示のノードは非表示にする（孤立ノードの除去）
-    cy.nodes().forEach(node => {
-        const visibleEdges = node.connectedEdges().filter(edge => edge.style("display") === "element");
-        if (visibleEdges.length === 0) {
-            node.style("display", "none");
+    // 5. node_color === 1 を含むクラスタだけ表示
+    components.forEach(comp => {
+        const hasColor1 = comp.nodes().some(node => node.data("node_color") === 1);
+        if (hasColor1) {
+            comp.nodes().forEach(node => node.style("display", "element"));
+            comp.edges().forEach(edge => edge.style("display", "element"));
         }
     });
 
-    // フィルタ後のレイアウトを再適用
+    // 6. レイアウト再適用
     cy.layout(getLayoutOptions()).run();
 }
 
