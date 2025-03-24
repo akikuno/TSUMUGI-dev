@@ -1,6 +1,8 @@
 // 検索モードの選択用変数 (初期状態を 'phenotype')
 let searchMode = 'phenotype';
 
+const geneListPlaceHolder = "Asxl1\r\nRab10\r\nDdx46\r\nAp3b2\r\nKcnma1"; // プレースホルダーとして例を入力
+
 // ====================================================================
 // タブ切り替え + searchMode の更新
 // ====================================================================
@@ -31,9 +33,7 @@ function setSearchMode(mode) {
     // Gene List のタブが押されたときにプレースホルダーを設定
     const geneListTextarea = document.getElementById("geneList");
     if (mode === 'geneList') {
-        geneListTextarea.value = "Asxl1\nRab10\nDdx46";  // プレースホルダーとして例を入力
-    } else {
-        geneListTextarea.value = '';  // 他のタブでは空にする
+        geneListTextarea.value = geneListPlaceHolder;
     }
 
     // Submit ボタンの切り替え

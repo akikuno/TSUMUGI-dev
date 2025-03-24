@@ -72,6 +72,7 @@ input[type="text"] {
 
 input[type="text"]:focus {
     border-color: #ccc;
+    outline: none;
 }
 
 /* -------------------------------------------------------- */
@@ -147,6 +148,11 @@ textarea.geneList {
     border: 2px solid #ccc;
     border-radius: 10px;
     resize: both;
+}
+
+textarea.geneList:focus {
+    border-color: #ccc;
+    outline: none;
 }
 
 /* -------------------------------------------------------- */
