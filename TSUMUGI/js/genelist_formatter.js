@@ -1,5 +1,5 @@
 // Pre-fill the textarea with example gene names
-document.getElementById("geneList").value = "Asxl1\r\nRab10\r\nDdx46";
+document.getElementById("geneList").value = "Asxl1\r\nRab10\r\nDdx46\r\nAp3b2\r\nKcnma1";
 
 export async function fetchGzippedJson(url) {
     try {
