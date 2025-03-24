@@ -36,7 +36,7 @@
 
 + Phenotypes for which no phenotype-similar gene groups were detected have been removed from `available_mp_terms.json` to prevent them from being selected. Issue: [#58](https://github.com/akikuno/TSUMUGI-dev/issues/58) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/31712b028108f1b1daf696f873f95c447deb118e)]
 
-+ Fixed a bug where target genes disappeared when increasing the slider threshold in "Gene". Issue: [#63](https://github.com/akikuno/TSUMUGI-dev/issues/63) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/31712b028108f1b1daf696f873f95c447deb118e)]
++ Fixed a bug where target genes disappeared when increasing the slider threshold in "Gene". Issue: [#63](https://github.com/akikuno/TSUMUGI-dev/issues/63) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/8fa8f8539351e598abf6d888293a4cd1b15b1ba0)]
 
 
 ## 🖼️ User Interface
