@@ -25,23 +25,17 @@ TSUMUGIは、**表現型を織りなす遺伝子群を紡ぎ出す**という動
 
 類似度の生データをダウンロードすることができます
 
+生データには以下の情報が含まれます
+- ペアとなる遺伝子シンボル （Gene1, Gene2）
+- ペアとなる遺伝子シンボルに共通する表現型の類似度 （Jaccard Similarity）
+- ペアとなる遺伝子シンボルに共通する表現型の数（Number of shared phenotype）
+- ペアとなる遺伝子シンボルに共通する表現型のリスト（List of shared phenotype）
+
 > [!NOTE]
-> 約100MBのCSVファイルです。ダウンロードには時間がかかる場合があります。
+> 約100MBのGZip圧縮CSVファイルです。ダウンロードには時間がかかる場合があります。
 
-### フッター
-
-フッターにはTSUMUGIのバージョンと各リンクがあります
-
-- `Documentation`はこのページです
-- `Feedback ＆ Requests`は以下のGoogleフォームです
-  [Googleフォーム](https://forms.gle/ME8EJZZHaRNgKZ979)
-
-> [!IMPORTANT]
-> 
 
 ## 表現型
-
-
 
 > [!NOTE]
 > IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)）には、効果量のスライドバーはありません
@@ -56,12 +50,13 @@ TSUMUGIは、**表現型を織りなす遺伝子群を紡ぎ出す**という動
 
 ## データ
 
-IMPCのデータセットは[Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results)の`statistical-results-ALL.csv.gz`を使用しています  
+- IMPCのデータセットは[Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results)の`statistical-results-ALL.csv.gz`を使用しています  
 
 ## 前処理
 
 - KOマウスの表現型のP値が0.0001以下を抽出
-  - 表現型に性差がある場合は、`male` または `female`を注釈
+  - 性差がある表現型は、`male` または `female`を注釈
+  - 遺伝型特異性が表現型は、`homo`, `hetero` または `hemi`を注釈
 
 ## 類似度の計算
 
@@ -69,7 +64,7 @@ IMPCのデータセットは[Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pu
 
 ## 可視化
 
-- 可視化には[cytoscape.js](https://academic.oup.com/bioinformatics/article/32/2/309/1744007)を使用
+- ネットワークの[cytoscape.js](https://academic.oup.com/bioinformatics/article/32/2/309/1744007)を使用
 
 # ✉️ お問い合わせ
 
