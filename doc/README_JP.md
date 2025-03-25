@@ -20,31 +20,83 @@ TSUMUGIは、**表現型を織りなす遺伝子群を紡ぎ出す**という動
 
 ## トップページ
 
+### 種類
+
+TSUMUGIは以下の3つの入力に対応しています
+
+- 表現型 Phenotype
+- 遺伝子シンボル Gene
+- 遺伝子リスト Gene List
+
+### 1. 表現型 Phenotype
+
+興味の表現型を入力することができます
+
+表現型は[Mammalian Phenotype Ontology（MPO）](https://www.informatics.jax.org/vocab/mp_ontology)に基づいています  
+
+<!-- 現在、TSUMUGIで検索可能な表現型のリストはこちらです  
+
+[表現型リスト](https://larc-tsukuba.github.io/tsumugi/app/phenotype_list.html) # TODO -->
+
+### 2. 遺伝子シンボル
+
+遺伝子シンボルでは特定の遺伝子に対してその他の遺伝子すべての類似度を計算します
+
+遺伝子シンボルは、[MGI](http://www.informatics.jax.org/)に基づいています
+
+<!-- 現在、TSUMUGIで検索可能な遺伝子シンボルのリストはこちらです  
+
+[遺伝子シンボルリスト](https://larc-tsukuba.github.io/tsumugi/app/phenotype_list.html) # TODO -->
+
+
+### 3. 遺伝子リスト
+
+複数遺伝子の入力が可能です  
+遺伝子リストは、改行区切りで入力してください  
+
+遺伝子シンボルとの違いは、遺伝子シンボルでは1つの遺伝子に対してその他の遺伝子すべての類似度を計算する一方で、遺伝子リストでは**リスト内の遺伝子同士の類似度**を計算します  
+
+入力された遺伝子リストにおいて、３つ以上表現型が類似する遺伝子ペアがまったく見つからなかった場合、`Gene not found`と警告が表示されます  
+
+また、類似する遺伝子ペアが200以上見つかった場合、ネットワークを描画するとブラウザが固まってしまうため、こちらも警告が表示されます  
 
 ### データのダウンロード
 
 類似度の生データをダウンロードすることができます
 
-生データには以下の情報が含まれます
+生データには以下の情報が含まれます  
+
 - ペアとなる遺伝子シンボル （Gene1, Gene2）
 - ペアとなる遺伝子シンボルに共通する表現型の類似度 （Jaccard Similarity）
 - ペアとなる遺伝子シンボルに共通する表現型の数（Number of shared phenotype）
 - ペアとなる遺伝子シンボルに共通する表現型のリスト（List of shared phenotype）
 
-> [!NOTE]
+> [!CAUTION]
 > 約100MBのGZip圧縮CSVファイルです。ダウンロードには時間がかかる場合があります。
 
+## ネットワーク描出
 
-## 表現型
+入力を受け付けるとページが遷移し、ネットワークが描出されます  
+
+### ノード（点）
+
+ネットワークのノードをクリックすると、そのノードに対応した遺伝子のKOマウスが示す異常表現型の一覧が表示されます  
+
+ノードをドラッグして、移動することができます
+
+### エッジ（線）
+
+ノードとノードをつなぐエッジ（線）をクリックすると、その２つの遺伝子のKOマウスに共通する異常表現型の一覧が表示されます  
+
+### コントロールパネル
+
+左側のコントロールパネルでは、ネットワークの表示を調整することができます
+
+### 
 
 > [!NOTE]
-> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)）には、効果量のスライドバーはありません
+> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)）や、入力が遺伝子シンボルの場合には、効果量のスライドバーはありません
 
-
-## 遺伝子
-
-
-## 遺伝子リスト
 
 # 🔍 表現型類似遺伝子群の抽出法
 
