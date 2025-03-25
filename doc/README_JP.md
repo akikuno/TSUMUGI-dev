@@ -92,7 +92,23 @@ TSUMUGIは以下の3つの入力に対応しています
 
 左側のコントロールパネルでは、ネットワークの表示を調整することができます
 
-### 
+#### ネットワークレイアウトの変更
+
+以下のレイアウトから選択できます
+
+- Cose (推奨)
+- Circle
+- Random
+- Grid
+- Concentric
+
+#### 表現型類似度によるフィルター
+
+`Phenotypes similarity`のスライダーで、表現型類似度に基づいてネットワーク図に表示する閾値を設定することができます
+
+#### 効果量によるフィルター
+
+`Phenotypes severity`のスライダーで、効果量に基づいてネットワーク図に表示する閾値を設定することができます
 
 > [!NOTE]
 > IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)）や、入力が遺伝子シンボルの場合には、効果量のスライドバーはありません
