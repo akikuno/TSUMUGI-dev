@@ -25,7 +25,7 @@
 
 ## 📝 Documentation
 
-Publish the complete list of currently available phenotypes and genes. Issue: [#34](https://github.com/akikuno/TSUMUGI-dev/issues/34). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)]
+Publish the complete list of currently available phenotypes and genes. Issue: [#34](https://github.com/akikuno/TSUMUGI-dev/issues/34). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/faa2b42eee54446d72c3c47acf9cdf6b04b5685c)]
 
 ## 🔧 Maintenance
 
