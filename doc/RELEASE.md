@@ -24,7 +24,9 @@
 
 # v0.2.1 (2025-04-DD) in Development
 
-<!-- + Add documentation (README.md and README_JP.md). Issue [#60](https://github.com/akikuno/TSUMUGI-dev/issues/60) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/xxxxx)] -->
+## 📝 Documentation
+
++ Add documentation (README.md and README_JP.md). Issue [#60](https://github.com/akikuno/TSUMUGI-dev/issues/60) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/66)]
 
 ## 🌟 New Features
 
