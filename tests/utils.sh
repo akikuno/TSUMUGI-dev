@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-WORD="available_gene_symbols"
+WORD="available_mp"
 
 find notebooks/ -type f | xargs grep "$WORD"
 find TSUMUGI/template -type f | xargs grep "$WORD"
