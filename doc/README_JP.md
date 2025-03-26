@@ -25,26 +25,24 @@ TSUMUGIは、以下の3種類の入力に対応しています。
 
 ### 1. 表現型（Phenotype）
 
-興味のある表現型を入力すると、それを示すKOマウスをもつ遺伝子の中から、**他の表現型も類似している遺伝子群**を探索します。  
-表現型名は[Mammalian Phenotype Ontology（MPO）](https://www.informatics.jax.org/vocab/mp_ontology)に基づいています。  
+関心のある表現型を入力すると、それを示すノックアウト（KO）マウスをもつ遺伝子の中から、**他の表現型も類似している遺伝子群**を探索します。  
+表現型名は [Mammalian Phenotype Ontology（MPO）](https://www.informatics.jax.org/vocab/mp_ontology) に基づいています。
 
-<!-- 現在、TSUMUGIで検索可能な表現型のリストはこちらです  
+TSUMUGIで現在検索可能な表現型の一覧はこちら：  
+👉 [表現型リスト](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_mp_terms.txt)
 
-[表現型リスト](https://larc-tsukuba.github.io/tsumugi/app/phenotype_list.html) # TODO -->
+### 2. 遺伝子名（Gene）
 
-### 2. 遺伝子名 (Gene)
+特定の遺伝子を1つ指定すると、**そのKOマウスと類似した表現型をもつ他の遺伝子群**を探索します。  
+遺伝子名は [MGI](http://www.informatics.jax.org/) に登録された遺伝子シンボルに準拠しています。
 
-特定の遺伝子を1つ指定すると、**そのKOマウスと表現型が類似する他の遺伝子群**を探索します。  
-遺伝子名は、[MGI](http://www.informatics.jax.org/)の遺伝子シンボルに準拠しています。  
-
-<!-- 現在、TSUMUGIで検索可能な遺伝子名のリストはこちらです  
-
-[遺伝子名リスト](https://larc-tsukuba.github.io/tsumugi/app/phenotype_list.html) # TODO -->
+TSUMUGIで現在検索可能な遺伝子名の一覧はこちら：  
+👉 [遺伝子名リスト](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_gene_symbols.txt)
 
 
 ### 3. 遺伝子リスト (Gene List)
 
-複数遺伝子の入力が可能です。  
+複数遺伝子の入力を受け付けます。  
 遺伝子リストは、改行区切りで入力してください。  
 
 > [!NOTE]

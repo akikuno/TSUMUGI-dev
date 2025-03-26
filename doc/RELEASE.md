@@ -23,9 +23,13 @@
 
 # v0.2.2 (2025-04-DD)
 
+## 📝 Documentation
+
+Publish the complete list of currently available phenotypes and genes. Issue: [#34](https://github.com/akikuno/TSUMUGI-dev/issues/34). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)]
+
 ## 🔧 Maintenance
 
-+ Use `inherit` for tab button text color to maintain consistency and prevent the default blue text styling on macOS. Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)]
++ Use `inherit` for tab button text color to maintain consistency and prevent the default blue text styling on macOS. Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)]
 
 <!-- ############################################################# # -->
 

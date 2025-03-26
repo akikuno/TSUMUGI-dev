@@ -28,25 +28,20 @@ TSUMUGI accepts the following three types of input:
 
 ### 1. Phenotype
 
-By entering a phenotype of interest, TSUMUGI searches for a group of genes whose knockout (KO) mice exhibit that phenotype, along with **other phenotypically similar traits**.  
+When you input a phenotype of interest, TSUMUGI searches for a group of genes whose knockout (KO) mice not only exhibit that phenotype, but also share **similar overall phenotype profiles**.  
 Phenotype names are based on the [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology).
 
-<!--
-A list of phenotypes currently searchable in TSUMUGI is available here:
+You can view the list of phenotypes currently searchable with TSUMUGI here:  
+👉 [Phenotype List](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_mp_terms.txt)
 
-[Phenotype List](https://larc-tsukuba.github.io/tsumugi/app/phenotype_list.html) # TODO
--->
 
 ### 2. Gene
 
-By specifying a single gene, TSUMUGI searches for **other genes whose KO mice exhibit similar phenotypes**.  
-Gene names follow the nomenclature defined by [MGI](http://www.informatics.jax.org/).
+When you specify a particular gene, TSUMUGI searches for **other genes whose KO mice share similar phenotype profiles** with the KO mouse of the specified gene.  
+Gene symbols follow the official nomenclature from [MGI](http://www.informatics.jax.org/).
 
-<!--
-A list of genes currently searchable in TSUMUGI is available here:
-
-[Gene List](https://larc-tsukuba.github.io/tsumugi/app/phenotype_list.html) # TODO
--->
+You can view the list of gene symbols currently searchable with TSUMUGI here:  
+👉 [Gene Symbol List](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_gene_symbols.txt)
 
 ### 3. Gene List
 
