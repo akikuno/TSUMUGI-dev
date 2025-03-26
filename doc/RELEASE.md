@@ -14,7 +14,6 @@
 <!-- ## TODO -->
 
 <!--
-- ドキュメントの整備 #60
 - いま利用できる表現型および遺伝子の全リストを公開する #34
 - Edgeの太さがすべて同じに見える #27
 - 類似度のフィルターをなだらかに段階的にしたい #29
@@ -22,7 +21,31 @@
 
 <!-- ############################################################# # -->
 
-# v0.2.1 (2025-04-DD) in Development
+# v0.2.2 (2025-04-DD)
+
+## 🔧 Maintenance
+
++ Use `inherit` for tab button text color to maintain consistency and prevent the default blue text styling on macOS. Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)]
+
+<!-- ############################################################# # -->
+
+
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- ============================================================= -->
+<!-- <details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details> -->
+<!-- ============================================================= -->
+
+
+<details>
+<summary> v0.2.1 (2025-03-27) </summary>
+
 
 ## 📝 Documentation
 
@@ -46,20 +69,7 @@
 
 + Improve the visibility of the top page tab. Issue: [#59](https://github.com/akikuno/TSUMUGI-dev/issues/59) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9d9ea23cadbe1883983e78efe3702ff7a69efe33)]
 
-<!-- ############################################################# # -->
-
-
-
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- ============================================================= -->
-<!-- <details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
-</details> -->
-<!-- ============================================================= -->
+</details>
 
 
 <details>

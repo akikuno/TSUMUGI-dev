@@ -17,6 +17,16 @@ body {
     align-items: center;
 }
 
+/* Inherit font settings for form elements */
+button,
+input,
+select {
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+
 a {
     color: #ff8c00;
     text-decoration: none;
