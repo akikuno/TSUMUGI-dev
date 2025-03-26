@@ -1,3 +1,7 @@
+/* ======================================================== */
+/* Main */
+/* ======================================================== */
+
 html,
 body {
     margin: 0;
@@ -69,6 +73,72 @@ a {
     display: inline-block;
     width: 25px;
     text-align: center;
+}
+
+/* ======================================================== */
+/* search-container */
+/* ======================================================== */
+
+/* Search container layout */
+.search-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Input style */
+#gene-search {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+}
+
+/* Input focus */
+#gene-search:focus {
+    border-color: #999;
+}
+
+/* Search button */
+#search-button {
+    margin-top: 8px;
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: #ffebd8;
+    cursor: pointer;
+}
+
+/* Suggestions list */
+ul.suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    list-style: none;
+    margin: 4px 0 0 0;
+    padding: 0;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    max-height: 30vh;
+    overflow-y: auto;
+    background-color: white;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Suggestion items */
+ul.suggestions li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+ul.suggestions li:hover {
+    background-color: #ffebd8;
 }
 
 /* ======================================================== */
