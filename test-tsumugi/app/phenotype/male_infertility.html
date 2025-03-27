@@ -22,6 +22,7 @@
 
         <!-- Custom JS -->
         <script type="module" src="male_infertility.js"></script>
+        <script type="module" src="../js/mobile_panel.js"></script>
 
         <!-- ============================= -->
         <!-- CSS -->
@@ -34,6 +35,10 @@
 
     <body>
         <header class="header-container">
+            <!-- スマホのときのコントロールパネルの制御ボタン -->
+            <div class="menu-toggle">
+                <i class="fa-solid fa-sliders menu-toggle-icon" id="menu-toggle"></i>
+            </div>
             <h1>
                 Phenotype-similarity gene network of <br /><a href="https://www.mousephenotype.org/data/phenotypes/MP:0001925" target="_blank"
                     >male infertility</a
@@ -136,7 +141,7 @@
 
                 <!-- ↓↓↓ SVG's scale bars -->
                 <div class="edge-scale-container">
-                    <svg width="400" height="30">
+                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
                         <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
                         <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
                         <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>

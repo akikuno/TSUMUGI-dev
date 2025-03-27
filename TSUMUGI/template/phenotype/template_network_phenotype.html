@@ -22,6 +22,7 @@
 
         <!-- Custom JS -->
         <script type="module" src="XXX_mp_term_name_underscore.js"></script>
+        <script type="module" src="../js/mobile_panel.js"></script>
 
         <!-- ============================= -->
         <!-- CSS -->
@@ -34,6 +35,10 @@
 
     <body>
         <header class="header-container">
+            <!-- スマホのときのコントロールパネルの制御ボタン -->
+            <div class="menu-toggle">
+                <i class="fa-solid fa-sliders menu-toggle-icon" id="menu-toggle"></i>
+            </div>
             <h1>
                 Phenotype-similarity gene network of <br /><a href="XXX_impc_url" target="_blank"
                     >XXX_mp_term_name_space</a
@@ -147,7 +152,7 @@
 
                 <!-- ↓↓↓ SVG's scale bars -->
                 <div class="edge-scale-container">
-                    <svg width="400" height="30">
+                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
                         <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
                         <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
                         <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
@@ -157,7 +162,7 @@
 
                 <!-- REMOVE_FROM_THIS_LINE_IF_BINARY -->
                 <div class="color-scale-container">
-                    <svg width="400" height="30">
+                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
                         <defs>
                             <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop offset="0%" style="stop-color: rgb(248, 229, 140); stop-opacity: 1" />
