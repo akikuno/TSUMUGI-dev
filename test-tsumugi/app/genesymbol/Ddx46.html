@@ -35,9 +35,9 @@
     <body>
         <header class="header-container">
             <!-- スマホのときのコントロールパネルの制御ボタン -->
-            <div class="menu-toggle">
-                <i class="fa-solid fa-sliders menu-toggle-icon" id="menu-toggle"></i>
-            </div>
+            <button id="menu-toggle" class="menu-toggle-icon">
+                <i class="fa-solid fa-sliders"></i>
+            </button>
             <h1>
                 Phenotype-similarity gene network of <br /><a href="https://www.mousephenotype.org/data/genes/MGI:1920895" target="_blank">Ddx46</a>
             </h1>
@@ -45,6 +45,8 @@
 
         <div class="body-container">
             <div class="control-panel-container">
+                <button id="close-panel" class="close-button">✕</button>
+
                 <!-- ===================================== -->
                 <!-- Network layout -->
                 <!-- ===================================== -->

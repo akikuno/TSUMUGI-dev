@@ -240,8 +240,10 @@ ul.suggestions li:hover {
 /* スマホ向けデザイン */
 /* ======================================================== */
 /* 初期状態でアイコンを非表示 */
-.menu-toggle-icon {
+button.menu-toggle-icon {
     display: none;
+    background-color: transparent;
+    border: none;
 }
 
 #close-panel {
@@ -255,7 +257,6 @@ ul.suggestions li:hover {
     color: #333;
     cursor: pointer;
     z-index: 2000;
-    /* パネルより上に重ねる */
 }
 
 @media (max-width: 600px) {
@@ -273,7 +274,7 @@ ul.suggestions li:hover {
         top: 20px;
     }
 
-    .menu-toggle-icon,
+    button.menu-toggle-icon,
     .close-button {
         display: block;
         font-size: 20px;
@@ -281,16 +282,16 @@ ul.suggestions li:hover {
         position: absolute;
         left: 10px;
         top: 10px;
-        z-index: 1000;
+        z-index: 2000;
     }
 
-    .menu-toggle-icon.hidden {
+    button.menu-toggle-icon.hidden {
         display: none;
     }
 
     .close-button.active {
         display: block;
-        z-index: 1000;
+        z-index: 2000;
     }
 
     .body-container {
