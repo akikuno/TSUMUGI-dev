@@ -113,7 +113,7 @@ ul.suggestions li:hover {
 }
 
 button.Tab {
-    flex: 1;
+    flex: 0 1 auto;
     padding: 10px 20px;
     margin: 0 5px;
     border: 2px solid #ff7800;
@@ -267,7 +267,6 @@ footer a:hover {
 
 
     button.Tab {
-        flex: 1 1 auto;
         padding: 8px 10px;
         font-size: 0.9em;
         margin: 2px;
