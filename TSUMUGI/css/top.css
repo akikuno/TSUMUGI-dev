@@ -104,6 +104,14 @@ ul.suggestions li:hover {
 /* Tab styling */
 /* -------------------------------------------------------- */
 
+.Tab-container {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 5px;
+    flex-direction: row;
+}
+
 button.Tab {
     flex: 1;
     padding: 10px 20px;
@@ -115,6 +123,11 @@ button.Tab {
     transition: background-color 0.3s ease, color 0.3s ease;
     position: relative;
     z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 button.Tab:hover {
@@ -235,4 +248,30 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+
+
+/* ======================================================== */
+/* Responsive design for mobile devices */
+/* ======================================================== */
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 1em;
+        padding-top: 20px;
+    }
+
+    form {
+        width: 90%;
+    }
+
+
+    button.Tab {
+        flex: 1 1 auto;
+        padding: 8px 10px;
+        font-size: 0.9em;
+        margin: 2px;
+        min-width: 30px;
+        white-space: nowrap;
+    }
 }
