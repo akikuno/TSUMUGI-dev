@@ -280,8 +280,8 @@ button.menu-toggle-icon {
         font-size: 20px;
         cursor: pointer;
         position: absolute;
-        left: 10px;
-        top: 10px;
+        left: 20px;
+        top: 20px;
         z-index: 2000;
     }
 
