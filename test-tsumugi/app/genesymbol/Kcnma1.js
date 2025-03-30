@@ -10,7 +10,6 @@ import { setupGeneSearch } from "../js/searcher.js";
 // Input handling
 // ############################################################################
 
-
 const url_elements = "../../data/genesymbol/Kcnma1.json.gz";
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
 

@@ -1,0 +1,88 @@
+<div class="control-panel-container">
+    <button id="close-panel" class="close-button">✕</button>
+    <!-- ===================================== -->
+    <!-- Network layout -->
+    <!-- ===================================== -->
+    <div class="slider-container">
+        <label for="layout-dropdown" class="control-label">Network layout:</label>
+        <select class="exporter" id="layout-dropdown">
+            <option value="cose" selected>Cose</option>
+            <option value="circle">Circle</option>
+            <option value="grid">Grid</option>
+            <option value="random">Random</option>
+            <option value="concentric">Concentric</option>
+        </select>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Slider for phenotypes similarity -->
+    <!-- ===================================== -->
+    <div class="slider-container">
+        <span class="control-label" style="display: block"
+            >Phenotypes similarity: <span id="edge-size-value">1 - 10</span></span
+        >
+        <div class="slider-element" id="filter-edge-slider"></div>
+    </div>
+
+    XXX_PHENOTYPE
+
+    <!-- ===================================== -->
+    <!-- Cytoscape's visualization setting -->
+    <!-- ===================================== -->
+    <div class="slider-container">
+        <span class="control-label">Font size: </span>
+        <span id="font-size-value">20</span>
+        <div class="slider-element" id="font-size-slider"></div>
+    </div>
+
+    <div class="slider-container">
+        <span class="control-label">Edge width:</span>
+        <span id="edge-width-value">5</span>
+        <div class="slider-element" id="edge-width-slider"></div>
+    </div>
+
+    <div class="slider-container">
+        <span class="control-label">Node repulsion (Cose only):</span>
+        <span id="node-repulsion-value">5</span>
+        <div class="slider-element" id="nodeRepulsion-slider"></div>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Gene search box -->
+    <!-- ===================================== -->
+    <div class="slider-container">
+        <label for="gene-search" class="control-label">Search gene:</label>
+        <div class="search-container">
+            <input type="text" id="gene-search" placeholder="" autocomplete="off" />
+            <button id="search-button">Search</button>
+            <ul id="suggestions" class="suggestions" hidden></ul>
+        </div>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Genotype / Sex filter -->
+    <!-- ===================================== -->
+    <div class="checkbox-container">
+        <span>Genotype specificity:</span>
+        <form id="genotype-filter-form">
+            <label><input type="checkbox" value="Homo" checked /> Homo</label>
+            <label><input type="checkbox" value="Hetero" checked /> Hetero</label>
+            <label><input type="checkbox" value="Hemi" checked /> Hemi</label>
+        </form>
+    </div>
+
+    <div class="checkbox-container">
+        <span>Sex specificity:</span>
+        <form id="sex-filter-form">
+            <label><input type="checkbox" value="Female" checked /> Female</label>
+            <label><input type="checkbox" value="Male" checked /> Male</label>
+        </form>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Exporter -->
+    <!-- ===================================== -->
+    <button class="exporter" id="export-png"><i class="fa-regular fa-image"></i> Export as PNG</button>
+    <button class="exporter" id="export-csv"><i class="fa-regular fa-file-lines"></i> Export as CSV</button>
+</div>
+
