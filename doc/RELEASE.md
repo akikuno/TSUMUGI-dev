@@ -31,6 +31,8 @@ Publish the complete list of currently available phenotypes and genes. Issue: [#
 
 + Use `inherit` for tab button text color to maintain consistency and prevent the default blue text styling on macOS. Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)]
 
++ Unify HTML templates. Issue [#68](https://github.com/akikuno/TSUMUGI-dev/issues/68). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/70)]
+
 <!-- ############################################################# # -->
 
 
