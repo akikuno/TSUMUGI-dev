@@ -10,8 +10,6 @@ import { setupGeneSearch } from "../js/searcher.js";
 // Input handler
 // ############################################################################
 
-
-
 const url_elements = "../../data/phenotype/preweaning_lethality,_incomplete_penetrance.json.gz";
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
 
@@ -162,7 +160,6 @@ function filterElements() {
 const edgeSlider = document.getElementById("filter-edge-slider");
 noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
 
-
 // --------------------------------------------------------
 // Update of the Slider
 // --------------------------------------------------------
@@ -172,7 +169,6 @@ edgeSlider.noUiSlider.on("update", function (values) {
     document.getElementById("edge-size-value").textContent = intValues.join(" - ");
     filterElements();
 });
-
 
 // =============================================================================
 // 遺伝型・正特異的フィルタリング関数

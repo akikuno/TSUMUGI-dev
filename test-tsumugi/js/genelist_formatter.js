@@ -16,8 +16,8 @@ export async function fetchGzippedJson(url) {
 export function filterJson(jsonDataList, geneKeys) {
     let elements = new Set();
 
-    jsonDataList.forEach(jsonData => {
-        jsonData.forEach(item => {
+    jsonDataList.forEach((jsonData) => {
+        jsonData.forEach((item) => {
             const data = item.data;
 
             if ("node_color" in data && data.node_color !== 1) return;
@@ -30,25 +30,26 @@ export function filterJson(jsonDataList, geneKeys) {
         });
     });
 
-    return Array.from(elements).map(item => JSON.parse(item));
+    return Array.from(elements).map((item) => JSON.parse(item));
 }
 
 export async function fetchGeneData() {
     let jsonDataList = [];
 
     const geneList = document.getElementById("geneList").value;
-    const geneKeys = geneList.split(/\r?\n/).map(gene => gene.trim()).filter(gene => gene !== "");
+    const geneKeys = geneList
+        .split(/\r?\n/)
+        .map((gene) => gene.trim())
+        .filter((gene) => gene !== "");
 
-    const fetchPromises = geneKeys.map(gene =>
-        fetchGzippedJson(`./data/genesymbol/${gene}.json.gz`)
-    );
+    const fetchPromises = geneKeys.map((gene) => fetchGzippedJson(`./data/genesymbol/${gene}.json.gz`));
 
     const results = await Promise.all(fetchPromises);
-    jsonDataList = results.filter(data => data !== null);
+    jsonDataList = results.filter((data) => data !== null);
 
     const elements = filterJson(jsonDataList, geneKeys);
 
-    const uniqueIds = new Set(elements.map(el => el.data.id).filter(id => id !== undefined));
+    const uniqueIds = new Set(elements.map((el) => el.data.id).filter((id) => id !== undefined));
 
     if (uniqueIds.size === 0) {
         alert("No similar phenotypes were found among the entered genes.");
@@ -58,9 +59,9 @@ export async function fetchGeneData() {
         return;
     }
 
-    localStorage.removeItem('elements');
-    localStorage.setItem('elements', JSON.stringify(elements));
-    window.open('./app/genelist/network_genelist.html', '_blank');
+    localStorage.removeItem("elements");
+    localStorage.setItem("elements", JSON.stringify(elements));
+    window.open("./app/genelist/network_genelist.html", "_blank");
 }
 
 // Assign event listener to button

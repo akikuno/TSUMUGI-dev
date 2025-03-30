@@ -1,5 +1,5 @@
 // 検索モードの選択用変数 (初期状態を 'phenotype')
-let searchMode = 'phenotype';
+let searchMode = "phenotype";
 
 const geneListPlaceHolder = "Asxl1\r\nRab10\r\nDdx46\r\nAp3b2\r\nKcnma1"; // プレースホルダーとして例を入力
 
@@ -7,51 +7,49 @@ const geneListPlaceHolder = "Asxl1\r\nRab10\r\nDdx46\r\nAp3b2\r\nKcnma1"; // プ
 // タブ切り替え + searchMode の更新
 // ====================================================================
 function setSearchMode(mode) {
-
     searchMode = mode;
 
-    document.getElementById('phenotypeSection').style.display = mode === 'phenotype' ? 'block' : 'none';
-    document.getElementById('geneSection').style.display = mode === 'gene' ? 'block' : 'none';
-    document.getElementById('geneListSection').style.display = mode === 'geneList' ? 'block' : 'none';
+    document.getElementById("phenotypeSection").style.display = mode === "phenotype" ? "block" : "none";
+    document.getElementById("geneSection").style.display = mode === "gene" ? "block" : "none";
+    document.getElementById("geneListSection").style.display = mode === "geneList" ? "block" : "none";
 
     // タブボタンのスタイル変更
-    document.querySelectorAll('.Tab').forEach(tabButton => {
-        tabButton.classList.remove('active-tab');
+    document.querySelectorAll(".Tab").forEach((tabButton) => {
+        tabButton.classList.remove("active-tab");
     });
-    document.querySelectorAll(`button[data-tab="${mode}"]`).forEach(tabButton => {
-        tabButton.classList.add('active-tab');
+    document.querySelectorAll(`button[data-tab="${mode}"]`).forEach((tabButton) => {
+        tabButton.classList.add("active-tab");
     });
 
     // 入力欄の初期化
-    document.querySelectorAll('input[type="text"], textarea').forEach(input => {
-        input.value = '';
+    document.querySelectorAll('input[type="text"], textarea').forEach((input) => {
+        input.value = "";
     });
-    document.querySelectorAll('ul.suggestions').forEach(ul => {
-        ul.innerHTML = '';
+    document.querySelectorAll("ul.suggestions").forEach((ul) => {
+        ul.innerHTML = "";
     });
 
     // Gene List のタブが押されたときにプレースホルダーを設定
     const geneListTextarea = document.getElementById("geneList");
-    if (mode === 'geneList') {
+    if (mode === "geneList") {
         geneListTextarea.value = geneListPlaceHolder;
     }
 
     // Submit ボタンの切り替え
-    const submitBtn = document.getElementById('submitBtn');
-    const submitBtnList = document.getElementById('submitBtn_List');
+    const submitBtn = document.getElementById("submitBtn");
+    const submitBtnList = document.getElementById("submitBtn_List");
 
-    submitBtn.style.display = mode === 'geneList' ? 'none' : 'inline-block';
-    submitBtnList.style.display = mode === 'geneList' ? 'inline-block' : 'none';
-
+    submitBtn.style.display = mode === "geneList" ? "none" : "inline-block";
+    submitBtnList.style.display = mode === "geneList" ? "inline-block" : "none";
 
     // 各モードに応じて Submit ボタンを無効化して初期化
-    if (mode === 'geneList') {
+    if (mode === "geneList") {
         submitBtnList.disabled = true;
     } else {
         submitBtn.disabled = true;
     }
 
-    if (mode === 'geneList') {
+    if (mode === "geneList") {
         checkGeneListInput();
     } else {
         checkValidInput();
@@ -71,11 +69,11 @@ function checkGeneListInput() {
 }
 
 // 初期表示
-setSearchMode('phenotype');
+setSearchMode("phenotype");
 
 // タブボタンのクリックイベント
-document.querySelectorAll('.Tab').forEach(button => {
-    button.addEventListener('click', () => setSearchMode(button.dataset.tab));
+document.querySelectorAll(".Tab").forEach((button) => {
+    button.addEventListener("click", () => setSearchMode(button.dataset.tab));
 });
 
 // Gene List のテキストエリアが変更されたらボタンを更新
@@ -90,21 +88,21 @@ const URL_GENE_SYMBOLS = "./data/available_gene_symbols.txt";
 
 // データ取得の完了を管理する Promise
 let phenotypesLoaded = fetch(URL_MP_TERMS)
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
         phenotypes = data;
     })
-    .catch(error => console.error('Error fetching phenotypes:', error));
+    .catch((error) => console.error("Error fetching phenotypes:", error));
 
 let geneSymbolsLoaded = fetch(URL_GENE_SYMBOLS)
-    .then(response => response.text())
-    .then(data => {
-        geneSymbols = data.split('\n').reduce((acc, symbol) => {
+    .then((response) => response.text())
+    .then((data) => {
+        geneSymbols = data.split("\n").reduce((acc, symbol) => {
             acc[symbol.trim()] = null;
             return acc;
         }, {});
     })
-    .catch(error => console.error('Error fetching gene symbols:', error));
+    .catch((error) => console.error("Error fetching gene symbols:", error));
 
 // 両方のデータがロードされたことを確認する関数
 async function ensureDataLoaded() {
@@ -123,48 +121,48 @@ async function handleInput(event) {
     await ensureDataLoaded(); // データのロードを保証
 
     const userInput = event.target.value.toLowerCase();
-    const suggestionList = searchMode === 'phenotype'
-        ? document.getElementById('phenotypeSuggestions')
-        : document.getElementById('geneSuggestions');
+    const suggestionList =
+        searchMode === "phenotype"
+            ? document.getElementById("phenotypeSuggestions")
+            : document.getElementById("geneSuggestions");
 
-    const submitButton = document.getElementById('submitBtn');
+    const submitButton = document.getElementById("submitBtn");
 
     if (!submitButton) {
         console.error(`submitButton not found`);
         return;
     }
 
-    suggestionList.innerHTML = '';
+    suggestionList.innerHTML = "";
 
     let isValidSelection = false;
     if (userInput) {
-        const dataDictionary = searchMode === 'phenotype' ? phenotypes : geneSymbols;
+        const dataDictionary = searchMode === "phenotype" ? phenotypes : geneSymbols;
         let matchingCandidates = Object.keys(dataDictionary)
-            .map(candidate => ({
+            .map((candidate) => ({
                 text: candidate,
-                score: wordMatchScore(userInput, candidate)
+                score: wordMatchScore(userInput, candidate),
             }))
             .sort((a, b) => b.score - a.score)
-            .filter(candidate => candidate.score > 0)
+            .filter((candidate) => candidate.score > 0)
             .slice(0, 10);
 
-        matchingCandidates.forEach(candidate => {
-            const listItem = document.createElement('li');
+        matchingCandidates.forEach((candidate) => {
+            const listItem = document.createElement("li");
             listItem.textContent = candidate.text;
-            listItem.addEventListener('click', function () {
+            listItem.addEventListener("click", function () {
                 event.target.value = candidate.text;
-                suggestionList.innerHTML = '';
+                suggestionList.innerHTML = "";
                 checkValidInput();
             });
             suggestionList.appendChild(listItem);
         });
 
-        isValidSelection = matchingCandidates.some(candidate => candidate.text.toLowerCase() === userInput);
+        isValidSelection = matchingCandidates.some((candidate) => candidate.text.toLowerCase() === userInput);
     }
 
     submitButton.disabled = !isValidSelection;
 }
-
 
 // --------------------------------------------------------------------
 // 入力の有効性を確認する関数
@@ -172,33 +170,30 @@ async function handleInput(event) {
 async function checkValidInput() {
     await ensureDataLoaded();
 
-    const userInput = searchMode === 'phenotype'
-        ? document.getElementById('phenotype')
-        : document.getElementById('gene');
+    const userInput =
+        searchMode === "phenotype" ? document.getElementById("phenotype") : document.getElementById("gene");
 
-    let isEmptyInput = userInput.value.trim() === '';
+    let isEmptyInput = userInput.value.trim() === "";
 
     let isValidSelection = false;
-    if (searchMode === 'phenotype') {
+    if (searchMode === "phenotype") {
         isValidSelection = phenotypes.hasOwnProperty(userInput.value);
-    } else if (searchMode === 'gene') {
+    } else if (searchMode === "gene") {
         isValidSelection = geneSymbols.hasOwnProperty(userInput.value);
     }
 
-    const submitBtn = document.getElementById('submitBtn');
+    const submitBtn = document.getElementById("submitBtn");
     submitBtn.disabled = !isValidSelection || isEmptyInput;
-
 }
-
 
 // --------------------------------------------------------------------
 // データ取得後にイベントリスナーを登録
 // --------------------------------------------------------------------
 ensureDataLoaded().then(() => {
-    document.getElementById('phenotype').addEventListener('input', handleInput);
-    document.getElementById('gene').addEventListener('input', handleInput);
-    document.getElementById('phenotype').addEventListener('blur', checkValidInput);
-    document.getElementById('gene').addEventListener('blur', checkValidInput);
+    document.getElementById("phenotype").addEventListener("input", handleInput);
+    document.getElementById("gene").addEventListener("input", handleInput);
+    document.getElementById("phenotype").addEventListener("blur", checkValidInput);
+    document.getElementById("gene").addEventListener("blur", checkValidInput);
 });
 
 // ====================================================================
@@ -210,24 +205,24 @@ function handleFormSubmit(event) {
     const mode = searchMode;
 
     // geneListのときには、直接関数を実行を取得
-    if (mode === 'geneList') {
+    if (mode === "geneList") {
         fetchGeneData(); // 🔥 ここで直接呼び出す
         return;
     }
 
     // phenotype / gene のときには、特定のページを出力
-    const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
-    const submitBtn = document.getElementById('submitBtn');
-    const selectedData = mode === 'phenotype' ? phenotypes[userInput.value] : userInput.value;
-    const path = mode === 'phenotype' ? 'phenotype' : 'genesymbol';
+    const userInput = mode === "phenotype" ? document.getElementById("phenotype") : document.getElementById("gene");
+    const submitBtn = document.getElementById("submitBtn");
+    const selectedData = mode === "phenotype" ? phenotypes[userInput.value] : userInput.value;
+    const path = mode === "phenotype" ? "phenotype" : "genesymbol";
 
     if (!submitBtn.disabled) {
-        window.open(`app/${path}/${selectedData}.html`, '_blank');
+        window.open(`app/${path}/${selectedData}.html`, "_blank");
     }
 }
 
 // フォームの submit イベントを監視
-document.getElementById('searchForm').addEventListener('submit', handleFormSubmit);
+document.getElementById("searchForm").addEventListener("submit", handleFormSubmit);
 
 // ====================================================================
 // 入力された文字列との類似性スコアを計算
@@ -274,7 +269,7 @@ function jaroWinkler(s1, s2) {
 
     transpositions /= 2;
 
-    const jaroScore = ((matches / s1Len) + (matches / s2Len) + ((matches - transpositions) / matches)) / 3;
+    const jaroScore = (matches / s1Len + matches / s2Len + (matches - transpositions) / matches) / 3;
 
     let prefixLength = 0;
     for (let i = 0; i < Math.min(4, s1Len, s2Len); i++) {
@@ -282,17 +277,17 @@ function jaroWinkler(s1, s2) {
         else break;
     }
 
-    return jaroScore + (prefixLength * scalingFactor * (1 - jaroScore));
+    return jaroScore + prefixLength * scalingFactor * (1 - jaroScore);
 }
 
 function wordMatchScore(term1, term2) {
-    const term1Words = term1.split(' ').filter(Boolean);
-    const term2Words = term2.split(' ').filter(Boolean);
+    const term1Words = term1.split(" ").filter(Boolean);
+    const term2Words = term2.split(" ").filter(Boolean);
     let score = 0;
 
-    term1Words.forEach(word1 => {
+    term1Words.forEach((word1) => {
         let maxScore = 0;
-        term2Words.forEach(word2 => {
+        term2Words.forEach((word2) => {
             const similarity = jaroWinkler(word1.toLowerCase(), word2.toLowerCase());
             maxScore = Math.max(maxScore, similarity);
         });

@@ -14,7 +14,6 @@ import { setupGeneSearch } from "../js/searcher.js";
 // localStorage からデータを取得
 const elements = JSON.parse(localStorage.getItem("elements"));
 
-
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
 
 const map_symbol_to_id = loadJSON(url_map_symbol_to_id);

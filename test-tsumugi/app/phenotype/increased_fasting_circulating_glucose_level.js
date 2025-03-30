@@ -25,7 +25,6 @@ import { setupGeneSearch } from "../js/searcher.js";
 
 // REMOVE_TO_THIS_LINE
 
-
 const url_elements = "../../data/phenotype/increased_fasting_circulating_glucose_level.json.gz";
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
 

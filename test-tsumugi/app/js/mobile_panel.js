@@ -21,12 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         // アイコンに click と touchstart の両方を登録
-        ['click', 'touchstart'].forEach(evt => {
+        ["click", "touchstart"].forEach((evt) => {
             menuToggle.addEventListener(evt, openPanel);
         });
 
         // ✕ボタンも同様に click と touchstart を登録
-        ['click', 'touchstart'].forEach(evt => {
+        ["click", "touchstart"].forEach((evt) => {
             closeButton.addEventListener(evt, closePanel);
         });
 
