@@ -10,6 +10,7 @@ import { setupGeneSearch } from "../js/searcher.js";
 // Input handling
 // ############################################################################
 
+
 const url_elements = "../../data/genesymbol/Asxl1.json.gz";
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
 
@@ -17,21 +18,22 @@ const elements = loadJSONGz(url_elements);
 const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
 
 // ############################################################################
-// Cytoscape handling
+// Cytoscape Elements handler
 // ############################################################################
 
+const nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
 const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
 
-const nodeMin = 0;
-const nodeMax = 1;
+const nodeMin = Math.min(...nodeSizes);
+const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
 
-// ############################################################################
+// ============================================================================
 // edgeMaxの計算：
-// node_color === 1 のノードに接続されたエッジの中で最大のedge_sizeを取得
-// その値をedgeMaxとする
-// その後、elementsのedge_sizeをedgeMaxを上限として調整
-// ############################################################################
+// 1. node_color === 1 のノードに接続されたエッジの中で最大のedge_sizeを取得
+// 2. その値をedgeMaxとする
+// 3. その後、elementsのedge_sizeをedgeMaxを上限として調整
+// ============================================================================
 
 // node_color === 1 のノード(targetGene)を1つだけ取得
 const targetGene = elements.find((ele) => ele.data.node_color === 1);
@@ -120,7 +122,7 @@ const cy = cytoscape({
 });
 
 // ############################################################################
-// Visualization handling
+// Control panel handler
 // ############################################################################
 
 // --------------------------------------------------------
