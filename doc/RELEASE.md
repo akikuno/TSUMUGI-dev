@@ -23,6 +23,10 @@
 
 # v0.2.2 (2025-04-DD)
 
+## 🌟 New Features
+
+
+
 ## 📝 Documentation
 
 Publish the complete list of currently available phenotypes and genes. Issue: [#34](https://github.com/akikuno/TSUMUGI-dev/issues/34). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/faa2b42eee54446d72c3c47acf9cdf6b04b5685c)]
