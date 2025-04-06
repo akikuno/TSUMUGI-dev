@@ -18,7 +18,7 @@ TSUMUGI is available as a web-tool that anyone can access from here👇️
 
 🔗 https://larc-tsukuba.github.io/tsumugi/
 
-The name *TSUMUGI* is derived from the Japanese word **紡ぎ**, symbolizing the concept of *twisting various elements (genes) together to create a unified entity (phenotype)*.  
+The name **TSUMUGI** is derived from the Japanese word **紡ぎ**, symbolizing the concept of *twisting various elements (genes) together to create a unified entity (phenotype)*.  
 
 # 📖 How to Use TSUMUGI
 
@@ -52,10 +52,11 @@ TSUMUGI calculates phenotypic similarity **between genes within the list only**.
 > Unlike a single gene search, the Gene List input compares phenotypes **within the listed genes** only.
 
 > [!CAUTION]
-> If **no similar phenotype pairs** are found, the message  
-> `No similar phenotypes were found among the entered genes.` will appear.  
-> If **more than 200 gene pairs** are detected, an alert will show  
-> `Too many genes submitted. Please limit the number to 200 or fewer.` to prevent browser overload.
+> If **no phenotype-similar genes** are found, an alert saying
+> `No similar phenotypes were found among the entered genes.` will appear, and you will not be able to proceed.
+>
+> If the number of phenotype-similar genes **exceeds 200**, an alert saying
+> `Too many genes submitted. Please limit the number to 200 or fewer.` will appear, and the process will be stopped to prevent browser overload.
 
 ### 📥 Download Data
 
