@@ -11,7 +11,7 @@
 
 [日本語はこちら](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_JP.md)
 
-**TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** is a tool that uses phenotype data from knockout mice provided by the [International Mouse Phenotyping Consortium (IMPC)](https://www.mousephenotype.org/).  
+**TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** is a tool that leverages comprehensive phenotype data from single-gene knockout (KO) mice, provided by the [International Mouse Phenotyping Consortium (IMPC)](https://www.mousephenotype.org/).  
 It identifies and visualizes gene modules based on **phenotypic similarity**.
 
 TSUMUGI is available as a web-tool that anyone can access from here👇️  
@@ -28,7 +28,7 @@ TSUMUGI accepts the following three types of input:
 
 ### 1. Phenotype
 
-When you input a phenotype of interest, TSUMUGI searches for a group of genes whose knockout (KO) mice not only exhibit that phenotype, but also share **similar overall phenotype profiles**.  
+When you input a phenotype of interest, TSUMUGI searches for a group of genes whose KO mice not only exhibit that phenotype, but also share **similar overall phenotype profiles**.  
 Phenotype names are based on the [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology).
 
 You can view the list of phenotypes currently searchable with TSUMUGI here:  
