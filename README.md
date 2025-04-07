@@ -155,7 +155,7 @@ The CSV file includes cluster (connected component) information and a list of ph
 
 ## Data Source
 
-The dataset used is [IMPC Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results), specifically the `statistical-results-ALL.csv.gz` file.  
+The dataset used is [IMPC Release-22.1](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results), specifically the `statistical-results-ALL.csv.gz` file.  
 Detailed information about the data fields can be found here:  
 👉 [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
 

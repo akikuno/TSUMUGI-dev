@@ -14,7 +14,7 @@ Web上で誰でも利用できる公開ツールとして提供されていま�
 
 🔗 https://larc-tsukuba.github.io/tsumugi/
 
-**TSUMUGI（紡ぎ）**は「表現型を織りなす遺伝子群を紡ぎ出す」という動機に由来します。  
+**TSUMUGI**は「表現型を織りなす遺伝子群を紡ぎ出す」という動機に由来します。  
 
 
 # 📖 TSUMUGIの使い方
@@ -155,7 +155,7 @@ CSVには、連結成分（クラスター）情報と、各遺伝子のKOマウ
 
 ## データソース
 
-IMPCのデータセットは[Release-22.1 (2024-12-11)](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results)の`statistical-results-ALL.csv.gz`を使用しています。  
+IMPCのデータセットは[Release-22.1](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results)の`statistical-results-ALL.csv.gz`を使用しています。  
 データセットに含まれる列の情報はこちらです： [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## 前処理
