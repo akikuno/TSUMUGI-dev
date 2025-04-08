@@ -1,184 +1,182 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>increased fasting circulating glucose level</title>
-    <link rel="icon" href="../../image/tsumugi-favicon.ico" />
+        <title>increased fasting circulating glucose level</title>
+        <link rel="icon" href="../../image/tsumugi-favicon.ico" />
 
-    <!-- ============================= -->
-    <!-- JS -->
-    <!-- ============================= -->
-    <!-- noUiSlider -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" defer></script>
+        <!-- ============================= -->
+        <!-- JS -->
+        <!-- ============================= -->
+        <!-- noUiSlider -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" defer></script>
 
-    <!-- pako for reading gzip JSON -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
+        <!-- pako for reading gzip JSON -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
 
-    <!-- Cytoscape -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
+        <!-- Cytoscape -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
 
-    <!-- Custom JS -->
-    <script type="module" src="./increased_fasting_circulating_glucose_level.js"></script>
-    <script type="module" src="../js/mobile_panel.js"></script>
+        <!-- Custom JS -->
+        <script type="module" src="./increased_fasting_circulating_glucose_level.js"></script>
+        <script type="module" src="../js/mobile_panel.js"></script>
 
-    <!-- ============================= -->
-    <!-- CSS -->
-    <!-- ============================= -->
-    <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
-    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/app.css" />
-</head>
+        <!-- ============================= -->
+        <!-- CSS -->
+        <!-- ============================= -->
+        <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
+        <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
+        <link rel="stylesheet" href="../css/app.css" />
+    </head>
 
-<body>
-    <header class="header-container">
-    <button id="menu-toggle" class="menu-toggle-icon">
-        <i class="fa-solid fa-sliders"></i>
-    </button>
-    <h1>
-        Phenotype-similarity gene network of <br />
-        <a href='https://www.mousephenotype.org/data/phenotypes/MP:0013279' target='_blank'>increased fasting circulating glucose level</a>
-    </h1>
-</header>
+    <body>
+        <header class="header-container">
+            <button id="menu-toggle" class="menu-toggle-icon">
+                <i class="fa-solid fa-sliders"></i>
+            </button>
+            <h1>
+                Phenotype-similarity gene network of <br />
+                <a href="https://www.mousephenotype.org/data/phenotypes/MP:0013279" target="_blank"
+                    >increased fasting circulating glucose level</a
+                >
+            </h1>
+        </header>
 
-    <div class="body-container">
-        <div class="control-panel-container">
-    <button id="close-panel" class="close-button">✕</button>
-    <!-- ===================================== -->
-    <!-- Network layout -->
-    <!-- ===================================== -->
-    <div class="slider-container">
-        <label for="layout-dropdown" class="control-label">Network layout:</label>
-        <select class="exporter" id="layout-dropdown">
-            <option value="cose" selected>Cose</option>
-            <option value="circle">Circle</option>
-            <option value="grid">Grid</option>
-            <option value="random">Random</option>
-            <option value="concentric">Concentric</option>
-        </select>
-    </div>
+        <div class="body-container">
+            <div class="control-panel-container">
+                <button id="close-panel" class="close-button">✕</button>
+                <!-- ===================================== -->
+                <!-- Network layout -->
+                <!-- ===================================== -->
+                <div class="slider-container">
+                    <label for="layout-dropdown" class="control-label">Network layout:</label>
+                    <select class="exporter" id="layout-dropdown">
+                        <option value="cose" selected>Cose</option>
+                        <option value="circle">Circle</option>
+                        <option value="grid">Grid</option>
+                        <option value="random">Random</option>
+                        <option value="concentric">Concentric</option>
+                    </select>
+                </div>
 
-    <!-- ===================================== -->
-    <!-- Slider for phenotypes similarity -->
-    <!-- ===================================== -->
-    <div class="slider-container">
-        <span class="control-label" style="display: block"
-            >Phenotypes similarity: <span id="edge-size-value">1 - 10</span></span
-        >
-        <div class="slider-element" id="filter-edge-slider"></div>
-    </div>
+                <!-- ===================================== -->
+                <!-- Slider for phenotypes similarity -->
+                <!-- ===================================== -->
+                <div class="slider-container">
+                    <span class="control-label" style="display: block"
+                        >Phenotypes similarity: <span id="edge-size-value">1 - 10</span></span
+                    >
+                    <div class="slider-element" id="filter-edge-slider"></div>
+                </div>
 
-    <!-- ===================================== -->
-<!-- Slider for phenotypes severity -->
-<!-- ===================================== -->
-<div class="slider-container">
-    <span class="control-label" style="display: block"
-        >Phenotype severity: <span id="node-color-value">1 - 10</span></span
-    >
-    <div class="slider-element" id="filter-node-slider"></div>
-</div>
+                <!-- ===================================== -->
+                <!-- Slider for phenotypes severity -->
+                <!-- ===================================== -->
+                <div class="slider-container">
+                    <span class="control-label" style="display: block"
+                        >Phenotype severity: <span id="node-color-value">1 - 10</span></span
+                    >
+                    <div class="slider-element" id="filter-node-slider"></div>
+                </div>
 
+                <!-- ===================================== -->
+                <!-- Cytoscape's visualization setting -->
+                <!-- ===================================== -->
+                <div class="slider-container">
+                    <span class="control-label">Font size: </span>
+                    <span id="font-size-value">20</span>
+                    <div class="slider-element" id="font-size-slider"></div>
+                </div>
 
-    <!-- ===================================== -->
-    <!-- Cytoscape's visualization setting -->
-    <!-- ===================================== -->
-    <div class="slider-container">
-        <span class="control-label">Font size: </span>
-        <span id="font-size-value">20</span>
-        <div class="slider-element" id="font-size-slider"></div>
-    </div>
+                <div class="slider-container">
+                    <span class="control-label">Edge width:</span>
+                    <span id="edge-width-value">5</span>
+                    <div class="slider-element" id="edge-width-slider"></div>
+                </div>
 
-    <div class="slider-container">
-        <span class="control-label">Edge width:</span>
-        <span id="edge-width-value">5</span>
-        <div class="slider-element" id="edge-width-slider"></div>
-    </div>
+                <div class="slider-container">
+                    <span class="control-label">Node repulsion (Cose only):</span>
+                    <span id="node-repulsion-value">5</span>
+                    <div class="slider-element" id="nodeRepulsion-slider"></div>
+                </div>
 
-    <div class="slider-container">
-        <span class="control-label">Node repulsion (Cose only):</span>
-        <span id="node-repulsion-value">5</span>
-        <div class="slider-element" id="nodeRepulsion-slider"></div>
-    </div>
+                <!-- ===================================== -->
+                <!-- Gene search box -->
+                <!-- ===================================== -->
+                <div class="slider-container">
+                    <label for="gene-search" class="control-label">Search gene:</label>
+                    <div class="search-container">
+                        <input type="text" id="gene-search" placeholder="" autocomplete="off" />
+                        <button id="search-button">Search</button>
+                        <ul id="suggestions" class="suggestions" hidden></ul>
+                    </div>
+                </div>
 
-    <!-- ===================================== -->
-    <!-- Gene search box -->
-    <!-- ===================================== -->
-    <div class="slider-container">
-        <label for="gene-search" class="control-label">Search gene:</label>
-        <div class="search-container">
-            <input type="text" id="gene-search" placeholder="" autocomplete="off" />
-            <button id="search-button">Search</button>
-            <ul id="suggestions" class="suggestions" hidden></ul>
+                <!-- ===================================== -->
+                <!-- Genotype / Sex filter -->
+                <!-- ===================================== -->
+                <div class="checkbox-container">
+                    <span>Genotype specificity:</span>
+                    <form id="genotype-filter-form">
+                        <label><input type="checkbox" value="Homo" checked /> Homo</label>
+                        <label><input type="checkbox" value="Hetero" checked /> Hetero</label>
+                        <label><input type="checkbox" value="Hemi" checked /> Hemi</label>
+                    </form>
+                </div>
+
+                <div class="checkbox-container">
+                    <span>Sex specificity:</span>
+                    <form id="sex-filter-form">
+                        <label><input type="checkbox" value="Female" checked /> Female</label>
+                        <label><input type="checkbox" value="Male" checked /> Male</label>
+                    </form>
+                </div>
+
+                <!-- ===================================== -->
+                <!-- Exporter -->
+                <!-- ===================================== -->
+                <button class="exporter" id="export-png"><i class="fa-regular fa-image"></i> Export as PNG</button>
+                <button class="exporter" id="export-csv"><i class="fa-regular fa-file-lines"></i> Export as CSV</button>
+            </div>
+
+            <div class="cy-container">
+                <div class="cy"></div>
+
+                <!-- ===================================== -->
+                <!-- SVG for phenotypes similarity -->
+                <!-- ===================================== -->
+
+                <div class="edge-scale-container">
+                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
+                        <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
+                        <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
+                        <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
+                    </svg>
+                    <p class="scale-label">Similarity of accessory phenotypes</p>
+                </div>
+
+                <!-- ===================================== -->
+                <!-- SVG for phenotypes severity -->
+                <!-- ===================================== -->
+                <div class="color-scale-container">
+                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color: rgb(248, 229, 140); stop-opacity: 1" />
+                                <stop offset="100%" style="stop-color: rgb(255, 140, 0); stop-opacity: 1" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="0" y="0" width="400" height="30" fill="url(#colorGradient)" />
+                        <text x="0" y="25" font-family="Arial" font-size="12px" fill="#000">Low</text>
+                        <text x="370" y="25" font-family="Arial" font-size="12px" fill="#000">High</text>
+                    </svg>
+                    <p class="scale-label">Severity of target phenotype</p>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <!-- ===================================== -->
-    <!-- Genotype / Sex filter -->
-    <!-- ===================================== -->
-    <div class="checkbox-container">
-        <span>Genotype specificity:</span>
-        <form id="genotype-filter-form">
-            <label><input type="checkbox" value="Homo" checked /> Homo</label>
-            <label><input type="checkbox" value="Hetero" checked /> Hetero</label>
-            <label><input type="checkbox" value="Hemi" checked /> Hemi</label>
-        </form>
-    </div>
-
-    <div class="checkbox-container">
-        <span>Sex specificity:</span>
-        <form id="sex-filter-form">
-            <label><input type="checkbox" value="Female" checked /> Female</label>
-            <label><input type="checkbox" value="Male" checked /> Male</label>
-        </form>
-    </div>
-
-    <!-- ===================================== -->
-    <!-- Exporter -->
-    <!-- ===================================== -->
-    <button class="exporter" id="export-png"><i class="fa-regular fa-image"></i> Export as PNG</button>
-    <button class="exporter" id="export-csv"><i class="fa-regular fa-file-lines"></i> Export as CSV</button>
-</div>
-
-        <div class="cy-container">
-    <div class="cy"></div>
-
-    <!-- ===================================== -->
-    <!-- SVG for phenotypes similarity -->
-    <!-- ===================================== -->
-
-    <div class="edge-scale-container">
-        <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
-            <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
-            <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
-            <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
-        </svg>
-        <p class="scale-label">Similarity of accessory phenotypes</p>
-    </div>
-
-    <!-- ===================================== -->
-<!-- SVG for phenotypes severity -->
-<!-- ===================================== -->
-<div class="color-scale-container">
-    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
-        <defs>
-            <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style="stop-color: rgb(248, 229, 140); stop-opacity: 1" />
-                <stop offset="100%" style="stop-color: rgb(255, 140, 0); stop-opacity: 1" />
-            </linearGradient>
-        </defs>
-        <rect x="0" y="0" width="400" height="30" fill="url(#colorGradient)" />
-        <text x="0" y="25" font-family="Arial" font-size="12px" fill="#000">Low</text>
-        <text x="370" y="25" font-family="Arial" font-size="12px" fill="#000">High</text>
-    </svg>
-    <p class="scale-label">Severity of target phenotype</p>
-</div>
-
-</div>
-
-    </div>
-</body>
-
+    </body>
 </html>

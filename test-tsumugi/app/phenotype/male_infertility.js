@@ -26,7 +26,7 @@ import { setupGeneSearch } from "../js/searcher.js";
 
 // REMOVE_TO_THIS_LINE
 
-const elements = loadJSONGz('../../data/phenotype/male_infertility.json.gz');
+const elements = loadJSONGz("../../data/phenotype/male_infertility.json.gz");
 const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
@@ -129,7 +129,6 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 const edgeSlider = document.getElementById("filter-edge-slider");
 noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
 
-
 // Update the slider values when the sliders are moved
 edgeSlider.noUiSlider.on("update", function (values) {
     const intValues = values.map((value) => Math.round(value));
@@ -137,15 +136,12 @@ edgeSlider.noUiSlider.on("update", function (values) {
     filterByNodeColorAndEdgeSize();
 });
 
-
-
 // --------------------------------------------------------
 // Modify the filter function to handle upper and lower bounds
 // --------------------------------------------------------
 
 function filterByNodeColorAndEdgeSize() {
     let nodeSliderValues = [1, 10];
-
 
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
@@ -189,7 +185,6 @@ function filterByNodeColorAndEdgeSize() {
     // Reapply layout after filtering
     cy.layout(getLayoutOptions()).run();
 }
-
 
 // =============================================================================
 // 遺伝型・正特異的フィルタリング関数

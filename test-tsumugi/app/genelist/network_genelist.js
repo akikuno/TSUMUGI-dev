@@ -26,7 +26,7 @@ import { setupGeneSearch } from "../js/searcher.js";
 
 // REMOVE_TO_THIS_LINE
 
-const elements = loadJSONGz("../../data/genesymbol/Rab10.json.gz");
+const elements = JSON.parse(localStorage.getItem("elements"));
 const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
@@ -145,31 +145,53 @@ function filterByNodeColorAndEdgeSize() {
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
-    // 1. edge_size条件を満たすエッジを取得
-    const visibleEdges = cy.edges().filter((edge) => {
+    // すべてのノードを一旦表示状態にする
+    cy.nodes().forEach((node) => node.style("display", "element"));
+
+    // edge_sizeの範囲でエッジをフィルターし、表示/非表示を設定
+    cy.edges().forEach((edge) => {
         const edgeSize = edge.data("edge_size");
-        return edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
+        const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
+        const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
+
+        const isEdgeVisible = sourceVisible && targetVisible && edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
+
+        edge.style("display", isEdgeVisible ? "element" : "none");
     });
 
-    // 2. 条件を満たしたエッジ＋そのエッジに接続しているノードたちを取得
-    const candidateElements = visibleEdges.union(visibleEdges.connectedNodes());
+    // 連結成分を取得し、node_color === 1 を含むものだけ残す
+    const connectedComponents = calculateConnectedComponents(cy);
+    const componentsWithColor1 = connectedComponents.filter((component) =>
+        Object.keys(component).some((label) => {
+            const node = cy.$(`node[label="${label}"]`);
+            return node.data("node_color") === 1;
+        }),
+    );
 
-    // 3. 連結成分を取得
-    const components = candidateElements.components();
+    // node_color === 1を含むノードのなかから、edge_size条件を満たすエッジを再表示
+    componentsWithColor1.forEach((component) => {
+        Object.keys(component).forEach((label) => {
+            const node = cy.$(`node[label="${label}"]`);
+            node.style("display", "element");
 
-    // 4. 一旦すべて非表示にしてから…
-    cy.elements().forEach((ele) => ele.style("display", "none"));
+            node.connectedEdges().forEach((edge) => {
+                const edgeSize = edge.data("edge_size");
+                if (edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue) {
+                    edge.style("display", "element");
+                }
+            });
+        });
+    });
 
-    // 5. node_color === 1 を含むクラスタだけ表示
-    components.forEach((comp) => {
-        const hasColor1 = comp.nodes().some((node) => node.data("node_color") === 1);
-        if (hasColor1) {
-            comp.nodes().forEach((node) => node.style("display", "element"));
-            comp.edges().forEach((edge) => edge.style("display", "element"));
+    // 接続エッジがすべて非表示のノードは非表示にする（孤立ノードの除去）
+    cy.nodes().forEach((node) => {
+        const visibleEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
+        if (visibleEdges.length === 0) {
+            node.style("display", "none");
         }
     });
 
-    // 6. レイアウト再適用
+    // フィルタ後のレイアウトを再適用
     cy.layout(getLayoutOptions()).run();
 }
 
@@ -255,7 +277,7 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = "TSUMUGI_Rab10";
+const file_name = "TSUMUGI_geneList";
 
 // --------------------------------------------------------
 // PNG Exporter

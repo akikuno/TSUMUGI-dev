@@ -26,7 +26,7 @@ import { setupGeneSearch } from "../js/searcher.js";
 
 // REMOVE_TO_THIS_LINE
 
-const elements = loadJSONGz('../../data/phenotype/increased_fasting_circulating_glucose_level.json.gz');
+const elements = loadJSONGz("../../data/phenotype/increased_fasting_circulating_glucose_level.json.gz");
 const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
@@ -147,9 +147,6 @@ nodeSlider.noUiSlider.on("update", function (values) {
     filterByNodeColorAndEdgeSize();
 });
 
-
-
-
 // --------------------------------------------------------
 // Modify the filter function to handle upper and lower bounds
 // --------------------------------------------------------
@@ -201,7 +198,6 @@ function filterByNodeColorAndEdgeSize() {
     // Reapply layout after filtering
     cy.layout(getLayoutOptions()).run();
 }
-
 
 // =============================================================================
 // 遺伝型・正特異的フィルタリング関数
