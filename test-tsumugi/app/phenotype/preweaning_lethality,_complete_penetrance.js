@@ -39,6 +39,7 @@ const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map
 const nodeMin = Math.min(...nodeSizes);
 const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
+
 const edgeMax = Math.max(...edgeSizes);
 
 // ############################################################################
@@ -194,7 +195,7 @@ let target_phenotype = "preweaning lethality, complete penetrance";
 
 // フィルタリング関数のラッパー
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterElements);
+    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterByNodeColorAndEdgeSize);
 }
 
 // フォーム変更時にフィルタリング関数を実行

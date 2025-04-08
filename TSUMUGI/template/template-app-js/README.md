@@ -9,6 +9,10 @@
   - mode="non-binary-phenotype"のとき、`node_color_slider.js`を挿入
   - それ以外は削除
 
+- XXX_EDGE_MAX
+  - 遺伝子シンボルのとき、`edgeMax_on_genesymbol.js`を挿入
+  - それ以外は`const edgeMax = Math.max(...edgeSizes);`に置換
+
 - XXX_FILTER_ELEMENTS
     - 表現型のとき、`filterByNodeColorAndEdgeSize_phenotype.js`を挿入
     - 遺伝子シンボルのとき、`filterByNodeColorAndEdgeSize_genesymbol.js`を挿入
