@@ -11,19 +11,9 @@ import { setupGeneSearch } from "../js/searcher.js";
 // Input handling
 // ############################################################################
 
-// localStorage からデータを取得
+// elementsはlocalStorage からデータを取得
 const elements = JSON.parse(localStorage.getItem("elements"));
-
-// REMOVE_FROM_THIS_LINE
-const url_map_symbol_to_id =
-    "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json";
-// REMOVE_TO_THIS_LINE
-
-/* REMOVE_THIS_LINE
-const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
-REMOVE_THIS_LINE */
-
-const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
+const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
 // Cytoscape handling
@@ -116,7 +106,7 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 // Modify the filter function to handle upper and lower bounds
 // --------------------------------------------------------
 
-function filterElements() {
+function filterByNodeColorAndEdgeSize() {
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
@@ -134,9 +124,6 @@ function filterElements() {
 
         edge.style("display", isEdgeVisible ? "element" : "none");
     });
-
-    // calculateConnectedComponentsを利用して連結成分を取得
-    const connected_component = calculateConnectedComponents(cy);
 
     // 連結成分を取得し、node_color === 1 を含むものだけ残す
     const connectedComponents = calculateConnectedComponents(cy);
@@ -187,7 +174,7 @@ noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, 
 edgeSlider.noUiSlider.on("update", function (values) {
     const intValues = values.map((value) => Math.round(value));
     document.getElementById("edge-size-value").textContent = intValues.join(" - ");
-    filterElements();
+    filterByNodeColorAndEdgeSize();
 });
 
 // ############################################################################
@@ -198,7 +185,7 @@ let target_phenotype = "";
 
 // フィルタリング関数のラッパー
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterElements);
+    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterByNodeColorAndEdgeSize);
 }
 
 // フォーム変更時にフィルタリング関数を実行

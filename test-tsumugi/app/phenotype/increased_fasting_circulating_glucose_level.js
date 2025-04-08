@@ -1,6 +1,7 @@
 import { exportGraphAsPNG, exportGraphAsCSV } from "../js/exporter.js";
 import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
 import { removeTooltips, showTooltip } from "../js/tooltips.js";
+import { calculateConnectedComponents } from "../js/components.js";
 import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
 import { loadJSONGz, loadJSON } from "../js/data_loader.js";
@@ -25,11 +26,8 @@ import { setupGeneSearch } from "../js/searcher.js";
 
 // REMOVE_TO_THIS_LINE
 
-const url_elements = "../../data/phenotype/increased_fasting_circulating_glucose_level.json.gz";
-const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
-
-const elements = loadJSONGz(url_elements);
-const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
+const elements = loadJSONGz("../../data/phenotype/increased_fasting_circulating_glucose_level.json.gz");
+const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
 // Cytoscape Elements handler
@@ -41,15 +39,12 @@ const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map
 const nodeMin = Math.min(...nodeSizes);
 const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
+
 const edgeMax = Math.max(...edgeSizes);
 
-function getLayoutOptions() {
-    return {
-        name: currentLayout,
-        nodeRepulsion: nodeRepulsionValue,
-        componentSpacing: componentSpacingValue,
-    };
-}
+// ############################################################################
+// Cytoscapeの初期化
+// ############################################################################
 
 let currentLayout = "cose";
 
@@ -69,6 +64,14 @@ let componentSpacingValue = scaleToOriginalRange(
     componentSpacingMin,
     componentSpacingMax,
 );
+
+function getLayoutOptions() {
+    return {
+        name: currentLayout,
+        nodeRepulsion: nodeRepulsionValue,
+        componentSpacing: componentSpacingValue,
+    };
+}
 
 const cy = cytoscape({
     container: document.querySelector(".cy"),
@@ -120,15 +123,40 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 // =============================================================================
 
 // --------------------------------------------------------
+// Edge size slider for Phenotypes similarity
+// --------------------------------------------------------
+
+// Initialization of the Edge size slider
+const edgeSlider = document.getElementById("filter-edge-slider");
+noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
+
+// Initialization of the Node color slider
+const nodeSlider = document.getElementById("filter-node-slider");
+noUiSlider.create(nodeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
+
+// Update the slider values when the sliders are moved
+edgeSlider.noUiSlider.on("update", function (values) {
+    const intValues = values.map((value) => Math.round(value));
+    document.getElementById("edge-size-value").textContent = intValues.join(" - ");
+    filterByNodeColorAndEdgeSize();
+});
+
+// Update the slider values when the sliders are moved
+nodeSlider.noUiSlider.on("update", function (values) {
+    const intValues = values.map((value) => Math.round(value));
+    document.getElementById("node-color-value").textContent = intValues.join(" - ");
+    filterByNodeColorAndEdgeSize();
+});
+
+// --------------------------------------------------------
 // Modify the filter function to handle upper and lower bounds
 // --------------------------------------------------------
 
-let nodeSliderValues = [1, 10];
+function filterByNodeColorAndEdgeSize() {
+    let nodeSliderValues = [1, 10];
 
-function filterElements() {
-    // REMOVE_FROM_THIS_LINE
-    nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat);
-    // REMOVE_TO_THIS_LINE
+    nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat); // REMOVE_THIS_LINE_IF_BINARY_PHENOTYPE
+
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
 
     const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax);
@@ -172,48 +200,15 @@ function filterElements() {
     cy.layout(getLayoutOptions()).run();
 }
 
-// --------------------------------------------------------
-// Initialization and Update of the Slider for Phenotypes similarity
-// --------------------------------------------------------
-const edgeSlider = document.getElementById("filter-edge-slider");
-noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
-
-// REMOVE_FROM_THIS_LINE
-// --------------------------------------------------------
-// Initialization of the Slider for Phenotypes severity
-// --------------------------------------------------------
-const nodeSlider = document.getElementById("filter-node-slider");
-noUiSlider.create(nodeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
-// REMOVE_TO_THIS_LINE
-
-// --------------------------------------------------------
-// Update of the Slider
-// --------------------------------------------------------
-
-edgeSlider.noUiSlider.on("update", function (values) {
-    const intValues = values.map((value) => Math.round(value));
-    document.getElementById("edge-size-value").textContent = intValues.join(" - ");
-    filterElements();
-});
-
-// REMOVE_FROM_THIS_LINE
-nodeSlider.noUiSlider.on("update", function (values) {
-    const intValues = values.map((value) => Math.round(value));
-    document.getElementById("node-color-value").textContent = intValues.join(" - ");
-    filterElements();
-});
-// REMOVE_TO_THIS_LINE
-
 // =============================================================================
 // 遺伝型・正特異的フィルタリング関数
 // =============================================================================
 
-let target_phenotype = "";
-target_phenotype = "increased_fasting_circulating_glucose_level".replace(/_/g, " ");
+let target_phenotype = "increased fasting circulating glucose level";
 
 // フィルタリング関数のラッパー
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterElements);
+    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterByNodeColorAndEdgeSize);
 }
 
 // フォーム変更時にフィルタリング関数を実行

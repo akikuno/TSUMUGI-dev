@@ -23,37 +23,31 @@ import { setupGeneSearch } from "../js/searcher.js";
 
 // const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
 
-const url_elements =
-    "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/Rab10.json.gz";
-const url_map_symbol_to_id =
-    "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json";
-
 // REMOVE_TO_THIS_LINE
 
-/* REMOVE_THIS_LINE
 const url_elements = "../../data/genesymbol/XXX_genesymbol.json.gz";
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
-REMOVE_THIS_LINE */
 
 const elements = loadJSONGz(url_elements);
 const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
 
 // ############################################################################
-// Cytoscape handling
+// Cytoscape Elements handler
 // ############################################################################
 
+const nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
 const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
 
-const nodeMin = 0;
-const nodeMax = 1;
+const nodeMin = Math.min(...nodeSizes);
+const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
 
-// ############################################################################
+// ============================================================================
 // edgeMaxの計算：
-// node_color === 1 のノードに接続されたエッジの中で最大のedge_sizeを取得
-// その値をedgeMaxとする
-// その後、elementsのedge_sizeをedgeMaxを上限として調整
-// ############################################################################
+// 1. node_color === 1 のノードに接続されたエッジの中で最大のedge_sizeを取得
+// 2. その値をedgeMaxとする
+// 3. その後、elementsのedge_sizeをedgeMaxを上限として調整
+// ============================================================================
 
 // node_color === 1 のノード(targetGene)を1つだけ取得
 const targetGene = elements.find((ele) => ele.data.node_color === 1);
@@ -142,7 +136,7 @@ const cy = cytoscape({
 });
 
 // ############################################################################
-// Visualization handling
+// Control panel handler
 // ############################################################################
 
 // --------------------------------------------------------

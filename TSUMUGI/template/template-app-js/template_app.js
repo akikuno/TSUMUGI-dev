@@ -26,7 +26,7 @@ import { setupGeneSearch } from "../js/searcher.js";
 
 // REMOVE_TO_THIS_LINE
 
-const elements = loadJSONGz("../../data/genesymbol/Ap3b2.json.gz");
+const elements = XXX_ELEMENTS;
 const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
@@ -40,35 +40,7 @@ const nodeMin = Math.min(...nodeSizes);
 const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
 
-// ============================================================================
-// edgeMaxの計算：
-// 1. node_color === 1 のノードに接続されたエッジの中で最大のedge_sizeを取得
-// 2. その値をedgeMaxとする
-// 3. その後、elementsのedge_sizeをedgeMaxを上限として調整
-// ============================================================================
-
-// node_color === 1 のノード(targetGene)を1つだけ取得
-const targetGene = elements.find((ele) => ele.data.node_color === 1);
-
-// targetGeneの ID (遺伝子シンボル)を取得
-const targetGeneId = targetGene?.data?.id;
-
-// targetGeneに接続されているエッジだけ抽出
-const connectedEdges = elements.filter((ele) => ele.data.source === targetGeneId || ele.data.target === targetGeneId);
-
-// そのエッジたちの edge_size を集めて最大値を取得
-const edgeSizesTargetGene = connectedEdges
-    .filter((edge) => edge.data.edge_size !== undefined)
-    .map((edge) => edge.data.edge_size);
-
-const edgeMax = Math.max(...edgeSizesTargetGene);
-
-// elementsに含まれる全edge_sizeの最大値を、edgeMaxを上限とする
-connectedEdges.forEach((edge) => {
-    if (edge.data.edge_size > edgeMax) {
-        edge.data.edge_size = edgeMax;
-    }
-});
+XXX_EDGE_MAX
 
 // ############################################################################
 // Cytoscapeの初期化
@@ -158,6 +130,8 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 const edgeSlider = document.getElementById("filter-edge-slider");
 noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
 
+XXX_NODE_COLOR_INITIALIZATION
+
 // Update the slider values when the sliders are moved
 edgeSlider.noUiSlider.on("update", function (values) {
     const intValues = values.map((value) => Math.round(value));
@@ -165,48 +139,19 @@ edgeSlider.noUiSlider.on("update", function (values) {
     filterByNodeColorAndEdgeSize();
 });
 
+XXX_NODE_COLOR_UPDATE
+
 // --------------------------------------------------------
 // Modify the filter function to handle upper and lower bounds
 // --------------------------------------------------------
 
-function filterByNodeColorAndEdgeSize() {
-    const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
-    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
-    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
-
-    // 1. edge_size条件を満たすエッジを取得
-    const visibleEdges = cy.edges().filter((edge) => {
-        const edgeSize = edge.data("edge_size");
-        return edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
-    });
-
-    // 2. 条件を満たしたエッジ＋そのエッジに接続しているノードたちを取得
-    const candidateElements = visibleEdges.union(visibleEdges.connectedNodes());
-
-    // 3. 連結成分を取得
-    const components = candidateElements.components();
-
-    // 4. 一旦すべて非表示にしてから…
-    cy.elements().forEach((ele) => ele.style("display", "none"));
-
-    // 5. node_color === 1 を含むクラスタだけ表示
-    components.forEach((comp) => {
-        const hasColor1 = comp.nodes().some((node) => node.data("node_color") === 1);
-        if (hasColor1) {
-            comp.nodes().forEach((node) => node.style("display", "element"));
-            comp.edges().forEach((edge) => edge.style("display", "element"));
-        }
-    });
-
-    // 6. レイアウト再適用
-    cy.layout(getLayoutOptions()).run();
-}
+XXX_FILTER_BY_NODE_COLOR_AND_EDGE_SIZE
 
 // =============================================================================
 // 遺伝型・正特異的フィルタリング関数
 // =============================================================================
 
-let target_phenotype = "";
+let target_phenotype = "XXX_TARGET_PHENOTYPE";
 
 // フィルタリング関数のラッパー
 function applyFiltering() {
@@ -284,7 +229,7 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = "TSUMUGI_Ap3b2";
+const file_name = "TSUMUGI_XXX_NAME";
 
 // --------------------------------------------------------
 // PNG Exporter

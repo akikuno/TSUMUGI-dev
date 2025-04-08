@@ -15,8 +15,8 @@ XX_JS_FILE_NAME: name of the JS file to be loaded (Phenotype, Gene, or network_g
 ## header.html
 
 
-if mode="gene-symbols":
-    XX_TITLE = "gene symbols"
+if mode="Gene List":
+    XX_TITLE = "gene list"
 else:
     XX_TITLE = '''
     <a href="XXX_impc_url" target="_blank">XXX_mp_term_name_space</a>

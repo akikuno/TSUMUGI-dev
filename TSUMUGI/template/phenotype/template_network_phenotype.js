@@ -25,15 +25,8 @@ import { setupGeneSearch } from "../js/searcher.js";
 
 // REMOVE_TO_THIS_LINE
 
-const url_elements = // REMOVE_THIS_LINE
-    "https://raw.githubusercontent.com/akikuno/TSUMUGI/refs/heads/main/notebooks/data/json/increased_circulating_glucose_level.json.gz"; // REMOVE_THIS_LINE
-const url_map_symbol_to_id = // REMOVE_THIS_LINE
-    "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1481158ce41ef5165be3c0e17d4b83b6d265b783/gist_marker_symbol_accession_id.json"; // REMOVE_THIS_LINE
-
-/* REMOVE_THIS_LINE
 const url_elements = "../../data/phenotype/XXX_mp_term_name_underscore.json.gz";
 const url_map_symbol_to_id = "../../data/marker_symbol_accession_id.json";
-REMOVE_THIS_LINE */
 
 const elements = loadJSONGz(url_elements);
 const map_symbol_to_id = loadJSON(url_map_symbol_to_id);
@@ -50,13 +43,9 @@ const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
 const edgeMax = Math.max(...edgeSizes);
 
-function getLayoutOptions() {
-    return {
-        name: currentLayout,
-        nodeRepulsion: nodeRepulsionValue,
-        componentSpacing: componentSpacingValue,
-    };
-}
+// ############################################################################
+// Cytoscapeの初期化
+// ############################################################################
 
 let currentLayout = "cose";
 
@@ -76,6 +65,14 @@ let componentSpacingValue = scaleToOriginalRange(
     componentSpacingMin,
     componentSpacingMax,
 );
+
+function getLayoutOptions() {
+    return {
+        name: currentLayout,
+        nodeRepulsion: nodeRepulsionValue,
+        componentSpacing: componentSpacingValue,
+    };
+}
 
 const cy = cytoscape({
     container: document.querySelector(".cy"),
@@ -194,7 +191,7 @@ noUiSlider.create(nodeSlider, { start: [1, 10], connect: true, range: { min: 1, 
 // REMOVE_TO_THIS_LINE
 
 // --------------------------------------------------------
-// Update of the Slider
+// Update the slider values when the sliders are moved
 // --------------------------------------------------------
 
 edgeSlider.noUiSlider.on("update", function (values) {
