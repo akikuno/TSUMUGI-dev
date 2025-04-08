@@ -33,14 +33,21 @@ const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 // Cytoscape Elements handler
 // ############################################################################
 
-const nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
-const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
+// node_color と edge_size の値を抽出
+const nodeSizes = elements.flatMap(ele => ele.data.node_color !== undefined ? [ele.data.node_color] : []);
+const edgeSizes = elements.flatMap(ele => ele.data.edge_size !== undefined ? [ele.data.edge_size] : []);
 
-const nodeMin = Math.min(...nodeSizes);
-const nodeMax = Math.max(...nodeSizes);
-const edgeMin = Math.min(...edgeSizes);
+// 共通関数：2番目の最小／最大値を取得（ユニーク＆ソート込み）
+function getSecondExtremeValue(arr, type = "min") {
+    const sorted = [...new Set(arr)].sort((a, b) => (type === "min" ? a - b : b - a));
+    return sorted.length > 1 ? sorted[1] : sorted[0];
+}
 
-const edgeMax = Math.max(...edgeSizes);
+// 2番目に小さい／大きい値を取得
+const nodeMin = getSecondExtremeValue(nodeSizes, "min");
+const nodeMax = getSecondExtremeValue(nodeSizes, "max");
+const edgeMin = getSecondExtremeValue(edgeSizes, "min");
+const edgeMax = getSecondExtremeValue(edgeSizes, "max");
 
 // ############################################################################
 // Cytoscapeの初期化
