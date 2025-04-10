@@ -23,10 +23,13 @@
 
 # v0.2.2 (2025-04-DD)
 
-## 🌟 New Features
+<!-- ## 🌟 New Features -->
 
-+ Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)]
+<!-- + Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)] -->
 
+## 🖼️ User Interface
+
++ Added support for smartphone operation. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b5ad78846fbbcca05d7626c900c7afa42360eab)]
 
 ## 📝 Documentation
 
