@@ -33,21 +33,72 @@ const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 // Cytoscape Elements handler
 // ############################################################################
 
-// node_color と edge_size の値を抽出
-const nodeSizes = elements.flatMap(ele => ele.data.node_color !== undefined ? [ele.data.node_color] : []);
-const edgeSizes = elements.flatMap(ele => ele.data.edge_size !== undefined ? [ele.data.edge_size] : []);
+let nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
+let nodeMin = Math.min(...nodeSizes);
+let nodeMax = Math.max(...nodeSizes);
 
-// 共通関数：2番目の最小／最大値を取得（ユニーク＆ソート込み）
-function getSecondExtremeValue(arr, type = "min") {
-    const sorted = [...new Set(arr)].sort((a, b) => (type === "min" ? a - b : b - a));
-    return sorted.length > 1 ? sorted[1] : sorted[0];
-}
+// ==========================================================
+// スライダーを上限値・下限値に合わせても、最低１つの遺伝子ペアが可視化できるようにする. Issue #72
+// ==========================================================
 
-// 2番目に小さい／大きい値を取得
-const nodeMin = getSecondExtremeValue(nodeSizes, "min");
-const nodeMax = getSecondExtremeValue(nodeSizes, "max");
-const edgeMin = getSecondExtremeValue(edgeSizes, "min");
-const edgeMax = getSecondExtremeValue(edgeSizes, "max");
+// Step 1: node_color を ID にマップし、ランクをつける
+const nodeColorMap = new Map();
+elements.forEach((ele) => {
+    if (ele.data.node_color !== undefined && ele.data.id !== undefined) {
+        nodeColorMap.set(ele.data.id, ele.data.node_color);
+    }
+});
+
+// ランク付け
+const sortedNodeColors = [...new Set([...nodeColorMap.values()])].sort((a, b) => a - b);
+const nodeColorToRank = new Map();
+sortedNodeColors.forEach((val, idx) => {
+    nodeColorToRank.set(val, idx + 1); // ランクは1スタート
+});
+
+// Step 2: エッジごとに source/target のランク合計と、元の値を保存
+const edgeRankPairs = [];
+
+elements.forEach((ele) => {
+    if (ele.data.source && ele.data.target) {
+        const sourceVal = nodeColorMap.get(ele.data.source);
+        const targetVal = nodeColorMap.get(ele.data.target);
+
+        if (sourceVal !== undefined && targetVal !== undefined) {
+            const sourceRank = nodeColorToRank.get(sourceVal);
+            const targetRank = nodeColorToRank.get(targetVal);
+            const rankSum = sourceRank + targetRank;
+
+            edgeRankPairs.push({
+                rankSum: rankSum,
+                minVal: Math.min(sourceVal, targetVal),
+                maxVal: Math.max(sourceVal, targetVal),
+            });
+        }
+    }
+});
+
+// Step 3: 最小スコアのペアの max → nodeMin、最大スコアのペアの min → nodeMax
+const minRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum < b.rankSum ? a : b));
+const maxRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum > b.rankSum ? a : b));
+
+nodeMin = minRankEdge.maxVal;
+nodeMax = maxRankEdge.minVal;
+
+// Step 4: node_color を min/max にクリップ
+elements.forEach((ele) => {
+    if (ele.data.node_color !== undefined) {
+        if (ele.data.node_color <= nodeMin) {
+            ele.data.node_color = nodeMin;
+        } else if (ele.data.node_color >= nodeMax) {
+            ele.data.node_color = nodeMax;
+        }
+    }
+});
+
+const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
+const edgeMin = Math.min(...edgeSizes);
+const edgeMax = Math.max(...edgeSizes);
 
 // ############################################################################
 // Cytoscapeの初期化

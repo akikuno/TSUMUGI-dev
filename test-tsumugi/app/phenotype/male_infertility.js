@@ -33,13 +33,12 @@ const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 // Cytoscape Elements handler
 // ############################################################################
 
-const nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
+let nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
+let nodeMin = Math.min(...nodeSizes);
+let nodeMax = Math.max(...nodeSizes);
+
 const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
-
-const nodeMin = Math.min(...nodeSizes);
-const nodeMax = Math.max(...nodeSizes);
 const edgeMin = Math.min(...edgeSizes);
-
 const edgeMax = Math.max(...edgeSizes);
 
 // ############################################################################
