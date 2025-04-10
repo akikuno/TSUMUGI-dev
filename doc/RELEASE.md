@@ -28,7 +28,6 @@
 + Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)]
 
 
-
 ## 📝 Documentation
 
 + Publish the complete list of currently available phenotypes and genes. Issue: [#34](https://github.com/akikuno/TSUMUGI-dev/issues/34). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/faa2b42eee54446d72c3c47acf9cdf6b04b5685c)]
@@ -37,7 +36,15 @@
 
 + Use `inherit` for tab button text color to maintain consistency and prevent the default blue text styling on macOS. Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)]
 
-+ Unify HTML templates. Issue [#68](https://github.com/akikuno/TSUMUGI-dev/issues/68). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/70)]
++ Unify HTML templates. Issue: [#68](https://github.com/akikuno/TSUMUGI-dev/issues/68). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/70)]
+
++ Unify JavaScript templates. Issue: [#69](https://github.com/akikuno/TSUMUGI-dev/issues/69). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/73)]
+
+## 🐛 Bug Fixes
+
++ Adjusts the severity slider behavior to ensure that at least one gene pair is always visible, even when the slider is moved to its minimum or maximum. Issue: [#72](https://github.com/akikuno/TSUMUGI-dev/issues/72). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ce38b815c65db3a7e4c80191160fdd0aaa980944)]
+
++ Since the link button appeared blue on macOS, it has been changed to black (#333). Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/5242c14be4bb41ec3f6b67a0357759922ae5add0)]
 
 <!-- ############################################################# # -->
 
