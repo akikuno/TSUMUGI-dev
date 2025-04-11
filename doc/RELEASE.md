@@ -29,7 +29,9 @@
 
 ## 🖼️ User Interface
 
-+ Added support for smartphone operation. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b5ad78846fbbcca05d7626c900c7afa42360eab)]
++ Add support for smartphone operation. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b5ad78846fbbcca05d7626c900c7afa42360eab)]
+
++ Redesigned the control panel. Issue: [#65](https://github.com/akikuno/TSUMUGI-dev/issues/65) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ae7a9c1f80e2591a44a108605858258aebd5aea8)]
 
 ## 📝 Documentation
 
