@@ -14,42 +14,57 @@
 <!-- ## TODO -->
 
 <!--
-- いま利用できる表現型および遺伝子の全リストを公開する #34
+<!-- ## 🌟 New Features -->
+
+<!-- + Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)] -->
+
 - Edgeの太さがすべて同じに見える #27
 - 類似度のフィルターをなだらかに段階的にしたい #29
 -->
 
 <!-- ############################################################# # -->
 
-# v0.2.2 (2025-04-DD)
-
-<!-- ## 🌟 New Features -->
-
-<!-- + Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)] -->
+# v0.2.2 (2025-04-11)
 
 ## 🖼️ User Interface
 
-+ Add support for smartphone operation. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b5ad78846fbbcca05d7626c900c7afa42360eab)]
+- Add support for smartphone operation.  
+  [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4b5ad78846fbbcca05d7626c900c7afa42360eab)
 
-+ Redesigned the control panel. Issue: [#65](https://github.com/akikuno/TSUMUGI-dev/issues/65) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ae7a9c1f80e2591a44a108605858258aebd5aea8)]
+- Redesign the control panel for improved usability.  
+  Issue: [#65](https://github.com/akikuno/TSUMUGI-dev/issues/65)  
+  [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ae7a9c1f80e2591a44a108605858258aebd5aea8)
 
 ## 📝 Documentation
 
-+ Publish the complete list of currently available phenotypes and genes. Issue: [#34](https://github.com/akikuno/TSUMUGI-dev/issues/34). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/faa2b42eee54446d72c3c47acf9cdf6b04b5685c)]
+- Publish a complete list of currently available phenotypes and genes.  
+  Issue: [#34](https://github.com/akikuno/TSUMUGI-dev/issues/34)  
+  [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/faa2b42eee54446d72c3c47acf9cdf6b04b5685c)
 
 ## 🔧 Maintenance
 
-+ Use `inherit` for tab button text color to maintain consistency and prevent the default blue text styling on macOS. Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)]
+- Use `inherit` for tab button text color to ensure consistent appearance and prevent default blue styling on macOS.  
+  Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67)  
+  [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/354b82cbb3200d164d5ff74878c5be74b8face07)
 
-+ Unify HTML templates. Issue: [#68](https://github.com/akikuno/TSUMUGI-dev/issues/68). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/70)]
+- Unify HTML templates for better maintainability.  
+  Issue: [#68](https://github.com/akikuno/TSUMUGI-dev/issues/68)  
+  [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/70)
 
-+ Unify JavaScript templates. Issue: [#69](https://github.com/akikuno/TSUMUGI-dev/issues/69). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/73)]
+- Unify JavaScript templates to reduce redundancy.  
+  Issue: [#69](https://github.com/akikuno/TSUMUGI-dev/issues/69)  
+  [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/73)
 
 ## 🐛 Bug Fixes
 
-+ Adjusts the severity slider behavior to ensure that at least one gene pair is always visible, even when the slider is moved to its minimum or maximum. Issue: [#72](https://github.com/akikuno/TSUMUGI-dev/issues/72). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ce38b815c65db3a7e4c80191160fdd0aaa980944)]
+- Adjust the severity slider behavior to always keep at least one gene pair visible, even at minimum or maximum values.  
+  Issue: [#72](https://github.com/akikuno/TSUMUGI-dev/issues/72)  
+  [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ce38b815c65db3a7e4c80191160fdd0aaa980944)
 
-+ Since the link button appeared blue on macOS, it has been changed to black (#333). Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/5242c14be4bb41ec3f6b67a0357759922ae5add0)]
+- Change the link button font color from blue to black (#333) on macOS for consistent styling.  
+  Issue: [#67](https://github.com/akikuno/TSUMUGI-dev/issues/67)  
+  [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/5242c14be4bb41ec3f6b67a0357759922ae5add0)
+
 
 <!-- ############################################################# # -->
 
