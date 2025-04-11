@@ -93,6 +93,9 @@ a {
     position: relative;
     width: 100%;
     max-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* Input style */
@@ -117,7 +120,7 @@ a {
     font-size: 14px;
     border: none;
     border-radius: 6px;
-    background-color: #ffebd8;
+    background-color: #ccc;
     cursor: pointer;
 }
 
@@ -155,19 +158,75 @@ ul.suggestions li:hover {
 /* ======================================================== */
 
 .checkbox-container {
-    display: block;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
-.checkbox-container label {
+.checkbox-container form {
     display: flex;
-    align-items: center;
-    cursor: pointer;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.checkbox-container input[type="checkbox"] {
-    margin-right: 5px;
-    accent-color: #ff8c00;
+/* 丸型チェックボックススタイル */
+.round-checkbox {
+    position: relative;
+    margin: 8px 0;
+}
+
+.round-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.round-checkbox input[type="checkbox"] + label {
+    position: relative;
+    padding-left: 35px;
+    line-height: 24px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.round-checkbox input[type="checkbox"] + label:before {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: "";
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid #aaa;
+    box-sizing: border-box;
+}
+
+/* チェック時だけ黄色背景に */
+.round-checkbox input[type="checkbox"]:checked + label:before {
+    background-color: #ff8c00;
+}
+
+.round-checkbox input[type="checkbox"]:checked + label:after {
+    display: block;
+    position: absolute;
+    content: "";
+    width: 12px;
+    height: 5px;
+    border-bottom: 3px solid #333;
+    border-left: 3px solid #333;
+    transform: rotate(-45deg);
+    top: 8px;
+    left: 6px;
+}
+
+/* ======================================================== */
+/* Exporter */
+/* ======================================================== */
+.exporter-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 
 /* ======================================================== */

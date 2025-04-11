@@ -203,6 +203,17 @@ createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
 // Slider for Node repulsion
 // --------------------------------------------------------
 
+const layoutDropdown = document.getElementById("layout-dropdown");
+const nodeRepulsionContainer = document.getElementById("node-repulsion-container");
+
+function updateNodeRepulsionVisibility() {
+    const selectedLayout = layoutDropdown.value;
+    nodeRepulsionContainer.style.display = selectedLayout === "cose" ? "block" : "none";
+}
+
+updateNodeRepulsionVisibility();
+layoutDropdown.addEventListener("change", updateNodeRepulsionVisibility);
+
 createSlider("nodeRepulsion-slider", 5, 1, 10, 1, (intValues) => {
     nodeRepulsionValue = scaleToOriginalRange(intValues, nodeRepulsionMin, nodeRepulsionMax);
     componentSpacingValue = scaleToOriginalRange(intValues, componentSpacingMin, componentSpacingMax);
