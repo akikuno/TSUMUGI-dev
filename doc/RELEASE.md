@@ -13,11 +13,11 @@
 
 <!-- ## TODO -->
 
-<!--
 <!-- ## 🌟 New Features -->
 
 <!-- + Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)] -->
 
+<!--
 - Edgeの太さがすべて同じに見える #27
 - 類似度のフィルターをなだらかに段階的にしたい #29
 -->
