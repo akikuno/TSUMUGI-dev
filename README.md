@@ -77,7 +77,8 @@ The file includes:
 
 After input is submitted, the page automatically transitions to a network view.
 
-Only **gene pairs that share three or more abnormal phenotypes** are visualized.
+> [!IMPORTANT]
+> **Gene pairs that share three or more abnormal phenotypes** are visualized.
 
 ### Nodes
 
