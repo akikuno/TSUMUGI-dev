@@ -72,6 +72,27 @@ The file includes:
 > [!CAUTION]
 > The file size is approximately 100MB. Downloading may take some time.
 
+You can load the data using either Polars or Pandas, as shown below:  
+
+#### Polars
+
+```python
+import polars as pl
+df_tsumugi = pl.read_csv("TSUMUGI_raw_data.csv.gz")
+
+df_tsumugi = df_tsumugi.with_columns([
+    pl.col("List of shared phenotypes").str.json_decode().alias("List of shared phenotypes")
+  ])
+```
+
+#### Pandas
+
+```python
+import json
+import pandas as pd
+df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
+    converters={"List of shared phenotypes": json.loads})
+```
 
 ## 🌐 Network Visualization
 

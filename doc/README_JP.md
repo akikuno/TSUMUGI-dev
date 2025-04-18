@@ -56,7 +56,7 @@ TSUMUGIで現在検索可能な遺伝子名の一覧はこちら：
 > `Too many genes submitted. Please limit the number to 200 or fewer.` というアラートが表示され、ブラウザの負荷を防ぐため処理が停止されます。
 
 
-### 📥 データのダウンロード
+### 📥 生データ(`TSUMUGI_raw_data.csv.gz`)のダウンロード
 
 遺伝子ペアにおける表現型類似度の生データ（CSV形式・gzip圧縮）をダウンロードすることができます。  
 
@@ -69,6 +69,28 @@ TSUMUGIで現在検索可能な遺伝子名の一覧はこちら：
 
 > [!CAUTION]
 > ファイルサイズは約100MBあります。ダウンロードに時間がかかる場合があります。
+
+Polars または Pandas を用いて、次のようにデータを読み込むことができます：  
+
+#### Polars
+
+```python
+import polars as pl
+df_tsumugi = pl.read_csv("TSUMUGI_raw_data.csv.gz")
+
+df_tsumugi = df_tsumugi.with_columns([
+    pl.col("List of shared phenotypes").str.json_decode().alias("List of shared phenotypes")
+  ])
+```
+
+#### Pandas
+
+```python
+import json
+import pandas as pd
+df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
+    converters={"List of shared phenotypes": json.loads})
+```
 
 ## 🌐 ネットワーク描出
 
