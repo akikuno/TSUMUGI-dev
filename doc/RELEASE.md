@@ -15,6 +15,7 @@
 
 <!--
 キーとなる表現型を持っていないのに、線が伸びている遺伝子群がある #54
+Enable the exclusion or extraction of specific phenotypes from the network #36
 -->
 
 <!-- ############################################################ # -->
