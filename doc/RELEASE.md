@@ -28,7 +28,7 @@
 
 + Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20).
   + [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)]
-  + [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)]
+  + [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/af287d8ae1867d9863c015d143a6dcade586b970)]
 
 + Set thresholds for visualization considering similarity. Issue [#77](https://github.com/akikuno/TSUMUGI-dev/issues/77). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/db661bb643df5772ad313ace24bb7063780920fc)].
   + Thanks to @aki2274 for reporting this issue!
