@@ -152,9 +152,11 @@ XXX_FILTER_BY_NODE_COLOR_AND_EDGE_SIZE
 // 遺伝型・性差・ライフステージ特異的フィルタリング関数
 // =============================================================================
 
+let target_phenotype = "XXX_PHENOTYPE";
+
 // フィルタリング関数のラッパー
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, cy, filterByNodeColorAndEdgeSize);
+    filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterByNodeColorAndEdgeSize);
 }
 
 // フォーム変更時にフィルタリング関数を実行
@@ -227,7 +229,7 @@ createSlider("nodeRepulsion-slider", 5, 1, 10, 1, (intValues) => {
 
 // Show tooltip on tap
 cy.on("tap", "node, edge", function (event) {
-    showTooltip(event, cy, map_symbol_to_id);
+    showTooltip(event, cy, map_symbol_to_id, target_phenotype);
 });
 
 // Hide tooltip when tapping on background
