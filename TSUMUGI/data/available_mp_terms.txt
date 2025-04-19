@@ -88,6 +88,7 @@ abnormal midbrain development
 abnormal midbrain morphology
 abnormal motor capabilities coordination movement
 abnormal motor coordination balance
+abnormal mouth morphology
 abnormal nail morphology
 abnormal neural tube closure
 abnormal neural tube morphology
@@ -108,7 +109,7 @@ abnormal placenta vasculature
 abnormal pupil morphology
 abnormal QT variability
 abnormal radius morphology
-abnormal rectum morphology
+abnormal reproductive system morphology
 abnormal response to new environment
 abnormal response to tactile stimuli
 abnormal retina blood vessel morphology
@@ -334,6 +335,7 @@ hemorrhage
 hydrocephaly
 hydrometra
 hyperactivity
+hypoalgesia
 immune system phenotype
 impaired contextual conditioning behavior
 impaired cued conditioning behavior
@@ -346,7 +348,9 @@ increased airway resistance
 increased anxiety-related response
 increased basophil cell number
 increased blood urea nitrogen level
+increased blood uric acid level
 increased body length
+increased body weight
 increased bone mineral content
 increased bone mineral density
 increased bone trabecular spacing
@@ -354,6 +358,7 @@ increased brain size
 increased brain weight
 increased B cell number
 increased cardiac muscle contractility
+increased cardiac output
 increased cardiac stroke volume
 "increased CD4-positive, alpha-beta T cell number"
 "increased CD4-positive, CD25-positive, alpha-beta regulatory T cell number"
@@ -385,6 +390,7 @@ increased circulating phosphate level
 increased circulating potassium level
 increased circulating serum albumin level
 increased circulating sodium level
+increased circulating thyroxine level
 increased circulating total protein level
 increased circulating triglyceride level
 increased circulating unsaturated transferrin level
@@ -468,6 +474,7 @@ prenatal lethality
 prenatal lethality prior to heart atrial septation
 "preweaning lethality, complete penetrance"
 "preweaning lethality, incomplete penetrance"
+prolonged PQ interval
 prolonged PR interval
 prolonged QRS complex duration
 prolonged QT interval
@@ -476,6 +483,7 @@ prolonged ST segment
 protruding tongue
 respiratory system phenotype
 rib fusion
+scaly skin
 sclerocornea
 scoliosis
 shortened PQ interval
