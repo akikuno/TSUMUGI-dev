@@ -1,167 +1,208 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>male infertility</title>
-        <link rel="icon" href="../../image/tsumugi-favicon.ico" />
+    <title>male infertility</title>
+    <link rel="icon" href="../../image/tsumugi-favicon.ico" />
 
-        <!-- ============================= -->
-        <!-- JS -->
-        <!-- ============================= -->
-        <!-- noUiSlider -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" defer></script>
+    <!-- ============================= -->
+    <!-- JS -->
+    <!-- ============================= -->
+    <!-- noUiSlider -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" defer></script>
 
-        <!-- pako for reading gzip JSON -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
+    <!-- pako for reading gzip JSON -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
 
-        <!-- Cytoscape -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
+    <!-- Cytoscape -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
 
-        <!-- Custom JS -->
-        <script type="module" src="./male_infertility.js"></script>
-        <script type="module" src="../js/mobile_panel.js"></script>
+    <!-- Custom JS -->
+    <script type="module" src="./male_infertility.js"></script>
+    <script type="module" src="../js/mobile_panel.js"></script>
 
-        <!-- ============================= -->
-        <!-- CSS -->
-        <!-- ============================= -->
-        <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
-        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
-        <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
-        <link rel="stylesheet" href="../css/app.css" />
-    </head>
+    <!-- ============================= -->
+    <!-- CSS -->
+    <!-- ============================= -->
+    <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/app.css" />
+</head>
 
-    <body>
-        <header class="header-container">
-            <button id="menu-toggle" class="menu-toggle-icon">
-                <i class="fa-solid fa-sliders"></i>
-            </button>
-            <h1>
-                Phenotype-similarity gene network of <br />
-                <a href="https://www.mousephenotype.org/data/phenotypes/MP:0001925" target="_blank">male infertility</a>
-            </h1>
-        </header>
 
-        <div class="body-container">
-            <div class="control-panel-container">
-                <button id="close-panel" class="close-button">✕</button>
+<body>
+    <header class="header-container">
+    <button id="menu-toggle" class="menu-toggle-icon">
+        <i class="fa-solid fa-sliders"></i>
+    </button>
+    <h1>
+        Phenotype-similarity gene network of <br />
+        <a href='https://www.mousephenotype.org/data/phenotypes/MP:0001925' target='_blank'>male infertility</a>
+    </h1>
+</header>
 
-                <!-- ===================================== -->
+
+    <div class="body-container">
+        <div class="control-panel-container">
+    <button id="close-panel" class="close-button">✕</button>
+
+    <!-- ===================================== -->
+    <!-- Slider for phenotype metrics -->
+    <!-- ===================================== -->
+
+    <!-- Slider for phenotypes similarity -->
+    <div class="panel-section">
+        <div class="panel-title"><i class="fa-solid fa-sliders"></i> Phenotypic Metrics</div>
+
+        <div class="slider-container">
+            <span class="control-label" style="display: block">
+                Phenotypes similarity:
+                <span id="edge-size-value"> 1 -10 </span>
+            </span>
+            <div class="slider-element" id="filter-edge-slider"></div>
+        </div>
+
+        
+
+        <!-- ===================================== -->
+        <!-- Filter of Genotype / Sex / Life-stage -->
+        <!-- ===================================== -->
+        <div class="panel-section">
+            <div class="panel-title">
+                <i class="fa-solid fa-dna"></i>
+                Biological filters
+            </div>
+
+            <div class="checkbox-container">
+                <span>Genotype</span>
+                <form id="genotype-filter-form">
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="homo" value="Homo" checked />
+                        <label for="homo">Homo</label>
+                    </div>
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="hetero" value="Hetero" checked />
+                        <label for="hetero">Hetero</label>
+                    </div>
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="hemi" value="Hemi" checked />
+                        <label for="hemi">Hemi</label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="checkbox-container">
+                <span>Sex</span>
+                <form id="sex-filter-form">
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="female" value="Female" checked />
+                        <label for="female">Female</label>
+                    </div>
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="male" value="Male" checked />
+                        <label for="male">Male</label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="checkbox-container">
+                <span>Life stage</span>
+                <form id="lifestage-filter-form">
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="embryo" value="Embryo" checked />
+                        <label for="embryo">Embryo</label>
+                    </div>
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="early" value="Early" checked />
+                        <label for="early">Early</label>
+                    </div>
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="interval" value="Interval" checked />
+                        <label for="interval">Interval</label>
+                    </div>
+                    <div class="round-checkbox">
+                        <input type="checkbox" id="late" value="Late" checked />
+                        <label for="late">Late</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- Cytoscape's visualization setting -->
+        <!-- ===================================== -->
+
+        <div class="panel-section">
+            <details>
+                <summary class="panel-title">
+                    <i class="fa-solid fa-puzzle-piece"></i>
+                    Layout & Display
+                </summary>
                 <!-- Network layout -->
-                <!-- ===================================== -->
 
-                <div class="slider-container" style="display: flex; align-items: center">
-                    <label for="layout-dropdown" class="control-label" style="margin-right: 10px"> Layout: </label>
-                    <select class="exporter" id="layout-dropdown">
-                        <option value="cose" selected>Cose</option>
-                        <option value="circle">Circle</option>
-                        <option value="grid">Grid</option>
-                        <option value="random">Random</option>
-                        <option value="concentric">Concentric</option>
-                    </select>
-                </div>
-
-                <!-- ===================================== -->
-                <!-- Slider for phenotypes similarity -->
-                <!-- ===================================== -->
                 <div class="slider-container">
-                    <span class="control-label" style="display: block">
-                        Phenotypes similarity:
-                        <span id="edge-size-value"> 1 -10 </span>
-                    </span>
-                    <div class="slider-element" id="filter-edge-slider"></div>
+                    <div class="label-row">
+                        <label for="layout-dropdown" class="control-label"> Layout: </label>
+                        <select class="exporter" id="layout-dropdown">
+                            <option value="cose" selected>Cose</option>
+                            <option value="circle">Circle</option>
+                            <option value="grid">Grid</option>
+                            <option value="random">Random</option>
+                            <option value="concentric">Concentric</option>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- ===================================== -->
-                <!-- Filter of Genotype / Sex / Life-stage -->
-                <!-- ===================================== -->
-                <div class="checkbox-container">
-                    <span>Genotype specificity:</span>
-                    <form id="genotype-filter-form">
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="homo" value="Homo" checked />
-                            <label for="homo">Homo</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="hetero" value="Hetero" checked />
-                            <label for="hetero">Hetero</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="hemi" value="Hemi" checked />
-                            <label for="hemi">Hemi</label>
-                        </div>
-                    </form>
+                <div class="slider-container">
+                    <div class="label-row">
+                        <span class="control-label">Font size: </span>
+                        <span id="font-size-value">20</span>
+                    </div>
+                    <div class="slider-element" id="font-size-slider"></div>
                 </div>
 
-                <div class="checkbox-container">
-                    <span>Sex specificity:</span>
-                    <form id="sex-filter-form">
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="female" value="Female" checked />
-                            <label for="female">Female</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="male" value="Male" checked />
-                            <label for="male">Male</label>
-                        </div>
-                    </form>
+                <div class="slider-container">
+                    <div class="label-row">
+                        <span class="control-label">Edge width:</span>
+                        <span id="edge-width-value">5</span>
+                    </div>
+                    <div class="slider-element" id="edge-width-slider"></div>
                 </div>
 
-                <div class="checkbox-container">
-                    <span>Life-stage specificity:</span>
-                    <form id="lifestage-filter-form">
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="embryo" value="Embryo" checked />
-                            <label for="embryo">Embryo</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="early" value="Early" checked />
-                            <label for="early">Early</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="interval" value="Interval" checked />
-                            <label for="interval">Interval</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="late" value="Late" checked />
-                            <label for="late">Late</label>
-                        </div>
-                    </form>
+                <div class="slider-container" id="node-repulsion-container">
+                    <div class="label-row">
+                        <span class="control-label">Node repulsion (Cose only):</span>
+                        <span id="node-repulsion-value">5</span>
+                    </div>
+                    <div class="slider-element" id="nodeRepulsion-slider"></div>
                 </div>
+            </details>
+        </div>
 
+        <!-- ===================================== -->
+        <!-- Search and Export -->
+        <!-- ===================================== -->
+        <div class="panel-section">
+            <details>
+                <summary class="panel-title">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Search & Export
+                </summary>
                 <!-- ===================================== -->
                 <!-- Gene search box -->
                 <!-- ===================================== -->
                 <div class="slider-container">
-                    <label for="gene-search" class="control-label"> Search gene:</label>
+                    <label for="gene-search" class="control-label"> Search gene </label>
                     <div class="search-container">
                         <input type="text" id="gene-search" placeholder="" autocomplete="off" />
                         <button id="search-button">Search</button>
                         <ul id="suggestions" class="suggestions" hidden></ul>
                     </div>
-                </div>
-
-                <!-- ===================================== -->
-                <!-- Cytoscape's visualization setting -->
-                <!-- ===================================== -->
-                <div class="slider-container">
-                    <span class="control-label">Font size: </span>
-                    <span id="font-size-value">20</span>
-                    <div class="slider-element" id="font-size-slider"></div>
-                </div>
-
-                <div class="slider-container">
-                    <span class="control-label">Edge width:</span>
-                    <span id="edge-width-value">5</span>
-                    <div class="slider-element" id="edge-width-slider"></div>
-                </div>
-
-                <div class="slider-container" id="node-repulsion-container">
-                    <span class="control-label">Node repulsion (Cose only):</span>
-                    <span id="node-repulsion-value">5</span>
-                    <div class="slider-element" id="nodeRepulsion-slider"></div>
                 </div>
 
                 <!-- ===================================== -->
@@ -177,24 +218,31 @@
                         CSV
                     </button>
                 </div>
-            </div>
-
-            <div class="cy-container">
-                <div class="cy"></div>
-
-                <!-- ===================================== -->
-                <!-- SVG for phenotypes similarity -->
-                <!-- ===================================== -->
-
-                <div class="edge-scale-container">
-                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
-                        <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
-                        <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
-                        <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
-                    </svg>
-                    <p class="scale-label">Similarity of accessory phenotypes</p>
-                </div>
-            </div>
+            </details>
         </div>
-    </body>
+    </div>
+
+        <div class="cy-container">
+    <div class="cy"></div>
+
+    <!-- ===================================== -->
+    <!-- SVG for phenotypes similarity -->
+    <!-- ===================================== -->
+
+    <div class="edge-scale-container">
+        <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
+            <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
+            <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
+            <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
+        </svg>
+        <p class="scale-label">Similarity of accessory phenotypes</p>
+    </div>
+
+    
+</div>
+
+
+    </div>
+</body>
+
 </html>

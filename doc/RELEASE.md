@@ -38,6 +38,9 @@
 
 + Add documentation on how to load the last column (`List of shared phenotypes`) in `TSUMUGI_raw_data.csv.gz` as `list[str]`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/bda251fa4630e220172f2046cb7702ef684c03bc)].
 
+## 🖼️ User Interface
++ Organize the control panel. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/xxxxx)]
+
 <!-- ############################################################# # -->
 
 
