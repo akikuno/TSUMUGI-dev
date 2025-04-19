@@ -99,7 +99,7 @@ df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
 After input is submitted, the page automatically transitions to a network view.
 
 > [!IMPORTANT]
-> **Gene pairs that share three or more abnormal phenotypes** are visualized.
+> Gene pairs with **three or more shared abnormal phenotypes** or a **similarity score of 0.5 or higher** are subject to visualization.
 
 ### Nodes
 
@@ -115,16 +115,6 @@ After input is submitted, the page automatically transitions to a network view.
 
 The left-hand control panel allows you to adjust the appearance and content of the network.
 
-#### Change Network Layout
-
-You can choose from the following layout options:
-
-- Cose (default)  
-- Circle  
-- Random  
-- Grid  
-- Concentric
-
 #### Filter by Phenotype Similarity
 
 The `Phenotypes similarity` slider lets you filter **gene pairs** based on their phenotypic similarity (Jaccard index).  
@@ -139,10 +129,35 @@ This score is also scaled from 1 to 10 for 10-step filtering.
 > [!NOTE]
 > The severity slider is not available if the phenotype data from IMPC is binary (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)) or if the input consists of a single gene.
 
+#### Specify Genotype
+
+You can specify the genotype of KO mice exhibiting phenotypes:
+
+- `Homo`: Phenotypes observed in homozygous mutants  
+- `Hetero`: Phenotypes observed in heterozygous mutants  
+- `Hemi`: Phenotypes observed in hemizygous mutants  
+
+#### Specify Sex
+
+You can extract sex-specific phenotypes:
+
+- `Female`: Phenotypes specific to females  
+- `Male`: Phenotypes specific to males  
+
+#### Specify Life Stage
+
+You can specify the life stage during which the phenotype appears:
+
+- `Embryo`: Phenotypes observed during the embryonic stage  
+- `Early`: Phenotypes observed at 0–16 weeks of age  
+- `Interval`: Phenotypes observed at 17–48 weeks of age  
+- `Late`: Phenotypes observed at 49 weeks of age or older  
+
 #### Adjust Network Appearance
 
 The following visual properties can be adjusted:
 
+- Network layout  
 - Font size  
 - Edge thickness  
 - Node repulsion (distance between nodes; applicable to Cose layout only)
@@ -150,21 +165,6 @@ The following visual properties can be adjusted:
 #### Search Gene
 
 You can search for specific gene names within the network.
-
-#### Specify Genotype
-
-You can restrict results to phenotypes observed in KO mice with a specific genotype:
-
-- `Homo`: Homozygous  
-- `Hetero`: Heterozygous  
-- `Hemi`: Hemizygous
-
-#### Specify Sex
-
-You can extract phenotypes specific to sex:
-
-- `Female`  
-- `Male`
 
 #### Export
 

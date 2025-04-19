@@ -13,11 +13,7 @@
 
 <!-- ## TODO -->
 
-<!-- ## 🌟 New Features -->
-
 <!--
-- Edgeの太さがすべて同じに見える #27
-- 類似度のフィルターをなだらかに段階的にしたい #29
 -->
 
 <!-- ############################################################# # -->
@@ -38,6 +34,9 @@
 ## 📝 Documentation
 
 + Add documentation on how to load the last column (`List of shared phenotypes`) in `TSUMUGI_raw_data.csv.gz` as `list[str]`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/bda251fa4630e220172f2046cb7702ef684c03bc)].
+
++ Add documentation of life stage. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/bda251fa4630e220172f2046cb7702ef684c03bc)].
+
 
 ## 🖼️ User Interface
 

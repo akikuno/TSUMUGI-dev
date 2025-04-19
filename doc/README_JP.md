@@ -97,7 +97,7 @@ df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
 入力内容に基づいてページが遷移し、ネットワークが自動的に描画されます。  
 
 > [!IMPORTANT]
-> **共通する異常表現型が3つ以上**ある遺伝子ペアが、可視化の対象となります。  
+> **共通する異常表現型が3つ以上 または 表現型類似度が0.5以上**の遺伝子ペアが、可視化の対象となります。  
 
 ### ノード（点）
 
@@ -113,23 +113,13 @@ df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
 
 左側のコントロールパネルでは、ネットワークの表示を調整することができます。  
 
-#### ネットワークレイアウトの変更
-
-以下のレイアウトから選択できます：  
-
-- Cose (デフォルト)
-- Circle
-- Random
-- Grid
-- Concentric
-
 #### 表現型類似度によるフィルター
 
 `Phenotypes similarity`のスライダーでは、**エッジの表現型類似度**（Jaccard係数）に基づいて、ネットワークに表示する遺伝子ペアの閾値を設定できます。  
 類似度の最小値と最大値を 1〜10 のスケールに変換し、10段階でフィルタリングが可能です。  
 
 > [!NOTE]
-> 表現型類似度の詳細は以下を御覧ください  
+> 表現型類似度についての詳細は、以下を御覧ください  
 > 👉 [🔍 表現型類似遺伝子群の算出方法](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_JP.md#-%E8%A1%A8%E7%8F%BE%E5%9E%8B%E9%A1%9E%E4%BC%BC%E9%81%BA%E4%BC%9D%E5%AD%90%E7%BE%A4%E3%81%AE%E7%AE%97%E5%87%BA%E6%96%B9%E6%B3%95)
 
 #### 効果量によるフィルター
@@ -141,10 +131,35 @@ df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
 > [!NOTE]
 > IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)）や、遺伝子名が入力の場合には、`Phenotypes severity`のスライダーはありません。
 
+#### 遺伝型を指定
+
+表現型を呈するKOマウスの遺伝型を指定できます：
+
+- `Homo`：ホモ接合型でみられる表現型
+- `Hetero`: ヘテロ接合型でみられる表現型
+- `Hemi`: ヘミ接合型でみられる表現型
+
+#### 性差を指定
+
+性特異的な表現型を抽出できます：
+
+- `Female`: 雌特異的な表現型
+- `Male`: 雄特異的な表現型
+
+#### ライフステージを指定
+
+表現型を呈するライフステージを指定できます：
+
+- `Embryo`: 胎児期に現れる表現型
+- `Early`: 0-16週齢に現れる表現型
+- `Interval`: 17-48週齢に現れる表現型
+- `Late`： 49週齢以上に現れる表現型
+
 #### ネットワーク図の表示スタイル調整
 
 以下の要素を調整できます：
 
+- ネットワークレイアウト (layout)
 - フォントサイズ (Font size)
 - エッジ（線）の太さ (Edge width)
 - ノード（点）間の距離（＊Coseレイアウト限定） (Node repulsion)
@@ -152,22 +167,6 @@ df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
 #### 遺伝子名の検索 (Search gene)
 
 ネットワークに含まれる遺伝子名を検索できます。
-
-#### 遺伝型を指定
-
-表現型を呈するKOマウスの遺伝型を指定できます：
-
-- `Homo`：ホモ接合型
-- `Hetero`: ヘテロ接合型
-- `Hemi`: ヘミ接合型
-
-#### 性差を指定
-
-性特異的な表現型を抽出できます：
-
-- `Female`
-- `Male`
-
 
 #### エクスポート
 
