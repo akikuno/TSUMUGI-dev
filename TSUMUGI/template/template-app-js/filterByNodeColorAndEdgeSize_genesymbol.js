@@ -3,19 +3,19 @@ function filterByNodeColorAndEdgeSize() {
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
-    // 1. edge_size条件を満たすエッジを取得
+    // 1. edge_size 条件に一致するエッジを取得
     const visibleEdges = cy.edges().filter((edge) => {
         const edgeSize = edge.data("edge_size");
         return edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
     });
 
-    // 2. 条件を満たしたエッジ＋そのエッジに接続しているノードたちを取得
+    // 2. 接続ノードを含めて対象エレメントとする
     const candidateElements = visibleEdges.union(visibleEdges.connectedNodes());
 
     // 3. 連結成分を取得
     const components = candidateElements.components();
 
-    // 4. 一旦すべて非表示にしてから…
+    // 4. 一旦すべて非表示
     cy.elements().forEach((ele) => ele.style("display", "none"));
 
     // 5. node_color === 1 を含むクラスタだけ表示
@@ -30,4 +30,3 @@ function filterByNodeColorAndEdgeSize() {
     // 6. レイアウト再適用
     cy.layout(getLayoutOptions()).run();
 }
-
