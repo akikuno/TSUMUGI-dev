@@ -26,13 +26,15 @@
 
 ## 💥 Breaking
 
-+ Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)]
++ Annotate the four life stages: Embryo, Early, Interval, and Late. Issue [#20](https://github.com/akikuno/TSUMUGI-dev/issues/20).
+  + [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)]
+  + [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/176847d10cee4d8b97d621df0c33f103a8ca185f)]
 
 + Set thresholds for visualization considering similarity. Issue [#77](https://github.com/akikuno/TSUMUGI-dev/issues/77). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/db661bb643df5772ad313ace24bb7063780920fc)].
   + Thanks to @aki2274 for reporting this issue!
 
 
-<!-- ## 📝 Documentation -->
+## 📝 Documentation
 
 + Add documentation on how to load the last column (`List of shared phenotypes`) in `TSUMUGI_raw_data.csv.gz` as `list[str]`. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/bda251fa4630e220172f2046cb7702ef684c03bc)].
 

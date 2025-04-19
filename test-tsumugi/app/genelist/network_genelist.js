@@ -196,19 +196,18 @@ function filterByNodeColorAndEdgeSize() {
 }
 
 // =============================================================================
-// 遺伝型・正特異的フィルタリング関数
+// 遺伝型・性差・ライフステージ特異的フィルタリング関数
 // =============================================================================
-
-let target_phenotype = "";
 
 // フィルタリング関数のラッパー
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterByNodeColorAndEdgeSize);
+    filterElementsByGenotypeAndSex(elements, cy, filterByNodeColorAndEdgeSize);
 }
 
 // フォーム変更時にフィルタリング関数を実行
 document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
+document.getElementById("lifestage-filter-form").addEventListener("change", applyFiltering);
 
 // ############################################################################
 // Cytoscape's visualization setting
