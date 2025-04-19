@@ -33,7 +33,7 @@
 + Set thresholds for visualization considering similarity. Issue [#77](https://github.com/akikuno/TSUMUGI-dev/issues/77). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/db661bb643df5772ad313ace24bb7063780920fc)].
   + Thanks to @aki2274 for reporting this issue!
 
-+ Rename the header name `cluster` to `module`  in the exported CSV.
++ Rename the header name `cluster` to `module` in the exported CSV. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/98ca5c486ae0825a6a027ca0497b3fe3ea170d73)].
 
 ## 📝 Documentation
 
