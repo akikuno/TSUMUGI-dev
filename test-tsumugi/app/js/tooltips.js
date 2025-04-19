@@ -7,14 +7,14 @@
 */
 function formatAnnotationsWithHighlight(annotations, target_phenotype) {
     if (!target_phenotype) {
-        return annotations.map(anno => "・ " + anno).join("<br>");
+        return annotations.map((anno) => "・ " + anno).join("<br>");
     }
 
     const matching = [];
     const others = [];
 
     for (const anno of annotations) {
-        if (anno.includes(target_phenotype)) {
+        if (anno.startsWith(target_phenotype)) {
             matching.push(anno);
         } else {
             others.push(anno);
@@ -25,7 +25,7 @@ function formatAnnotationsWithHighlight(annotations, target_phenotype) {
 
     return ordered
         .map((anno) => {
-            if (anno.includes(target_phenotype)) {
+            if (anno.startsWith(target_phenotype)) {
                 return `🚩 ${anno}`;
             } else {
                 return "・ " + anno;
@@ -47,7 +47,6 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
         tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>`;
         tooltipText += formatAnnotationsWithHighlight(annotations, target_phenotype);
         pos = event.target.renderedPosition();
-
     } else if (event.target.isEdge()) {
         const sourceNode = cy.getElementById(data.source).data("label");
         const targetNode = cy.getElementById(data.target).data("label");
@@ -64,7 +63,6 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
 
     return { tooltipText, pos };
 }
-
 
 function enableTooltipDrag(tooltip) {
     let isDragging = false;
@@ -121,7 +119,6 @@ export function showTooltip(event, cy, map_symbol_to_id, target_phenotype = null
     document.querySelector(".cy").appendChild(tooltip);
     enableTooltipDrag(tooltip);
 }
-
 
 export function removeTooltips() {
     document.querySelectorAll(".cy-tooltip").forEach((el) => el.remove());

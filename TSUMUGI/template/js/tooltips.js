@@ -14,7 +14,7 @@ function formatAnnotationsWithHighlight(annotations, target_phenotype) {
     const others = [];
 
     for (const anno of annotations) {
-        if (anno.includes(target_phenotype)) {
+        if (anno.startsWith(target_phenotype)) {
             matching.push(anno);
         } else {
             others.push(anno);
@@ -25,7 +25,7 @@ function formatAnnotationsWithHighlight(annotations, target_phenotype) {
 
     return ordered
         .map((anno) => {
-            if (anno.includes(target_phenotype)) {
+            if (anno.startsWith(target_phenotype)) {
                 return `🚩 ${anno}`;
             } else {
                 return "・ " + anno;

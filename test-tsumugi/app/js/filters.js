@@ -70,7 +70,7 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
             .filter((item) => item.data.annotation.length > 0);
     }
 
-    // 2つ以上の annotation を持つものだけ残す
+    // ✅ 2つ以上の annotation を持つものだけ残す
     filteredElements = filteredElements.filter((item) => item.data.annotation && item.data.annotation.length > 1);
 
     // 🔁 target_phenotype を復元

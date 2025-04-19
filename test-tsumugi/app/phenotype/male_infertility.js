@@ -143,46 +143,46 @@ edgeSlider.noUiSlider.on("update", function (values) {
 function filterByNodeColorAndEdgeSize() {
     let nodeSliderValues = [1, 10];
 
-    const edgeSliderValues = edgeSlider.noUiSlider.get().map(parseFloat);
+    const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
 
     const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax);
     const nodeMaxValue = scaleToOriginalRange(nodeSliderValues[1], nodeMin, nodeMax);
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
 
-    // Filter nodes based on color
-    cy.nodes().forEach(function (node) {
+    // 1. node_color 範囲に基づきノードを表示/非表示
+    cy.nodes().forEach((node) => {
         const nodeColor = node.data("node_color");
-        node.style("display", nodeColor >= nodeMinValue && nodeColor <= nodeMaxValue ? "element" : "none");
+        const isVisible = nodeColor >= nodeMinValue && nodeColor <= nodeMaxValue;
+        node.style("display", isVisible ? "element" : "none");
     });
 
-    // Filter edges based on size
-    cy.edges().forEach(function (edge) {
+    // 2. edge_size + 表現型数の条件でエッジを表示/非表示
+    cy.edges().forEach((edge) => {
         const edgeSize = edge.data("edge_size");
-        const sourceNode = cy.getElementById(edge.data("source"));
-        const targetNode = cy.getElementById(edge.data("target"));
+        const sharedPhenotypes = edge.data("annotation") || [];
+        const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
+        const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
 
-        if (
-            sourceNode.style("display") === "element" &&
-            targetNode.style("display") === "element" &&
+        const isVisible =
+            sourceVisible &&
+            targetVisible &&
             edgeSize >= edgeMinValue &&
-            edgeSize <= edgeMaxValue
-        ) {
-            edge.style("display", "element");
-        } else {
-            edge.style("display", "none");
+            edgeSize <= edgeMaxValue &&
+            sharedPhenotypes.length >= 2; // 2つ以上の表現型を持つエッジのみ表示
+
+        edge.style("display", isVisible ? "element" : "none");
+    });
+
+    // 3. 孤立ノードを非表示
+    cy.nodes().forEach((node) => {
+        const visibleEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
+        if (visibleEdges.length === 0) {
+            node.style("display", "none");
         }
     });
 
-    // After filtering, remove nodes with no connected visible edges
-    cy.nodes().forEach(function (node) {
-        const connectedEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
-        if (connectedEdges.length === 0) {
-            node.style("display", "none"); // Hide node if no connected edges
-        }
-    });
-
-    // Reapply layout after filtering
+    // 4. レイアウト再適用
     cy.layout(getLayoutOptions()).run();
 }
 
@@ -266,7 +266,7 @@ createSlider("nodeRepulsion-slider", 5, 1, 10, 1, (intValues) => {
 
 // Show tooltip on tap
 cy.on("tap", "node, edge", function (event) {
-    showTooltip(event, cy, map_symbol_to_id);
+    showTooltip(event, cy, map_symbol_to_id, target_phenotype);
 });
 
 // Hide tooltip when tapping on background
