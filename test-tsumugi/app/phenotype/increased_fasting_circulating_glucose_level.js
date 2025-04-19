@@ -262,16 +262,15 @@ function filterByNodeColorAndEdgeSize() {
 // 遺伝型・正特異的フィルタリング関数
 // =============================================================================
 
-let target_phenotype = "increased fasting circulating glucose level";
-
 // フィルタリング関数のラッパー
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterByNodeColorAndEdgeSize);
+    filterElementsByGenotypeAndSex(elements, cy, filterByNodeColorAndEdgeSize);
 }
 
 // フォーム変更時にフィルタリング関数を実行
 document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
+document.getElementById("lifestage-filter-form").addEventListener("change", applyFiltering);
 
 // ############################################################################
 // Cytoscape's visualization setting
