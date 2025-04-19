@@ -22,6 +22,11 @@ Enable the exclusion or extraction of specific phenotypes from the network #36
 
 # v0.3.1 (2025-MM-DD)
 
+
+## 🐛 Bug Fixes
+
++ Ensure all node and edges including target phenotyping. Issue [#54](https://github.com/akikuno/TSUMUGI-dev/issues/54). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/1f08e851bf1e9009d754cc5f5727f23c9f0901cb)]
+
 <!-- ############################################################# # -->
 
 

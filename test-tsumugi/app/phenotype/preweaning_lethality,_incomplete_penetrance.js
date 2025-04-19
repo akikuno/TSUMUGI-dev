@@ -190,9 +190,11 @@ function filterByNodeColorAndEdgeSize() {
 // 遺伝型・性差・ライフステージ特異的フィルタリング関数
 // =============================================================================
 
+let target_phenotype = "preweaning lethality, incomplete penetrance";
+
 // フィルタリング関数のラッパー
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, cy, filterByNodeColorAndEdgeSize);
+    filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterByNodeColorAndEdgeSize);
 }
 
 // フォーム変更時にフィルタリング関数を実行

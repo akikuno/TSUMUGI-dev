@@ -2,36 +2,49 @@
 // Tooltip Handling Functions
 // ############################################################
 
-// Function to remove all existing tooltips
 export function removeTooltips() {
     document.querySelectorAll(".cy-tooltip").forEach((el) => el.remove());
 }
 
-// Function to create tooltip content for nodes and edges
-function createTooltip(event, cy, map_symbol_to_id) {
+function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
     const data = event.target.data();
     let tooltipText = "";
     let pos;
 
     if (event.target.isNode()) {
-        const annotations = Array.isArray(data.annotation)
-            ? data.annotation.map((anno) => "・ " + anno).join("<br>")
-            : "・ " + data.annotation;
+        const annotations = Array.isArray(data.annotation) ? data.annotation : [data.annotation];
 
-        const geneID = map_symbol_to_id[data.label] || "UNKNOWN"; // undefined の場合に備える
+        const geneID = map_symbol_to_id[data.label] || "UNKNOWN";
         const url_impc = `https://www.mousephenotype.org/data/genes/${geneID}`;
-        tooltipText =
-            `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>` + annotations;
 
+        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>`;
+
+        const annotationLines = annotations.map((anno) => {
+            if (target_phenotype && anno.includes(target_phenotype)) {
+                return `・ <span style="font-weight: bold; color: #333;">🚩 ${anno}</span>`;
+            } else {
+                return "・ " + anno;
+            }
+        }).join("<br>");
+
+        tooltipText += annotationLines;
         pos = event.target.renderedPosition();
     } else if (event.target.isEdge()) {
         const sourceNode = cy.getElementById(data.source).data("label");
         const targetNode = cy.getElementById(data.target).data("label");
-        const annotations = Array.isArray(data.annotation)
-            ? data.annotation.map((anno) => "・ " + anno).join("<br>")
-            : "・ " + data.annotation;
+        const annotations = Array.isArray(data.annotation) ? data.annotation : [data.annotation];
 
-        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>` + annotations;
+        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>`;
+
+        const annotationLines = annotations.map((anno) => {
+            if (target_phenotype && anno.includes(target_phenotype)) {
+                return `・ <span style="font-weight: bold; color: #333;">🚩 ${anno}</span>`;
+            } else {
+                return "・ " + anno;
+            }
+        }).join("<br>");
+
+        tooltipText += annotationLines;
 
         const sourcePos = cy.getElementById(data.source).renderedPosition();
         const targetPos = cy.getElementById(data.target).renderedPosition();
@@ -44,11 +57,12 @@ function createTooltip(event, cy, map_symbol_to_id) {
     return { tooltipText, pos };
 }
 
-// Function to show tooltip
-export function showTooltip(event, cy, map_symbol_to_id) {
-    removeTooltips(); // Remove existing tooltips
 
-    const { tooltipText, pos } = createTooltip(event, cy, map_symbol_to_id);
+// Accepts target_phenotype and passes it to createTooltip
+export function showTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
+    removeTooltips();
+
+    const { tooltipText, pos } = createTooltip(event, cy, map_symbol_to_id, target_phenotype);
 
     const tooltip = document.createElement("div");
     tooltip.classList.add("cy-tooltip");
@@ -71,7 +85,6 @@ export function showTooltip(event, cy, map_symbol_to_id) {
     enableTooltipDrag(tooltip);
 }
 
-// Function to enable dragging for tooltips
 function enableTooltipDrag(tooltip) {
     let isDragging = false;
     let offset = { x: 0, y: 0 };
