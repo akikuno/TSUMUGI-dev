@@ -27,17 +27,17 @@ export function exportGraphAsCSV(cy, file_name) {
     const connected_component = calculateConnectedComponents(cy);
 
     // CSVのヘッダー行
-    let csvContent = "cluster,gene,phenotypes\n";
+    let csvContent = "module,gene,phenotypes\n";
 
     // クラスター番号を割り当てて、CSVフォーマットに変換
-    connected_component.forEach((component, clusterIndex) => {
-        const clusterNumber = clusterIndex + 1;
+    connected_component.forEach((component, moduleIndex) => {
+        const moduleNumber = moduleIndex + 1;
 
         Object.keys(component).forEach((gene) => {
             const phenotypes = component[gene].join(";"); // 表現型をセミコロン区切りで結合
 
             // CSVの各行を生成
-            csvContent += `${clusterNumber},${gene},"${phenotypes}"\n`;
+            csvContent += `${moduleNumber},${gene},"${phenotypes}"\n`;
         });
     });
 
