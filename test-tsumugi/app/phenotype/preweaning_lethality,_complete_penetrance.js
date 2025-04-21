@@ -38,6 +38,7 @@ let nodeMin = Math.min(...nodeSizes);
 let nodeMax = Math.max(...nodeSizes);
 
 const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
+
 const edgeMin = Math.min(...edgeSizes);
 const edgeMax = Math.max(...edgeSizes);
 

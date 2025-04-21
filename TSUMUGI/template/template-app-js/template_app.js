@@ -40,8 +40,8 @@ let nodeMax = Math.max(...nodeSizes);
 XXX_NODE_MIN_MAX
 
 const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map((ele) => ele.data.edge_size);
-const edgeMin = Math.min(...edgeSizes);
-XXX_EDGE_MAX
+
+XXX_EDGE_MIN_MAX
 
 // ############################################################################
 // Cytoscapeの初期化

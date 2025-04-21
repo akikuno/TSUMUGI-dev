@@ -13,9 +13,10 @@
   - mode="non-binary-phenotype"のとき、`nodeMinMax.js`を挿入
   - それ以外は削除
 
-- XXX_EDGE_MAX
-  - 遺伝子シンボルのとき、`edgeMax_on_genesymbol.js`を挿入
-  - それ以外は`const edgeMax = Math.max(...edgeSizes);`に置換
+- XXX_EDGE_MIN_MAX
+  - 遺伝子シンボルのとき、`edgeMinMax_for_genesymbol.js`を挿入
+  - それ以外は以下に置換：
+    `const edgeMin = Math.min(...edgeSizes); const edgeMax = Math.max(...edgeSizes);`
 
 - XXX_FILTER_ELEMENTS
     - 表現型のとき、`filterByNodeColorAndEdgeSize_phenotype.js`を挿入
