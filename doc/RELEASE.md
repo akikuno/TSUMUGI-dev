@@ -22,13 +22,11 @@ Enable the exclusion or extraction of specific phenotypes from the network #36
 
 # v0.3.1 (2025-04-22)
 
-## ✨ Features
+## 🖼️ User Interface
 
 - The user-specified phenotype is now always displayed, regardless of filter settings  
   Issue [#80](https://github.com/akikuno/TSUMUGI-dev/issues/80)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4195f75481040696fed366ab3f69b1742c233477)]
-
-## 🖼️ User Interface
 
 - Added TSUMUGI version information and a contact form to the footer  
   Issue [#79](https://github.com/akikuno/TSUMUGI-dev/issues/79)  
