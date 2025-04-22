@@ -56,11 +56,14 @@ export function setupGeneSearch({ cy, inputId = "gene-search", listId = "suggest
         // 遺伝子名でノードを検索し、見つけたらハイライト
         const matchedNode = cy.nodes().filter((node) => node.data("label").toLowerCase() === query);
         if (matchedNode.length > 0) {
-            matchedNode.style("border-width", 2);
-            matchedNode.style("border-color", "#e66900");
+            matchedNode.style("border-width", 3);
+            matchedNode.style("border-color", "#fc4c00");
+
+            // Zoom in and center with animation
             cy.center(matchedNode);
             cy.animate({
                 center: { eles: matchedNode },
+                zoom: 5,
                 duration: 500,
             });
         } else {
