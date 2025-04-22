@@ -15,8 +15,6 @@ abnormal cholesterol homeostasis
 abnormal chorioallantoic fusion
 abnormal clavicle morphology
 abnormal coat appearance
-abnormal coat hair pigmentation
-abnormal coat  hair morphology
 abnormal colon morphology
 abnormal contextual conditioning behavior
 abnormal cornea morphology
@@ -86,8 +84,6 @@ abnormal mandible morphology
 abnormal maxilla morphology
 abnormal midbrain development
 abnormal midbrain morphology
-abnormal motor capabilities coordination movement
-abnormal motor coordination balance
 abnormal mouth morphology
 abnormal nail morphology
 abnormal neural tube closure
@@ -168,7 +164,6 @@ absent optic nerve
 absent ovary
 absent pinna reflex
 absent seminal vesicle
-absent teeth
 absent testes
 absent vibrissae
 anophthalmia
@@ -201,15 +196,12 @@ decreased brain weight
 decreased bronchoconstrictive response
 decreased B cell number
 decreased cardiac muscle contractility
-decreased cardiac output
 decreased cardiac stroke volume
 decreased caudal vertebrae number
-decreased CD11b-high dendritic cell number
 decreased CD4-negative NK T cell number
 "decreased CD4-positive, alpha-beta T cell number"
 "decreased CD4-positive, CD25-positive, alpha-beta regulatory T cell number"
 decreased CD4-positive NK T cell number
-decreased CD5-positive Ly6C-positive T cell number
 "decreased CD8-positive, alpha-beta T cell number"
 "decreased CD8-positive, naive alpha-beta T cell number"
 decreased circulating alanine transaminase level
@@ -241,7 +233,6 @@ decreased eosinophil cell number
 decreased erythrocyte cell number
 decreased exploration in new environment
 decreased fasting circulating glucose level
-decreased follicular B cell number
 decreased food intake
 decreased freezing behavior
 decreased grip strength
@@ -260,12 +251,9 @@ decreased liver weight
 decreased locomotor activity
 decreased lung compliance
 decreased lung elastance
-decreased lung tissue damping
 decreased Ly6C-positive immature NK cell number
-decreased Ly6C-positive mature NK cell number
 decreased Ly6C-positive NK T cell number
 decreased lymphocyte cell number
-decreased mature B cell number
 decreased mean corpuscular hemoglobin
 decreased mean corpuscular hemoglobin concentration
 decreased mean corpuscular volume
@@ -415,7 +403,6 @@ increased heart weight
 increased hematocrit
 increased hemoglobin content
 increased IgE level
-increased IgG2b level
 increased kidney weight
 increased lactate dehydrogenase level
 increased large unstained cell number

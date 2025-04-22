@@ -341,6 +341,37 @@ ul.suggestions li:hover {
 }
 
 /* ======================================================== */
+/* Footer styling */
+/* ======================================================== */
+
+footer {
+    margin: 20px 0 10px;
+    padding: 20px;
+    color: #666;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+footer p {
+    margin: 5px 0 0;
+}
+
+footer i {
+    margin-right: 8px;
+}
+
+footer a {
+    color: #666;
+    font-size: 1em;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* ======================================================== */
 /* スマホ向けデザイン */
 /* ======================================================== */
 /* 初期状態でアイコンを非表示 */
