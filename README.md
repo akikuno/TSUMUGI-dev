@@ -46,7 +46,6 @@ You can view the list of gene symbols currently searchable with TSUMUGI here:
 ### 3. Gene List
 
 You can input multiple genes (one per line).  
-TSUMUGI calculates phenotypic similarity **between genes within the list only**.
 
 > [!Note]
 > Unlike a single gene search, the Gene List input compares phenotypes **within the listed genes** only.

@@ -20,12 +20,49 @@ Enable the exclusion or extraction of specific phenotypes from the network #36
 
 <!-- ############################################################ # -->
 
-# v0.3.1 (2025-MM-DD)
+# v0.3.1 (2025-04-22)
 
+## 🖼️ User Interface
+
+- The user-specified phenotype is now always displayed, regardless of filter settings  
+  Issue [#80](https://github.com/akikuno/TSUMUGI-dev/issues/80)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4195f75481040696fed366ab3f69b1742c233477)]
+
+- Added TSUMUGI version information and a contact form to the footer  
+  Issue [#79](https://github.com/akikuno/TSUMUGI-dev/issues/79)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/4704544d9cbc2cf040f83c8f827c144501a76e73)]
 
 ## 🐛 Bug Fixes
 
-+ Ensure all node and edges including target phenotyping. Issue [#54](https://github.com/akikuno/TSUMUGI-dev/issues/54). [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/1f08e851bf1e9009d754cc5f5727f23c9f0901cb)]
+- Ensured that all nodes and edges related to the target phenotype are properly displayed  
+  Issue [#54](https://github.com/akikuno/TSUMUGI-dev/issues/54)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/1f08e851bf1e9009d754cc5f5727f23c9f0901cb)]
+
+- To prevent nodes from disappearing when adjusting the slider, the row with the largest absolute effect size (between Homo and Hetero) is now selected  
+  Issue [#72](https://github.com/akikuno/TSUMUGI-dev/issues/72)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/c5ed96555d5ed7aaf27778a35979b5938c2b4263)]
+
+- `edgeMin` is now defined as the minimum edge size among edges connected to the target gene, similar to the `edgeMax` logic  
+  Issue [#74](https://github.com/akikuno/TSUMUGI-dev/issues/74)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/3fe449af554a382f3f6b4e3fd76fd0714c61adc0)]
+
+- Nodes that do not contain the user-specified phenotype are now excluded from display  
+  Issue [#54](https://github.com/akikuno/TSUMUGI-dev/issues/54)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/1f08e851bf1e9009d754cc5f5727f23c9f0901cb)]
+
+- Only edges between nodes that share two or more phenotypes are now visualized  
+  Issue [#81](https://github.com/akikuno/TSUMUGI-dev/issues/81)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/d6dc99c4afa4cc2617b3bbb92d7685e2ff9a9f85)]
+
+- Fixed an issue where duplicate phenotypes were shown in tooltips  
+  Issue [#82](https://github.com/akikuno/TSUMUGI-dev/issues/82)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/f5ad91efbd5fdf774b6655e7bdfbf80bddbbedef)]
+
+## 🔧 Maintenance
+
+- Improved visibility in gene search by automatically centering and zooming in on the corresponding node  
+  Issue [#78](https://github.com/akikuno/TSUMUGI-dev/issues/78)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/bbc6f00c6d6586a838003b7cfd2570a06ef2fd10)]
 
 <!-- ############################################################# # -->
 
