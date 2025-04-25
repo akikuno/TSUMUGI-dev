@@ -15,7 +15,7 @@ body:
       id: TSUMUGI_version
       attributes:
           label: "🔖 TSUMUGI Version"
-          description: "Required: Specify the TSUMUGI version you are using.
+          description: "Required: Specify the TSUMUGI version you are using."
       validations:
           required: true
 
