@@ -12,7 +12,6 @@
 -->
 
 <!-- = TODO ====
-- IMPC RELEASE 23.0への対応 #88
 - 遺伝子aが検索リストに出てこない #86
 - binaryの表現型リストをアップロード #85
 - deployコードの一元化 #84
@@ -22,6 +21,8 @@
 <!-- ############################################################ # -->
 
 # v0.3.2 (2025-MM-DD)
+
+## 🔧 Maintenance
 
 + Support for IMPC RELEASE 23.0. Issue: [#88](https://github.com/akikuno/TSUMUGI-dev/issues/88) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e0dbbfce604394e66c2d71049560e42f41030947)]
 
