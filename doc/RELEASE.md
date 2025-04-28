@@ -11,16 +11,37 @@
 + commitMessage. Issue: #XX [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/xxxxx)]
 -->
 
-<!-- ## TODO -->
-
-<!--
-キーとなる表現型を持っていないのに、線が伸びている遺伝子群がある #54
-Enable the exclusion or extraction of specific phenotypes from the network #36
+<!-- = TODO ====
+- IMPC RELEASE 23.0への対応 #88
+- 遺伝子aが検索リストに出てこない #86
+- binaryの表現型リストをアップロード #85
+- deployコードの一元化 #84
+- Enable the exclusion or extraction of specific phenotypes from the network #36
 -->
 
 <!-- ############################################################ # -->
 
-# v0.3.1 (2025-04-22)
+# v0.3.2 (2025-MM-DD)
+
++ Support for IMPC RELEASE 23.0. Issue: [#88](https://github.com/akikuno/TSUMUGI-dev/issues/88) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e0dbbfce604394e66c2d71049560e42f41030947)]
+
+<!-- ############################################################# # -->
+
+
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+<details>
+<summary> v0.3.1 (2025-04-22) </summary>
 
 ## 🖼️ User Interface
 
@@ -64,20 +85,7 @@ Enable the exclusion or extraction of specific phenotypes from the network #36
   Issue [#78](https://github.com/akikuno/TSUMUGI-dev/issues/78)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/bbc6f00c6d6586a838003b7cfd2570a06ef2fd10)]
 
-<!-- ############################################################# # -->
-
-
-
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- ============================================================= -->
-<!-- <details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
-</details> -->
-<!-- ============================================================= -->
+</details>
 
 <details>
 <summary> v0.3.0 (2025-04-19) </summary>
