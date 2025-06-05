@@ -20,7 +20,7 @@ function filterByNodeColorAndEdgeSize() {
     // 2. edge_size + 表現型数の条件でエッジを表示/非表示
     cy.edges().forEach((edge) => {
         const edgeSize = edge.data("edge_size");
-        const sharedPhenotypes = edge.data("annotation") || [];
+        const sharedPhenotypes = edge.data("phenotype") || [];
         const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
         const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
 

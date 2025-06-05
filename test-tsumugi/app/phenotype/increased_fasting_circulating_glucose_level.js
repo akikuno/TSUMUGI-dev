@@ -14,12 +14,12 @@ import { setupGeneSearch } from "../js/searcher.js";
 // REMOVE_FROM_THIS_LINE
 
 // const elements = [
-//     { data: { id: 'Nanog', label: 'Nanog', annotation: ['hoge', 'hooo'], node_color: 50, } },
-//     { data: { id: 'Pou5f1', label: 'Pou5f1', annotation: 'fuga', node_color: 100, } },
-//     { data: { id: 'Sox2', label: 'Sox2', annotation: 'foo', node_color: 3, } },
-//     { data: { source: 'Nanog', target: 'Pou5f1', annotation: ['Foo', 'FooBar'], edge_size: 5 } },
-//     { data: { source: 'Nanog', target: 'Sox2', annotation: 'FooBar', edge_size: 1 } },
-//     { data: { source: 'Sox2', target: 'Pou5f1', annotation: 'FooBar', edge_size: 10 } },
+//     { data: { id: 'Nanog', label: 'Nanog', phenotype: ['hoge', 'hooo'], node_color: 50, } },
+//     { data: { id: 'Pou5f1', label: 'Pou5f1', phenotype: 'fuga', node_color: 100, } },
+//     { data: { id: 'Sox2', label: 'Sox2', phenotype: 'foo', node_color: 3, } },
+//     { data: { source: 'Nanog', target: 'Pou5f1', phenotype: ['Foo', 'FooBar'], edge_size: 5 } },
+//     { data: { source: 'Nanog', target: 'Sox2', phenotype: 'FooBar', edge_size: 1 } },
+//     { data: { source: 'Sox2', target: 'Pou5f1', phenotype: 'FooBar', edge_size: 10 } },
 // ];
 
 // const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
@@ -232,7 +232,7 @@ function filterByNodeColorAndEdgeSize() {
     // 2. edge_size + 表現型数の条件でエッジを表示/非表示
     cy.edges().forEach((edge) => {
         const edgeSize = edge.data("edge_size");
-        const sharedPhenotypes = edge.data("annotation") || [];
+        const sharedPhenotypes = edge.data("phenotype") || [];
         const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
         const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
 
@@ -273,6 +273,7 @@ function applyFiltering() {
 document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("lifestage-filter-form").addEventListener("change", applyFiltering);
+document.getElementById("human-disease-filter-form").addEventListener("change", applyFiltering);
 
 // ############################################################################
 // Cytoscape's visualization setting

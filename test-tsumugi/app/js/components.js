@@ -6,10 +6,10 @@ export function calculateConnectedComponents(cy) {
         let componentObject = {};
         component.nodes().forEach((node) => {
             const nodeLabel = node.data("label");
-            const nodeAnnotations = Array.isArray(node.data("annotation"))
-                ? node.data("annotation")
-                : [node.data("annotation")];
-            componentObject[nodeLabel] = nodeAnnotations;
+            const nodePhenotypes = Array.isArray(node.data("phenotype"))
+                ? node.data("phenotype")
+                : [node.data("phenotype")];
+            componentObject[nodeLabel] = nodePhenotypes;
         });
         return componentObject;
     });

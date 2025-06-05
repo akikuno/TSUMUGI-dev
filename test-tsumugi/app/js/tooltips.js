@@ -3,32 +3,32 @@
 // ############################################################
 
 /*
-    Formats annotations for tooltips, placing and highlighting the target phenotype at the top.
+    Formats phenotypes for tooltips, placing and highlighting the target phenotype at the top.
 */
-function formatAnnotationsWithHighlight(annotations, target_phenotype) {
+function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
     if (!target_phenotype) {
-        return annotations.map((anno) => "・ " + anno).join("<br>");
+        return phenotypes.map((anno) => "・ " + anno).join("<br>");
     }
 
     const matching = [];
     const others = [];
 
-    for (const anno of annotations) {
-        if (anno.startsWith(target_phenotype)) {
-            matching.push(anno);
+    for (const phenotype of phenotypes) {
+        if (phenotype.startsWith(target_phenotype)) {
+            matching.push(phenotype);
         } else {
-            others.push(anno);
+            others.push(phenotype);
         }
     }
 
     const ordered = [...matching, ...others];
 
     return ordered
-        .map((anno) => {
-            if (anno.startsWith(target_phenotype)) {
-                return `🚩 ${anno}`;
+        .map((phenotype) => {
+            if (phenotype.startsWith(target_phenotype)) {
+                return `🚩 ${phenotype}`;
             } else {
-                return "・ " + anno;
+                return "・ " + phenotype;
             }
         })
         .join("<br>");
@@ -39,19 +39,25 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
     let tooltipText = "";
     let pos;
 
-    const annotations = Array.isArray(data.annotation) ? data.annotation : [data.annotation];
+    const phenotypes = Array.isArray(data.phenotype) ? data.phenotype : [data.phenotype];
+    const diseases = Array.isArray(data.disease) ? data.disease : [data.disease];
 
     if (event.target.isNode()) {
-        const geneID = map_symbol_to_id[data.label] || "UNKNOWN";
+        const geneID = map_symbol_to_id[data.id] || "UNKNOWN";
         const url_impc = `https://www.mousephenotype.org/data/genes/${geneID}`;
-        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>`;
-        tooltipText += formatAnnotationsWithHighlight(annotations, target_phenotype);
+        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a></b><br>`;
+        tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
+        // もしdiseasesが""出ない場合は、Associated Human Diseasesを追加
+        if (diseases && diseases.length > 0 && diseases[0] !== "") {
+            tooltipText += `<br><br><b>Associated Human Diseases</b><br>`;
+            tooltipText += diseases.map((disease) => "・ " + disease).join("<br>");
+        }
         pos = event.target.renderedPosition();
     } else if (event.target.isEdge()) {
         const sourceNode = cy.getElementById(data.source).data("label");
         const targetNode = cy.getElementById(data.target).data("label");
         tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>`;
-        tooltipText += formatAnnotationsWithHighlight(annotations, target_phenotype);
+        tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
 
         const sourcePos = cy.getElementById(data.source).renderedPosition();
         const targetPos = cy.getElementById(data.target).renderedPosition();

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-WORD="calculateConnectedComponents"
+WORD="data.annotation"
 
 find notebooks/ -type f | xargs grep "$WORD"
 find TSUMUGI/template -type f | xargs grep "$WORD"
