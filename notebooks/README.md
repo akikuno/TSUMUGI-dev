@@ -16,6 +16,7 @@ conda activate env-tsumugi
 [  -f .gitattributes ] || touch .gitattributes
 if ! grep -q nbstripout .gitattributes; then
     nbstripout --install
+    echo '{"metadata": false, "cell_metadata": false, "output": false}' > .nbstripout
     echo "*.ipynb filter=nbstripout" >> .gitattributes
 fi
 
