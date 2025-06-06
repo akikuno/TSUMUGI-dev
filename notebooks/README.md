@@ -12,10 +12,13 @@ fi
 
 conda activate env-tsumugi
 
+# Configuration of nbstripout to exclude output and metadata of .ipynb files from Git commits.
+[  -f .gitattributes ] || touch .gitattributes
 if ! grep -q nbstripout .gitattributes; then
     nbstripout --install
     echo "*.ipynb filter=nbstripout" >> .gitattributes
 fi
+
 ```
 
 
