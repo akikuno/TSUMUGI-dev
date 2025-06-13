@@ -15,6 +15,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #FFEBD8;
 }
 
 /* Inherit font settings for form elements */
@@ -31,24 +32,32 @@ a {
     text-decoration: none;
 }
 
+.main-container {
+    background-color: white;
+    width: 90%;
+    max-width: 1500px;
+    box-sizing: border-box;
+    padding-bottom: 50px;
+    margin: 30px auto;
+    border-radius: 20px;
+}
+
 .header-container {
-    width: 100%;
     text-align: center;
-    padding: 20px 0;
     box-sizing: border-box;
 }
 
 .body-container {
     display: flex;
-    width: 100%;
-    max-width: 1200px;
     height: calc(100% - 60px);
     max-height: 800px;
     box-sizing: border-box;
-    margin-top: 0;
     align-items: stretch;
 }
 
+/* ======================================================== */
+/* control-panel-container */
+/* ======================================================== */
 .control-panel-container {
     flex: 1;
     display: flex;
@@ -62,6 +71,9 @@ a {
 
 .panel-section {
     margin-top: 15px;
+    background-color: #fff;
+    padding-bottom: 10px;
+    border-radius: 10px;
 }
 
 .panel-section:first-child {
@@ -76,15 +88,32 @@ a {
     font-weight: bold;
 }
 
-.label-row {
+
+/* ======================================================== */
+/* cy-container */
+/* ======================================================== */
+
+.cy-container {
+    flex: 3;
+    min-width: 0;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-    text-align: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+    box-sizing: border-box;
+    border: 2px solid #aaa;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 20px;
 }
+
+.cy {
+    width: 100%;
+    height: calc(100% - 130px);
+}
+
 
 /* ======================================================== */
 /* slider-container */
@@ -113,6 +142,31 @@ a {
     width: 25px;
     text-align: center;
 }
+
+.label-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    text-align: center;
+}
+
+/* SVG */
+.color-scale-container,
+.edge-scale-container {
+    width: 50%;
+    height: auto;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.scale-label {
+    margin-top: 5px;
+}
+
+
 
 /* ======================================================== */
 /* search-container */
@@ -197,7 +251,7 @@ ul.suggestions li:hover {
 }
 
 /* タイトル風スタイルをつける */
-.checkbox-container > span {
+.checkbox-container>span {
     position: absolute;
     top: 0;
     left: 50%;
@@ -223,7 +277,7 @@ ul.suggestions li:hover {
     display: none;
 }
 
-.round-checkbox input[type="checkbox"] + label {
+.round-checkbox input[type="checkbox"]+label {
     position: relative;
     padding-left: 35px;
     line-height: 24px;
@@ -231,7 +285,7 @@ ul.suggestions li:hover {
     user-select: none;
 }
 
-.round-checkbox input[type="checkbox"] + label:before {
+.round-checkbox input[type="checkbox"]+label:before {
     display: block;
     position: absolute;
     left: 0;
@@ -246,11 +300,11 @@ ul.suggestions li:hover {
 }
 
 /* チェック時だけ黄色背景に */
-.round-checkbox input[type="checkbox"]:checked + label:before {
+.round-checkbox input[type="checkbox"]:checked+label:before {
     background-color: #ff8c00;
 }
 
-.round-checkbox input[type="checkbox"]:checked + label:after {
+.round-checkbox input[type="checkbox"]:checked+label:after {
     display: block;
     position: absolute;
     content: "";
@@ -275,51 +329,18 @@ ul.suggestions li:hover {
     margin-top: 10px;
 }
 
-/* ======================================================== */
-/* cy-container */
-/* ======================================================== */
-
-.cy-container {
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    position: relative;
-    box-sizing: border-box;
-    border: 2px solid #aaa;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 20px;
-}
-
-.cy {
-    width: 100%;
-    height: calc(100% - 130px);
-}
-
-.color-scale-container,
-.edge-scale-container {
-    width: 50%;
-    height: auto;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.scale-label {
-    margin-top: 5px;
-}
 
 /* ======================================================== */
 /* Custom styles for noUiSlider */
 /* ======================================================== */
 
-.noUi-target {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 10px;
+.noUi-handle {
+    border-radius: 50%;
+    box-shadow: none;
+    outline: none;
+    border: 3px solid #888;
 }
+
 
 .noUi-horizontal {
     height: 10px;
