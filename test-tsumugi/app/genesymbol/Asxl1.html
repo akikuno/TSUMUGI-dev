@@ -56,7 +56,9 @@
 
                 <!-- Slider for phenotypes similarity -->
                 <div class="panel-section">
-                    <div class="panel-title"><i class="fa-solid fa-sliders"></i> Phenotypic metrics</div>
+                    <div class="panel-title">
+                        <i class="fa-solid fa-sliders"></i> Phenotypic metrics
+                    </div>
 
                     <div class="slider-container">
                         <span class="control-label" style="display: block">
@@ -146,87 +148,83 @@
                 <!-- ===================================== -->
 
                 <div class="panel-section">
-                    <details>
-                        <summary class="panel-title">
-                            <i class="fa-solid fa-puzzle-piece"></i>
-                            Layout & Display
-                        </summary>
-                        <!-- Network layout -->
+                    <div class="panel-title">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                        Layout & Display
+                    </div>
+                    <!-- Network layout -->
 
-                        <div class="slider-container">
-                            <div class="label-row">
-                                <label for="layout-dropdown" class="control-label"> Layout: </label>
-                                <select class="exporter" id="layout-dropdown">
-                                    <option value="cose" selected>Cose</option>
-                                    <option value="circle">Circle</option>
-                                    <option value="grid">Grid</option>
-                                    <option value="random">Random</option>
-                                    <option value="concentric">Concentric</option>
-                                </select>
-                            </div>
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <label for="layout-dropdown" class="control-label"> Layout: </label>
+                            <select class="exporter" id="layout-dropdown">
+                                <option value="cose" selected>Cose</option>
+                                <option value="circle">Circle</option>
+                                <option value="grid">Grid</option>
+                                <option value="random">Random</option>
+                                <option value="concentric">Concentric</option>
+                            </select>
                         </div>
+                    </div>
 
-                        <div class="slider-container">
-                            <div class="label-row">
-                                <span class="control-label">Font size: </span>
-                                <span id="font-size-value">20</span>
-                            </div>
-                            <div class="slider-element" id="font-size-slider"></div>
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <span class="control-label">Font size: </span>
+                            <span id="font-size-value">20</span>
                         </div>
+                        <div class="slider-element" id="font-size-slider"></div>
+                    </div>
 
-                        <div class="slider-container">
-                            <div class="label-row">
-                                <span class="control-label">Edge width:</span>
-                                <span id="edge-width-value">5</span>
-                            </div>
-                            <div class="slider-element" id="edge-width-slider"></div>
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <span class="control-label">Edge width:</span>
+                            <span id="edge-width-value">5</span>
                         </div>
+                        <div class="slider-element" id="edge-width-slider"></div>
+                    </div>
 
-                        <div class="slider-container" id="node-repulsion-container">
-                            <div class="label-row">
-                                <span class="control-label">Node repulsion (Cose only):</span>
-                                <span id="node-repulsion-value">5</span>
-                            </div>
-                            <div class="slider-element" id="nodeRepulsion-slider"></div>
+                    <div class="slider-container" id="node-repulsion-container">
+                        <div class="label-row">
+                            <span class="control-label">Node repulsion (Cose only):</span>
+                            <span id="node-repulsion-value">5</span>
                         </div>
-                    </details>
+                        <div class="slider-element" id="nodeRepulsion-slider"></div>
+                    </div>
                 </div>
 
                 <!-- ===================================== -->
                 <!-- Search and Export -->
                 <!-- ===================================== -->
                 <div class="panel-section">
-                    <details>
-                        <summary class="panel-title">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            Search & Export
-                        </summary>
-                        <!-- ===================================== -->
-                        <!-- Gene search box -->
-                        <!-- ===================================== -->
-                        <div class="slider-container">
-                            <label for="gene-search" class="control-label"> Search gene </label>
-                            <div class="search-container">
-                                <input type="text" id="gene-search" placeholder="" autocomplete="off" />
-                                <button id="search-button">Search</button>
-                                <ul id="suggestions" class="suggestions" hidden></ul>
-                            </div>
+                    <div class="panel-title">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        Search & Export
+                    </div>
+                    <!-- ===================================== -->
+                    <!-- Gene search box -->
+                    <!-- ===================================== -->
+                    <div class="slider-container">
+                        <label for="gene-search" class="control-label"> Search gene </label>
+                        <div class="search-container">
+                            <input type="text" id="gene-search" placeholder="" autocomplete="off" />
+                            <button id="search-button">Search</button>
+                            <ul id="suggestions" class="suggestions" hidden></ul>
                         </div>
+                    </div>
 
-                        <!-- ===================================== -->
-                        <!-- Exporter -->
-                        <!-- ===================================== -->
-                        <div class="exporter-group">
-                            <button class="exporter" id="export-png">
-                                <i class="fa-regular fa-image"></i>
-                                PNG
-                            </button>
-                            <button class="exporter" id="export-csv">
-                                <i class="fa-regular fa-file-lines"></i>
-                                CSV
-                            </button>
-                        </div>
-                    </details>
+                    <!-- ===================================== -->
+                    <!-- Exporter -->
+                    <!-- ===================================== -->
+                    <div class="exporter-group">
+                        <button class="exporter" id="export-png">
+                            <i class="fa-regular fa-image"></i>
+                            PNG
+                        </button>
+                        <button class="exporter" id="export-csv">
+                            <i class="fa-regular fa-file-lines"></i>
+                            CSV
+                        </button>
+                    </div>
                 </div>
             </div>
 
