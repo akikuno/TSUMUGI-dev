@@ -6,6 +6,7 @@ import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
 import { loadJSONGz, loadJSON } from "../js/data_loader.js";
 import { setupGeneSearch } from "../js/searcher.js";
+import { highlightDiseaseAnnotation } from "../js/highlighter.js";
 
 // ############################################################################
 // Input handler
@@ -161,9 +162,27 @@ const cy = cytoscape({
                 },
             },
         },
+        {
+            selector: ".disease-highlight", // 疾患ハイライト用クラス
+            style: {
+                "border-width": 3,
+                "border-color": "#fc4c00",
+            },
+        },
+        {
+            selector: ".search-highlight", // 検索ハイライト用クラス
+            style: {
+                "border-width": 3,
+                "border-color": "#00cc99",
+            },
+        },
     ],
     layout: getLayoutOptions(),
 });
+
+
+// ★ デバッグ用：cyをグローバルに公開
+window.cy = cy;
 
 // ############################################################################
 // Control panel handler
@@ -273,7 +292,12 @@ function applyFiltering() {
 document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("lifestage-filter-form").addEventListener("change", applyFiltering);
-document.getElementById("human-disease-filter-form").addEventListener("change", applyFiltering);
+
+// =============================================================================
+// ヒト疾患ハイライト
+// =============================================================================
+
+highlightDiseaseAnnotation({ cy });
 
 // ############################################################################
 // Cytoscape's visualization setting

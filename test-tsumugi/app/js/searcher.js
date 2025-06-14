@@ -47,17 +47,10 @@ export function setupGeneSearch({ cy, inputId = "gene-search", listId = "suggest
     document.getElementById(buttonId).addEventListener("click", () => {
         const query = input.value.trim().toLowerCase();
 
-        // すべてのノードのハイライトをリセット
-        cy.nodes().forEach((node) => {
-            node.style("border-width", 0);
-            node.style("border-color", "transparent");
-        });
-
         // 遺伝子名でノードを検索し、見つけたらハイライト
         const matchedNode = cy.nodes().filter((node) => node.data("label").toLowerCase() === query);
         if (matchedNode.length > 0) {
-            matchedNode.style("border-width", 3);
-            matchedNode.style("border-color", "#fc4c00");
+            matchedNode.addClass("search-highlight");
 
             // Zoom in and center with animation
             cy.center(matchedNode);
