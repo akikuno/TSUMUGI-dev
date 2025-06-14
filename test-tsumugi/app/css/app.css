@@ -4,18 +4,18 @@
 
 html,
 body {
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     height: 100%;
     width: 100%;
+    max-width: 1500px;
     font-size: 18px;
     font-family: "Lato", "Arial", "Helvetica", sans-serif;
     color: #333;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    background-color: #FFEBD8;
+    margin: 0 auto;
 }
 
 /* Inherit font settings for form elements */
@@ -59,8 +59,8 @@ a {
 /* control-panel-container */
 /* ======================================================== */
 /* 左パネル */
-.left-layout-panel {
-    flex: 1 1 10%;
+.left-control-panel-container {
+    flex: 1;
     min-width: 120px;
     padding: 10px;
     box-sizing: border-box;
@@ -71,8 +71,8 @@ a {
 
 
 /* 右パネル */
-.right-control-panel {
-    flex: 1 1 10%;
+.right-control-panel-container {
+    flex: 1;
     min-width: 120px;
     padding: 10px;
     box-sizing: border-box;
@@ -82,7 +82,7 @@ a {
 }
 
 .panel-section {
-    margin-top: 15px;
+    margin: 0 auto;
     background-color: #fff;
     padding-bottom: 10px;
     border-radius: 10px;
@@ -96,7 +96,7 @@ a {
 .panel-title {
     text-align: center;
     margin-bottom: 15px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: bold;
 }
 
@@ -107,9 +107,9 @@ a {
 
 
 .cy-container {
-    flex: 1 1 60%;
+    flex: 3;
     padding: 10px;
-    margin: 0 10px;
+    margin: 0 auto;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -180,23 +180,13 @@ a {
 /* search-container */
 /* ======================================================== */
 
-/* Search container layout */
-.search-container {
-    position: relative;
-    width: 80%;
-    max-width: 300px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
 /* Input style */
 #gene-search {
-    width: 50%;
-    padding: 8px;
+    width: 70%;
+    padding: 10px;
     font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
     outline: none;
 }
 
@@ -245,21 +235,22 @@ ul.suggestions li:hover {
     background-color: #ffebd8;
 }
 
+
 /* ======================================================== */
-/* checkbox-container */
+/* boxed-section */
 /* ======================================================== */
 
-.checkbox-container {
+.boxed-section {
     border: 2px solid #aaa;
     border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 15px;
+    padding: 10px;
+    margin-bottom: 20px;
     position: relative;
     background-color: #fff;
 }
 
 /* タイトル風スタイルをつける */
-.checkbox-container>span {
+.boxed-section>span {
     position: absolute;
     top: 0;
     left: 50%;
@@ -269,10 +260,21 @@ ul.suggestions li:hover {
     white-space: nowrap;
 }
 
-.checkbox-container form {
+.boxed-section form {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+.boxed-section.align-center {
+    /* 中央揃えのためのスタイル */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
 }
 
 /* 丸型チェックボックススタイル */
@@ -328,6 +330,15 @@ ul.suggestions li:hover {
 /* ======================================================== */
 /* Exporter */
 /* ======================================================== */
+.exporter {
+    border: 2px solid #aaa;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
 .exporter-group {
     display: flex;
     justify-content: center;
@@ -343,7 +354,7 @@ ul.suggestions li:hover {
 /* ======================================================== */
 
 .noUi-handle {
-    border-radius: 50%;
+    border-radius: 20%;
     box-shadow: none;
     outline: none;
     border: 3px solid #888;
@@ -358,17 +369,6 @@ ul.suggestions li:hover {
     background-color: #aaa;
 }
 
-/* ======================================================== */
-/* Exporter */
-/* ======================================================== */
-.exporter {
-    border: 1px solid #aaa;
-    background-color: #fff;
-    border-radius: 4px;
-    padding: 12px 20px;
-    margin-top: 10px;
-    cursor: pointer;
-}
 
 /* ======================================================== */
 /* Footer styling */
@@ -465,7 +465,7 @@ button.menu-toggle-icon {
         justify-content: center;
     }
 
-    .control-panel-container {
+    .left-control-panel-container {
         position: fixed;
         top: 0;
         left: -100%;
@@ -474,13 +474,12 @@ button.menu-toggle-icon {
         max-width: 300px;
         background-color: #fff;
         z-index: 999;
-        transition: left 0.3s ease;
         overflow-y: auto;
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
         padding-top: 80px;
     }
 
-    .control-panel-container.active {
+    .left-control-panel-container.active {
         left: 0;
     }
 
