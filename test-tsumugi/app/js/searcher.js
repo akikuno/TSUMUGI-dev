@@ -73,8 +73,4 @@ export function setupGeneSearch({
         }, 100);
     });
 
-    // // 🔍 ボタンのクリックでも検索できるようにしておく
-    // document.getElementById(buttonId).addEventListener("click", () => {
-    //     performSearch(input.value);
-    // });
 }

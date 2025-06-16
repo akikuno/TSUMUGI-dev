@@ -1,23 +1,29 @@
-function filterConnectedComponentsByDisease(cy) {
-    // #human-disease-filter-form のチェック状態確認
-    const isDiseaseFilterChecked = document.querySelector('#human-disease-filter-form input[type="checkbox"]:checked');
-    if (!isDiseaseFilterChecked) return;
+import { highlightDiseaseNodes } from "../js/highlighter.js";
 
-    // 全ての連結成分を取得
-    const components = cy.elements().components();
+// ========================================
+// ハイライト状態復元関数
+// ========================================
 
-    components.forEach((component) => {
-        // この連結成分のノードの中に、diseaseが空でないものがあるか？
-        const hasDisease = component.nodes().some((node) => {
-            const disease = node.data("disease");
-            return disease && disease.length > 0;
-        });
+function restoreHighlightStates(cy) {
+    // Human Diseaseハイライトの復元
+    const isDiseaseChecked = document.querySelector('#human-disease-filter-form input[type="checkbox"]:checked');
+    if (isDiseaseChecked) {
+        // highlighter.jsの関数を呼び出してハイライトを再適用
+        highlightDiseaseNodes(cy);
+    }
 
-        // diseaseが空のノードだけで構成されている場合は非表示
-        if (!hasDisease) {
-            component.remove();
+    // Gene searchハイライトの復元
+    const geneSearchInput = document.getElementById('gene-search');
+    if (geneSearchInput && geneSearchInput.value.trim() !== '') {
+        const searchTerm = geneSearchInput.value.trim().toLowerCase();
+        const matchedNode = cy.nodes().filter(
+            (node) => node.data("label").toLowerCase() === searchTerm
+        );
+
+        if (matchedNode.length > 0) {
+            matchedNode.addClass("gene-highlight");
         }
-    });
+    }
 }
 
 export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterElements) {
@@ -126,6 +132,5 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
     cy.add(filteredElements);
     filterElements();
 
-    // ✅ diseaseフィルター適用
-    filterConnectedComponentsByDisease(cy);
+    restoreHighlightStates(cy);
 }

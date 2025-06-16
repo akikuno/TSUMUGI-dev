@@ -12,7 +12,7 @@ export function highlightDiseaseAnnotation({ cy, checkboxId = "disease" }) {
     });
 }
 
-function highlightDiseaseNodes(cy) {
+export function highlightDiseaseNodes(cy) {
     // 疾患関連ノードを検索してハイライト
     const diseaseNodes = cy.nodes().filter((node) => {
         const nodeData = node.data();
