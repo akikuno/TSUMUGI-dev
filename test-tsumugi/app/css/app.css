@@ -433,6 +433,11 @@ button.menu-toggle-icon {
         max-width: 90%;
     }
 
+
+    #close-panel.active {
+        display: block;
+    }
+
     .menu-toggle {
         position: absolute;
         left: 20px;
@@ -465,6 +470,7 @@ button.menu-toggle-icon {
         justify-content: center;
     }
 
+    /* パネルコンテナの統合スタイル */
     .left-control-panel-container {
         position: fixed;
         top: 0;
@@ -476,11 +482,27 @@ button.menu-toggle-icon {
         z-index: 999;
         overflow-y: auto;
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-        padding-top: 80px;
+        padding: 80px 10px 20px 10px;
+        transition: left 0.3s ease;
+    }
+
+    /* 右パネルを左パネルの中に移動 */
+    .right-control-panel-container {
+        position: static;
+        width: 100%;
+        padding: 10px;
+        box-shadow: none;
+        border-top: 2px solid #aaa;
+        margin-top: 20px;
     }
 
     .left-control-panel-container.active {
         left: 0;
+    }
+
+    /* 右パネルを非表示にしない */
+    .body-container {
+        flex-direction: column;
     }
 
     .cy-container {
