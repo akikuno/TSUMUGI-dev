@@ -23,17 +23,32 @@
 
 # v0.3.2 (2025-MM-DD)
 
+## 💥 Breaking Changes
+
++ Updated to support IMPC RELEASE 23.0.  
+  Issue: [#88](https://github.com/akikuno/TSUMUGI-dev/issues/88)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e0dbbfce604394e66c2d71049560e42f41030947)]
+
 ## 🔧 Maintenance
 
-+ Support for IMPC RELEASE 23.0. Issue: [#88](https://github.com/akikuno/TSUMUGI-dev/issues/88) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e0dbbfce604394e66c2d71049560e42f41030947)]
++ Added version tags to filenames in `TSUMUGI_raw_data` and included support for both CSV and Parquet formats.  
+  Issues: [#95](https://github.com/akikuno/TSUMUGI-dev/issues/95), [#96](https://github.com/akikuno/TSUMUGI-dev/issues/96)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/22a5ad079c4f353c12b2316629981e3677cc8e94)]
 
-+ スマホで左右に分割されたControl Panelを一括して表示するように修正。Issue: [#89](https://github.com/akikuno/TSUMUGI-dev/issues/89) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/73da4c4774062f836ff187ad7e2b1494bbf203c6)]
++ On mobile devices, the previously split left/right control panels are now unified into a single panel view.  
+  Issue: [#89](https://github.com/akikuno/TSUMUGI-dev/issues/89)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/73da4c4774062f836ff187ad7e2b1494bbf203c6)]
 
-+ スマホにおいて、Headerの文字列がそれぞれ一行に収まるようにフォントサイズを動的に変更. Issue: [#93](https://github.com/akikuno/TSUMUGI-dev/issues/93) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab26c11232ffa56ed316a8658403b5a767756a8f)]
++ Dynamically adjusted header font sizes on mobile devices to ensure text fits within a single line.  
+  Issue: [#93](https://github.com/akikuno/TSUMUGI-dev/issues/93)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab26c11232ffa56ed316a8658403b5a767756a8f)]
 
 ## 🐛 Bug Fixes
 
-+ スマホにおいて、ToggleのCloseボタンが表示されるように修正. Issue: [#94](https://github.com/akikuno/TSUMUGI-dev/issues/94) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/73da4c4774062f836ff187ad7e2b1494bbf203c6)]
++ Fixed an issue where the toggle close button was not appearing on mobile devices.  
+  Issue: [#94](https://github.com/akikuno/TSUMUGI-dev/issues/94)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/73da4c4774062f836ff187ad7e2b1494bbf203c6)]
+
 
 
 -------------------------------------------------------------
