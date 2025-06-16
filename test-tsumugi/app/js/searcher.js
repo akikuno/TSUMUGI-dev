@@ -15,7 +15,7 @@ export function setupGeneSearch({
         );
 
         if (matchedNode.length > 0) {
-            matchedNode.addClass("search-highlight");
+            matchedNode.addClass("gene-highlight");
             cy.center(matchedNode);
             cy.animate({
                 center: { eles: matchedNode },

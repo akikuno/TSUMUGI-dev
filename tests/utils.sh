@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-WORD="data.annotation"
+WORD="search-highlight"
 
 find notebooks/ -type f | xargs grep "$WORD"
 find TSUMUGI/template -type f | xargs grep "$WORD"

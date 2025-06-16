@@ -170,10 +170,9 @@ const cy = cytoscape({
             },
         },
         {
-            selector: ".search-highlight", // 検索ハイライト用クラス
+            selector: ".gene-highlight", // 遺伝子検索ハイライト用クラス
             style: {
-                "border-width": 3,
-                "border-color": "#00cc99",
+                "color": "#fc4c00",
             },
         },
     ],
