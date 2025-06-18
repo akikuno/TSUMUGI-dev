@@ -49,6 +49,11 @@
   Issue: [#94](https://github.com/akikuno/TSUMUGI-dev/issues/94)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/73da4c4774062f836ff187ad7e2b1494bbf203c6)]
 
+## 🖼️ User Interface
+
++ Update the footer layout to emphasize Documentation & Inquiry.  
+  Issue: [#98](https://github.com/akikuno/TSUMUGI-dev/issues/98)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/aad5dde6e6db184401b16f14acbebf5fa22ffa94)]
 
 
 -------------------------------------------------------------
