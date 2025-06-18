@@ -1,7 +1,7 @@
 // 検索モードの選択用変数 (初期状態を 'phenotype')
 let searchMode = "phenotype";
 
-const geneListPlaceHolder = "Asxl1\r\nRab10\r\nDdx46\r\nAp3b2\r\nKcnma1"; // プレースホルダーとして例を入力
+const geneListPlaceHolder = "Asxl1\r\nRab10\r\nDdx46\r\nLepr\r\nKcnma1"; // プレースホルダーとして例を入力
 
 // ====================================================================
 // タブ切り替え + searchMode の更新

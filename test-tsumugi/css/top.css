@@ -193,30 +193,60 @@ button.submitBtn:hover:enabled {
 
 
 /* ======================================================== */
-/* Download button */
+/* Resources Section */
 /* ======================================================== */
-.download-btn {
+
+.resources-container {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+}
+
+.resource-section {
+    flex: 1;
+    min-width: 280px;
+    text-align: center;
+}
+
+.resource-section h3 {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    color: #555;
+    font-weight: normal;
+}
+
+.resource-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.resource-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     background-color: #fff;
-    color: #333;
-    padding: 12px 20px;
+    color: #555;
+    padding: 10px 16px;
+    border: 2px solid #ccc;
     border-radius: 10px;
     text-decoration: none;
-    transition: background-color 0.3s, transform 0.1s;
+    font-size: 0.95em;
+    transition: all 0.2s ease;
 }
 
-.download-btn:hover {
-    color: #fff;
-    background-color: #ff7800;
+.resource-btn:hover {
+    color: #333;
+    border-color: #ff7800;
+    background-color: rgba(255, 120, 0, 0.05);
 }
 
-.download-btn:active {
-    transform: scale(0.95);
-}
-
-.download-btn i {
-    margin-right: 8px;
+.resource-btn i {
+    margin-right: 6px;
+    font-size: 0.9em;
 }
 
 /* ======================================================== */
@@ -265,12 +295,21 @@ footer a:hover {
         width: 90%;
     }
 
-
     button.Tab {
         padding: 8px 10px;
         font-size: 0.9em;
         margin: 2px;
         min-width: 30px;
         white-space: nowrap;
+    }
+
+    .resources-container {
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .resource-section {
+        min-width: auto;
     }
 }

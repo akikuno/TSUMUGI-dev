@@ -172,13 +172,13 @@ const cy = cytoscape({
         {
             selector: ".gene-highlight", // 遺伝子検索ハイライト用クラス
             style: {
-                "color": "#fc4c00",
+                color: "#028760",
+                "font-weight": "bold",
             },
         },
     ],
     layout: getLayoutOptions(),
 });
-
 
 // ★ デバッグ用：cyをグローバルに公開
 window.cy = cy;
@@ -295,7 +295,6 @@ document.getElementById("lifestage-filter-form").addEventListener("change", appl
 // =============================================================================
 // ヒト疾患ハイライト
 // =============================================================================
-
 highlightDiseaseAnnotation({ cy });
 
 // ############################################################################

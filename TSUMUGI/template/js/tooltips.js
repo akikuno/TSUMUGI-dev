@@ -7,7 +7,7 @@
 */
 function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
     if (!target_phenotype) {
-        return phenotypes.map(anno => "・ " + anno).join("<br>");
+        return phenotypes.map((anno) => "・ " + anno).join("<br>");
     }
 
     const matching = [];
@@ -50,10 +50,9 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
         // もしdiseasesが""出ない場合は、Associated Human Diseasesを追加
         if (diseases && diseases.length > 0 && diseases[0] !== "") {
             tooltipText += `<br><br><b>Associated Human Diseases</b><br>`;
-            tooltipText += diseases.map(disease => "・ " + disease).join("<br>");
+            tooltipText += diseases.map((disease) => "・ " + disease).join("<br>");
         }
         pos = event.target.renderedPosition();
-
     } else if (event.target.isEdge()) {
         const sourceNode = cy.getElementById(data.source).data("label");
         const targetNode = cy.getElementById(data.target).data("label");
@@ -70,7 +69,6 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
 
     return { tooltipText, pos };
 }
-
 
 function enableTooltipDrag(tooltip) {
     let isDragging = false;
@@ -127,7 +125,6 @@ export function showTooltip(event, cy, map_symbol_to_id, target_phenotype = null
     document.querySelector(".cy").appendChild(tooltip);
     enableTooltipDrag(tooltip);
 }
-
 
 export function removeTooltips() {
     document.querySelectorAll(".cy-tooltip").forEach((el) => el.remove());

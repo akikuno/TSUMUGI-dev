@@ -1,3 +1,31 @@
+import { highlightDiseaseNodes } from "../js/highlighter.js";
+
+// ========================================
+// ハイライト状態復元関数
+// ========================================
+
+function restoreHighlightStates(cy) {
+    // Human Diseaseハイライトの復元
+    const isDiseaseChecked = document.querySelector('#human-disease-filter-form input[type="checkbox"]:checked');
+    if (isDiseaseChecked) {
+        // highlighter.jsの関数を呼び出してハイライトを再適用
+        highlightDiseaseNodes(cy);
+    }
+
+    // Gene searchハイライトの復元
+    const geneSearchInput = document.getElementById('gene-search');
+    if (geneSearchInput && geneSearchInput.value.trim() !== '') {
+        const searchTerm = geneSearchInput.value.trim().toLowerCase();
+        const matchedNode = cy.nodes().filter(
+            (node) => node.data("label").toLowerCase() === searchTerm
+        );
+
+        if (matchedNode.length > 0) {
+            matchedNode.addClass("gene-highlight");
+        }
+    }
+}
+
 export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterElements) {
     const checkedSexs = Array.from(document.querySelectorAll('#sex-filter-form input[type="checkbox"]:checked')).map(
         (input) => input.value,
@@ -19,8 +47,8 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
         ...item,
         data: {
             ...item.data,
-            _originalAnnotations: item.data.annotation || [], // 🔁 元の annotation を保持
-            annotation: item.data.annotation || [],
+            _originalPhenotypes: item.data.phenotype || [], // 🔁 元の phenotype を保持
+            phenotype: item.data.phenotype || [],
         },
     }));
 
@@ -28,65 +56,65 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
     if (checkedSexs.length !== allSexs.length) {
         filteredElements = filteredElements
             .map((item) => {
-                const filtered = item.data.annotation.filter((annotation) =>
-                    checkedSexs.some((sex) => annotation.includes(sex)),
+                const filtered = item.data.phenotype.filter((phenotype) =>
+                    checkedSexs.some((sex) => phenotype.includes(sex)),
                 );
                 return {
                     ...item,
-                    data: { ...item.data, annotation: filtered },
+                    data: { ...item.data, phenotype: filtered },
                 };
             })
-            .filter((item) => item.data.annotation.length > 0);
+            .filter((item) => item.data.phenotype.length > 0);
     }
 
     // 遺伝型フィルター
     if (checkedGenotypes.length !== allGenotypes.length) {
         filteredElements = filteredElements
             .map((item) => {
-                const original = item.data._originalAnnotations;
-                const filtered = item.data.annotation.filter((annotation) =>
-                    checkedGenotypes.some((gt) => annotation.includes(gt)),
+                const original = item.data._originalPhenotypes;
+                const filtered = item.data.phenotype.filter((phenotype) =>
+                    checkedGenotypes.some((gt) => phenotype.includes(gt)),
                 );
                 return {
                     ...item,
-                    data: { ...item.data, annotation: filtered },
+                    data: { ...item.data, phenotype: filtered },
                 };
             })
-            .filter((item) => item.data.annotation.length > 0);
+            .filter((item) => item.data.phenotype.length > 0);
     }
 
     // ライフステージフィルター
     if (checkedLifestages.length !== allLifestages.length) {
         filteredElements = filteredElements
             .map((item) => {
-                const filtered = item.data.annotation.filter((annotation) =>
-                    checkedLifestages.some((stage) => annotation.includes(stage)),
+                const filtered = item.data.phenotype.filter((phenotype) =>
+                    checkedLifestages.some((stage) => phenotype.includes(stage)),
                 );
                 return {
                     ...item,
-                    data: { ...item.data, annotation: filtered },
+                    data: { ...item.data, phenotype: filtered },
                 };
             })
-            .filter((item) => item.data.annotation.length > 0);
+            .filter((item) => item.data.phenotype.length > 0);
     }
 
-    // ✅ 2つ以上の annotation を持つものだけ残す
-    filteredElements = filteredElements.filter((item) => item.data.annotation && item.data.annotation.length > 1);
+    // ✅ 2つ以上の phenotype を持つものだけ残す
+    filteredElements = filteredElements.filter((item) => item.data.phenotype && item.data.phenotype.length > 1);
 
     // 🔁 target_phenotype を復元
     if (target_phenotype) {
         filteredElements = filteredElements.map((item) => {
-            const original = item.data._originalAnnotations;
-            const restored = original.filter((annotation) => annotation.includes(target_phenotype));
+            const original = item.data._originalPhenotypes;
+            const restored = original.filter((phenotype) => phenotype.includes(target_phenotype));
 
-            const merged = [...item.data.annotation, ...restored];
+            const merged = [...item.data.phenotype, ...restored];
             const unique = Array.from(new Set(merged));
 
             return {
                 ...item,
                 data: {
                     ...item.data,
-                    annotation: unique,
+                    phenotype: unique,
                 },
             };
         });
@@ -95,7 +123,7 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
     // ✅ target_phenotype を含まない要素を除外する
     if (target_phenotype) {
         filteredElements = filteredElements.filter((item) =>
-            item.data.annotation.some((anno) => anno.includes(target_phenotype)),
+            item.data.phenotype.some((anno) => anno.includes(target_phenotype)),
         );
     }
 
@@ -103,4 +131,6 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
     cy.elements().remove();
     cy.add(filteredElements);
     filterElements();
+
+    restoreHighlightStates(cy);
 }

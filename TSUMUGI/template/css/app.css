@@ -4,17 +4,18 @@
 
 html,
 body {
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     height: 100%;
     width: 100%;
+    max-width: 1500px;
     font-size: 18px;
     font-family: "Lato", "Arial", "Helvetica", sans-serif;
     color: #333;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    margin: 0 auto;
 }
 
 /* Inherit font settings for form elements */
@@ -31,37 +32,60 @@ a {
     text-decoration: none;
 }
 
+.main-container {
+    background-color: white;
+    width: 90%;
+    max-width: 1500px;
+    box-sizing: border-box;
+    padding-bottom: 50px;
+    margin: 30px auto;
+    border-radius: 20px;
+}
+
 .header-container {
-    width: 100%;
     text-align: center;
-    padding: 20px 0;
     box-sizing: border-box;
 }
 
 .body-container {
-    display: flex;
-    width: 100%;
-    max-width: 1200px;
     height: calc(100% - 60px);
     max-height: 800px;
     box-sizing: border-box;
-    margin-top: 0;
     align-items: stretch;
+    display: flex;
 }
 
-.control-panel-container {
+/* ======================================================== */
+/* control-panel-container */
+/* ======================================================== */
+/* 左パネル */
+.left-control-panel-container {
     flex: 1;
+    min-width: 120px;
+    padding: 10px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    background-color: white;
+}
+
+
+/* 右パネル */
+.right-control-panel-container {
+    flex: 1;
+    min-width: 120px;
     padding: 10px;
-    margin-left: 20px;
     box-sizing: border-box;
-    min-width: 25%;
-    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
 }
 
 .panel-section {
-    margin-top: 15px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding-bottom: 10px;
+    border-radius: 10px;
 }
 
 .panel-section:first-child {
@@ -72,19 +96,34 @@ a {
 .panel-title {
     text-align: center;
     margin-bottom: 15px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: bold;
 }
 
-.label-row {
+
+/* ======================================================== */
+/* cy-container */
+/* ======================================================== */
+
+
+.cy-container {
+    flex: 3;
+    padding: 10px;
+    margin: 0 auto;
+    box-sizing: border-box;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-    text-align: center;
+    justify-content: center;
+    border: 2px solid #aaa;
+    border-radius: 10px;
 }
+
+.cy {
+    width: 100%;
+    height: calc(100% - 130px);
+}
+
 
 /* ======================================================== */
 /* slider-container */
@@ -114,27 +153,40 @@ a {
     text-align: center;
 }
 
+.label-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    text-align: center;
+}
+
+/* SVG */
+.color-scale-container,
+.edge-scale-container {
+    width: 50%;
+    height: auto;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.scale-label {
+    margin-top: 5px;
+}
+
 /* ======================================================== */
 /* search-container */
 /* ======================================================== */
 
-/* Search container layout */
-.search-container {
-    position: relative;
-    width: 80%;
-    max-width: 300px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
 /* Input style */
 #gene-search {
-    width: 50%;
-    padding: 8px;
+    width: 70%;
+    padding: 10px;
     font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
     outline: none;
 }
 
@@ -183,21 +235,22 @@ ul.suggestions li:hover {
     background-color: #ffebd8;
 }
 
+
 /* ======================================================== */
-/* checkbox-container */
+/* boxed-section */
 /* ======================================================== */
 
-.checkbox-container {
+.boxed-section {
     border: 2px solid #aaa;
     border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 15px;
+    padding: 10px;
+    margin-bottom: 20px;
     position: relative;
     background-color: #fff;
 }
 
 /* タイトル風スタイルをつける */
-.checkbox-container>span {
+.boxed-section>span {
     position: absolute;
     top: 0;
     left: 50%;
@@ -207,10 +260,21 @@ ul.suggestions li:hover {
     white-space: nowrap;
 }
 
-.checkbox-container form {
+.boxed-section form {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+.boxed-section.align-center {
+    /* 中央揃えのためのスタイル */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
 }
 
 /* 丸型チェックボックススタイル */
@@ -266,6 +330,15 @@ ul.suggestions li:hover {
 /* ======================================================== */
 /* Exporter */
 /* ======================================================== */
+.exporter {
+    border: 2px solid #aaa;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
 .exporter-group {
     display: flex;
     justify-content: center;
@@ -275,51 +348,18 @@ ul.suggestions li:hover {
     margin-top: 10px;
 }
 
-/* ======================================================== */
-/* cy-container */
-/* ======================================================== */
-
-.cy-container {
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    position: relative;
-    box-sizing: border-box;
-    border: 2px solid #aaa;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 20px;
-}
-
-.cy {
-    width: 100%;
-    height: calc(100% - 130px);
-}
-
-.color-scale-container,
-.edge-scale-container {
-    width: 50%;
-    height: auto;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.scale-label {
-    margin-top: 5px;
-}
 
 /* ======================================================== */
 /* Custom styles for noUiSlider */
 /* ======================================================== */
 
-.noUi-target {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 10px;
+.noUi-handle {
+    border-radius: 20%;
+    box-shadow: none;
+    outline: none;
+    border: 3px solid #888;
 }
+
 
 .noUi-horizontal {
     height: 10px;
@@ -329,16 +369,63 @@ ul.suggestions li:hover {
     background-color: #aaa;
 }
 
+
 /* ======================================================== */
-/* Exporter */
+/* Resources Section */
 /* ======================================================== */
-.exporter {
-    border: 1px solid #aaa;
+
+.resources-container {
+    max-width: 800px;
+    margin: 30px auto 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+}
+
+.resource-section {
+    flex: 1;
+    min-width: 280px;
+    text-align: center;
+}
+
+.resource-section h3 {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    color: #555;
+    font-weight: normal;
+}
+
+.resource-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+}
+
+.resource-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background-color: #fff;
-    border-radius: 4px;
-    padding: 12px 20px;
-    margin-top: 10px;
-    cursor: pointer;
+    color: #555;
+    padding: 10px 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.95em;
+    transition: all 0.2s ease;
+}
+
+.resource-btn:hover {
+    color: #333;
+    border-color: #ff7800;
+    background-color: rgba(255, 120, 0, 0.05);
+}
+
+.resource-btn i {
+    margin-right: 6px;
+    font-size: 0.9em;
 }
 
 /* ======================================================== */
@@ -372,7 +459,6 @@ footer a:hover {
     text-decoration: underline;
 }
 
-
 /* ======================================================== */
 /* スマホ向けデザイン */
 /* ======================================================== */
@@ -403,6 +489,11 @@ button.menu-toggle-icon {
         text-align: center;
         padding-left: 40px;
         max-width: 90%;
+    }
+
+
+    #close-panel.active {
+        display: block;
     }
 
     .menu-toggle {
@@ -437,7 +528,8 @@ button.menu-toggle-icon {
         justify-content: center;
     }
 
-    .control-panel-container {
+    /* パネルコンテナの統合スタイル */
+    .left-control-panel-container {
         position: fixed;
         top: 0;
         left: -100%;
@@ -446,14 +538,29 @@ button.menu-toggle-icon {
         max-width: 300px;
         background-color: #fff;
         z-index: 999;
-        transition: left 0.3s ease;
         overflow-y: auto;
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-        padding-top: 80px;
+        padding: 80px 10px 20px 10px;
+        transition: left 0.3s ease;
     }
 
-    .control-panel-container.active {
+    /* 右パネルを左パネルの中に移動 */
+    .right-control-panel-container {
+        position: static;
+        width: 100%;
+        padding: 10px;
+        box-shadow: none;
+        border-top: 2px solid #aaa;
+        margin-top: 20px;
+    }
+
+    .left-control-panel-container.active {
         left: 0;
+    }
+
+    /* 右パネルを非表示にしない */
+    .body-container {
+        flex-direction: column;
     }
 
     .cy-container {
@@ -471,5 +578,19 @@ button.menu-toggle-icon {
         height: auto;
         text-align: center;
         margin-top: 10px;
+    }
+
+    .resources-container {
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .resource-section {
+        min-width: auto;
+    }
+
+    .resource-buttons {
+        flex-direction: column;
     }
 }

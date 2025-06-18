@@ -1,41 +1,40 @@
 <!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Asxl1</title>
+        <link rel="icon" href="../../image/tsumugi-favicon.ico" />
 
-    <title>Asxl1</title>
-    <link rel="icon" href="../../image/tsumugi-favicon.ico" />
+        <!-- ============================= -->
+        <!-- JS -->
+        <!-- ============================= -->
+        <!-- noUiSlider -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" defer></script>
 
-    <!-- ============================= -->
-    <!-- JS -->
-    <!-- ============================= -->
-    <!-- noUiSlider -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" defer></script>
+        <!-- pako for reading gzip JSON -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
 
-    <!-- pako for reading gzip JSON -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
+        <!-- Cytoscape -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
 
-    <!-- Cytoscape -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
+        <!-- Custom JS -->
+        <script type="module" src="./Asxl1.js"></script>
+        <script type="module" src="../js/mobile_panel.js"></script>
+        <script type="module" src="../js/dynamic_font_size.js"></script>
 
-    <!-- Custom JS -->
-    <script type="module" src="./Asxl1.js"></script>
-    <script type="module" src="../js/mobile_panel.js"></script>
+        <!-- ============================= -->
+        <!-- CSS -->
+        <!-- ============================= -->
+        <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
+        <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
+        <link rel="stylesheet" href="../css/app.css" />
+    </head>
 
-    <!-- ============================= -->
-    <!-- CSS -->
-    <!-- ============================= -->
-    <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
-    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/app.css" />
-</head>
-
-<body>
-    <div class="main-container">
+    <body>
         <header class="header-container">
             <button id="menu-toggle" class="menu-toggle-icon">
                 <i class="fa-solid fa-sliders"></i>
@@ -47,7 +46,7 @@
         </header>
 
         <div class="body-container">
-            <div class="control-panel-container">
+            <div class="left-control-panel-container">
                 <button id="close-panel" class="close-button">✕</button>
 
                 <!-- ===================================== -->
@@ -57,13 +56,14 @@
                 <!-- Slider for phenotypes similarity -->
                 <div class="panel-section">
                     <div class="panel-title">
-                        <i class="fa-solid fa-sliders"></i> Phenotypic metrics
+                        <i class="fa-solid fa-sliders"></i>
+                        Phenotypic metrics
                     </div>
 
                     <div class="slider-container">
                         <span class="control-label" style="display: block">
                             Phenotypes similarity:
-                            <span id="edge-size-value"> 1 -10 </span>
+                            <span id="edge-size-value"> 1 - 10 </span>
                         </span>
                         <div class="slider-element" id="filter-edge-slider"></div>
                     </div>
@@ -78,7 +78,7 @@
                         Biological filters
                     </div>
 
-                    <div class="checkbox-container">
+                    <div class="boxed-section">
                         <span>Genotype</span>
                         <form id="genotype-filter-form">
                             <div class="round-checkbox">
@@ -96,7 +96,7 @@
                         </form>
                     </div>
 
-                    <div class="checkbox-container">
+                    <div class="boxed-section">
                         <span>Sex</span>
                         <form id="sex-filter-form">
                             <div class="round-checkbox">
@@ -110,7 +110,7 @@
                         </form>
                     </div>
 
-                    <div class="checkbox-container">
+                    <div class="boxed-section">
                         <span>Life stage</span>
                         <form id="lifestage-filter-form">
                             <div class="round-checkbox">
@@ -131,18 +131,56 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
 
-                    <div class="checkbox-container">
-                        <span>Human Disease</span>
+            <div class="cy-container">
+                <div class="cy"></div>
+
+                <!-- ===================================== -->
+                <!-- SVG for phenotypes similarity -->
+                <!-- ===================================== -->
+
+                <div class="edge-scale-container">
+                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
+                        <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
+                        <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
+                        <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
+                    </svg>
+                    <p class="scale-label">Similarity of accessory phenotypes</p>
+                </div>
+            </div>
+
+            <div class="right-control-panel-container">
+                <!-- ===================================== -->
+                <!-- Export -->
+                <!-- ===================================== -->
+                <div class="panel-section">
+                    <div class="panel-title">
+                        <i class="fa-regular fa-lightbulb"></i>
+                        Markup
+                    </div>
+                    <div class="boxed-section align-center">
+                        <span> Highlight </span>
                         <form id="human-disease-filter-form">
                             <div class="round-checkbox">
                                 <input type="checkbox" id="disease" value="Disease" />
-                                <label for="disease">Associated Disease</label>
+                                <label for="disease">Human Disease</label>
                             </div>
                         </form>
                     </div>
+                    <!-- ===================================== -->
+                    <!-- Gene search box -->
+                    <!-- ===================================== -->
+                    <div class="boxed-section align-center">
+                        <span>Search</span>
+                        <div class="round-checkbox">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="gene-search" placeholder="Specific Gene" />
+                            <ul id="suggestions" class="suggestions" hidden></ul>
+                        </div>
+                    </div>
                 </div>
-
                 <!-- ===================================== -->
                 <!-- Cytoscape's visualization setting -->
                 <!-- ===================================== -->
@@ -156,7 +194,7 @@
 
                     <div class="slider-container">
                         <div class="label-row">
-                            <label for="layout-dropdown" class="control-label"> Layout: </label>
+                            <label for="layout-dropdown" class="control-label"> Layout:</label>
                             <select class="exporter" id="layout-dropdown">
                                 <option value="cose" selected>Cose</option>
                                 <option value="circle">Circle</option>
@@ -185,7 +223,7 @@
 
                     <div class="slider-container" id="node-repulsion-container">
                         <div class="label-row">
-                            <span class="control-label">Node repulsion (Cose only):</span>
+                            <span class="control-label">Node repulsion:</span>
                             <span id="node-repulsion-value">5</span>
                         </div>
                         <div class="slider-element" id="nodeRepulsion-slider"></div>
@@ -193,23 +231,12 @@
                 </div>
 
                 <!-- ===================================== -->
-                <!-- Search and Export -->
+                <!-- Export -->
                 <!-- ===================================== -->
                 <div class="panel-section">
                     <div class="panel-title">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        Search & Export
-                    </div>
-                    <!-- ===================================== -->
-                    <!-- Gene search box -->
-                    <!-- ===================================== -->
-                    <div class="slider-container">
-                        <label for="gene-search" class="control-label"> Search gene </label>
-                        <div class="search-container">
-                            <input type="text" id="gene-search" placeholder="" autocomplete="off" />
-                            <button id="search-button">Search</button>
-                            <ul id="suggestions" class="suggestions" hidden></ul>
-                        </div>
+                        <i class="fa-solid fa-download"></i>
+                        Export
                     </div>
 
                     <!-- ===================================== -->
@@ -227,46 +254,40 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="cy-container">
-                <div class="cy"></div>
-
-                <!-- ===================================== -->
-                <!-- SVG for phenotypes similarity -->
-                <!-- ===================================== -->
-
-                <div class="edge-scale-container">
-                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
-                        <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
-                        <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
-                        <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
-                    </svg>
-                    <p class="scale-label">Similarity of accessory phenotypes</p>
+        <!-- ========================================  -->
+        <!-- Resources Section -->
+        <!-- ========================================  -->
+        <div class="resources-container">
+            <div class="resource-section">
+                <div class="resource-buttons">
+                    <a
+                        class="resource-btn"
+                        href="https://github.com/akikuno/TSUMUGI-dev/blob/main/README.md"
+                        target="_blank"
+                    >
+                        <i class="fa-regular fa-file-lines"></i> Documentation
+                    </a>
+                    <a class="resource-btn" href="https://forms.gle/TpLeatthUBLN57PU6" target="_blank">
+                        <i class="fa-regular fa-comment-dots"></i> Inquiry
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- ========================================  -->
-    <!-- Footer -->
-    <!-- ========================================  -->
-    <footer>
-        <p>TSUMUGI version 0.3.2</p>
-        <p>
-            <i class="fa-regular fa-file-lines"></i>
-            <a href="https://github.com/akikuno/TSUMUGI-dev/blob/main/README.md" target="_blank">Documentation</a>
-        </p>
-        <p>
-            <i class="fa-regular fa-comment-dots"></i>
-            <a href="https://forms.gle/TpLeatthUBLN57PU6" target="_blank">Feedback & Requests</a>
-        </p>
-        <!-- <p><i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> </p>-->
-        <p>
-            &copy; 2024
-            <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/public_E/index.html" target="_blank">Laboratory Animal
-                Resource Center, University of Tsukuba</a>
-        </p>
-    </footer>
-</body>
-
+        <!-- ========================================  -->
+        <!-- Footer -->
+        <!-- ========================================  -->
+        <footer>
+            <p>TSUMUGI version 0.3.2</p>
+            <!-- <p><i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> </p>-->
+            <p>
+                &copy; 2024
+                <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/public_E/index.html" target="_blank"
+                    >Laboratory Animal Resource Center, University of Tsukuba</a
+                >
+            </p>
+        </footer>
+    </body>
 </html>

@@ -1,10 +1,11 @@
 #!/bin/bash
 
 
-WORD="search-highlight"
+WORD="SIVERITY"
 
 find notebooks/ -type f | xargs grep "$WORD"
 find TSUMUGI/template -type f | xargs grep "$WORD"
+find TSUMUGI/js -type f | xargs grep "$WORD"
 
 conda activate env-tsumugi
 
