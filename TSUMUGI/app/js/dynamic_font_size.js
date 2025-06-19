@@ -1,6 +1,6 @@
 export function initDynamicFontSize() {
     function adjustHeaderFontSize() {
-        const header = document.querySelector('.header-container h1');
+        const header = document.querySelector(".header-container h1");
         if (!header) return;
 
         const containerWidth = header.parentElement.offsetWidth;
@@ -17,7 +17,7 @@ export function initDynamicFontSize() {
             baseFontSize = Math.min(baseFontSize, viewportWidth * 0.045);
         }
 
-        header.style.fontSize = baseFontSize + 'px';
+        header.style.fontSize = baseFontSize + "px";
     }
 
     // 初期実行
@@ -25,11 +25,11 @@ export function initDynamicFontSize() {
 
     // リサイズ時の実行（デバウンス付き）
     let resizeTimer;
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(adjustHeaderFontSize, 100);
     });
 }
 
 // 自動実行
-document.addEventListener('DOMContentLoaded', initDynamicFontSize);
+document.addEventListener("DOMContentLoaded", initDynamicFontSize);

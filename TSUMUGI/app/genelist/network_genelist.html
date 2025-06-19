@@ -23,6 +23,7 @@
         <!-- Custom JS -->
         <script type="module" src="./network_genelist.js"></script>
         <script type="module" src="../js/mobile_panel.js"></script>
+        <script type="module" src="../js/dynamic_font_size.js"></script>
 
         <!-- ============================= -->
         <!-- CSS -->
@@ -45,7 +46,7 @@
         </header>
 
         <div class="body-container">
-            <div class="control-panel-container">
+            <div class="left-control-panel-container">
                 <button id="close-panel" class="close-button">✕</button>
 
                 <!-- ===================================== -->
@@ -54,12 +55,15 @@
 
                 <!-- Slider for phenotypes similarity -->
                 <div class="panel-section">
-                    <div class="panel-title"><i class="fa-solid fa-sliders"></i> Phenotypic metrics</div>
+                    <div class="panel-title">
+                        <i class="fa-solid fa-sliders"></i>
+                        Phenotypic metrics
+                    </div>
 
                     <div class="slider-container">
                         <span class="control-label" style="display: block">
                             Phenotypes similarity:
-                            <span id="edge-size-value"> 1 -10 </span>
+                            <span id="edge-size-value"> 1 - 10 </span>
                         </span>
                         <div class="slider-element" id="filter-edge-slider"></div>
                     </div>
@@ -74,7 +78,7 @@
                         Biological filters
                     </div>
 
-                    <div class="checkbox-container">
+                    <div class="boxed-section">
                         <span>Genotype</span>
                         <form id="genotype-filter-form">
                             <div class="round-checkbox">
@@ -92,7 +96,7 @@
                         </form>
                     </div>
 
-                    <div class="checkbox-container">
+                    <div class="boxed-section">
                         <span>Sex</span>
                         <form id="sex-filter-form">
                             <div class="round-checkbox">
@@ -106,7 +110,7 @@
                         </form>
                     </div>
 
-                    <div class="checkbox-container">
+                    <div class="boxed-section">
                         <span>Life stage</span>
                         <form id="lifestage-filter-form">
                             <div class="round-checkbox">
@@ -128,94 +132,6 @@
                         </form>
                     </div>
                 </div>
-
-                <!-- ===================================== -->
-                <!-- Cytoscape's visualization setting -->
-                <!-- ===================================== -->
-
-                <div class="panel-section">
-                    <details>
-                        <summary class="panel-title">
-                            <i class="fa-solid fa-puzzle-piece"></i>
-                            Layout & Display
-                        </summary>
-                        <!-- Network layout -->
-
-                        <div class="slider-container">
-                            <div class="label-row">
-                                <label for="layout-dropdown" class="control-label"> Layout: </label>
-                                <select class="exporter" id="layout-dropdown">
-                                    <option value="cose" selected>Cose</option>
-                                    <option value="circle">Circle</option>
-                                    <option value="grid">Grid</option>
-                                    <option value="random">Random</option>
-                                    <option value="concentric">Concentric</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="slider-container">
-                            <div class="label-row">
-                                <span class="control-label">Font size: </span>
-                                <span id="font-size-value">20</span>
-                            </div>
-                            <div class="slider-element" id="font-size-slider"></div>
-                        </div>
-
-                        <div class="slider-container">
-                            <div class="label-row">
-                                <span class="control-label">Edge width:</span>
-                                <span id="edge-width-value">5</span>
-                            </div>
-                            <div class="slider-element" id="edge-width-slider"></div>
-                        </div>
-
-                        <div class="slider-container" id="node-repulsion-container">
-                            <div class="label-row">
-                                <span class="control-label">Node repulsion (Cose only):</span>
-                                <span id="node-repulsion-value">5</span>
-                            </div>
-                            <div class="slider-element" id="nodeRepulsion-slider"></div>
-                        </div>
-                    </details>
-                </div>
-
-                <!-- ===================================== -->
-                <!-- Search and Export -->
-                <!-- ===================================== -->
-                <div class="panel-section">
-                    <details>
-                        <summary class="panel-title">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            Search & Export
-                        </summary>
-                        <!-- ===================================== -->
-                        <!-- Gene search box -->
-                        <!-- ===================================== -->
-                        <div class="slider-container">
-                            <label for="gene-search" class="control-label"> Search gene </label>
-                            <div class="search-container">
-                                <input type="text" id="gene-search" placeholder="" autocomplete="off" />
-                                <button id="search-button">Search</button>
-                                <ul id="suggestions" class="suggestions" hidden></ul>
-                            </div>
-                        </div>
-
-                        <!-- ===================================== -->
-                        <!-- Exporter -->
-                        <!-- ===================================== -->
-                        <div class="exporter-group">
-                            <button class="exporter" id="export-png">
-                                <i class="fa-regular fa-image"></i>
-                                PNG
-                            </button>
-                            <button class="exporter" id="export-csv">
-                                <i class="fa-regular fa-file-lines"></i>
-                                CSV
-                            </button>
-                        </div>
-                    </details>
-                </div>
             </div>
 
             <div class="cy-container">
@@ -234,21 +150,137 @@
                     <p class="scale-label">Similarity of accessory phenotypes</p>
                 </div>
             </div>
+
+            <div class="right-control-panel-container">
+                <!-- ===================================== -->
+                <!-- Export -->
+                <!-- ===================================== -->
+                <div class="panel-section">
+                    <div class="panel-title">
+                        <i class="fa-regular fa-lightbulb"></i>
+                        Markup
+                    </div>
+                    <div class="boxed-section align-center">
+                        <span> Highlight </span>
+                        <form id="human-disease-filter-form">
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="disease" value="Disease" />
+                                <label for="disease">Human Disease</label>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- ===================================== -->
+                    <!-- Gene search box -->
+                    <!-- ===================================== -->
+                    <div class="boxed-section align-center">
+                        <span>Search</span>
+                        <div class="round-checkbox">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="gene-search" placeholder="Specific Gene" />
+                            <ul id="suggestions" class="suggestions" hidden></ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- ===================================== -->
+                <!-- Cytoscape's visualization setting -->
+                <!-- ===================================== -->
+
+                <div class="panel-section">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                        Layout & Display
+                    </div>
+                    <!-- Network layout -->
+
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <label for="layout-dropdown" class="control-label"> Layout:</label>
+                            <select class="exporter" id="layout-dropdown">
+                                <option value="cose" selected>Cose</option>
+                                <option value="circle">Circle</option>
+                                <option value="grid">Grid</option>
+                                <option value="random">Random</option>
+                                <option value="concentric">Concentric</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <span class="control-label">Font size: </span>
+                            <span id="font-size-value">20</span>
+                        </div>
+                        <div class="slider-element" id="font-size-slider"></div>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <span class="control-label">Edge width:</span>
+                            <span id="edge-width-value">5</span>
+                        </div>
+                        <div class="slider-element" id="edge-width-slider"></div>
+                    </div>
+
+                    <div class="slider-container" id="node-repulsion-container">
+                        <div class="label-row">
+                            <span class="control-label">Node repulsion:</span>
+                            <span id="node-repulsion-value">5</span>
+                        </div>
+                        <div class="slider-element" id="nodeRepulsion-slider"></div>
+                    </div>
+                </div>
+
+                <!-- ===================================== -->
+                <!-- Export -->
+                <!-- ===================================== -->
+                <div class="panel-section">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-download"></i>
+                        Export
+                    </div>
+
+                    <!-- ===================================== -->
+                    <!-- Exporter -->
+                    <!-- ===================================== -->
+                    <div class="exporter-group">
+                        <button class="exporter" id="export-png">
+                            <i class="fa-regular fa-image"></i>
+                            PNG
+                        </button>
+                        <button class="exporter" id="export-csv">
+                            <i class="fa-regular fa-file-lines"></i>
+                            CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================  -->
+        <!-- Resources Section -->
+        <!-- ========================================  -->
+        <div class="resources-container">
+            <div class="resource-section">
+                <div class="resource-buttons">
+                    <a
+                        class="resource-btn"
+                        href="https://github.com/akikuno/TSUMUGI-dev/blob/main/README.md"
+                        target="_blank"
+                    >
+                        <i class="fa-regular fa-file-lines"></i> Documentation
+                    </a>
+                    <a class="resource-btn" href="https://forms.gle/TpLeatthUBLN57PU6" target="_blank">
+                        <i class="fa-regular fa-comment-dots"></i> Inquiry
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- ========================================  -->
         <!-- Footer -->
         <!-- ========================================  -->
         <footer>
-            <p>TSUMUGI version 0.3.1</p>
-            <p>
-                <i class="fa-regular fa-file-lines"></i>
-                <a href="https://github.com/akikuno/TSUMUGI-dev/blob/main/README.md" target="_blank">Documentation</a>
-            </p>
-            <p>
-                <i class="fa-regular fa-comment-dots"></i>
-                <a href="https://forms.gle/TpLeatthUBLN57PU6" target="_blank">Feedback & Requests</a>
-            </p>
+            <p>TSUMUGI version 0.3.2</p>
             <!-- <p><i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> </p>-->
             <p>
                 &copy; 2024

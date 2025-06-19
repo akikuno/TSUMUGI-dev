@@ -51,10 +51,10 @@ abnormal hair growth
 abnormal head morphology
 abnormal head shape
 abnormal head size
+abnormal heartbeat
 abnormal heart left ventricle morphology
 abnormal heart looping
 abnormal heart morphology
-abnormal heart shape
 abnormal hindbrain development
 abnormal hindbrain morphology
 abnormal hindlimb morphology
@@ -65,7 +65,6 @@ abnormal incisor morphology
 abnormal inspiratory capacity
 abnormal iris morphology
 abnormal iris pigmentation
-abnormal jejunum morphology
 abnormal joint morphology
 abnormal kidney morphology
 abnormal left-right axis patterning
@@ -158,10 +157,8 @@ abnormal vitelline vasculature morphology
 abnormal vitreous body morphology
 abnormal vocalization
 abnormal zygomatic bone morphology
-absent epididymis
 absent lymph nodes
 absent optic nerve
-absent ovary
 absent pinna reflex
 absent seminal vesicle
 absent testes
@@ -180,7 +177,6 @@ cornea vascularization
 curly tail
 cyanosis
 cystolithiasis
-decreased airway resistance
 decreased anxiety-related response
 decreased B-2 B cell number
 decreased basophil cell number
@@ -199,11 +195,11 @@ decreased cardiac muscle contractility
 decreased cardiac stroke volume
 decreased caudal vertebrae number
 decreased CD4-negative NK T cell number
-"decreased CD4-positive, alpha-beta T cell number"
-"decreased CD4-positive, CD25-positive, alpha-beta regulatory T cell number"
+decreased CD4-positive, alpha-beta T cell number
+decreased CD4-positive, CD25-positive, alpha-beta regulatory T cell number
 decreased CD4-positive NK T cell number
-"decreased CD8-positive, alpha-beta T cell number"
-"decreased CD8-positive, naive alpha-beta T cell number"
+decreased CD8-positive, alpha-beta T cell number
+decreased CD8-positive, naive alpha-beta T cell number
 decreased circulating alanine transaminase level
 decreased circulating alkaline phosphatase level
 decreased circulating amylase level
@@ -227,14 +223,13 @@ decreased circulating serum albumin level
 decreased circulating sodium level
 decreased circulating total protein level
 decreased circulating triglyceride level
-"decreased effector memory CD8-positive, alpha-beta T cell number"
+decreased effector memory CD8-positive, alpha-beta T cell number
 decreased effector memory T-helper cell number
 decreased eosinophil cell number
 decreased erythrocyte cell number
 decreased exploration in new environment
 decreased fasting circulating glucose level
 decreased food intake
-decreased freezing behavior
 decreased grip strength
 decreased heart left ventricle size
 decreased heart rate
@@ -282,7 +277,6 @@ decreased urine magnesium level
 decreased vertical activity
 dilated aorta
 dilated heart left ventricle
-distended jejunum
 edema
 embryonic growth retardation
 embryonic lethality prior to organogenesis
@@ -291,24 +285,19 @@ enhanced contextual conditioning behavior
 enhanced cued conditioning behavior
 enlarged adrenal glands
 enlarged cecum
-enlarged duodenum
 enlarged epididymis
 enlarged gallbladder
 enlarged heart
-enlarged ileum
 enlarged kidney
 enlarged liver
-enlarged lung
 enlarged lymph nodes
 enlarged ovary
-enlarged pancreas
 enlarged prostate gland
 enlarged seminal vesicle
 enlarged spleen
 enlarged stomach
 enlarged testis
 enlarged thymus
-enlarged thyroid gland
 enlarged urinary bladder
 enlarged uterus
 exencephaly
@@ -320,6 +309,7 @@ fused cornea and lens
 fusion of vertebral arches
 head bobbing
 hemorrhage
+herniated abdominal wall
 hydrocephaly
 hydrometra
 hyperactivity
@@ -348,11 +338,10 @@ increased B cell number
 increased cardiac muscle contractility
 increased cardiac output
 increased cardiac stroke volume
-"increased CD4-positive, alpha-beta T cell number"
-"increased CD4-positive, CD25-positive, alpha-beta regulatory T cell number"
-increased CD4-positive NK T cell number
-"increased CD8-positive, alpha-beta T cell number"
-"increased CD8-positive, naive alpha-beta T cell number"
+increased CD4-positive, alpha-beta T cell number
+increased CD4-positive, CD25-positive, alpha-beta regulatory T cell number
+increased CD8-positive, alpha-beta T cell number
+increased CD8-positive, naive alpha-beta T cell number
 increased circulating alanine transaminase level
 increased circulating alkaline phosphatase level
 increased circulating amylase level
@@ -384,7 +373,7 @@ increased circulating triglyceride level
 increased circulating unsaturated transferrin level
 increased coping response
 increased cornea thickness
-"increased effector memory CD8-positive, alpha-beta T cell number"
+increased effector memory CD8-positive, alpha-beta T cell number
 increased effector memory T-helper cell number
 increased eosinophil cell number
 increased erythrocyte cell number
@@ -395,7 +384,6 @@ increased food intake
 increased freezing behavior
 increased granulocyte number
 increased grip strength
-increased heart atrium size
 increased heart left ventricle size
 increased heart rate
 increased heart rate variability
@@ -409,6 +397,7 @@ increased large unstained cell number
 increased lean body mass
 increased leukocyte cell number
 increased liver weight
+increased lumbar vertebrae number
 increased lung compliance
 increased lung elastance
 increased lung tissue damping
@@ -421,6 +410,7 @@ increased memory-marker CD4-positive NK T cell number
 increased monocyte cell number
 increased neutrophil cell number
 increased NK cell number
+increased NK T cell number
 increased prepulse inhibition
 increased pulmonary respiratory rate
 increased pulmonary ventilation
@@ -459,10 +449,9 @@ polydactyly
 polysyndactyly
 prenatal lethality
 prenatal lethality prior to heart atrial septation
-"preweaning lethality, complete penetrance"
-"preweaning lethality, incomplete penetrance"
+preweaning lethality, complete penetrance
+preweaning lethality, incomplete penetrance
 prolonged PQ interval
-prolonged PR interval
 prolonged QRS complex duration
 prolonged QT interval
 prolonged RR interval
@@ -470,7 +459,6 @@ prolonged ST segment
 protruding tongue
 respiratory system phenotype
 rib fusion
-scaly skin
 sclerocornea
 scoliosis
 shortened PQ interval
@@ -488,7 +476,6 @@ small heart
 small kidney
 small liver
 small lung
-small lymph nodes
 small seminal vesicle
 small spleen
 small stomach
