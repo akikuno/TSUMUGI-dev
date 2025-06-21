@@ -27,7 +27,7 @@ import { highlightDiseaseAnnotation } from "../js/highlighter.js";
 
 // REMOVE_TO_THIS_LINE
 
-const elements = loadJSONGz("../../data/genesymbol/Lepr.json.gz");
+const elements = loadJSONGz("../../data/genesymbol/Ints8.json.gz");
 const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
@@ -334,7 +334,7 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = "TSUMUGI_Lepr";
+const file_name = "TSUMUGI_Ints8";
 
 // --------------------------------------------------------
 // PNG Exporter
