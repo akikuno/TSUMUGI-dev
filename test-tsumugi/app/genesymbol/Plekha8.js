@@ -27,7 +27,7 @@ import { highlightDiseaseAnnotation } from "../js/highlighter.js";
 
 // REMOVE_TO_THIS_LINE
 
-const elements = loadJSONGz("../../data/genesymbol/Asxl1.json.gz");
+const elements = loadJSONGz("../../data/genesymbol/Plekha8.json.gz");
 const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
@@ -334,7 +334,7 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = "TSUMUGI_Asxl1";
+const file_name = "TSUMUGI_Plekha8";
 
 // --------------------------------------------------------
 // PNG Exporter

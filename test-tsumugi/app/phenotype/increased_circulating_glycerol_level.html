@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>Asxl1</title>
+        <title>increased circulating glycerol level</title>
         <link rel="icon" href="../../image/tsumugi-favicon.ico" />
 
         <!-- ============================= -->
@@ -21,7 +21,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
 
         <!-- Custom JS -->
-        <script type="module" src="./Asxl1.js"></script>
+        <script type="module" src="./increased_circulating_glycerol_level.js"></script>
         <script type="module" src="../js/mobile_panel.js"></script>
         <script type="module" src="../js/dynamic_font_size.js"></script>
 
@@ -41,7 +41,9 @@
             </button>
             <h1>
                 Phenotype-Similarity Gene Network for <br />
-                <a href="https://www.mousephenotype.org/data/genes/MGI:2684063" target="_blank">Asxl1</a>
+                <a href="https://www.mousephenotype.org/data/phenotypes/MP:0003443" target="_blank"
+                    >increased circulating glycerol level</a
+                >
             </h1>
         </header>
 
@@ -66,6 +68,16 @@
                             <span id="edge-size-value"> 1 - 10 </span>
                         </span>
                         <div class="slider-element" id="filter-edge-slider"></div>
+                    </div>
+
+                    <!-- Slider for phenotypes severity -->
+
+                    <div class="slider-container">
+                        <span class="control-label" style="display: block">
+                            Phenotype severity:
+                            <span id="node-color-value"> 1 -10 </span>
+                        </span>
+                        <div class="slider-element" id="filter-node-slider"></div>
                     </div>
                 </div>
 
@@ -148,6 +160,24 @@
                         <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
                     </svg>
                     <p class="scale-label">Similarity of accessory phenotypes</p>
+                </div>
+
+                <!-- ===================================== -->
+                <!-- SVG for phenotypes severity -->
+                <!-- ===================================== -->
+                <div class="color-scale-container">
+                    <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color: rgb(248, 229, 140); stop-opacity: 1" />
+                                <stop offset="100%" style="stop-color: rgb(255, 140, 0); stop-opacity: 1" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="0" y="0" width="400" height="30" fill="url(#colorGradient)" />
+                        <text x="0" y="25" font-family="Arial" font-size="12px" fill="#000">Low</text>
+                        <text x="370" y="25" font-family="Arial" font-size="12px" fill="#000">High</text>
+                    </svg>
+                    <p class="scale-label">Severity of target phenotype</p>
                 </div>
             </div>
 
