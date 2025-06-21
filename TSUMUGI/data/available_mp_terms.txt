@@ -16,11 +16,9 @@ abnormal chorioallantoic fusion
 abnormal clavicle morphology
 abnormal coat appearance
 abnormal colon morphology
-abnormal contextual conditioning behavior
 abnormal cornea morphology
 abnormal craniofacial morphology
 abnormal cranium morphology
-abnormal cued conditioning behavior
 abnormal digit morphology
 abnormal duodenum morphology
 abnormal ear morphology
@@ -28,10 +26,8 @@ abnormal embryo development
 abnormal embryo size
 abnormal embryo turning
 abnormal epididymis morphology
-abnormal esophagus morphology
 abnormal eyelid aperture
 abnormal eyelid fusion
-abnormal eyelid morphology
 abnormal eye anterior chamber depth
 abnormal eye morphology
 abnormal eye pigmentation
@@ -60,7 +56,6 @@ abnormal hindbrain morphology
 abnormal hindlimb morphology
 abnormal humerus morphology
 abnormal ileum morphology
-abnormal incisor color
 abnormal incisor morphology
 abnormal inspiratory capacity
 abnormal iris morphology
@@ -78,9 +73,11 @@ abnormal locomotor behavior
 abnormal lumbar vertebrae morphology
 abnormal lung morphology
 abnormal lymph node morphology
+abnormal male genitalia morphology
 abnormal mammary gland morphology
 abnormal mandible morphology
 abnormal maxilla morphology
+abnormal metabolism
 abnormal midbrain development
 abnormal midbrain morphology
 abnormal mouth morphology
@@ -102,9 +99,7 @@ abnormal placenta morphology
 abnormal placenta size
 abnormal placenta vasculature
 abnormal pupil morphology
-abnormal QT variability
 abnormal radius morphology
-abnormal reproductive system morphology
 abnormal response to new environment
 abnormal response to tactile stimuli
 abnormal retina blood vessel morphology
@@ -114,7 +109,6 @@ abnormal retina outer nuclear layer morphology
 abnormal retina pigmentation
 abnormal retina vasculature morphology
 abnormal rib morphology
-abnormal sacral vertebrae morphology
 abnormal scapula morphology
 abnormal seminal vesicle morphology
 abnormal sinus arrhythmia
@@ -123,7 +117,6 @@ abnormal skin appearance
 abnormal skin coloration
 abnormal skin condition
 abnormal skin morphology
-abnormal skin pigmentation
 abnormal sleep behavior
 abnormal snout morphology
 abnormal somite shape
@@ -138,7 +131,6 @@ abnormal tail length
 abnormal tail morphology
 abnormal tail movements
 abnormal testis morphology
-abnormal thoracic cage shape
 abnormal thymus morphology
 abnormal thyroid gland morphology
 abnormal tibia morphology
@@ -147,7 +139,6 @@ abnormal tooth morphology
 abnormal trachea morphology
 abnormal ulna morphology
 abnormal urinary bladder morphology
-abnormal urination
 abnormal uterus morphology
 abnormal vertebrae morphology
 abnormal vertebral arch morphology
@@ -161,12 +152,9 @@ absent lymph nodes
 absent optic nerve
 absent pinna reflex
 absent seminal vesicle
-absent testes
 absent vibrissae
 anophthalmia
-aorta stenosis
 bleb
-brachydactyly
 cardiovascular system phenotype
 cataract
 cleft palate
@@ -174,11 +162,9 @@ convulsive seizures
 cornea deposits
 cornea opacity
 cornea vascularization
-curly tail
 cyanosis
 cystolithiasis
 decreased anxiety-related response
-decreased B-2 B cell number
 decreased basophil cell number
 decreased blood urea nitrogen level
 decreased body length
@@ -186,20 +172,13 @@ decreased body temperature
 decreased body weight
 decreased bone mineral content
 decreased bone mineral density
-decreased bone trabecula number
 decreased brain size
 decreased brain weight
 decreased bronchoconstrictive response
 decreased B cell number
 decreased cardiac muscle contractility
-decreased cardiac stroke volume
-decreased caudal vertebrae number
-decreased CD4-negative NK T cell number
 decreased CD4-positive, alpha-beta T cell number
-decreased CD4-positive, CD25-positive, alpha-beta regulatory T cell number
-decreased CD4-positive NK T cell number
 decreased CD8-positive, alpha-beta T cell number
-decreased CD8-positive, naive alpha-beta T cell number
 decreased circulating alanine transaminase level
 decreased circulating alkaline phosphatase level
 decreased circulating amylase level
@@ -216,11 +195,11 @@ decreased circulating glycerol level
 decreased circulating HDL cholesterol level
 decreased circulating iron level
 decreased circulating LDL cholesterol level
-decreased circulating magnesium level
 decreased circulating phosphate level
 decreased circulating potassium level
 decreased circulating serum albumin level
 decreased circulating sodium level
+decreased circulating thyroxine level
 decreased circulating total protein level
 decreased circulating triglyceride level
 decreased effector memory CD8-positive, alpha-beta T cell number
@@ -233,49 +212,37 @@ decreased food intake
 decreased grip strength
 decreased heart left ventricle size
 decreased heart rate
-decreased heart rate variability
 decreased heart weight
 decreased hematocrit
 decreased hemoglobin content
 decreased kidney weight
-decreased lactate dehydrogenase level
 decreased large unstained cell number
 decreased lean body mass
 decreased leukocyte cell number
-decreased liver weight
 decreased locomotor activity
 decreased lung compliance
 decreased lung elastance
-decreased Ly6C-positive immature NK cell number
-decreased Ly6C-positive NK T cell number
 decreased lymphocyte cell number
 decreased mean corpuscular hemoglobin
 decreased mean corpuscular hemoglobin concentration
 decreased mean corpuscular volume
 decreased mean platelet volume
-decreased memory-marker CD4-negative NK T cell number
-decreased memory-marker CD4-positive NK T cell number
 decreased monocyte cell number
 decreased neutrophil cell number
 decreased NK cell number
-decreased NK T cell number
 decreased prepulse inhibition
 decreased pulmonary respiratory rate
 decreased pulmonary ventilation
 decreased red blood cell distribution width
 decreased respiratory quotient
-decreased sacral vertebrae number
 decreased spleen weight
 decreased startle reflex
-decreased T-helper cell number
 decreased thigmotaxis
 decreased total body fat amount
 decreased total retina thickness
 decreased T cell number
-decreased urine creatinine level
 decreased urine magnesium level
 decreased vertical activity
-dilated aorta
 dilated heart left ventricle
 edema
 embryonic growth retardation
@@ -283,7 +250,6 @@ embryonic lethality prior to organogenesis
 embryonic lethality prior to tooth bud stage
 enhanced contextual conditioning behavior
 enhanced cued conditioning behavior
-enlarged adrenal glands
 enlarged cecum
 enlarged epididymis
 enlarged gallbladder
@@ -295,13 +261,11 @@ enlarged ovary
 enlarged prostate gland
 enlarged seminal vesicle
 enlarged spleen
-enlarged stomach
 enlarged testis
 enlarged thymus
 enlarged urinary bladder
 enlarged uterus
 exencephaly
-eyelids fail to open
 eye hemorrhage
 facial cleft
 female infertility
@@ -313,10 +277,7 @@ herniated abdominal wall
 hydrocephaly
 hydrometra
 hyperactivity
-hypoalgesia
-immune system phenotype
 impaired contextual conditioning behavior
-impaired cued conditioning behavior
 impaired glucose tolerance
 impaired pupillary reflex
 impaired righting response
@@ -326,20 +287,14 @@ increased airway resistance
 increased anxiety-related response
 increased basophil cell number
 increased blood urea nitrogen level
-increased blood uric acid level
 increased body length
 increased body weight
 increased bone mineral content
 increased bone mineral density
-increased bone trabecular spacing
 increased brain size
 increased brain weight
-increased B cell number
 increased cardiac muscle contractility
-increased cardiac output
-increased cardiac stroke volume
 increased CD4-positive, alpha-beta T cell number
-increased CD4-positive, CD25-positive, alpha-beta regulatory T cell number
 increased CD8-positive, alpha-beta T cell number
 increased CD8-positive, naive alpha-beta T cell number
 increased circulating alanine transaminase level
@@ -359,7 +314,6 @@ increased circulating glycerol level
 increased circulating HDL cholesterol level
 increased circulating insulin level
 increased circulating iron level
-increased circulating lactate dehydrogenase level
 increased circulating LDL cholesterol level
 increased circulating lipase level
 increased circulating magnesium level
@@ -371,18 +325,14 @@ increased circulating thyroxine level
 increased circulating total protein level
 increased circulating triglyceride level
 increased circulating unsaturated transferrin level
-increased coping response
 increased cornea thickness
-increased effector memory CD8-positive, alpha-beta T cell number
 increased effector memory T-helper cell number
 increased eosinophil cell number
 increased erythrocyte cell number
 increased exploration in new environment
 increased fasting circulating glucose level
-increased fluid intake
 increased food intake
 increased freezing behavior
-increased granulocyte number
 increased grip strength
 increased heart left ventricle size
 increased heart rate
@@ -396,8 +346,6 @@ increased lactate dehydrogenase level
 increased large unstained cell number
 increased lean body mass
 increased leukocyte cell number
-increased liver weight
-increased lumbar vertebrae number
 increased lung compliance
 increased lung elastance
 increased lung tissue damping
@@ -406,7 +354,6 @@ increased mean corpuscular hemoglobin
 increased mean corpuscular hemoglobin concentration
 increased mean corpuscular volume
 increased mean platelet volume
-increased memory-marker CD4-positive NK T cell number
 increased monocyte cell number
 increased neutrophil cell number
 increased NK cell number
@@ -419,22 +366,20 @@ increased respiratory quotient
 increased spleen weight
 increased startle reflex
 increased T-helper cell number
-increased thermal nociceptive threshold
 increased thigmotaxis
 increased tidal volume
 increased total body fat amount
 increased total retina thickness
 increased T cell number
+increased urine microalbumin level
 increased vertical activity
 iris synechia
 irregularly shaped pupil
-kinked tail
 kyphosis
 limb grasping
 long tibia
 lordosis
 male infertility
-megacolon
 microcephaly
 microphthalmia
 mydriasis
@@ -450,7 +395,6 @@ polysyndactyly
 prenatal lethality
 prenatal lethality prior to heart atrial septation
 preweaning lethality, complete penetrance
-preweaning lethality, incomplete penetrance
 prolonged PQ interval
 prolonged QRS complex duration
 prolonged QT interval
@@ -460,14 +404,11 @@ protruding tongue
 respiratory system phenotype
 rib fusion
 sclerocornea
-scoliosis
 shortened PQ interval
 shortened PR interval
 shortened QRS complex duration
-shortened QT interval
 shortened RR interval
 shortened ST segment
-short tail
 short tibia
 single kidney
 small adrenal glands
