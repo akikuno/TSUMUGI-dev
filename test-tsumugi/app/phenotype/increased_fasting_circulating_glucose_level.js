@@ -35,8 +35,12 @@ const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 // ############################################################################
 
 let nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
-let nodeMin = Math.min(...nodeSizes);
-let nodeMax = Math.max(...nodeSizes);
+let nodeColorMin = Math.min(...nodeSizes); // 色表示用の元の範囲
+let nodeColorMax = Math.max(...nodeSizes); // 色表示用の元の範囲
+
+// フィルタリング用の範囲（元の値をコピー）
+let nodeMin = nodeColorMin;
+let nodeMax = nodeColorMax;
 
 // ==========================================================
 // スライダーを上限値・下限値に合わせても、最低１つの遺伝子ペアが可視化できるようにする. Issue #72
@@ -83,16 +87,23 @@ elements.forEach((ele) => {
 const minRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum < b.rankSum ? a : b));
 const maxRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum > b.rankSum ? a : b));
 
+// フィルタリング用の範囲のみ更新（色表示用は元の値を保持）
 nodeMin = minRankEdge.maxVal;
 nodeMax = maxRankEdge.minVal;
 
-// Step 4: node_color を min/max にクリップ
+// 色表示用の元の値は保持し、フィルタリング用の値を新しく追加
 elements.forEach((ele) => {
     if (ele.data.node_color !== undefined) {
+        // 色表示用の元の値を保存
+        ele.data.original_node_color = ele.data.node_color;
+
+        // フィルタリング用の値をクリップ
         if (ele.data.node_color <= nodeMin) {
-            ele.data.node_color = nodeMin;
+            ele.data.node_color_for_filter = nodeMin;
         } else if (ele.data.node_color >= nodeMax) {
-            ele.data.node_color = nodeMax;
+            ele.data.node_color_for_filter = nodeMax;
+        } else {
+            ele.data.node_color_for_filter = ele.data.node_color;
         }
     }
 });
@@ -147,7 +158,8 @@ const cy = cytoscape({
                 width: 15,
                 height: 15,
                 "background-color": function (ele) {
-                    const color_value = scaleValue(ele.data("node_color"), nodeMin, nodeMax, 1, 10);
+                    const originalColor = ele.data("original_node_color") || ele.data("node_color");
+                    const color_value = scaleValue(originalColor, nodeColorMin, nodeColorMax, 1, 10);
                     return getColorForValue(color_value);
                 },
             },
@@ -272,9 +284,10 @@ function filterByNodeColorAndEdgeSize() {
 
     // 1. node_color 範囲に基づきノードを表示/非表示
     cy.nodes().forEach((node) => {
-        const nodeColor = node.data("node_color");
+        const nodeColorForFilter = node.data("node_color_for_filter") || node.data("node_color");
         const isVisible =
-            nodeColor >= Math.min(nodeMinValue, nodeMaxValue) && nodeColor <= Math.max(nodeMinValue, nodeMaxValue);
+            nodeColorForFilter >= Math.min(nodeMinValue, nodeMaxValue) &&
+            nodeColorForFilter <= Math.max(nodeMinValue, nodeMaxValue);
         node.style("display", isVisible ? "element" : "none");
     });
 

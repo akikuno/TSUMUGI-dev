@@ -35,8 +35,12 @@ const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 // ############################################################################
 
 let nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
-let nodeMin = Math.min(...nodeSizes);
-let nodeMax = Math.max(...nodeSizes);
+let nodeColorMin = Math.min(...nodeSizes);  // 色表示用の元の範囲
+let nodeColorMax = Math.max(...nodeSizes);  // 色表示用の元の範囲
+
+// フィルタリング用の範囲（元の値をコピー）
+let nodeMin = nodeColorMin;
+let nodeMax = nodeColorMax;
 
 XXX_NODE_MIN_MAX
 
@@ -89,7 +93,8 @@ const cy = cytoscape({
                 width: 15,
                 height: 15,
                 "background-color": function (ele) {
-                    const color_value = scaleValue(ele.data("node_color"), nodeMin, nodeMax, 1, 10);
+                    const originalColor = ele.data("original_node_color") || ele.data("node_color");
+                    const color_value = scaleValue(originalColor, nodeColorMin, nodeColorMax, 1, 10);
                     return getColorForValue(color_value);
                 },
             },

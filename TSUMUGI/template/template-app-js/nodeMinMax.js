@@ -43,16 +43,23 @@ elements.forEach(ele => {
 const minRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum < b.rankSum ? a : b));
 const maxRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum > b.rankSum ? a : b));
 
+// フィルタリング用の範囲のみ更新（色表示用は元の値を保持）
 nodeMin = minRankEdge.maxVal;
 nodeMax = maxRankEdge.minVal;
 
-// Step 4: node_color を min/max にクリップ
+// 色表示用の元の値は保持し、フィルタリング用の値を新しく追加
 elements.forEach(ele => {
     if (ele.data.node_color !== undefined) {
+        // 色表示用の元の値を保存
+        ele.data.original_node_color = ele.data.node_color;
+        
+        // フィルタリング用の値をクリップ
         if (ele.data.node_color <= nodeMin) {
-            ele.data.node_color = nodeMin;
+            ele.data.node_color_for_filter = nodeMin;
         } else if (ele.data.node_color >= nodeMax) {
-            ele.data.node_color = nodeMax;
+            ele.data.node_color_for_filter = nodeMax;
+        } else {
+            ele.data.node_color_for_filter = ele.data.node_color;
         }
     }
 });

@@ -12,8 +12,8 @@ function filterByNodeColorAndEdgeSize() {
 
     // 1. node_color 範囲に基づきノードを表示/非表示
     cy.nodes().forEach((node) => {
-        const nodeColor = node.data("node_color");
-        const isVisible = nodeColor >= Math.min(nodeMinValue, nodeMaxValue) && nodeColor <= Math.max(nodeMinValue, nodeMaxValue);
+        const nodeColorForFilter = node.data("node_color_for_filter") || node.data("node_color");
+        const isVisible = nodeColorForFilter >= Math.min(nodeMinValue, nodeMaxValue) && nodeColorForFilter <= Math.max(nodeMinValue, nodeMaxValue);
         node.style("display", isVisible ? "element" : "none");
     });
 
