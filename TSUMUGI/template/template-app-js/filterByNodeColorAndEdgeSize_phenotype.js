@@ -13,7 +13,7 @@ function filterByNodeColorAndEdgeSize() {
     // 1. node_color 範囲に基づきノードを表示/非表示
     cy.nodes().forEach((node) => {
         const nodeColor = node.data("node_color");
-        const isVisible = nodeColor >= nodeMinValue && nodeColor <= nodeMaxValue;
+        const isVisible = nodeColor >= Math.min(nodeMinValue, nodeMaxValue) && nodeColor <= Math.max(nodeMinValue, nodeMaxValue);
         node.style("display", isVisible ? "element" : "none");
     });
 
@@ -27,8 +27,8 @@ function filterByNodeColorAndEdgeSize() {
         const isVisible =
             sourceVisible &&
             targetVisible &&
-            edgeSize >= edgeMinValue &&
-            edgeSize <= edgeMaxValue &&
+            edgeSize >= Math.min(edgeMinValue, edgeMaxValue) &&
+            edgeSize <= Math.max(edgeMinValue, edgeMaxValue) &&
             sharedPhenotypes.length >= 2; // 2つ以上の表現型を持つエッジのみ表示
 
         edge.style("display", isVisible ? "element" : "none");

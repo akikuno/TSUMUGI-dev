@@ -62,17 +62,25 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 menuToggle.style.display = "block";
             }, 50);
+
+            // Cytoscapeの再描画（パネルが閉じられた後）
+            setTimeout(() => {
+                if (window.cy && window.innerWidth <= 600) {
+                    console.log("📱 Refreshing Cytoscape after panel close");
+                    window.cy.resize();
+                    window.cy.fit();
+                    window.cy.center();
+                }
+            }, 400);
         };
 
         // アイコンに click と touchstart の両方を登録
-        ["click", "touchstart"].forEach((evt) => {
-            menuToggle.addEventListener(evt, openPanel);
-        });
+        menuToggle.addEventListener("click", openPanel);
+        menuToggle.addEventListener("touchstart", openPanel, { passive: true });
 
         // ✕ボタンも同様に click と touchstart を登録
-        ["click", "touchstart"].forEach((evt) => {
-            closeButton.addEventListener(evt, closePanel);
-        });
+        closeButton.addEventListener("click", closePanel);
+        closeButton.addEventListener("touchstart", closePanel, { passive: true });
 
         // 外部クリックで閉じる（click のみでOK）
         document.addEventListener("click", (event) => {

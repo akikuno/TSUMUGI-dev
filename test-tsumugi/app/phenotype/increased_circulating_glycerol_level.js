@@ -183,6 +183,36 @@ const cy = cytoscape({
 // ★ デバッグ用：cyをグローバルに公開
 window.cy = cy;
 
+// ★ モバイル対応：Cytoscapeの表示問題を修正
+function handleMobileResize() {
+    if (cy) {
+        // モバイルでのレイアウト変更後にCytoscapeを再描画
+        setTimeout(() => {
+            cy.resize();
+            cy.fit();
+            cy.center();
+        }, 300);
+    }
+}
+
+// モバイルでの初期化完了後にCytoscapeを調整
+setTimeout(() => {
+    if (window.innerWidth <= 600) {
+        console.log("📱 Mobile device detected - applying mobile fixes");
+        cy.resize();
+        cy.fit();
+        cy.center();
+    }
+}, 500);
+
+// ウィンドウリサイズ時の対応
+window.addEventListener("resize", handleMobileResize);
+
+// オリエンテーション変更時の対応（モバイル）
+window.addEventListener("orientationchange", () => {
+    setTimeout(handleMobileResize, 500);
+});
+
 // ############################################################################
 // Control panel handler
 // ############################################################################
@@ -243,7 +273,8 @@ function filterByNodeColorAndEdgeSize() {
     // 1. node_color 範囲に基づきノードを表示/非表示
     cy.nodes().forEach((node) => {
         const nodeColor = node.data("node_color");
-        const isVisible = nodeColor >= nodeMinValue && nodeColor <= nodeMaxValue;
+        const isVisible =
+            nodeColor >= Math.min(nodeMinValue, nodeMaxValue) && nodeColor <= Math.max(nodeMinValue, nodeMaxValue);
         node.style("display", isVisible ? "element" : "none");
     });
 
@@ -257,8 +288,8 @@ function filterByNodeColorAndEdgeSize() {
         const isVisible =
             sourceVisible &&
             targetVisible &&
-            edgeSize >= edgeMinValue &&
-            edgeSize <= edgeMaxValue &&
+            edgeSize >= Math.min(edgeMinValue, edgeMaxValue) &&
+            edgeSize <= Math.max(edgeMinValue, edgeMaxValue) &&
             sharedPhenotypes.length >= 2; // 2つ以上の表現型を持つエッジのみ表示
 
         edge.style("display", isVisible ? "element" : "none");

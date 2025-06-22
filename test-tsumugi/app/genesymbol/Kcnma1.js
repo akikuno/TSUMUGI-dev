@@ -167,6 +167,36 @@ const cy = cytoscape({
 // ★ デバッグ用：cyをグローバルに公開
 window.cy = cy;
 
+// ★ モバイル対応：Cytoscapeの表示問題を修正
+function handleMobileResize() {
+    if (cy) {
+        // モバイルでのレイアウト変更後にCytoscapeを再描画
+        setTimeout(() => {
+            cy.resize();
+            cy.fit();
+            cy.center();
+        }, 300);
+    }
+}
+
+// モバイルでの初期化完了後にCytoscapeを調整
+setTimeout(() => {
+    if (window.innerWidth <= 600) {
+        console.log("📱 Mobile device detected - applying mobile fixes");
+        cy.resize();
+        cy.fit();
+        cy.center();
+    }
+}, 500);
+
+// ウィンドウリサイズ時の対応
+window.addEventListener("resize", handleMobileResize);
+
+// オリエンテーション変更時の対応（モバイル）
+window.addEventListener("orientationchange", () => {
+    setTimeout(handleMobileResize, 500);
+});
+
 // ############################################################################
 // Control panel handler
 // ############################################################################
@@ -210,7 +240,7 @@ function filterByNodeColorAndEdgeSize() {
     // 1. edge_size 条件に一致するエッジを取得
     const visibleEdges = cy.edges().filter((edge) => {
         const edgeSize = edge.data("edge_size");
-        return edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
+        return edgeSize >= Math.min(edgeMinValue, edgeMaxValue) && edgeSize <= Math.max(edgeMinValue, edgeMaxValue);
     });
 
     // 2. 接続ノードを含めて対象エレメントとする

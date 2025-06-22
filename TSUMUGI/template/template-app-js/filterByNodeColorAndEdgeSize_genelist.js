@@ -11,7 +11,7 @@ function filterByNodeColorAndEdgeSize() {
         const edgeSize = edge.data("edge_size");
         const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
         const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
-        const isVisible = sourceVisible && targetVisible && edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
+        const isVisible = sourceVisible && targetVisible && edgeSize >= Math.min(edgeMinValue, edgeMaxValue) && edgeSize <= Math.max(edgeMinValue, edgeMaxValue);
         edge.style("display", isVisible ? "element" : "none");
     });
 
@@ -31,7 +31,7 @@ function filterByNodeColorAndEdgeSize() {
             node.style("display", "element");
             node.connectedEdges().forEach((edge) => {
                 const edgeSize = edge.data("edge_size");
-                if (edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue) {
+                if (edgeSize >= Math.min(edgeMinValue, edgeMaxValue) && edgeSize <= Math.max(edgeMinValue, edgeMaxValue)) {
                     edge.style("display", "element");
                 }
             });

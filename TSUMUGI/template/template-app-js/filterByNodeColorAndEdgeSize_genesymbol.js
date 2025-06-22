@@ -6,7 +6,7 @@ function filterByNodeColorAndEdgeSize() {
     // 1. edge_size 条件に一致するエッジを取得
     const visibleEdges = cy.edges().filter((edge) => {
         const edgeSize = edge.data("edge_size");
-        return edgeSize >= edgeMinValue && edgeSize <= edgeMaxValue;
+        return edgeSize >= Math.min(edgeMinValue, edgeMaxValue) && edgeSize <= Math.max(edgeMinValue, edgeMaxValue);
     });
 
     // 2. 接続ノードを含めて対象エレメントとする
