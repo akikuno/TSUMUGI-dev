@@ -8,7 +8,9 @@
 ## 🔧 Maintenance
 ## ⛔️ Deprecated
 ## 🖼️ User Interface
-+ commitMessage. Issue: #XX [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/xxxxx)]
++ [COMMIT_MESSAGE]  
+  Issue: [#XXX](https://github.com/akikuno/TSUMUGI-dev/issues/XXX)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 -->
 
 <!-- = TODO ====
@@ -29,11 +31,19 @@
   Issue: [#88](https://github.com/akikuno/TSUMUGI-dev/issues/88)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e0dbbfce604394e66c2d71049560e42f41030947)]
 
-## 🔧 Maintenance
+## 🌟 New Features
 
-+ Added version tags to filenames in `TSUMUGI_raw_data` and included support for both CSV and Parquet formats.  
-  Issues: [#95](https://github.com/akikuno/TSUMUGI-dev/issues/95), [#96](https://github.com/akikuno/TSUMUGI-dev/issues/96)  
-  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/22a5ad079c4f353c12b2316629981e3677cc8e94)]
++ Add highlight functionality for the human disease annotations.  
+  Issue: [#87](https://github.com/akikuno/TSUMUGI-dev/issues/87)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/cb1033e0fde11a8cbfd98b3fa34731e2f929c0c0)]  
+  Thanks to @kinari-labwork for contributing to this issue!
+
+
+## 🖼️ User Interface
+
++ Update the footer layout to emphasize Documentation & Inquiry.  
+  Issue: [#98](https://github.com/akikuno/TSUMUGI-dev/issues/98)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/aad5dde6e6db184401b16f14acbebf5fa22ffa94)]
 
 + On mobile devices, the previously split left/right control panels are now unified into a single panel view.  
   Issue: [#89](https://github.com/akikuno/TSUMUGI-dev/issues/89)  
@@ -43,17 +53,30 @@
   Issue: [#93](https://github.com/akikuno/TSUMUGI-dev/issues/93)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ab26c11232ffa56ed316a8658403b5a767756a8f)]
 
+
 ## 🐛 Bug Fixes
 
 + Fixed an issue where the toggle close button was not appearing on mobile devices.  
   Issue: [#94](https://github.com/akikuno/TSUMUGI-dev/issues/94)  
-  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/73da4c4774062f836ff187ad7e2b1494bbf203c6)]
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/73da4c4774062f836ff187ad7e2b1494bbf203c6)]  
 
-## 🖼️ User Interface
++ Since rendering the web page takes time when the number of nodes exceeds 200, set the upper limit of the number of nodes to 150 or less.  
+  Issue: [#103](https://github.com/akikuno/TSUMUGI-dev/issues/103)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/515f23cd0c9d8687b07a0cc8a38e6bdb0f102a44)]  
 
-+ Update the footer layout to emphasize Documentation & Inquiry.  
-  Issue: [#98](https://github.com/akikuno/TSUMUGI-dev/issues/98)  
-  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/aad5dde6e6db184401b16f14acbebf5fa22ffa94)]
++ Show only directly connected nodes to target gene in genesymbol pages.  
+  Issue: [#104](https://github.com/akikuno/TSUMUGI-dev/issues/104)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/bc710476f7c53d7a3e112b9d76afaba83d7dbede)]  
+
+## 🔧 Maintenance
+
++ Added version tags to filenames in `TSUMUGI_raw_data` and included support for both CSV and Parquet formats.  
+  Issues: [#95](https://github.com/akikuno/TSUMUGI-dev/issues/95), [#96](https://github.com/akikuno/TSUMUGI-dev/issues/96)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/22a5ad079c4f353c12b2316629981e3677cc8e94)]
+
++ Merge the two separate deployment .ipynb files—one for testing and one for production—into a single .ipynb file.  
+  Issues: [#101](https://github.com/akikuno/TSUMUGI-dev/issues/101)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/66076a91458a0482e32bc1eba420092fcba4cab7)]
 
 
 -------------------------------------------------------------
