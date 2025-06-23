@@ -6,8 +6,8 @@ TSUMUGI/data/*
 TSUMUGI/app/genesymbol/*
 TSUMUGI/app/phenotype/*
 
-!TSUMUGI/data/available_mp_terms.txt
-!TSUMUGI/data/available_gene_symbols.txt
+!TSUMUGI/data/*.txt
+
 # Office temporary
 ~$*.*
 .vscode/*
