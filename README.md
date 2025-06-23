@@ -141,7 +141,7 @@ Higher effect sizes indicate stronger phenotypic impact.
 This also scales the effect size range to 1-10, allowing 10-level filtering.  
 
 > [!NOTE]
-> When IMPC phenotype evaluation is binary (present/absent) (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)) or when gene name is input, the `Phenotypes severity` slider is not available.
+> When IMPC phenotype evaluation is binary (present/absent) (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html): list of binary phenotypes available [here](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/binary_phenotypes.txt)) or when gene name is input, the `Phenotypes severity` slider is not available.
 
 #### Specify Genotype
 

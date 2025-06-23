@@ -140,7 +140,7 @@ df_tsumugi = pd.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
 こちらも、効果量の範囲を 1〜10 にスケールしており、10段階のフィルタリングが可能です。  
 
 > [!NOTE]
-> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)）や、遺伝子名が入力の場合には、`Phenotypes severity`のスライダーはありません。
+> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Phenotypes severity`のスライダーはありません。
 
 #### 遺伝型を指定
 
