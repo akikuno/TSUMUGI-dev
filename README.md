@@ -6,206 +6,222 @@
 
 [![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
 [![DOI](https://zenodo.org/badge/441025227.svg)](https://doi.org/10.5281/zenodo.14957711)
-[![Inquiry](https://img.shields.io/badge/Inquiry-923DE2)](https://forms.gle/ME8EJZZHaRNgKZ979)
+[![Contact](https://img.shields.io/badge/Contact-923DE2)](https://forms.gle/ME8EJZZHaRNgKZ979)
 
 
-[日本語はこちら](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_JP.md)
+[日本語版 README はこちら](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_JP.md)
 
-**TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** is a tool that leverages comprehensive phenotype data from single-gene knockout (KO) mice, provided by the [International Mouse Phenotyping Consortium (IMPC)](https://www.mousephenotype.org/).  
-It identifies and visualizes gene modules based on **phenotypic similarity**.
+**TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** is a web tool that leverages knockout (KO) mouse phenotype data from the [International Mouse Phenotyping Consortium (IMPC)](https://www.mousephenotype.org/) to **extract and visualize gene modules based on phenotypic similarity**.
 
-TSUMUGI is available as a web-tool that anyone can access from here👇️  
+The tool is publicly available online for anyone to use 👇️  
 
 🔗 https://larc-tsukuba.github.io/tsumugi/
 
-The name **TSUMUGI** is derived from the Japanese word **紡ぎ**, symbolizing the concept of *twisting various elements (genes) together to create a unified entity (phenotype)*.  
+**TSUMUGI** derives from the Japanese concept of "weaving together gene groups that form phenotypes."
+
 
 # 📖 How to Use TSUMUGI
 
 ## 💬 Top Page
 
-TSUMUGI accepts the following three types of input:
+TSUMUGI supports three types of input:
 
 ### 1. Phenotype
 
-When you input a phenotype of interest, TSUMUGI searches for a group of genes whose KO mice not only exhibit that phenotype, but also share **similar overall phenotype profiles**.  
-Phenotype names are based on the [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology).
+When you input a phenotype of interest, TSUMUGI searches for **gene groups with similar overall phenotype profiles** among genes whose KO mice exhibit that phenotype.  
+Phenotype names are based on [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology).
 
-You can view the list of phenotypes currently searchable with TSUMUGI here:  
+List of currently searchable phenotypes in TSUMUGI:  
 👉 [Phenotype List](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_mp_terms.txt)
-
 
 ### 2. Gene
 
-When you specify a particular gene, TSUMUGI searches for **other genes whose KO mice share similar phenotype profiles** with the KO mouse of the specified gene.  
-Gene symbols follow the official nomenclature from [MGI](http://www.informatics.jax.org/).
+When you specify a single gene, TSUMUGI searches for **other gene groups whose KO mice have similar phenotype profiles** to that gene's KO mice.  
+Gene names follow gene symbols registered in [MGI](http://www.informatics.jax.org/).
 
-You can view the list of gene symbols currently searchable with TSUMUGI here:  
-👉 [Gene Symbol List](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_gene_symbols.txt)
+List of currently searchable gene names in TSUMUGI:  
+👉 [Gene List](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_gene_symbols.txt)
 
 ### 3. Gene List
 
-You can input multiple genes (one per line).  
+Accepts input of multiple genes.  
+Gene lists should be entered separated by line breaks.  
 
-> [!Note]
-> Unlike a single gene search, the Gene List input compares phenotypes **within the listed genes** only.
+> [!NOTE]
+> Gene List differs from single Gene input in that it extracts phenotypically similar genes **among the genes within the list**.
 
 > [!CAUTION]
-> If **no phenotype-similar genes** are found, an alert saying
-> `No similar phenotypes were found among the entered genes.` will appear, and you will not be able to proceed.
+> **If no phenotypically similar genes are found**,
+> `No similar phenotypes were found among the entered genes.` alert will be displayed and processing will stop.
 >
-> If the number of phenotype-similar genes **exceeds 200**, an alert saying
-> `Too many genes submitted. Please limit the number to 200 or fewer.` will appear, and the process will be stopped to prevent browser overload.
+> **If phenotypically similar genes exceed 200**,
+> `Too many genes submitted. Please limit the number to 200 or fewer.` alert will be displayed and processing will stop to prevent browser overload.
 
-### 📥 Download Data
+### 📥 Raw Data Download (`TSUMUGI_{version}_raw_data`)
 
-You can download raw data of phenotype similarities between gene pairs (CSV format, gzip-compressed).
+You can download raw data of phenotypic similarity between gene pairs (in Gzip-compressed CSV format or Parquet format).  
 
-The file includes:
+Contents include:  
 
-- Gene pair (Gene1, Gene2)
-- Phenotypic similarity score (Jaccard Similarity)
-- Number of shared phenotypes
-- List of shared phenotypes
+- Paired gene names (Gene1, Gene2)
+- Phenotypic similarity between pairs (Jaccard Similarity)
+- Number of shared phenotypes between pairs (Number of shared phenotype)
+- List of shared phenotypes between pairs (List of shared phenotype)
 
 > [!CAUTION]
-> The file size is approximately 100MB. Downloading may take some time.
+> File size is approximately 50-100MB. Download may take some time.
 
-You can load the data using either Polars or Pandas, as shown below:  
+We recommend using Parquet format when working with `Polars` or `Pandas`.  
+You can load the data as follows:  
 
 #### Polars
 
-```python
-import polars as pl
-df_tsumugi = pl.read_csv("TSUMUGI_raw_data.csv.gz")
+```bash
+# Install Polars and PyArrow using conda
+conda create -y -n env-tsumugi polars pyarrow
+conda activate env-tsumugi
+```
 
-df_tsumugi = df_tsumugi.with_columns([
-    pl.col("List of shared phenotypes").str.json_decode().alias("List of shared phenotypes")
-  ])
+```python
+# Load Parquet file using Polars
+import polars as pl
+df_tsumugi = pl.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
 ```
 
 #### Pandas
 
+```bash
+# Install Pandas and PyArrow using conda
+conda create -y -n env-tsumugi pandas pyarrow
+conda activate env-tsumugi
+```
+
 ```python
-import json
+# Load Parquet file using Pandas
 import pandas as pd
-df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
-    converters={"List of shared phenotypes": json.loads})
+df_tsumugi = pd.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
 ```
 
 ## 🌐 Network Visualization
 
-After input is submitted, the page automatically transitions to a network view.
+Based on the input, the page transitions and the network is automatically drawn.  
 
 > [!IMPORTANT]
-> Gene pairs with **three or more shared abnormal phenotypes** or a **similarity score of 0.5 or higher** are subject to visualization.
+> **Gene pairs with 2 or more shared abnormal phenotypes AND phenotypic similarity of 0.2 or higher** are subject to visualization.  
 
-### Nodes
+### Network Panel
 
-- Each node represents a single gene.  
-- Clicking a node displays the list of abnormal phenotypes observed in its KO mouse.  
-- Nodes can be repositioned freely by dragging.
+#### Nodes (Points)
 
-### Edges
+Each node represents one gene.  
+Clicking displays a list of abnormal phenotypes observed in that gene's KO mice.  
+You can freely adjust positions by dragging.  
 
-- Clicking an edge reveals detailed information about the shared phenotypes between the two connected genes.
+#### Edges (Lines)
+
+Clicking an edge shows details of shared phenotypes.  
 
 ### Control Panel
 
-The left-hand control panel allows you to adjust the appearance and content of the network.
+The left control panel allows you to adjust network display.  
 
-#### Filter by Phenotype Similarity
+#### Filter by Phenotypic Similarity
 
-The `Phenotypes similarity` slider lets you filter **gene pairs** based on their phenotypic similarity (Jaccard index).  
-The similarity scores are scaled to a range of 1 to 10, allowing filtering in 10 steps.
-
-#### Filter by Phenotype Severity
-
-The `Phenotypes severity` slider allows you to filter **nodes** based on phenotype severity in KO mice.  
-Higher severity scores indicate stronger phenotypic effects.  
-This score is also scaled from 1 to 10 for 10-step filtering.
+The `Phenotypes similarity` slider allows you to set thresholds for gene pairs displayed in the network based on **edge phenotypic similarity** (Jaccard coefficient).  
+Similarity minimum and maximum values are converted to a 1-10 scale, allowing 10-level filtering.  
 
 > [!NOTE]
-> The severity slider is not available if the phenotype data from IMPC is binary (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)) or if the input consists of a single gene.
+> For details on phenotypic similarity, please see:  
+> 👉 [🔍 Calculation Method for Phenotypically Similar Gene Groups](https://github.com/akikuno/TSUMUGI-dev#-method-for-identifying-phenotypically-similar-gene-groups)
+
+#### Filter by Effect Size
+
+The `Phenotypes severity` slider allows you to adjust node display based on **phenotype severity (effect size) in KO mice**.  
+Higher effect sizes indicate stronger phenotypic impact.  
+This also scales the effect size range to 1-10, allowing 10-level filtering.  
+
+> [!NOTE]
+> When IMPC phenotype evaluation is binary (present/absent) (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)) or when gene name is input, the `Phenotypes severity` slider is not available.
 
 #### Specify Genotype
 
 You can specify the genotype of KO mice exhibiting phenotypes:
 
-- `Homo`: Phenotypes observed in homozygous mutants  
-- `Hetero`: Phenotypes observed in heterozygous mutants  
-- `Hemi`: Phenotypes observed in hemizygous mutants  
+- `Homo`: Phenotypes seen in homozygous mice
+- `Hetero`: Phenotypes seen in heterozygous mice
+- `Hemi`: Phenotypes seen in hemizygous mice
 
 #### Specify Sex
 
 You can extract sex-specific phenotypes:
 
-- `Female`: Phenotypes specific to females  
-- `Male`: Phenotypes specific to males  
+- `Female`: Female-specific phenotypes
+- `Male`: Male-specific phenotypes
 
 #### Specify Life Stage
 
-You can specify the life stage during which the phenotype appears:
+You can specify life stages when phenotypes appear:
 
-- `Embryo`: Phenotypes observed during the embryonic stage  
-- `Early`: Phenotypes observed at 0–16 weeks of age  
-- `Interval`: Phenotypes observed at 17–48 weeks of age  
-- `Late`: Phenotypes observed at 49 weeks of age or older  
+- `Embryo`: Phenotypes appearing during embryonic stage
+- `Early`: Phenotypes appearing at 0-16 weeks of age
+- `Interval`: Phenotypes appearing at 17-48 weeks of age
+- `Late`: Phenotypes appearing at 49+ weeks of age
 
-#### Adjust Network Appearance
+### Markup Panel
 
-The following visual properties can be adjusted:
+#### Highlight Human Disease-Related Genes (Highlight: Human Disease)
 
-- Network layout  
-- Font size  
-- Edge thickness  
-- Node repulsion (distance between nodes; applicable to Cose layout only)
+You can highlight genes related to human diseases.  
+The relationship between KO mice and human diseases uses public data from [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).  
 
-#### Search Gene
+#### Search Gene Names (Search: Specific Gene)
 
-You can search for specific gene names within the network.
+You can search for gene names included in the network.
+
+#### Adjust Network Display Style (Layout & Display)
+
+You can adjust the following elements:
+
+- Network layout (layout)
+- Font size (Font size)
+- Edge thickness (Edge width)
+- Distance between nodes (*Cose layout only) (Node repulsion)
 
 #### Export
 
-You can export the current network as PNG and CSV files.  
-The CSV file includes cluster (connected component) information and a list of phenotypes observed for each gene's KO mouse.
+You can export current network images and data in PNG and CSV formats.  
+CSV includes connected component (module) IDs and lists of phenotypes shown by each gene's KO mice.  
 
----
-
-# 🔍 Method for Identifying Phenotypically Similar Gene Groups
+# 🔍 Calculation Method for Phenotypically Similar Gene Groups
 
 ## Data Source
 
-The dataset used is [IMPC Release-22.1](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results), specifically the `statistical-results-ALL.csv.gz` file.  
-Detailed information about the data fields can be found here:  
-👉 [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+IMPC dataset uses `statistical-results-ALL.csv.gz` from [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results).  
+Information about columns included in the dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Preprocessing
 
-Gene–phenotype pairs were extracted where the KO mouse exhibited a phenotype with a p-value ≤ 0.0001  
-(`p_value`, `female_ko_effect_p_value`, or `male_ko_effect_p_value`).
+Extract gene-phenotype pairs where KO mouse phenotype P-values (`p_value`, `female_ko_effect_p_value`, or `male_ko_effect_p_value`) are 0.0001 or below.  
+- Genotype-specific phenotypes are annotated with `homo`, `hetero`, or `hemi`
+- Sex-specific phenotypes are annotated with `female` or `male`
 
-- Genotype-specific phenotypes are annotated with `homo`, `hetero`, or `hemi`.  
-- Sex-specific phenotypes are annotated with `female` or `male`.
+## Phenotypic Similarity Calculation
 
-## Phenotype Similarity Calculation
-
-Phenotypic similarity is quantified using the **Jaccard index**,  
-which measures the proportion of shared phenotypes between two gene knockouts as a value between 0 and 1.
+**Jaccard coefficient** is used as the phenotypic similarity metric.  
+This is a similarity measure that expresses the proportion of shared phenotypes as a 0-1 numerical value.
 
 ```
 Jaccard(A, B) = |A ∩ B| / |A ∪ B|
 ```
 
-For example, suppose KO mice of gene A and gene B exhibit the following abnormal phenotypes:
+For example, suppose gene A and gene B KO mice have the following abnormal phenotypes:  
 
 ```
 A: {abnormal embryo development, abnormal heart morphology, abnormal kidney morphology}
 B: {abnormal embryo development, abnormal heart morphology, abnormal lung morphology}
 ```
 
-In this case, there are 2 shared phenotypes and 4 unique phenotypes in total.  
-The Jaccard index is calculated as follows:
+In this case, there are 2 shared phenotypes and 4 total unique phenotypes, so the Jaccard coefficient is calculated as follows:
 
 ```
 Jaccard(A, B) = 2 / 4 = 0.5
@@ -213,10 +229,10 @@ Jaccard(A, B) = 2 / 4 = 0.5
 
 # ✉️ Contact
 
-If you have any questions or requests, feel free to contact us using one of the methods below (inquiries in Japanese are welcome):
+For questions or requests, please feel free to contact us:
 
 - **Google Form**  
   👉 [Contact Form](https://forms.gle/ME8EJZZHaRNgKZ979)
 
-- If you have a **GitHub account**  
+- **For GitHub account holders**  
   👉 [GitHub Issue](https://github.com/akikuno/TSUMUGI-dev/issues/new/choose)

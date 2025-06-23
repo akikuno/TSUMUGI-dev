@@ -56,9 +56,9 @@ TSUMUGIで現在検索可能な遺伝子名の一覧はこちら：
 > `Too many genes submitted. Please limit the number to 200 or fewer.` というアラートが表示され、ブラウザの負荷を防ぐため処理が停止されます。
 
 
-### 📥 生データ(`TSUMUGI_raw_data.csv.gz`)のダウンロード
+### 📥 生データ(`TSUMUGI_{version}_raw_data`)のダウンロード
 
-遺伝子ペアにおける表現型類似度の生データ（CSV形式・gzip圧縮）をダウンロードすることができます。  
+遺伝子ペアにおける表現型類似度の生データ（Gzip圧縮CSV形式、またはParquet形式）をダウンロードすることができます。  
 
 内容は以下のとおりです：  
 
@@ -68,28 +68,37 @@ TSUMUGIで現在検索可能な遺伝子名の一覧はこちら：
 - ペアに共通する表現型のリスト（List of shared phenotype）
 
 > [!CAUTION]
-> ファイルサイズは約100MBあります。ダウンロードに時間がかかる場合があります。
+> ファイルサイズは約50-100MBあります。ダウンロードに時間がかかる場合があります。
 
-Polars または Pandas を用いて、次のようにデータを読み込むことができます：  
+`Polars` または `Pandas` を用いる場合には、Parquet形式のご利用を推奨します。  
+次のようにデータを読み込むことができます：  
 
 #### Polars
 
-```python
-import polars as pl
-df_tsumugi = pl.read_csv("TSUMUGI_raw_data.csv.gz")
+```bash
+# condaを使用してPolarsとPyArrowをインストールします
+conda create -y -n env-tsumugi polars pyarrow
+conda activate env-tsumugi
+```
 
-df_tsumugi = df_tsumugi.with_columns([
-    pl.col("List of shared phenotypes").str.json_decode().alias("List of shared phenotypes")
-  ])
+```python
+# Polarsを使用してParquetファイルを読み込みます
+import polars as pl
+df_tsumugi = pl.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
 ```
 
 #### Pandas
 
+```bash
+# condaを使用してPandasとPyArrowをインストールします
+conda create -y -n env-tsumugi pandas pyarrow
+conda activate env-tsumugi
+```
+
 ```python
-import json
+# Pandasを使用してParquetファイルを読み込みます
 import pandas as pd
-df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
-    converters={"List of shared phenotypes": json.loads})
+df_tsumugi = pd.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
 ```
 
 ## 🌐 ネットワーク描出
@@ -97,15 +106,17 @@ df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
 入力内容に基づいてページが遷移し、ネットワークが自動的に描画されます。  
 
 > [!IMPORTANT]
-> **共通する異常表現型が3つ以上 または 表現型類似度が0.5以上**の遺伝子ペアが、可視化の対象となります。  
+> **共通する異常表現型が2つ以上 かつ 表現型類似度が0.2以上**の遺伝子ペアが、可視化の対象となります。  
 
-### ノード（点）
+### ネットワークパネル
+
+#### ノード（点）
 
 各ノードは1つの遺伝子を表します。  
 クリックすると、そのKOマウスに観察された異常表現型のリストが表示されます。  
 ドラッグで自由に位置を調整できます。  
 
-### エッジ（線）
+#### エッジ（線）
 
 エッジをクリックすると、共通表現型の詳細が確認できます。  
 
@@ -155,7 +166,18 @@ df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
 - `Interval`: 17-48週齢に現れる表現型
 - `Late`： 49週齢以上に現れる表現型
 
-#### ネットワーク図の表示スタイル調整
+### マークアップパネル
+
+#### ヒト疾患関連遺伝子のハイライト (Highlight: Human Disease)
+
+ヒト疾患に関連する遺伝子をハイライト表示できます。  
+KOマウスとヒト疾患の関連は、[IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)の公開データを使用しています。  
+
+#### 遺伝子名の検索 (Search: Specific Gene)
+
+ネットワークに含まれる遺伝子名を検索できます。
+
+#### ネットワーク図の表示スタイル調整 （Layout ＆ Display）
 
 以下の要素を調整できます：
 
@@ -164,20 +186,16 @@ df_tsumugi = pd.read_csv("TSUMUGI_raw_data.csv.gz",
 - エッジ（線）の太さ (Edge width)
 - ノード（点）間の距離（＊Coseレイアウト限定） (Node repulsion)
 
-#### 遺伝子名の検索 (Search gene)
-
-ネットワークに含まれる遺伝子名を検索できます。
-
-#### エクスポート
+#### エクスポート (Export)
 
 現在のネットワークの画像およびデータを、PNGおよびCSV形式でエクスポートできます。  
-CSVには、連結成分（クラスター）情報と、各遺伝子のKOマウスが示す表現型の一覧が含まれます。  
+CSVには、連結成分（モジュール）のIDと、各遺伝子のKOマウスが示す表現型の一覧が含まれます。  
 
 # 🔍 表現型類似遺伝子群の算出方法
 
 ## データソース
 
-IMPCのデータセットは[Release-22.1](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-22.1/results)の`statistical-results-ALL.csv.gz`を使用しています。  
+IMPCのデータセットは[Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results)の`statistical-results-ALL.csv.gz`を使用しています。  
 データセットに含まれる列の情報はこちらです： [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## 前処理
