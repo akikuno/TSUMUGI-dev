@@ -74,6 +74,7 @@ function enableTooltipDrag(tooltip) {
     let isDragging = false;
     let offset = { x: 0, y: 0 };
 
+    // Mouse events (existing functionality)
     tooltip.addEventListener("mousedown", function (e) {
         e.stopPropagation();
         isDragging = true;
@@ -92,6 +93,33 @@ function enableTooltipDrag(tooltip) {
     });
 
     document.addEventListener("mouseup", function () {
+        isDragging = false;
+        tooltip.style.cursor = "move";
+    });
+
+    // Touch events for tablet/mobile support
+    tooltip.addEventListener("touchstart", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        isDragging = true;
+        const touch = e.touches[0];
+        const rect = tooltip.getBoundingClientRect();
+        offset.x = touch.clientX - rect.left;
+        offset.y = touch.clientY - rect.top;
+        tooltip.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("touchmove", function (e) {
+        if (isDragging) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const containerRect = document.querySelector(".cy").getBoundingClientRect();
+            tooltip.style.left = `${touch.clientX - offset.x - containerRect.left}px`;
+            tooltip.style.top = `${touch.clientY - offset.y - containerRect.top}px`;
+        }
+    });
+
+    document.addEventListener("touchend", function () {
         isDragging = false;
         tooltip.style.cursor = "move";
     });
