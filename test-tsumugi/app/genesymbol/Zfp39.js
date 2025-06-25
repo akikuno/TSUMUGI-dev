@@ -5,8 +5,9 @@ import { calculateConnectedComponents } from "../js/components.js";
 import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
 import { loadJSONGz, loadJSON } from "../js/data_loader.js";
-import { setupGeneSearch } from "../js/searcher.js";
+import { setupGeneSearch } from "../js/gene_searcher.js";
 import { highlightDiseaseAnnotation } from "../js/highlighter.js";
+import { setupPhenotypeSearch } from "../js/phenotype_searcher.js";
 
 // ############################################################################
 // Input handler
@@ -163,6 +164,13 @@ const cy = cytoscape({
             style: {
                 color: "#028760",
                 "font-weight": "bold",
+            },
+        },
+        {
+            selector: ".phenotype-highlight", // 表現型ハイライト用クラス
+            style: {
+                "border-width": 3,
+                "border-color": "#28a745",
             },
         },
     ],
@@ -346,6 +354,11 @@ highlightDiseaseAnnotation({ cy });
 // --------------------------------------------------------
 
 setupGeneSearch({ cy });
+
+// =============================================================================
+// 表現型ハイライト（検索機能付き）
+// =============================================================================
+setupPhenotypeSearch({ cy, elements });
 
 // --------------------------------------------------------
 // Slider for Font size

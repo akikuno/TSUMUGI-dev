@@ -177,7 +177,8 @@ a {
 /* ======================================================== */
 
 /* Input style */
-#gene-search {
+#gene-search,
+#phenotype-search {
     width: 70%;
     padding: 10px;
     font-size: 14px;
@@ -187,7 +188,8 @@ a {
 }
 
 /* Input focus */
-#gene-search:focus {
+#gene-search:focus,
+#phenotype-search:focus {
     border-color: #999;
 }
 
@@ -320,6 +322,46 @@ ul.suggestions li:hover {
     transform: rotate(-45deg);
     top: 8px;
     left: 6px;
+}
+
+/* ======================================================== */
+/* Phenotype Search */
+/* ======================================================== */
+
+.selected-phenotypes {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.selected-phenotype-tag {
+    background-color: transparent;
+    color: #333;
+    padding: 5px 10px;
+    border: 2px solid #aaa;
+    border-radius: 15px;
+    font-size: 0.85em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    word-wrap: break-word;
+    line-height: 1.2;
+}
+
+.selected-phenotype-tag .remove-btn {
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 8px;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+.selected-phenotype-tag .remove-btn:hover {
+    opacity: 0.7;
 }
 
 /* ======================================================== */
