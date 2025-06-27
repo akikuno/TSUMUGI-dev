@@ -23,6 +23,7 @@
 ## v0.4.0 (2025-MM-DD)
 
 ## 🐛 Bug Fixes
+
 + Fix gene search bug for single character input  
   Issue: [#86](https://github.com/akikuno/TSUMUGI-dev/issues/86)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/0822ae2424d685be487858f5d53a7b49768918dc)]  

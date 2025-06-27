@@ -1,4 +1,4 @@
-import { exportGraphAsPNG, exportGraphAsCSV } from "../js/exporter.js";
+import { exportGraphAsPNG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/exporter.js";
 import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
 import { removeTooltips, showTooltip } from "../js/tooltips.js";
 import { calculateConnectedComponents } from "../js/components.js";
@@ -381,4 +381,12 @@ document.getElementById("export-png").addEventListener("click", function () {
 
 document.getElementById("export-csv").addEventListener("click", function () {
     exportGraphAsCSV(cy, file_name);
+});
+
+// --------------------------------------------------------
+// GraphML Exporter (Desktop Cytoscape Compatible)
+// --------------------------------------------------------
+
+document.getElementById("export-graphml").addEventListener("click", function () {
+    exportGraphAsGraphML(cy, file_name);
 });
