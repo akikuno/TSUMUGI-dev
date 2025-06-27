@@ -8,21 +8,29 @@
 ## 🔧 Maintenance
 ## ⛔️ Deprecated
 ## 🖼️ User Interface
-+ [COMMIT_MESSAGE]  
++ COMMIT_MESSAGE  
   Issue: [#XXX](https://github.com/akikuno/TSUMUGI-dev/issues/XXX)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 -->
 
 <!-- = TODO ====
-- 遺伝子aが検索リストに出てこない #86
-- Enable the exclusion or extraction of specific phenotypes from the network #36
+- [x] 遺伝子aが検索リストに出てこない #86
+- [x] Enable the exclusion or extraction of specific phenotypes from the network #36
 -->
 
 <!-- ############################################################ # -->
 
 ## v0.4.0 (2025-MM-DD)
 
+## 🐛 Bug Fixes
++ Fix gene search bug for single character input  
+  Issue: [#86](https://github.com/akikuno/TSUMUGI-dev/issues/86)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 
+  Fixed negative matchWindow in Jaro-Winkler algorithm that prevented
+  single character searches like "a" from showing gene suggestions.
+
+Issue:  #86
 
 -------------------------------------------------------------
 
