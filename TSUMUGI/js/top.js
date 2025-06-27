@@ -236,7 +236,7 @@ function jaroWinkler(s1, s2) {
 
     if (s1Len === 0 || s2Len === 0) return 0;
 
-    const matchWindow = Math.floor(Math.max(s1Len, s2Len) / 2) - 1;
+    const matchWindow = Math.max(0, Math.floor(Math.max(s1Len, s2Len) / 2) - 1);
     const s1Matches = new Array(s1Len).fill(false);
     const s2Matches = new Array(s2Len).fill(false);
     let matches = 0;
