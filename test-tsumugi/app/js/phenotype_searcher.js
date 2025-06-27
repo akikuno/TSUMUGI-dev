@@ -73,6 +73,34 @@ function setupPhenotypeSearchInput() {
         displayPhenotypeSuggestions(filteredPhenotypes);
     });
 
+    // クリック時に候補を表示
+    searchInput.addEventListener("click", function () {
+        const searchTerm = this.value.toLowerCase().trim();
+
+        if (searchTerm.length === 0) {
+            // 入力が空の場合は全ての表現型を表示（選択済みを除く）
+            const availablePhenotypes = allPhenotypes.filter((phenotype) => !selectedPhenotypes.has(phenotype));
+            displayPhenotypeSuggestions(availablePhenotypes);
+        } else {
+            // 入力がある場合は検索結果を表示
+            const filteredPhenotypes = allPhenotypes.filter(
+                (phenotype) => phenotype.toLowerCase().includes(searchTerm) && !selectedPhenotypes.has(phenotype),
+            );
+            displayPhenotypeSuggestions(filteredPhenotypes);
+        }
+    });
+
+    // フォーカス時にも候補を表示
+    searchInput.addEventListener("focus", function () {
+        const searchTerm = this.value.toLowerCase().trim();
+
+        if (searchTerm.length === 0) {
+            // 入力が空の場合は全ての表現型を表示（選択済みを除く）
+            const availablePhenotypes = allPhenotypes.filter((phenotype) => !selectedPhenotypes.has(phenotype));
+            displayPhenotypeSuggestions(availablePhenotypes);
+        }
+    });
+
     // 入力フィールド外をクリックしたら候補を隠す
     document.addEventListener("click", function (event) {
         if (!searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
