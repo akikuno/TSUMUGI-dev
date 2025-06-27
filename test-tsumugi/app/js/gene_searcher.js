@@ -25,21 +25,20 @@ export function setupGeneSearch({
         }
     }
 
-    input.addEventListener("input", () => {
-        const query = input.value.trim().toLowerCase();
+    // 🔍 候補を表示する共通関数
+    function showSuggestions(query = "") {
+        const normalizedQuery = query.trim().toLowerCase();
         suggestionsList.innerHTML = "";
-
-        if (!query) {
-            suggestionsList.hidden = true;
-            return;
-        }
 
         const visibleLabels = cy
             .nodes()
             .filter((n) => n.style("display") !== "none")
             .map((n) => n.data("label"));
 
-        const matched = visibleLabels.filter((label) => label.toLowerCase().includes(query)).slice(0, 10);
+        const matched = visibleLabels
+            .filter((label) => (normalizedQuery ? label.toLowerCase().includes(normalizedQuery) : true))
+            .sort()
+            .slice(0, 10);
 
         if (matched.length === 0) {
             suggestionsList.hidden = true;
@@ -61,6 +60,29 @@ export function setupGeneSearch({
         });
 
         suggestionsList.hidden = false;
+    }
+
+    input.addEventListener("input", () => {
+        const query = input.value.trim().toLowerCase();
+
+        if (!query) {
+            suggestionsList.hidden = true;
+            return;
+        }
+
+        showSuggestions(query);
+    });
+
+    // クリック時に候補を表示
+    input.addEventListener("click", () => {
+        const query = input.value.trim().toLowerCase();
+        showSuggestions(query);
+    });
+
+    // フォーカス時にも候補を表示
+    input.addEventListener("focus", () => {
+        const query = input.value.trim().toLowerCase();
+        showSuggestions(query);
     });
 
     input.addEventListener("blur", () => {
