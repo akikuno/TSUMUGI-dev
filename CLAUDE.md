@@ -94,6 +94,9 @@ The main deployment process is handled by the notebook `notebooks/notebools-web/
 - Jupyter notebooks use nbstripout to exclude outputs from Git
 - Prettier formatting applied to all web files
 - Template placeholders use `XXX_` prefix (e.g., `XXX_TITLE`, `XXX_NAME`)
+- 型ヒントは組み込み型を使用し、typingモジュールは使用しないこと。
+- クラスは使わず、関数で実装すること。
+
 
 ## Testing and Quality Assurance
 

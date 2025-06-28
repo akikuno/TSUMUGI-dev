@@ -8,6 +8,9 @@ TSUMUGI/app/phenotype/*
 
 !TSUMUGI/data/*.txt
 
+CLAUDE.md
+GEMINI.md
+
 # Office temporary
 ~$*.*
 .vscode/*
