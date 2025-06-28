@@ -9,6 +9,11 @@ find TSUMUGI/js -type f | xargs grep "$WORD"
 
 conda activate env-tsumugi
 
+# コードのバグや非推奨なスタイルを直す
+ruff check notebooks/ --fix
+# そのあとでフォーマットを整える
+ruff format notebooks/
+
 type prettier || conda install -y -n env-tsumugi conda-forge::prettier
 prettier --write "TSUMUGI/template/**/*" --print-width 120 --prose-wrap never --tab-width 4
 prettier --write "test-tsumugi/**/*" --print-width 120 --prose-wrap never --tab-width 4
