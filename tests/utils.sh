@@ -9,9 +9,7 @@ find TSUMUGI/js -type f | xargs grep "$WORD"
 
 conda activate env-tsumugi
 
-# コードのバグや非推奨なスタイルを直す
 ruff check notebooks/ --fix
-# そのあとでフォーマットを整える
 ruff format notebooks/
 
 type prettier || conda install -y -n env-tsumugi conda-forge::prettier
