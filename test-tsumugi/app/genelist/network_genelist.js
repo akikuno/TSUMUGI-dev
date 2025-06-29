@@ -259,6 +259,11 @@ function filterByNodeColorAndEdgeSize() {
 
     // 6. レイアウト再適用
     cy.layout(getLayoutOptions()).run();
+
+    // 7. 表現型リストを更新（フィルター変更後に現在表示されている遺伝子の表現型のみを表示）
+    if (window.refreshPhenotypeList) {
+        window.refreshPhenotypeList();
+    }
 }
 
 // =============================================================================

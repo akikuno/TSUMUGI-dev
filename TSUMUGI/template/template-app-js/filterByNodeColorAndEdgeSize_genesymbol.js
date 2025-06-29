@@ -21,7 +21,7 @@ function filterByNodeColorAndEdgeSize() {
     // 4. 標的遺伝子と直接接続されているノードのみを特定
     const targetGene = "XXX_NAME";
     const targetNode = cy.getElementById(targetGene);
-    
+
     if (targetNode.length === 0) {
         return;
     }
@@ -31,13 +31,13 @@ function filterByNodeColorAndEdgeSize() {
 
     // 6. 標的遺伝子と直接接続されているノードを特定
     const directlyConnectedNodes = new Set([targetGene]);
-    
+
     // まず標的遺伝子と直接接続されているノードを特定
     cy.edges().forEach((edge) => {
         if (edge.style("display") === "element") {
             const source = edge.data("source");
             const target = edge.data("target");
-            
+
             // 標的遺伝子が関与するエッジから接続ノードを特定
             if (source === targetGene) {
                 directlyConnectedNodes.add(target);
@@ -52,7 +52,7 @@ function filterByNodeColorAndEdgeSize() {
         if (edge.style("display") === "element") {
             const source = edge.data("source");
             const target = edge.data("target");
-            
+
             // 両端のノードが直接接続されたノードセットに含まれている場合は表示
             if (directlyConnectedNodes.has(source) && directlyConnectedNodes.has(target)) {
                 edge.style("display", "element");
@@ -72,6 +72,12 @@ function filterByNodeColorAndEdgeSize() {
         }
     });
 
-    // 6. レイアウト再適用
+    // 9. レイアウト再適用
     cy.layout(getLayoutOptions()).run();
+
+
+    // 10. 表現型リストを更新（フィルター変更後に現在表示されている遺伝子の表現型のみを表示）
+    if (window.refreshPhenotypeList) {
+        window.refreshPhenotypeList();
+    }
 }
