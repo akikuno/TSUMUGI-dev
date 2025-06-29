@@ -5,6 +5,7 @@
 // 表現型リストを保持
 let allPhenotypes = [];
 let selectedPhenotypes = new Set();
+let cytoscapeInstance = null;
 
 /**
  * 表現型検索機能を初期化
@@ -13,7 +14,8 @@ let selectedPhenotypes = new Set();
  * @param {Array} params.elements - ネットワークデータ要素
  */
 export function setupPhenotypeSearch({ cy, elements }) {
-    initializePhenotypeSearch(elements);
+    cytoscapeInstance = cy;
+    initializePhenotypeSearch(cy);
     setupPhenotypeSearchInput();
     
     // グローバル関数として定義（HTML内のonclickで使用）
@@ -21,24 +23,31 @@ export function setupPhenotypeSearch({ cy, elements }) {
     
     // updatePhenotypeHighlight関数をグローバルに公開（他のモジュールから呼び出し可能）
     window.updatePhenotypeHighlight = () => updatePhenotypeHighlight(cy);
+    
+    // refreshPhenotypeList関数をグローバルに公開（フィルター変更時に呼び出し可能）
+    window.refreshPhenotypeList = () => refreshPhenotypeList();
 }
 
 /**
- * 全ての表現型を抽出してリストを作成
- * @param {Array} elements - ネットワークデータ要素
+ * 現在表示されている遺伝子から表現型を抽出してリストを作成
+ * @param {Object} cy - Cytoscapeインスタンス
  */
-function initializePhenotypeSearch(elements) {
+function initializePhenotypeSearch(cy) {
     const phenotypeSet = new Set();
     
-    // ノードとエッジから表現型を抽出
-    elements.forEach((ele) => {
-        if (ele.data.phenotype) {
-            const phenotypes = Array.isArray(ele.data.phenotype) ? ele.data.phenotype : [ele.data.phenotype];
-            phenotypes.forEach(phenotype => {
-                if (phenotype && phenotype.trim() !== "") {
-                    phenotypeSet.add(phenotype.trim());
-                }
-            });
+    // 現在表示されているノードのみから表現型を抽出
+    cy.nodes().forEach((node) => {
+        // ノードが表示されているかチェック
+        if (node.style('display') !== 'none' && !node.hidden()) {
+            const nodeData = node.data();
+            if (nodeData.phenotype) {
+                const phenotypes = Array.isArray(nodeData.phenotype) ? nodeData.phenotype : [nodeData.phenotype];
+                phenotypes.forEach(phenotype => {
+                    if (phenotype && phenotype.trim() !== "") {
+                        phenotypeSet.add(phenotype.trim());
+                    }
+                });
+            }
         }
     });
     
@@ -243,6 +252,47 @@ export function clearSelectedPhenotypes() {
     selectedPhenotypes.clear();
     displaySelectedPhenotypes();
     
+    if (window.updatePhenotypeHighlight) {
+        window.updatePhenotypeHighlight();
+    }
+}
+
+/**
+ * フィルター変更時に表現型リストを更新
+ */
+function refreshPhenotypeList() {
+    if (!cytoscapeInstance) return;
+    
+    // 現在の検索入力値を保存
+    const searchInput = document.getElementById("phenotype-search");
+    const currentSearchValue = searchInput ? searchInput.value : "";
+    
+    // 表現型リストを再初期化
+    initializePhenotypeSearch(cytoscapeInstance);
+    
+    // 選択済み表現型のうち、もう存在しないものを削除
+    const updatedSelectedPhenotypes = new Set();
+    selectedPhenotypes.forEach(phenotype => {
+        if (allPhenotypes.includes(phenotype)) {
+            updatedSelectedPhenotypes.add(phenotype);
+        }
+    });
+    selectedPhenotypes = updatedSelectedPhenotypes;
+    
+    // 表示を更新
+    displaySelectedPhenotypes();
+    
+    // 検索中だった場合は候補を更新
+    if (searchInput && currentSearchValue.trim().length > 0) {
+        const searchTerm = currentSearchValue.toLowerCase().trim();
+        const filteredPhenotypes = allPhenotypes.filter(phenotype => 
+            phenotype.toLowerCase().includes(searchTerm) && 
+            !selectedPhenotypes.has(phenotype)
+        );
+        displayPhenotypeSuggestions(filteredPhenotypes);
+    }
+    
+    // ハイライトを更新
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
     }

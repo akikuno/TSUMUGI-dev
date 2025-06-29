@@ -24,6 +24,16 @@ function restoreHighlightStates(cy) {
             matchedNode.addClass("gene-highlight");
         }
     }
+
+    // Phenotype searchハイライトの復元
+    if (window.updatePhenotypeHighlight) {
+        window.updatePhenotypeHighlight();
+    }
+
+    // Phenotype listの更新（フィルター後の遺伝子のみの表現型を表示）
+    if (window.refreshPhenotypeList) {
+        window.refreshPhenotypeList();
+    }
 }
 
 export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterElements) {
