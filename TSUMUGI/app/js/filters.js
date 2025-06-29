@@ -13,16 +13,24 @@ function restoreHighlightStates(cy) {
     }
 
     // Gene searchハイライトの復元
-    const geneSearchInput = document.getElementById('gene-search');
-    if (geneSearchInput && geneSearchInput.value.trim() !== '') {
+    const geneSearchInput = document.getElementById("gene-search");
+    if (geneSearchInput && geneSearchInput.value.trim() !== "") {
         const searchTerm = geneSearchInput.value.trim().toLowerCase();
-        const matchedNode = cy.nodes().filter(
-            (node) => node.data("label").toLowerCase() === searchTerm
-        );
+        const matchedNode = cy.nodes().filter((node) => node.data("label").toLowerCase() === searchTerm);
 
         if (matchedNode.length > 0) {
             matchedNode.addClass("gene-highlight");
         }
+    }
+
+    // Phenotype searchハイライトの復元
+    if (window.updatePhenotypeHighlight) {
+        window.updatePhenotypeHighlight();
+    }
+
+    // Phenotype listの更新（フィルター後の遺伝子のみの表現型を表示）
+    if (window.refreshPhenotypeList) {
+        window.refreshPhenotypeList();
     }
 }
 

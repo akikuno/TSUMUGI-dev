@@ -84,7 +84,7 @@ conda activate env-tsumugi
 ```python
 # Polarsを使用してParquetファイルを読み込みます
 import polars as pl
-df_tsumugi = pl.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
+df_tsumugi = pl.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 ```
 
 #### Pandas
@@ -98,7 +98,7 @@ conda activate env-tsumugi
 ```python
 # Pandasを使用してParquetファイルを読み込みます
 import pandas as pd
-df_tsumugi = pd.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
+df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 ```
 
 ## 🌐 ネットワーク描出
@@ -133,9 +133,9 @@ df_tsumugi = pd.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
 > 表現型類似度についての詳細は、以下を御覧ください  
 > 👉 [🔍 表現型類似遺伝子群の算出方法](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_JP.md#-%E8%A1%A8%E7%8F%BE%E5%9E%8B%E9%A1%9E%E4%BC%BC%E9%81%BA%E4%BC%9D%E5%AD%90%E7%BE%A4%E3%81%AE%E7%AE%97%E5%87%BA%E6%96%B9%E6%B3%95)
 
-#### 効果量によるフィルター
+#### 表現型重症度によるフィルター
 
-`Phenotypes severity`のスライダーでは、**KOマウスにおける表現型の重症度**（効果量）に基づいて、ノードの表示を調整できます。  
+`Phenotype severity`のスライダーでは、**KOマウスにおける表現型の重症度**（効果量）に基づいて、ノードの表示を調整できます。  
 効果量が高いほど、表現型の影響が強く現れていることを示します。  
 こちらも、効果量の範囲を 1〜10 にスケールしており、10段階のフィルタリングが可能です。  
 
@@ -188,8 +188,9 @@ KOマウスとヒト疾患の関連は、[IMPC Disease Models Portal](https://di
 
 #### エクスポート (Export)
 
-現在のネットワークの画像およびデータを、PNGおよびCSV形式でエクスポートできます。  
+現在のネットワークの画像およびデータを、PNG、CSVおよびGraphML形式でエクスポートできます。  
 CSVには、連結成分（モジュール）のIDと、各遺伝子のKOマウスが示す表現型の一覧が含まれます。  
+GraphMLは、デスクトップ版Cytoscapeと互換性のある形式で、Cytoscapeにネットワークをインポートして分析することができます。  
 
 # 🔍 表現型類似遺伝子群の算出方法
 

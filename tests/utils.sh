@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-WORD="SIVERITY"
+WORD="0.4.0"
 
 find notebooks/ -type f | xargs grep "$WORD"
 find TSUMUGI/template -type f | xargs grep "$WORD"

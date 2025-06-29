@@ -85,7 +85,7 @@ conda activate env-tsumugi
 ```python
 # Load Parquet file using Polars
 import polars as pl
-df_tsumugi = pl.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
+df_tsumugi = pl.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 ```
 
 #### Pandas
@@ -99,7 +99,7 @@ conda activate env-tsumugi
 ```python
 # Load Parquet file using Pandas
 import pandas as pd
-df_tsumugi = pd.read_parquet("TSUMUGI_v0.3.2_raw_data.parquet")
+df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 ```
 
 ## 🌐 Network Visualization
@@ -134,9 +134,9 @@ Similarity minimum and maximum values are converted to a 1-10 scale, allowing 10
 > For details on phenotypic similarity, please see:  
 > 👉 [🔍 Calculation Method for Phenotypically Similar Gene Groups](https://github.com/akikuno/TSUMUGI-dev#-method-for-identifying-phenotypically-similar-gene-groups)
 
-#### Filter by Effect Size
+#### Filter by Phenotype Severity
 
-The `Phenotypes severity` slider allows you to adjust node display based on **phenotype severity (effect size) in KO mice**.  
+The `Phenotype severity` slider allows you to adjust node display based on **phenotype severity (effect size) in KO mice**.  
 Higher effect sizes indicate stronger phenotypic impact.  
 This also scales the effect size range to 1-10, allowing 10-level filtering.  
 
@@ -189,8 +189,10 @@ You can adjust the following elements:
 
 #### Export
 
-You can export current network images and data in PNG and CSV formats.  
+You can export current network images and data in PNG, CSV and GraphML formats.  
 CSV includes connected component (module) IDs and lists of phenotypes shown by each gene's KO mice.  
+GraphML is a format compatible with the desktop version of Cytoscape, allowing you to import the network into Cytoscape for further analysis.  
+
 
 # 🔍 Calculation Method for Phenotypically Similar Gene Groups
 

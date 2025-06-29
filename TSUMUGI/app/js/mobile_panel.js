@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // すべての要素が取得できている場合のみ処理を進める
     if (menuToggle && leftPanel && rightPanel && closeButton) {
-
         // スマホ表示時のみ右パネルを左パネルに移動
         const reorganizePanels = () => {
             if (window.innerWidth <= 600) {

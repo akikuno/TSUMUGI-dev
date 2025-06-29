@@ -1,12 +1,13 @@
-import { exportGraphAsPNG, exportGraphAsCSV } from "../js/exporter.js";
+import { exportGraphAsPNG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/exporter.js";
 import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
 import { removeTooltips, showTooltip } from "../js/tooltips.js";
 import { calculateConnectedComponents } from "../js/components.js";
 import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
 import { loadJSONGz, loadJSON } from "../js/data_loader.js";
-import { setupGeneSearch } from "../js/searcher.js";
+import { setupGeneSearch } from "../js/gene_searcher.js";
 import { highlightDiseaseAnnotation } from "../js/highlighter.js";
+import { setupPhenotypeSearch } from "../js/phenotype_searcher.js";
 
 // ############################################################################
 // Input handler
@@ -120,6 +121,13 @@ const cy = cytoscape({
             style: {
                 color: "#028760",
                 "font-weight": "bold",
+            },
+        },
+        {
+            selector: ".phenotype-highlight", // 表現型ハイライト用クラス
+            style: {
+                "border-width": 3,
+                "border-color": "#28a745",
             },
         },
     ],
@@ -251,6 +259,11 @@ function filterByNodeColorAndEdgeSize() {
 
     // 6. レイアウト再適用
     cy.layout(getLayoutOptions()).run();
+
+    // 7. 表現型リストを更新（フィルター変更後に現在表示されている遺伝子の表現型のみを表示）
+    if (window.refreshPhenotypeList) {
+        window.refreshPhenotypeList();
+    }
 }
 
 // =============================================================================
@@ -283,6 +296,11 @@ highlightDiseaseAnnotation({ cy });
 // --------------------------------------------------------
 
 setupGeneSearch({ cy });
+
+// =============================================================================
+// 表現型ハイライト（検索機能付き）
+// =============================================================================
+setupPhenotypeSearch({ cy, elements });
 
 // --------------------------------------------------------
 // Slider for Font size
@@ -368,4 +386,12 @@ document.getElementById("export-png").addEventListener("click", function () {
 
 document.getElementById("export-csv").addEventListener("click", function () {
     exportGraphAsCSV(cy, file_name);
+});
+
+// --------------------------------------------------------
+// GraphML Exporter (Desktop Cytoscape Compatible)
+// --------------------------------------------------------
+
+document.getElementById("export-graphml").addEventListener("click", function () {
+    exportGraphAsGraphML(cy, file_name);
 });

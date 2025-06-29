@@ -24,6 +24,7 @@
         <script type="module" src="./network_genelist.js"></script>
         <script type="module" src="../js/mobile_panel.js"></script>
         <script type="module" src="../js/dynamic_font_size.js"></script>
+        <script src="../js/info_tooltips.js"></script>
 
         <!-- ============================= -->
         <!-- CSS -->
@@ -58,6 +59,13 @@
                     <div class="panel-title">
                         <i class="fa-solid fa-sliders"></i>
                         Phenotypic metrics
+                        <div class="info-tooltip-container">
+                            <div class="info-tooltip-icon">i</div>
+                            <div class="info-tooltip-content">
+                                Phenotype severity is not displayed when phenotype evaluation is binary
+                                (presence/absence).
+                            </div>
+                        </div>
                     </div>
 
                     <div class="slider-container">
@@ -75,7 +83,7 @@
                 <div class="panel-section">
                     <div class="panel-title">
                         <i class="fa-solid fa-dna"></i>
-                        Biological filters
+                        Biological annotations
                     </div>
 
                     <div class="boxed-section">
@@ -111,7 +119,13 @@
                     </div>
 
                     <div class="boxed-section">
-                        <span>Life stage</span>
+                        <span
+                            >Life stage
+                            <div class="info-tooltip-container">
+                                <div class="info-tooltip-icon">i</div>
+                                <div class="info-tooltip-content">Early: -16w, Interval: 17-48w, Late: 49w-</div>
+                            </div>
+                        </span>
                         <form id="lifestage-filter-form">
                             <div class="round-checkbox">
                                 <input type="checkbox" id="embryo" value="Embryo" checked />
@@ -161,13 +175,34 @@
                         Markup
                     </div>
                     <div class="boxed-section align-center">
-                        <span> Highlight </span>
+                        <span>
+                            Highlight
+                            <div class="info-tooltip-container">
+                                <div class="info-tooltip-icon">i</div>
+                                <div class="info-tooltip-content">
+                                    Human Disease annotations use
+                                    <a
+                                        href="https://www.mousephenotype.org/help/data-visualization/gene-pages/disease-models/"
+                                        target="_blank"
+                                        >IMPC Disease Models</a
+                                    >
+                                </div>
+                            </div>
+                        </span>
                         <form id="human-disease-filter-form">
                             <div class="round-checkbox">
                                 <input type="checkbox" id="disease" value="Disease" />
                                 <label for="disease">Human Disease</label>
                             </div>
                         </form>
+                        <div class="round-checkbox">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="phenotype-search" placeholder="Specific phenotypes" />
+                            <ul id="phenotype-suggestions" class="suggestions" hidden></ul>
+                        </div>
+                        <div id="selected-phenotypes" class="selected-phenotypes">
+                            <!-- Selected phenotypes will be displayed here -->
+                        </div>
                     </div>
                     <!-- ===================================== -->
                     <!-- Gene search box -->
@@ -237,6 +272,12 @@
                     <div class="panel-title">
                         <i class="fa-solid fa-download"></i>
                         Export
+                        <div class="info-tooltip-container">
+                            <div class="info-tooltip-icon">i</div>
+                            <div class="info-tooltip-content">
+                                GraphML can be used to visualize with desktop version of Cytoscape.
+                            </div>
+                        </div>
                     </div>
 
                     <!-- ===================================== -->
@@ -250,6 +291,10 @@
                         <button class="exporter" id="export-csv">
                             <i class="fa-regular fa-file-lines"></i>
                             CSV
+                        </button>
+                        <button class="exporter" id="export-graphml">
+                            <i class="fa-solid fa-project-diagram"></i>
+                            GraphML
                         </button>
                     </div>
                 </div>
@@ -270,7 +315,7 @@
                         <i class="fa-regular fa-file-lines"></i> Documentation
                     </a>
                     <a class="resource-btn" href="https://forms.gle/TpLeatthUBLN57PU6" target="_blank">
-                        <i class="fa-regular fa-comment-dots"></i> Inquiry
+                        <i class="fa-regular fa-comment-dots"></i> Contact
                     </a>
                 </div>
             </div>
@@ -280,7 +325,7 @@
         <!-- Footer -->
         <!-- ========================================  -->
         <footer>
-            <p>TSUMUGI version 0.3.2</p>
+            <p>TSUMUGI version 1.0.0</p>
             <!-- <p><i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> </p>-->
             <p>
                 &copy; 2024
