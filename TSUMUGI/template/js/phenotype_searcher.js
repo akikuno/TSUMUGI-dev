@@ -128,8 +128,8 @@ function displayPhenotypeSuggestions(phenotypes) {
         return;
     }
     
-    // 最大10個まで表示
-    const displayPhenotypes = phenotypes.slice(0, 10);
+    // 全て表示（スクロール可能）
+    const displayPhenotypes = phenotypes;
     
     displayPhenotypes.forEach(phenotype => {
         const li = document.createElement("li");
@@ -188,7 +188,7 @@ function displaySelectedPhenotypes() {
         const tag = document.createElement("div");
         tag.className = "selected-phenotype-tag";
         tag.innerHTML = `
-            <span>${phenotype}</span>
+            <span class="phenotype-text">${phenotype}</span>
             <button class="remove-btn" onclick="removeSelectedPhenotype('${phenotype.replace(/'/g, "\\'")}')">×</button>
         `;
         container.appendChild(tag);
