@@ -15,10 +15,10 @@ let selectedPhenotypes = new Set();
 export function setupPhenotypeSearch({ cy, elements }) {
     initializePhenotypeSearch(elements);
     setupPhenotypeSearchInput();
-
+    
     // グローバル関数として定義（HTML内のonclickで使用）
     window.removeSelectedPhenotype = removeSelectedPhenotype;
-
+    
     // updatePhenotypeHighlight関数をグローバルに公開（他のモジュールから呼び出し可能）
     window.updatePhenotypeHighlight = () => updatePhenotypeHighlight(cy);
 }
@@ -29,19 +29,19 @@ export function setupPhenotypeSearch({ cy, elements }) {
  */
 function initializePhenotypeSearch(elements) {
     const phenotypeSet = new Set();
-
+    
     // ノードとエッジから表現型を抽出
     elements.forEach((ele) => {
         if (ele.data.phenotype) {
             const phenotypes = Array.isArray(ele.data.phenotype) ? ele.data.phenotype : [ele.data.phenotype];
-            phenotypes.forEach((phenotype) => {
+            phenotypes.forEach(phenotype => {
                 if (phenotype && phenotype.trim() !== "") {
                     phenotypeSet.add(phenotype.trim());
                 }
             });
         }
     });
-
+    
     allPhenotypes = Array.from(phenotypeSet).sort();
 }
 
@@ -51,58 +51,64 @@ function initializePhenotypeSearch(elements) {
 function setupPhenotypeSearchInput() {
     const searchInput = document.getElementById("phenotype-search");
     const suggestionsList = document.getElementById("phenotype-suggestions");
-
+    
     if (!searchInput || !suggestionsList) {
         console.warn("Phenotype search elements not found in DOM");
         return;
     }
-
-    searchInput.addEventListener("input", function () {
+    
+    searchInput.addEventListener("input", function() {
         const searchTerm = this.value.toLowerCase().trim();
-
+        
         if (searchTerm.length === 0) {
             suggestionsList.hidden = true;
             return;
         }
-
+        
         // 既に選択されているものを除外して検索
-        const filteredPhenotypes = allPhenotypes.filter(
-            (phenotype) => phenotype.toLowerCase().includes(searchTerm) && !selectedPhenotypes.has(phenotype),
+        const filteredPhenotypes = allPhenotypes.filter(phenotype => 
+            phenotype.toLowerCase().includes(searchTerm) && 
+            !selectedPhenotypes.has(phenotype)
         );
-
+        
         displayPhenotypeSuggestions(filteredPhenotypes);
     });
 
     // クリック時に候補を表示
-    searchInput.addEventListener("click", function () {
+    searchInput.addEventListener("click", function() {
         const searchTerm = this.value.toLowerCase().trim();
-
+        
         if (searchTerm.length === 0) {
             // 入力が空の場合は全ての表現型を表示（選択済みを除く）
-            const availablePhenotypes = allPhenotypes.filter((phenotype) => !selectedPhenotypes.has(phenotype));
+            const availablePhenotypes = allPhenotypes.filter(phenotype => 
+                !selectedPhenotypes.has(phenotype)
+            );
             displayPhenotypeSuggestions(availablePhenotypes);
         } else {
             // 入力がある場合は検索結果を表示
-            const filteredPhenotypes = allPhenotypes.filter(
-                (phenotype) => phenotype.toLowerCase().includes(searchTerm) && !selectedPhenotypes.has(phenotype),
+            const filteredPhenotypes = allPhenotypes.filter(phenotype => 
+                phenotype.toLowerCase().includes(searchTerm) && 
+                !selectedPhenotypes.has(phenotype)
             );
             displayPhenotypeSuggestions(filteredPhenotypes);
         }
     });
 
     // フォーカス時にも候補を表示
-    searchInput.addEventListener("focus", function () {
+    searchInput.addEventListener("focus", function() {
         const searchTerm = this.value.toLowerCase().trim();
-
+        
         if (searchTerm.length === 0) {
             // 入力が空の場合は全ての表現型を表示（選択済みを除く）
-            const availablePhenotypes = allPhenotypes.filter((phenotype) => !selectedPhenotypes.has(phenotype));
+            const availablePhenotypes = allPhenotypes.filter(phenotype => 
+                !selectedPhenotypes.has(phenotype)
+            );
             displayPhenotypeSuggestions(availablePhenotypes);
         }
     });
-
+    
     // 入力フィールド外をクリックしたら候補を隠す
-    document.addEventListener("click", function (event) {
+    document.addEventListener("click", function(event) {
         if (!searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
             suggestionsList.hidden = true;
         }
@@ -116,26 +122,26 @@ function setupPhenotypeSearchInput() {
 function displayPhenotypeSuggestions(phenotypes) {
     const suggestionsList = document.getElementById("phenotype-suggestions");
     suggestionsList.innerHTML = "";
-
+    
     if (phenotypes.length === 0) {
         suggestionsList.hidden = true;
         return;
     }
-
+    
     // 全て表示（スクロール可能）
     const displayPhenotypes = phenotypes;
-
-    displayPhenotypes.forEach((phenotype) => {
+    
+    displayPhenotypes.forEach(phenotype => {
         const li = document.createElement("li");
         li.textContent = phenotype;
-        li.addEventListener("click", function () {
+        li.addEventListener("click", function() {
             addSelectedPhenotype(phenotype);
             document.getElementById("phenotype-search").value = "";
             suggestionsList.hidden = true;
         });
         suggestionsList.appendChild(li);
     });
-
+    
     suggestionsList.hidden = false;
 }
 
@@ -145,10 +151,10 @@ function displayPhenotypeSuggestions(phenotypes) {
  */
 function addSelectedPhenotype(phenotype) {
     if (selectedPhenotypes.has(phenotype)) return;
-
+    
     selectedPhenotypes.add(phenotype);
     displaySelectedPhenotypes();
-
+    
     // グローバルに公開されたupdatePhenotypeHighlight関数を呼び出し
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
@@ -162,7 +168,7 @@ function addSelectedPhenotype(phenotype) {
 function removeSelectedPhenotype(phenotype) {
     selectedPhenotypes.delete(phenotype);
     displaySelectedPhenotypes();
-
+    
     // グローバルに公開されたupdatePhenotypeHighlight関数を呼び出し
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
@@ -175,10 +181,10 @@ function removeSelectedPhenotype(phenotype) {
 function displaySelectedPhenotypes() {
     const container = document.getElementById("selected-phenotypes");
     if (!container) return;
-
+    
     container.innerHTML = "";
-
-    selectedPhenotypes.forEach((phenotype) => {
+    
+    selectedPhenotypes.forEach(phenotype => {
         const tag = document.createElement("div");
         tag.className = "selected-phenotype-tag";
         tag.innerHTML = `
@@ -196,25 +202,25 @@ function displaySelectedPhenotypes() {
 function updatePhenotypeHighlight(cy) {
     // 既存のハイライトをリセット
     cy.nodes().removeClass("phenotype-highlight");
-
+    
     if (selectedPhenotypes.size === 0) {
         return; // 何も選択されていない場合は何もしない
     }
-
+    
     // 選択された表現型を持つ遺伝子をハイライト
-    cy.nodes().forEach((node) => {
+    cy.nodes().forEach(node => {
         const nodeData = node.data();
-
+        
         if (nodeData.phenotype) {
             const nodePhenotypes = Array.isArray(nodeData.phenotype) ? nodeData.phenotype : [nodeData.phenotype];
-
+            
             // 選択された表現型のいずれかがノードの表現型リストに含まれているかチェック
-            const hasSelectedPhenotype = Array.from(selectedPhenotypes).some((selectedPhenotype) =>
-                nodePhenotypes.some(
-                    (nodePhenotype) => nodePhenotype && nodePhenotype.trim() === selectedPhenotype.trim(),
-                ),
+            const hasSelectedPhenotype = Array.from(selectedPhenotypes).some(selectedPhenotype => 
+                nodePhenotypes.some(nodePhenotype => 
+                    nodePhenotype && nodePhenotype.trim() === selectedPhenotype.trim()
+                )
             );
-
+            
             if (hasSelectedPhenotype) {
                 node.addClass("phenotype-highlight");
             }
@@ -236,7 +242,7 @@ export function getSelectedPhenotypes() {
 export function clearSelectedPhenotypes() {
     selectedPhenotypes.clear();
     displaySelectedPhenotypes();
-
+    
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
     }

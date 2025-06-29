@@ -178,7 +178,7 @@ const cy = cytoscape({
         {
             selector: ".disease-highlight", // 疾患ハイライト用クラス
             style: {
-                "border-width": 5,
+                "border-width": 3,
                 "border-color": "#fc4c00",
             },
         },
@@ -192,7 +192,7 @@ const cy = cytoscape({
         {
             selector: ".phenotype-highlight", // 表現型ハイライト用クラス
             style: {
-                "border-width": 5,
+                "border-width": 3,
                 "border-color": "#28a745",
             },
         },

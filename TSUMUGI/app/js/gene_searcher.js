@@ -10,7 +10,9 @@ export function setupGeneSearch({
     // 🔍 共通の検索処理を関数にまとめる
     function performSearch(query) {
         const normalized = query.trim().toLowerCase();
-        const matchedNode = cy.nodes().filter((node) => node.data("label").toLowerCase() === normalized);
+        const matchedNode = cy.nodes().filter(
+            (node) => node.data("label").toLowerCase() === normalized
+        );
 
         if (matchedNode.length > 0) {
             matchedNode.addClass("gene-highlight");
@@ -36,7 +38,7 @@ export function setupGeneSearch({
             .map((n) => n.data("label"));
 
         const matched = visibleLabels
-            .filter((label) => (normalizedQuery ? label.toLowerCase().includes(normalizedQuery) : true))
+            .filter((label) => normalizedQuery ? label.toLowerCase().includes(normalizedQuery) : true)
             .sort()
             .slice(0, 10);
 
@@ -90,4 +92,5 @@ export function setupGeneSearch({
             suggestionsList.hidden = true;
         }, 100);
     });
+
 }

@@ -59,7 +59,7 @@ export function exportGraphAsCSV(cy, file_name) {
 export function exportGraphAsGraphML(cy, file_name) {
     const nodes = cy.nodes();
     const edges = cy.edges();
-    
+
     // GraphML header
     let graphmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
@@ -83,13 +83,13 @@ export function exportGraphAsGraphML(cy, file_name) {
 `;
 
     // Add nodes
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
         const data = node.data();
-        const id = data.id || '';
+        const id = data.id || "";
         const label = data.label || id;
         const color = data.node_color || 0;
-        const phenotypes = Array.isArray(data.phenotype) ? data.phenotype.join(';') : (data.phenotype || '');
-        
+        const phenotypes = Array.isArray(data.phenotype) ? data.phenotype.join(";") : data.phenotype || "";
+
         graphmlContent += `    <node id="${escapeXml(id)}">
       <data key="n0">${escapeXml(id)}</data>
       <data key="n1">${escapeXml(label)}</data>
@@ -102,12 +102,12 @@ export function exportGraphAsGraphML(cy, file_name) {
     // Add edges
     edges.forEach((edge, index) => {
         const data = edge.data();
-        const source = data.source || '';
-        const target = data.target || '';
+        const source = data.source || "";
+        const target = data.target || "";
         const width = data.edge_size || 1;
-        const sharedPhenotypes = Array.isArray(data.phenotype) ? data.phenotype.join(';') : (data.phenotype || '');
+        const sharedPhenotypes = Array.isArray(data.phenotype) ? data.phenotype.join(";") : data.phenotype || "";
         const similarity = data.similarity || 0;
-        
+
         graphmlContent += `    <edge id="e${index}" source="${escapeXml(source)}" target="${escapeXml(target)}">
       <data key="e0">interaction</data>
       <data key="e1">${width}</data>
@@ -133,7 +133,6 @@ export function exportGraphAsGraphML(cy, file_name) {
     URL.revokeObjectURL(url);
 }
 
-
 // --------------------------------------------------------
 // Utility function for XML escaping
 // --------------------------------------------------------
@@ -141,11 +140,16 @@ export function exportGraphAsGraphML(cy, file_name) {
 function escapeXml(unsafe) {
     return unsafe.replace(/[<>&'"]/g, function (c) {
         switch (c) {
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '&': return '&amp;';
-            case '\'': return '&apos;';
-            case '"': return '&quot;';
+            case "<":
+                return "&lt;";
+            case ">":
+                return "&gt;";
+            case "&":
+                return "&amp;";
+            case "'":
+                return "&apos;";
+            case '"':
+                return "&quot;";
         }
     });
 }
