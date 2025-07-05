@@ -2,6 +2,8 @@
 // Tooltip Handling Functions
 // ############################################################
 
+import { scaleValue } from "./value_scaler.js";
+
 /*
     Formats phenotypes for tooltips, placing and highlighting the target phenotype at the top.
 */
@@ -34,7 +36,17 @@ function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
         .join("<br>");
 }
 
-function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
+function createTooltip(
+    event,
+    cy,
+    map_symbol_to_id,
+    target_phenotype = null,
+    nodeColorMin = null,
+    nodeColorMax = null,
+    edgeMin = null,
+    edgeMax = null,
+    allNodeColors = null,
+) {
     const data = event.target.data();
     let tooltipText = "";
     let pos;
@@ -45,7 +57,28 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
     if (event.target.isNode()) {
         const geneID = map_symbol_to_id[data.id] || "UNKNOWN";
         const url_impc = `https://www.mousephenotype.org/data/genes/${geneID}`;
-        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a></b><br>`;
+
+        // Calculate severity score only if node colors are not binary (0 or 1 only)
+        let severityText = "";
+        let isBinary = false;
+
+        // Check if all node colors are 0 or 1
+        if (allNodeColors && allNodeColors.length > 0) {
+            isBinary = allNodeColors.every((color) => color === 0 || color === 1);
+        }
+
+        if (
+            nodeColorMin !== null &&
+            nodeColorMax !== null &&
+            !isBinary &&
+            Math.abs(nodeColorMax - nodeColorMin) > 0.0001
+        ) {
+            const originalNodeColor = data.original_node_color || data.node_color;
+            const severityScore = scaleValue(originalNodeColor, nodeColorMin, nodeColorMax, 1, 10);
+            severityText = ` (Severity: ${severityScore.toFixed(1)}/10)`;
+        }
+
+        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b><br>`;
         tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
         // もしdiseasesが""出ない場合は、Associated Human Diseasesを追加
         if (diseases && diseases.length > 0 && diseases[0] !== "") {
@@ -56,7 +89,15 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
     } else if (event.target.isEdge()) {
         const sourceNode = cy.getElementById(data.source).data("label");
         const targetNode = cy.getElementById(data.target).data("label");
-        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>`;
+
+        // Calculate similarity score
+        let similarityText = "";
+        if (edgeMin !== null && edgeMax !== null) {
+            const similarityScore = scaleValue(data.edge_size, edgeMin, edgeMax, 1, 10);
+            similarityText = ` (Similarity: ${similarityScore.toFixed(1)}/10)`;
+        }
+
+        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs${similarityText}</b><br>`;
         tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
 
         const sourcePos = cy.getElementById(data.source).renderedPosition();
@@ -128,10 +169,30 @@ function enableTooltipDrag(tooltip) {
 /*
     Accepts target_phenotype and passes it to createTooltip
 */
-export function showTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
+export function showTooltip(
+    event,
+    cy,
+    map_symbol_to_id,
+    target_phenotype = null,
+    nodeColorMin = null,
+    nodeColorMax = null,
+    edgeMin = null,
+    edgeMax = null,
+    allNodeColors = null,
+) {
     removeTooltips();
 
-    const { tooltipText, pos } = createTooltip(event, cy, map_symbol_to_id, target_phenotype);
+    const { tooltipText, pos } = createTooltip(
+        event,
+        cy,
+        map_symbol_to_id,
+        target_phenotype,
+        nodeColorMin,
+        nodeColorMax,
+        edgeMin,
+        edgeMax,
+        allNodeColors,
+    );
 
     const tooltip = document.createElement("div");
     tooltip.classList.add("cy-tooltip");

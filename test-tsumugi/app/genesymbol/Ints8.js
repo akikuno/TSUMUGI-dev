@@ -419,7 +419,7 @@ createSlider("nodeRepulsion-slider", 5, 1, 10, 1, (intValues) => {
 
 // Show tooltip on tap
 cy.on("tap", "node, edge", function (event) {
-    showTooltip(event, cy, map_symbol_to_id, target_phenotype);
+    showTooltip(event, cy, map_symbol_to_id, target_phenotype, nodeColorMin, nodeColorMax, edgeMin, edgeMax, nodeSizes);
 });
 
 // Hide tooltip when tapping on background
