@@ -20,13 +20,25 @@
 
 <!-- ############################################################ # -->
 
-## v0.4.0 (2025-MM-DD)
+## v1.0.0 (2025-MM-DD)
+
+
+## 🌟 New Features
+
++ 
+
+## 📝 Documentation
+
++ Add FAQ section to the documentation, addressing common user questions and providing troubleshooting tips.  
+  Issue: [#90](https://github.com/akikuno/TSUMUGI-dev/issues/90)
+  [[Commit Detail]()]
 
 ## 🐛 Bug Fixes
 
 + Fix gene search bug for single character input  
   Issue: [#86](https://github.com/akikuno/TSUMUGI-dev/issues/86)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/0822ae2424d685be487858f5d53a7b49768918dc)]  
+
 
 -------------------------------------------------------------
 
