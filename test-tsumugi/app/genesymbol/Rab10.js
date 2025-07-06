@@ -102,24 +102,40 @@ const nodeRepulsionMax = 10000;
 const componentSpacingMin = 1;
 const componentSpacingMax = 200;
 
-let nodeRepulsionValue = scaleToOriginalRange(
-    parseFloat(document.getElementById("nodeRepulsion-slider").value),
-    nodeRepulsionMin,
-    nodeRepulsionMax,
-);
+// Use different defaults for gene symbol pages only
+const isGeneSymbolPage = "loadJSONGz('../../data/genesymbol/Rab10.json.gz')".includes("genesymbol");
+const defaultNodeRepulsion = isGeneSymbolPage ? 8 : 5;
 
-let componentSpacingValue = scaleToOriginalRange(
-    parseFloat(document.getElementById("nodeRepulsion-slider").value),
-    componentSpacingMin,
-    componentSpacingMax,
-);
+let nodeRepulsionValue = scaleToOriginalRange(defaultNodeRepulsion, nodeRepulsionMin, nodeRepulsionMax);
+
+let componentSpacingValue = scaleToOriginalRange(defaultNodeRepulsion, componentSpacingMin, componentSpacingMax);
 
 function getLayoutOptions() {
-    return {
+    const baseOptions = {
         name: currentLayout,
         nodeRepulsion: nodeRepulsionValue,
         componentSpacing: componentSpacingValue,
     };
+
+    // Add enhanced options for COSE layout to prevent hairball effect (gene symbol pages only)
+    if (currentLayout === "cose" && isGeneSymbolPage) {
+        return {
+            ...baseOptions,
+            idealEdgeLength: 100, // Increase ideal edge length for better spacing
+            nodeOverlap: 20, // Increase to prevent node overlap
+            padding: 30, // Add padding around the layout
+            animate: true, // Enable animation for better visual feedback
+            animationDuration: 500, // Animation duration in ms
+            gravity: -1.2, // Negative gravity to push nodes apart
+            numIter: 1500, // More iterations for better layout
+            initialTemp: 200, // Higher initial temperature for better spreading
+            coolingFactor: 0.95, // Slower cooling for better results
+            minTemp: 1.0, // Minimum temperature threshold
+            edgeElasticity: 100, // Edge elasticity for better edge distribution
+        };
+    }
+
+    return baseOptions;
 }
 
 const cy = cytoscape({
@@ -132,7 +148,7 @@ const cy = cytoscape({
                 label: "data(label)",
                 "text-valign": "center",
                 "text-halign": "center",
-                "font-size": "20px",
+                "font-size": isGeneSymbolPage ? "10px" : "20px",
                 width: 15,
                 height: 15,
                 "background-color": function (ele) {
@@ -369,7 +385,7 @@ setupPhenotypeSearch({ cy, elements });
 // Slider for Font size
 // --------------------------------------------------------
 
-createSlider("font-size-slider", 20, 1, 50, 1, (intValues) => {
+createSlider("font-size-slider", isGeneSymbolPage ? 10 : 20, 1, 50, 1, (intValues) => {
     document.getElementById("font-size-value").textContent = intValues;
     cy.style()
         .selector("node")
@@ -381,7 +397,7 @@ createSlider("font-size-slider", 20, 1, 50, 1, (intValues) => {
 // Slider for Edge width
 // --------------------------------------------------------
 
-createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
+createSlider("edge-width-slider", isGeneSymbolPage ? 2 : 5, 1, 10, 1, (intValues) => {
     document.getElementById("edge-width-value").textContent = intValues;
     cy.style()
         .selector("edge")
@@ -406,7 +422,7 @@ function updateNodeRepulsionVisibility() {
 updateNodeRepulsionVisibility();
 layoutDropdown.addEventListener("change", updateNodeRepulsionVisibility);
 
-createSlider("nodeRepulsion-slider", 5, 1, 10, 1, (intValues) => {
+createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues) => {
     nodeRepulsionValue = scaleToOriginalRange(intValues, nodeRepulsionMin, nodeRepulsionMax);
     componentSpacingValue = scaleToOriginalRange(intValues, componentSpacingMin, componentSpacingMax);
     document.getElementById("node-repulsion-value").textContent = intValues;
