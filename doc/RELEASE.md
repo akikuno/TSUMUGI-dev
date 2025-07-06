@@ -33,14 +33,15 @@
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/0822ae2424d685be487858f5d53a7b49768918dc)]  
 
 
-
 ## 🖼️ User Interface
 
 + Add Phenotype Severity and Similarity Scores to Network Tooltips
   Issue: [#107](https://github.com/akikuno/TSUMUGI-dev/issues/107)  
-  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/109)]  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/107)]  
 
-
++ Improve Network Visualization for Gene Symbol Pages
+  Issue: [#105](https://github.com/akikuno/TSUMUGI-dev/issues/105)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/105)]  
 
 
 -------------------------------------------------------------
