@@ -5,17 +5,17 @@
  */
 export function calculateDegreeCentrality(cy) {
     const degreeCentrality = new Map();
-    
+
     // Get only visible nodes
-    const visibleNodes = cy.nodes().filter(node => node.style('display') === 'element');
-    
-    visibleNodes.forEach(node => {
+    const visibleNodes = cy.nodes().filter((node) => node.style("display") === "element");
+
+    visibleNodes.forEach((node) => {
         // Count only visible edges
-        const visibleEdges = node.connectedEdges().filter(edge => edge.style('display') === 'element');
+        const visibleEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
         const degree = visibleEdges.length;
         degreeCentrality.set(node.id(), degree);
     });
-    
+
     return degreeCentrality;
 }
 
@@ -26,62 +26,64 @@ export function calculateDegreeCentrality(cy) {
  * @returns {Map} Map of node id to betweenness centrality value
  */
 export function calculateBetweennessCentrality(cy) {
-    const visibleNodes = cy.nodes().filter(node => node.style('display') === 'element');
+    const visibleNodes = cy.nodes().filter((node) => node.style("display") === "element");
     const betweennessCentrality = new Map();
-    
+
     // Initialize all nodes with 0
-    visibleNodes.forEach(node => {
+    visibleNodes.forEach((node) => {
         betweennessCentrality.set(node.id(), 0);
     });
-    
+
     // If there are less than 3 nodes, betweenness centrality is 0 for all
     if (visibleNodes.length < 3) {
         return betweennessCentrality;
     }
-    
+
     // Build adjacency list for visible nodes only
     const adjacencyList = new Map();
-    visibleNodes.forEach(node => {
+    visibleNodes.forEach((node) => {
         adjacencyList.set(node.id(), []);
     });
-    
+
     // Add edges to adjacency list (only if both nodes are visible)
-    cy.edges().filter(edge => edge.style('display') === 'element').forEach(edge => {
-        const source = edge.source().id();
-        const target = edge.target().id();
-        if (adjacencyList.has(source) && adjacencyList.has(target)) {
-            adjacencyList.get(source).push(target);
-            adjacencyList.get(target).push(source); // Undirected graph
-        }
-    });
-    
+    cy.edges()
+        .filter((edge) => edge.style("display") === "element")
+        .forEach((edge) => {
+            const source = edge.source().id();
+            const target = edge.target().id();
+            if (adjacencyList.has(source) && adjacencyList.has(target)) {
+                adjacencyList.get(source).push(target);
+                adjacencyList.get(target).push(source); // Undirected graph
+            }
+        });
+
     // Brandes algorithm main loop
-    visibleNodes.forEach(s => {
+    visibleNodes.forEach((s) => {
         const S = []; // Stack
         const P = new Map(); // Predecessors
         const sigma = new Map(); // Number of shortest paths
         const d = new Map(); // Distance
         const delta = new Map(); // Dependency
-        
+
         // Initialize
-        visibleNodes.forEach(node => {
+        visibleNodes.forEach((node) => {
             P.set(node.id(), []);
             sigma.set(node.id(), 0);
             d.set(node.id(), -1);
             delta.set(node.id(), 0);
         });
-        
+
         sigma.set(s.id(), 1);
         d.set(s.id(), 0);
-        
+
         // BFS
         const Q = [s.id()];
         while (Q.length > 0) {
             const v = Q.shift();
             S.push(v);
-            
+
             const neighbors = adjacencyList.get(v) || [];
-            neighbors.forEach(w => {
+            neighbors.forEach((w) => {
                 // First time we reach w?
                 if (d.get(w) < 0) {
                     Q.push(w);
@@ -94,12 +96,12 @@ export function calculateBetweennessCentrality(cy) {
                 }
             });
         }
-        
+
         // Accumulation - back propagation of dependencies
         while (S.length > 0) {
             const w = S.pop();
             const predecessors = P.get(w) || [];
-            predecessors.forEach(v => {
+            predecessors.forEach((v) => {
                 const sigmav = sigma.get(v) || 1;
                 const sigmaw = sigma.get(w) || 1;
                 const deltav = delta.get(v) || 0;
@@ -112,19 +114,13 @@ export function calculateBetweennessCentrality(cy) {
             }
         }
     });
-    
+
     // For undirected graphs, divide by 2
     betweennessCentrality.forEach((value, key) => {
         betweennessCentrality.set(key, value / 2);
     });
-    
-    // Debug: Log the calculated values
-    console.log('Betweenness Centrality (Brandes Algorithm):');
-    visibleNodes.forEach(node => {
-        const value = betweennessCentrality.get(node.id()) || 0;
-        console.log(`Node ${node.id()}: ${value}`);
-    });
-    
+
+
     return betweennessCentrality;
 }
 
@@ -135,7 +131,7 @@ export function calculateBetweennessCentrality(cy) {
  * @param {string} centralityType - Type of centrality ('degree' or 'betweenness')
  */
 export function updateNodeCentrality(cy, centralityMap, centralityType) {
-    cy.nodes().forEach(node => {
+    cy.nodes().forEach((node) => {
         const centralityValue = centralityMap.get(node.id()) || 0;
         node.data(`${centralityType}_centrality`, centralityValue);
     });
@@ -148,16 +144,16 @@ export function updateNodeCentrality(cy, centralityMap, centralityType) {
  * @returns {Object} Object with min and max values
  */
 export function getCentralityRange(cy, centralityType) {
-    const visibleNodes = cy.nodes().filter(node => node.style('display') === 'element');
-    const values = visibleNodes.map(node => node.data(`${centralityType}_centrality`) || 0);
-    
+    const visibleNodes = cy.nodes().filter((node) => node.style("display") === "element");
+    const values = visibleNodes.map((node) => node.data(`${centralityType}_centrality`) || 0);
+
     if (values.length === 0) {
         return { min: 0, max: 0 };
     }
-    
+
     return {
         min: Math.min(...values),
-        max: Math.max(...values)
+        max: Math.max(...values),
     };
 }
 
@@ -165,7 +161,7 @@ export function getCentralityRange(cy, centralityType) {
 // Centrality UI state and management
 // ############################################################################
 
-let centralityType = 'none'; // 'none', 'degree', or 'betweenness'
+let centralityType = "none"; // 'none', 'degree', or 'betweenness'
 let centralityScale = 0; // 0 to 1 scale factor
 let cytoscapeInstance = null;
 let createSliderFunction = null;
@@ -178,13 +174,13 @@ let createSliderFunction = null;
 export function initializeCentralitySystem(cy, createSlider) {
     cytoscapeInstance = cy;
     createSliderFunction = createSlider;
-    
+
     // Set up global handler for HTML onchange
     window.handleCentralityTypeChange = handleCentralityTypeChange;
-    
+
     // Initialize controls
     initializeCentralityControls();
-    
+
     // Calculate initial centrality values
     setTimeout(() => {
         recalculateCentrality();
@@ -196,19 +192,18 @@ export function initializeCentralitySystem(cy, createSlider) {
  * @param {string} value - Selected centrality type
  */
 function handleCentralityTypeChange(value) {
-    console.log("Centrality type changed to:", value);
     centralityType = value;
-    
+
     const container = document.getElementById("centrality-slider-container");
     if (container) {
-        if (value === 'none') {
-            container.style.display = 'none';
+        if (value === "none") {
+            container.style.display = "none";
             centralityScale = 0;
             if (window.centralitySliderInstance) {
                 window.centralitySliderInstance.set(0);
             }
         } else {
-            container.style.display = 'block';
+            container.style.display = "block";
             // Initialize slider if not already done
             if (!window.centralitySliderInstance) {
                 initializeCentralitySlider();
@@ -222,7 +217,6 @@ function handleCentralityTypeChange(value) {
  * Initialize the centrality scale slider
  */
 function initializeCentralitySlider() {
-    console.log("Initializing centrality slider...");
     const sliderElement = document.getElementById("centrality-scale-slider");
     if (sliderElement && createSliderFunction) {
         window.centralitySliderInstance = createSliderFunction("centrality-scale-slider", 0, 0, 100, 1, (value) => {
@@ -232,7 +226,6 @@ function initializeCentralitySlider() {
             document.getElementById("centrality-scale-value").textContent = parseInt(value);
             updateNodeSizeByCentrality();
         });
-        console.log("Centrality slider initialized successfully");
     } else {
         console.error("Centrality slider element not found or createSlider function not available");
     }
@@ -246,15 +239,15 @@ export function recalculateCentrality() {
         console.error("Cytoscape instance not available for centrality calculation");
         return;
     }
-    
+
     // Calculate centrality for visible nodes
     const degreeCentrality = calculateDegreeCentrality(cytoscapeInstance);
     const betweennessCentrality = calculateBetweennessCentrality(cytoscapeInstance);
-    
+
     // Update node data with centrality values
-    updateNodeCentrality(cytoscapeInstance, degreeCentrality, 'degree');
-    updateNodeCentrality(cytoscapeInstance, betweennessCentrality, 'betweenness');
-    
+    updateNodeCentrality(cytoscapeInstance, degreeCentrality, "degree");
+    updateNodeCentrality(cytoscapeInstance, betweennessCentrality, "betweenness");
+
     // Apply node size updates if sliders are active
     updateNodeSizeByCentrality();
 }
@@ -266,55 +259,56 @@ function updateNodeSizeByCentrality() {
     if (!cytoscapeInstance) {
         return;
     }
-    
+
     const baseSize = 15; // Consistent base size
-    
-    if (centralityType === 'none' || centralityScale === 0) {
+
+    if (centralityType === "none" || centralityScale === 0) {
         // Reset all nodes to default size
-        cytoscapeInstance.nodes().forEach(node => {
+        cytoscapeInstance.nodes().forEach((node) => {
             node.style({
-                'width': baseSize,
-                'height': baseSize
+                width: baseSize,
+                height: baseSize,
             });
         });
         return;
     }
-    
+
     const centralityRange = getCentralityRange(cytoscapeInstance, centralityType);
-    
-    cytoscapeInstance.nodes().forEach(node => {
+
+    cytoscapeInstance.nodes().forEach((node) => {
         let size = baseSize; // Start with base size
-        
-        if (centralityType === 'degree' && centralityRange.max > centralityRange.min) {
-            const degreeCentrality = node.data('degree_centrality') || 0;
-            const normalizedDegree = (degreeCentrality - centralityRange.min) / (centralityRange.max - centralityRange.min);
+
+        if (centralityType === "degree" && centralityRange.max > centralityRange.min) {
+            const degreeCentrality = node.data("degree_centrality") || 0;
+            const normalizedDegree =
+                (degreeCentrality - centralityRange.min) / (centralityRange.max - centralityRange.min);
             // Add scaling on top of base size
-            size = baseSize + (normalizedDegree * 35 * centralityScale);
-        } else if (centralityType === 'betweenness') {
-            const betweennessCentrality = node.data('betweenness_centrality') || 0;
-            
+            size = baseSize + normalizedDegree * 35 * centralityScale;
+        } else if (centralityType === "betweenness") {
+            const betweennessCentrality = node.data("betweenness_centrality") || 0;
+
             // Use logarithmic scaling for better differentiation
             // Add 1 to avoid log(0) and ensure nodes with 0 centrality have minimum size
             const logCentrality = Math.log10(betweennessCentrality + 1);
             const maxLogCentrality = Math.log10((centralityRange.max || 1) + 1);
-            
+
             // Normalize using log scale
             const normalizedBetweenness = maxLogCentrality > 0 ? logCentrality / maxLogCentrality : 0;
-            
+
             // Add scaling on top of base size
             const scalingFactor = normalizedBetweenness * 35 * centralityScale;
             size = baseSize + scalingFactor;
-            
+
             // Ensure nodes with centrality > 0 are visually distinct from those with 0
             // Only apply minimum boost if there's actual scaling happening
             if (betweennessCentrality > 0 && centralityScale > 0 && scalingFactor < 2) {
                 size = baseSize + 2; // Minimum visible increase for non-zero centrality
             }
         }
-        
+
         node.style({
-            'width': size,
-            'height': size
+            width: size,
+            height: size,
         });
     });
 }
@@ -323,20 +317,12 @@ function updateNodeSizeByCentrality() {
  * Initialize centrality controls in the DOM
  */
 function initializeCentralityControls() {
-    console.log("Initializing centrality controls...");
-    console.log("DOM ready state:", document.readyState);
-    
     const centralityDropdown = document.getElementById("centrality-type-dropdown");
-    
-    if (centralityDropdown) {
-        console.log("Centrality dropdown found, initialization successful");
-        if (typeof window.handleCentralityTypeChange !== 'function') {
-            console.error("Global handler not available");
-        } else {
-            console.log("Centrality controls ready");
-        }
-    } else {
+
+    if (!centralityDropdown) {
         console.error("Centrality dropdown not found");
+    } else if (typeof window.handleCentralityTypeChange !== "function") {
+        console.error("Global handler not available");
     }
 }
 
@@ -345,12 +331,12 @@ function initializeCentralityControls() {
  */
 function setupCentralityEventListeners() {
     // Initialize centrality controls
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeCentralityControls);
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initializeCentralityControls);
     } else {
         initializeCentralityControls();
     }
-    
+
     // Backup initialization
     setTimeout(initializeCentralityControls, 500);
 }

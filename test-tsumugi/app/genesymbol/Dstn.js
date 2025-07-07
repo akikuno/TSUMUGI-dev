@@ -487,3 +487,19 @@ document.getElementById("export-csv").addEventListener("click", function () {
 document.getElementById("export-graphml").addEventListener("click", function () {
     exportGraphAsGraphML(cy, file_name);
 });
+
+// --------------------------------------------------------
+// Mobile Export buttons
+// --------------------------------------------------------
+
+document.getElementById("export-png-mobile").addEventListener("click", function () {
+    exportGraphAsPNG(cy, file_name);
+});
+
+document.getElementById("export-csv-mobile").addEventListener("click", function () {
+    exportGraphAsCSV(cy, file_name);
+});
+
+document.getElementById("export-graphml-mobile").addEventListener("click", function () {
+    exportGraphAsGraphML(cy, file_name);
+});

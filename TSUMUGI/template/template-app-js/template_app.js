@@ -179,7 +179,6 @@ function handleMobileResize() {
 // モバイルでの初期化完了後にCytoscapeを調整
 setTimeout(() => {
     if (window.innerWidth <= 600) {
-        console.log("📱 Mobile device detected - applying mobile fixes");
         cy.resize();
         cy.fit();
         cy.center();
@@ -370,5 +369,21 @@ document.getElementById("export-csv").addEventListener("click", function () {
 // --------------------------------------------------------
 
 document.getElementById("export-graphml").addEventListener("click", function () {
+    exportGraphAsGraphML(cy, file_name);
+});
+
+// --------------------------------------------------------
+// Mobile Export buttons
+// --------------------------------------------------------
+
+document.getElementById("export-png-mobile").addEventListener("click", function () {
+    exportGraphAsPNG(cy, file_name);
+});
+
+document.getElementById("export-csv-mobile").addEventListener("click", function () {
+    exportGraphAsCSV(cy, file_name);
+});
+
+document.getElementById("export-graphml-mobile").addEventListener("click", function () {
     exportGraphAsGraphML(cy, file_name);
 });

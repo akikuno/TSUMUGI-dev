@@ -120,12 +120,6 @@ export function calculateBetweennessCentrality(cy) {
         betweennessCentrality.set(key, value / 2);
     });
 
-    // Debug: Log the calculated values
-    console.log("Betweenness Centrality (Brandes Algorithm):");
-    visibleNodes.forEach((node) => {
-        const value = betweennessCentrality.get(node.id()) || 0;
-        console.log(`Node ${node.id()}: ${value}`);
-    });
 
     return betweennessCentrality;
 }
@@ -198,7 +192,6 @@ export function initializeCentralitySystem(cy, createSlider) {
  * @param {string} value - Selected centrality type
  */
 function handleCentralityTypeChange(value) {
-    console.log("Centrality type changed to:", value);
     centralityType = value;
 
     const container = document.getElementById("centrality-slider-container");
@@ -224,7 +217,6 @@ function handleCentralityTypeChange(value) {
  * Initialize the centrality scale slider
  */
 function initializeCentralitySlider() {
-    console.log("Initializing centrality slider...");
     const sliderElement = document.getElementById("centrality-scale-slider");
     if (sliderElement && createSliderFunction) {
         window.centralitySliderInstance = createSliderFunction("centrality-scale-slider", 0, 0, 100, 1, (value) => {
@@ -234,7 +226,6 @@ function initializeCentralitySlider() {
             document.getElementById("centrality-scale-value").textContent = parseInt(value);
             updateNodeSizeByCentrality();
         });
-        console.log("Centrality slider initialized successfully");
     } else {
         console.error("Centrality slider element not found or createSlider function not available");
     }
@@ -326,20 +317,12 @@ function updateNodeSizeByCentrality() {
  * Initialize centrality controls in the DOM
  */
 function initializeCentralityControls() {
-    console.log("Initializing centrality controls...");
-    console.log("DOM ready state:", document.readyState);
-
     const centralityDropdown = document.getElementById("centrality-type-dropdown");
 
-    if (centralityDropdown) {
-        console.log("Centrality dropdown found, initialization successful");
-        if (typeof window.handleCentralityTypeChange !== "function") {
-            console.error("Global handler not available");
-        } else {
-            console.log("Centrality controls ready");
-        }
-    } else {
+    if (!centralityDropdown) {
         console.error("Centrality dropdown not found");
+    } else if (typeof window.handleCentralityTypeChange !== "function") {
+        console.error("Global handler not available");
     }
 }
 

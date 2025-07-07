@@ -290,13 +290,43 @@
                         <div class="slider-element" id="nodeRepulsion-slider"></div>
                     </div>
                 </div>
+                
+                <!-- ===================================== -->
+                <!-- Export (Mobile only) -->
+                <!-- ===================================== -->
+                <div class="panel-section export-mobile">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-download"></i>
+                        Export
+                        <div class="info-tooltip-container">
+                            <div class="info-tooltip-icon">i</div>
+                            <div class="info-tooltip-content">
+                                GraphML can be used to visualize with desktop version of Cytoscape.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exporter-group">
+                        <button class="exporter" id="export-png-mobile">
+                            <i class="fa-regular fa-image"></i>
+                            PNG
+                        </button>
+                        <button class="exporter" id="export-csv-mobile">
+                            <i class="fa-regular fa-file-lines"></i>
+                            CSV
+                        </button>
+                        <button class="exporter" id="export-graphml-mobile">
+                            <i class="fa-solid fa-project-diagram"></i>
+                            GraphML
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-
+        
         <!-- ===================================== -->
-        <!-- Export -->
+        <!-- Export (Desktop only) -->
         <!-- ===================================== -->
-        <div class="panel-section">
+        <div class="panel-section export-desktop">
             <div class="panel-title">
                 <i class="fa-solid fa-download"></i>
                 Export

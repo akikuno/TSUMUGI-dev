@@ -384,6 +384,13 @@ ul.suggestions li:hover {
     padding: 12px 20px;
     margin-top: 10px;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exporter:hover {
+    color: #333;
+    border-color: #ff7800;
+    background-color: rgba(255, 120, 0, 0.05);
 }
 
 .exporter-group {
@@ -501,6 +508,23 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+/* ======================================================== */
+/* Export section visibility */
+/* ======================================================== */
+/* デスクトップでは通常のExportを表示、モバイル用は非表示 */
+.export-mobile {
+    display: none;
+}
+
+/* デスクトップ用のExportセクション（独立した配置） */
+.export-desktop {
+    max-width: 800px;
+    margin: 30px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
 }
 
 /* ======================================================== */
@@ -642,6 +666,15 @@ button.menu-toggle-icon {
 
     .resource-buttons {
         flex-direction: column;
+    }
+    
+    /* モバイルではデスクトップ用Exportを非表示、モバイル用を表示 */
+    .export-desktop {
+        display: none;
+    }
+    
+    .export-mobile {
+        display: block;
     }
 }
 
