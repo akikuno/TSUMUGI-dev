@@ -212,7 +212,6 @@ function handleMobileResize() {
 // モバイルでの初期化完了後にCytoscapeを調整
 setTimeout(() => {
     if (window.innerWidth <= 600) {
-        console.log("📱 Mobile device detected - applying mobile fixes");
         cy.resize();
         cy.fit();
         cy.center();

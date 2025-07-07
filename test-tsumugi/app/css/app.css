@@ -299,7 +299,7 @@ ul.suggestions li:hover {
 }
 
 /* タイトル風スタイルをつける */
-.boxed-section>span {
+.boxed-section > span {
     position: absolute;
     top: 0;
     left: 50%;
@@ -336,7 +336,7 @@ ul.suggestions li:hover {
     display: none;
 }
 
-.round-checkbox input[type="checkbox"]+label {
+.round-checkbox input[type="checkbox"] + label {
     position: relative;
     padding-left: 35px;
     line-height: 24px;
@@ -344,7 +344,7 @@ ul.suggestions li:hover {
     user-select: none;
 }
 
-.round-checkbox input[type="checkbox"]+label:before {
+.round-checkbox input[type="checkbox"] + label:before {
     display: block;
     position: absolute;
     left: 0;
@@ -359,11 +359,11 @@ ul.suggestions li:hover {
 }
 
 /* チェック時だけ黄色背景に */
-.round-checkbox input[type="checkbox"]:checked+label:before {
+.round-checkbox input[type="checkbox"]:checked + label:before {
     background-color: #ff8c00;
 }
 
-.round-checkbox input[type="checkbox"]:checked+label:after {
+.round-checkbox input[type="checkbox"]:checked + label:after {
     display: block;
     position: absolute;
     content: "";

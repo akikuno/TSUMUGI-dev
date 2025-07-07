@@ -11,13 +11,13 @@ abnormal_duodenum_morphology
 abnormal_embryo_development 
 abnormal_embryo_turning 
 abnormal_epididymis_morphology 
+abnormal_esophagus_morphology 
 abnormal_eyelid_fusion 
 abnormal_facial_morphology 
 abnormal_forebrain_development 
 abnormal_forebrain_morphology 
 abnormal_gallbladder_morphology 
 abnormal_head_shape 
-abnormal_head_size 
 abnormal_heart_looping 
 abnormal_heart_morphology 
 abnormal_hindbrain_development 
@@ -68,6 +68,7 @@ abnormal_vitelline_vasculature_morphology
 absent_lymph_nodes 
 absent_optic_nerve 
 absent_seminal_vesicle 
+absent_testes 
 bleb 
 cleft_palate 
 cyanosis 
@@ -77,6 +78,7 @@ edema
 embryonic_growth_retardation 
 embryonic_lethality_prior_to_organogenesis 
 embryonic_lethality_prior_to_tooth_bud_stage 
+enlarged_adrenal_glands 
 enlarged_cecum 
 enlarged_epididymis 
 enlarged_gallbladder 
@@ -88,6 +90,7 @@ enlarged_ovary
 enlarged_prostate_gland 
 enlarged_seminal_vesicle 
 enlarged_spleen 
+enlarged_stomach 
 enlarged_testis 
 enlarged_thymus 
 enlarged_urinary_bladder 
@@ -100,6 +103,7 @@ hydrocephaly
 hydrometra 
 increased_brain_size 
 male_infertility 
+megacolon 
 microcephaly 
 microphthalmia 
 no_spontaneous_movement 
@@ -111,8 +115,10 @@ polydactyly
 prenatal_lethality 
 prenatal_lethality_prior_to_heart_atrial_septation 
 preweaning_lethality,_complete_penetrance 
+preweaning_lethality,_incomplete_penetrance 
 protruding_tongue 
 respiratory_system_phenotype 
+short_tail 
 single_kidney 
 small_adrenal_glands 
 small_epididymis 
@@ -128,7 +134,6 @@ small_testis
 small_thymus 
 small_uterus 
 spina_bifida 
-syndactyly 
 thick_skin 
 unresponsive_to_tactile_stimuli 
 urinary_bladder_obstruction 

@@ -120,7 +120,6 @@ export function calculateBetweennessCentrality(cy) {
         betweennessCentrality.set(key, value / 2);
     });
 
-
     return betweennessCentrality;
 }
 
