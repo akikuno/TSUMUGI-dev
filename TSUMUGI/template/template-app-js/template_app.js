@@ -8,6 +8,7 @@ import { loadJSONGz, loadJSON } from "../js/data_loader.js";
 import { setupGeneSearch } from "../js/gene_searcher.js";
 import { highlightDiseaseAnnotation } from "../js/highlighter.js";
 import { setupPhenotypeSearch } from "../js/phenotype_searcher.js";
+import { initializeCentralitySystem } from "../js/centrality.js";
 
 // ############################################################################
 // Input handler
@@ -82,7 +83,7 @@ function getLayoutOptions() {
         nodeRepulsion: nodeRepulsionValue,
         componentSpacing: componentSpacingValue,
     };
-    
+
     // Add enhanced options for COSE layout to prevent hairball effect (gene symbol pages only)
     if (currentLayout === "cose" && isGeneSymbolPage) {
         return {
@@ -100,7 +101,7 @@ function getLayoutOptions() {
             edgeElasticity: 100,            // Edge elasticity for better edge distribution
         };
     }
-    
+
     return baseOptions;
 }
 
@@ -318,6 +319,13 @@ createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues)
     document.getElementById("node-repulsion-value").textContent = intValues;
     cy.layout(getLayoutOptions()).run();
 });
+
+// ############################################################################
+// Initialize centrality system
+// ############################################################################
+
+// Initialize centrality system with dependencies
+initializeCentralitySystem(cy, createSlider);
 
 // ############################################################################
 // Tooltip handling
