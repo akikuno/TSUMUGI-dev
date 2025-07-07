@@ -49,4 +49,9 @@ function filterByNodeColorAndEdgeSize() {
     if (window.refreshPhenotypeList) {
         window.refreshPhenotypeList();
     }
+    
+    // 6. Recalculate centrality for the filtered network
+    if (typeof recalculateCentrality === 'function') {
+        recalculateCentrality();
+    }
 }

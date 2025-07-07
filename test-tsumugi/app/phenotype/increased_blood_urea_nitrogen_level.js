@@ -8,6 +8,7 @@ import { loadJSONGz, loadJSON } from "../js/data_loader.js";
 import { setupGeneSearch } from "../js/gene_searcher.js";
 import { highlightDiseaseAnnotation } from "../js/highlighter.js";
 import { setupPhenotypeSearch } from "../js/phenotype_searcher.js";
+import { initializeCentralitySystem } from "../js/centrality.js";
 
 // ############################################################################
 // Input handler
@@ -349,6 +350,11 @@ function filterByNodeColorAndEdgeSize() {
     if (window.refreshPhenotypeList) {
         window.refreshPhenotypeList();
     }
+
+    // 6. Recalculate centrality for the filtered network
+    if (typeof recalculateCentrality === "function") {
+        recalculateCentrality();
+    }
 }
 
 // =============================================================================
@@ -434,6 +440,13 @@ createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues)
     document.getElementById("node-repulsion-value").textContent = intValues;
     cy.layout(getLayoutOptions()).run();
 });
+
+// ############################################################################
+// Initialize centrality system
+// ############################################################################
+
+// Initialize centrality system with dependencies
+initializeCentralitySystem(cy, createSlider);
 
 // ############################################################################
 // Tooltip handling
