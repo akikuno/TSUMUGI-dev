@@ -6,6 +6,7 @@ abnormal autopod morphology
 abnormal behavior
 abnormal blood vessel morphology
 abnormal body wall morphology
+abnormal bone marrow morphology
 abnormal bone mineralization
 abnormal bone structure
 abnormal brain morphology
@@ -13,6 +14,7 @@ abnormal caudal vertebrae morphology
 abnormal cecum morphology
 abnormal cholesterol homeostasis
 abnormal chorioallantoic fusion
+abnormal circulating phosphate level
 abnormal clavicle morphology
 abnormal coat appearance
 abnormal colon morphology
@@ -21,6 +23,7 @@ abnormal cornea morphology
 abnormal craniofacial morphology
 abnormal cranium morphology
 abnormal cued conditioning behavior
+abnormal defecation
 abnormal digit morphology
 abnormal duodenum morphology
 abnormal ear morphology
@@ -29,6 +32,7 @@ abnormal embryo size
 abnormal embryo turning
 abnormal epididymis morphology
 abnormal esophagus morphology
+abnormal external female genitalia morphology
 abnormal eyelid aperture
 abnormal eyelid fusion
 abnormal eyelid morphology
@@ -55,6 +59,7 @@ abnormal heartbeat
 abnormal heart left ventricle morphology
 abnormal heart looping
 abnormal heart morphology
+abnormal heart shape
 abnormal hindbrain development
 abnormal hindbrain morphology
 abnormal hindlimb morphology
@@ -65,6 +70,7 @@ abnormal incisor morphology
 abnormal inspiratory capacity
 abnormal iris morphology
 abnormal iris pigmentation
+abnormal iris transillumination
 abnormal joint morphology
 abnormal kidney morphology
 abnormal left-right axis patterning
@@ -78,11 +84,14 @@ abnormal locomotor behavior
 abnormal lumbar vertebrae morphology
 abnormal lung morphology
 abnormal lymph node morphology
+abnormal male genitalia morphology
 abnormal mammary gland morphology
 abnormal mandible morphology
 abnormal maxilla morphology
+abnormal metabolism
 abnormal midbrain development
 abnormal midbrain morphology
+abnormal motor learning
 abnormal mouth morphology
 abnormal nail morphology
 abnormal neural tube closure
@@ -104,10 +113,10 @@ abnormal placenta vasculature
 abnormal pupil morphology
 abnormal QT variability
 abnormal radius morphology
-abnormal reproductive system morphology
 abnormal response to new environment
 abnormal response to tactile stimuli
 abnormal retina blood vessel morphology
+abnormal retina blood vessel pattern
 abnormal retina inner nuclear layer morphology
 abnormal retina morphology
 abnormal retina outer nuclear layer morphology
@@ -156,11 +165,15 @@ abnormal visceral yolk sac morphology
 abnormal vitelline vasculature morphology
 abnormal vitreous body morphology
 abnormal vocalization
+abnormal whole-body plethysmography
 abnormal zygomatic bone morphology
+absent adrenal gland
 absent lymph nodes
 absent optic nerve
 absent pinna reflex
 absent seminal vesicle
+absent spleen
+absent teeth
 absent testes
 absent vibrissae
 anophthalmia
@@ -192,6 +205,7 @@ decreased brain weight
 decreased bronchoconstrictive response
 decreased B cell number
 decreased cardiac muscle contractility
+decreased cardiac output
 decreased cardiac stroke volume
 decreased caudal vertebrae number
 decreased CD4-negative NK T cell number
@@ -221,15 +235,20 @@ decreased circulating phosphate level
 decreased circulating potassium level
 decreased circulating serum albumin level
 decreased circulating sodium level
+decreased circulating thyroxine level
 decreased circulating total protein level
 decreased circulating triglyceride level
+decreased coping response
 decreased effector memory CD8-positive, alpha-beta T cell number
 decreased effector memory T-helper cell number
 decreased eosinophil cell number
 decreased erythrocyte cell number
 decreased exploration in new environment
 decreased fasting circulating glucose level
+decreased fluid intake
 decreased food intake
+decreased freezing behavior
+decreased granulocyte number
 decreased grip strength
 decreased heart left ventricle size
 decreased heart rate
@@ -249,6 +268,7 @@ decreased lung elastance
 decreased Ly6C-positive immature NK cell number
 decreased Ly6C-positive NK T cell number
 decreased lymphocyte cell number
+decreased mature B cell number
 decreased mean corpuscular hemoglobin
 decreased mean corpuscular hemoglobin concentration
 decreased mean corpuscular volume
@@ -268,6 +288,7 @@ decreased sacral vertebrae number
 decreased spleen weight
 decreased startle reflex
 decreased T-helper cell number
+decreased thermal nociceptive threshold
 decreased thigmotaxis
 decreased total body fat amount
 decreased total retina thickness
@@ -290,6 +311,7 @@ enlarged gallbladder
 enlarged heart
 enlarged kidney
 enlarged liver
+enlarged lung
 enlarged lymph nodes
 enlarged ovary
 enlarged prostate gland
@@ -298,9 +320,11 @@ enlarged spleen
 enlarged stomach
 enlarged testis
 enlarged thymus
+enlarged thyroid gland
 enlarged urinary bladder
 enlarged uterus
 exencephaly
+exophthalmos
 eyelids fail to open
 eye hemorrhage
 facial cleft
@@ -340,8 +364,10 @@ increased cardiac output
 increased cardiac stroke volume
 increased CD4-positive, alpha-beta T cell number
 increased CD4-positive, CD25-positive, alpha-beta regulatory T cell number
+increased CD4-positive NK T cell number
 increased CD8-positive, alpha-beta T cell number
 increased CD8-positive, naive alpha-beta T cell number
+increased cellular hemoglobin content
 increased circulating alanine transaminase level
 increased circulating alkaline phosphatase level
 increased circulating amylase level
@@ -391,6 +417,9 @@ increased heart weight
 increased hematocrit
 increased hemoglobin content
 increased IgE level
+increased IgG1 level
+increased IgG2b level
+increased IgG3 level
 increased kidney weight
 increased lactate dehydrogenase level
 increased large unstained cell number
@@ -425,6 +454,8 @@ increased tidal volume
 increased total body fat amount
 increased total retina thickness
 increased T cell number
+increased urine magnesium level
+increased urine microalbumin level
 increased vertical activity
 iris synechia
 irregularly shaped pupil
@@ -440,6 +471,7 @@ microphthalmia
 mydriasis
 narrow eye opening
 no spontaneous movement
+oligodactyly
 pale liver
 pale yolk sac
 pallor
@@ -452,6 +484,7 @@ prenatal lethality prior to heart atrial septation
 preweaning lethality, complete penetrance
 preweaning lethality, incomplete penetrance
 prolonged PQ interval
+prolonged PR interval
 prolonged QRS complex duration
 prolonged QT interval
 prolonged RR interval
@@ -476,6 +509,8 @@ small heart
 small kidney
 small liver
 small lung
+small lymph nodes
+small ovary
 small seminal vesicle
 small spleen
 small stomach

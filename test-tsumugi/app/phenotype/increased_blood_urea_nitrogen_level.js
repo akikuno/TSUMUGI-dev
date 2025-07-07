@@ -8,7 +8,7 @@ import { loadJSONGz, loadJSON } from "../js/data_loader.js";
 import { setupGeneSearch } from "../js/gene_searcher.js";
 import { highlightDiseaseAnnotation } from "../js/highlighter.js";
 import { setupPhenotypeSearch } from "../js/phenotype_searcher.js";
-import { initializeCentralitySystem } from "../js/centrality.js";
+import { initializeCentralitySystem, recalculateCentrality } from "../js/centrality.js";
 
 // ############################################################################
 // Input handler
@@ -351,8 +351,8 @@ function filterByNodeColorAndEdgeSize() {
     }
 
     // 6. Recalculate centrality for the filtered network
-    if (typeof recalculateCentrality === "function") {
-        recalculateCentrality();
+    if (typeof window.recalculateCentrality === "function") {
+        window.recalculateCentrality();
     }
 }
 
@@ -365,6 +365,10 @@ let target_phenotype = "increased blood urea nitrogen level";
 // フィルタリング関数のラッパー
 function applyFiltering() {
     filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterByNodeColorAndEdgeSize);
+    // フィルタリング後にCentrality値を再計算
+    if (typeof window.recalculateCentrality === "function") {
+        window.recalculateCentrality();
+    }
 }
 
 // フォーム変更時にフィルタリング関数を実行
@@ -446,6 +450,9 @@ createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues)
 
 // Initialize centrality system with dependencies
 initializeCentralitySystem(cy, createSlider);
+
+// Make recalculateCentrality available globally for use in filters
+window.recalculateCentrality = recalculateCentrality;
 
 // ############################################################################
 // Tooltip handling

@@ -82,7 +82,7 @@ function filterByNodeColorAndEdgeSize() {
     }
     
     // 11. Recalculate centrality for the filtered network
-    if (typeof recalculateCentrality === 'function') {
-        recalculateCentrality();
+    if (typeof window.recalculateCentrality === 'function') {
+        window.recalculateCentrality();
     }
 }
