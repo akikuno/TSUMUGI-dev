@@ -71,20 +71,24 @@
                     </div>
 
                     <div class="slider-container">
-                        <span class="control-label" style="display: block">
-                            Phenotypes similarity:
-                            <span id="edge-size-value"> 1 - 10 </span>
-                        </span>
+                        <div class="label-row">
+                            <span class="control-label">
+                                Phenotypes similarity:
+                                <span id="edge-size-value"> 1 - 10 </span>
+                            </span>
+                        </div>
                         <div class="slider-element" id="filter-edge-slider"></div>
                     </div>
 
                     <!-- Slider for phenotypes severity -->
 
                     <div class="slider-container">
-                        <span class="control-label" style="display: block">
-                            Phenotype severity:
-                            <span id="node-color-value"> 1 -10 </span>
-                        </span>
+                        <div class="label-row">
+                            <span class="control-label">
+                                Phenotype severity:
+                                <span id="node-color-value"> 1 -10 </span>
+                            </span>
+                        </div>
                         <div class="slider-element" id="filter-node-slider"></div>
                     </div>
                 </div>
@@ -212,22 +216,22 @@
                             <div class="round-checkbox">
                                 <input type="checkbox" id="disease" value="Disease" />
                                 <label for="disease">Human Disease</label>
-                            </div>
-                            <div class="info-tooltip-container">
-                                <div class="info-tooltip-icon">i</div>
-                                <div class="info-tooltip-content">
-                                    Human Disease annotations use
-                                    <a
-                                        href="https://www.mousephenotype.org/help/data-visualization/gene-pages/disease-models/"
-                                        target="_blank"
-                                        >IMPC Disease Models</a
-                                    >
+                                <div class="info-tooltip-container">
+                                    <div class="info-tooltip-icon">i</div>
+                                    <div class="info-tooltip-content">
+                                        Human Disease annotations use
+                                        <a
+                                            href="https://www.mousephenotype.org/help/data-visualization/gene-pages/disease-models/"
+                                            target="_blank"
+                                            >IMPC Disease Models</a
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </form>
 
                         <!-- Phenotype search -->
-                        <div class="round-checkbox">
+                        <div class="search-container">
                             <i class="fa-solid fa-magnifying-glass"></i>
                             <input type="text" id="phenotype-search" placeholder="Phenotypes" />
                             <ul id="phenotype-suggestions" class="suggestions" hidden></ul>
@@ -235,7 +239,7 @@
                         <div id="selected-phenotypes" class="selected-phenotypes"></div>
 
                         <!-- Gene search -->
-                        <div class="round-checkbox">
+                        <div class="search-container">
                             <i class="fa-solid fa-magnifying-glass"></i>
                             <input type="text" id="gene-search" placeholder="Gene Symbol" />
                             <ul id="suggestions" class="suggestions" hidden></ul>
@@ -263,7 +267,7 @@
                             </div>
                         </div>
 
-                        <div class="slider-container" id="centrality-slider-container" style="display: none">
+                        <div class="slider-container hidden" id="centrality-slider-container">
                             <div class="label-row">
                                 <span class="control-label">Scale:</span>
                                 <span id="centrality-scale-value">0</span>
