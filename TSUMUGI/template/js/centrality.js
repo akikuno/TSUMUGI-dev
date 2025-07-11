@@ -282,10 +282,15 @@ function handleCentralityTypeChange(value) {
             container.style.display = "block";
             // Initialize slider if not already done
             if (!window.centralitySliderInstance) {
-                initializeCentralitySlider();
+                try {
+                    initializeCentralitySlider();
+                } catch (error) {
+                    console.error("Error initializing centrality slider:", error);
+                }
             }
         }
-        updateNodeSizeByCentrality();
+        // Recalculate centrality values when type changes (always call this)
+        recalculateCentrality();
     }
 }
 
@@ -294,7 +299,13 @@ function handleCentralityTypeChange(value) {
  */
 function initializeCentralitySlider() {
     const sliderElement = document.getElementById("centrality-scale-slider");
+    
     if (sliderElement && createSliderFunction) {
+        // Check if slider already exists and destroy it first
+        if (window.centralitySliderInstance) {
+            return;
+        }
+        
         window.centralitySliderInstance = createSliderFunction("centrality-scale-slider", 0, 0, 100, 1, (value) => {
             // Convert 0-100 integer to 0.00-1.00 for internal calculation
             centralityScale = parseInt(value) / 100;
