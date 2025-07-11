@@ -196,22 +196,22 @@ const cy = cytoscape({
         {
             selector: ".disease-highlight", // 疾患ハイライト用クラス
             style: {
-                "border-width": 3,
+                "border-width": 5,
                 "border-color": "#fc4c00",
             },
         },
         {
             selector: ".gene-highlight", // 遺伝子検索ハイライト用クラス
             style: {
-                color: "#028760",
+                color: "#00a497",
                 "font-weight": "bold",
             },
         },
         {
             selector: ".phenotype-highlight", // 表現型ハイライト用クラス
             style: {
-                "border-width": 3,
-                "border-color": "#28a745",
+                "border-width": 5,
+                "border-color": "#3FA7D6",
             },
         },
     ],

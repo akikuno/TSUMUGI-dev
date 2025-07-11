@@ -7,7 +7,7 @@ if ! { conda info --envs | grep -q "env-tsumugi"; }; then
     conda install -y -n env-tsumugi -c conda-forge \
         numpy pandas polars pyarrow matplotlib seaborn plotnine scikit-learn statsmodels \
         ipykernel ipywidgets nbstripout \
-        ruff tqdm networkx dash dash_cytoscape nodejs yarn prettier
+        ruff tqdm networkx dash dash_cytoscape nodejs yarn prettier obonet
 fi
 
 conda activate env-tsumugi
