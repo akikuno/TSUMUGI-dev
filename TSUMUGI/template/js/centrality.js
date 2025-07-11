@@ -1,4 +1,24 @@
 /**
+ * Count the number of phenotypes for a node, excluding disease-related phenotypes
+ * @param {Object} node - Cytoscape node
+ * @returns {number} Number of non-disease phenotypes
+ */
+function countNodePhenotypes(node) {
+    const nodeData = node.data();
+    const phenotypes = nodeData.phenotype || [];
+    
+    // Ensure phenotypes is an array
+    const phenotypeArray = Array.isArray(phenotypes) ? phenotypes : [phenotypes];
+    
+    // Filter out empty strings and nulls
+    const validPhenotypes = phenotypeArray.filter(p => p && p !== "");
+    
+    // Disease phenotypes are stored separately in the 'disease' field,
+    // so we just count all valid phenotypes in the phenotype array
+    return validPhenotypes.length;
+}
+
+/**
  * Calculate degree centrality for all visible nodes in the network
  * @param {Object} cy - Cytoscape instance
  * @returns {Map} Map of node id to degree centrality value
@@ -120,8 +140,64 @@ export function calculateBetweennessCentrality(cy) {
         betweennessCentrality.set(key, value / 2);
     });
 
+    // Normalize by the maximum possible betweenness centrality: (n-1)(n-2)/2 for undirected graphs
+    const n = visibleNodes.length;
+    if (n > 2) {
+        const normalizationFactor = ((n - 1) * (n - 2)) / 2;
+        betweennessCentrality.forEach((value, key) => {
+            betweennessCentrality.set(key, value / normalizationFactor);
+        });
+    }
 
     return betweennessCentrality;
+}
+
+/**
+ * Calculate normalized degree centrality (degree / phenotype count)
+ * @param {Object} cy - Cytoscape instance
+ * @returns {Map} Map of node id to normalized degree centrality value
+ */
+export function calculateNormalizedDegreeCentrality(cy) {
+    const normalizedDegreeCentrality = new Map();
+    const degreeCentrality = calculateDegreeCentrality(cy);
+    
+    // Get only visible nodes
+    const visibleNodes = cy.nodes().filter((node) => node.style("display") === "element");
+    
+    visibleNodes.forEach((node) => {
+        const degree = degreeCentrality.get(node.id()) || 0;
+        const phenotypeCount = countNodePhenotypes(node);
+        
+        // Normalize by phenotype count, with minimum of 1 to avoid division by zero
+        const normalizedDegree = phenotypeCount > 0 ? degree / phenotypeCount : 0;
+        normalizedDegreeCentrality.set(node.id(), normalizedDegree);
+    });
+    
+    return normalizedDegreeCentrality;
+}
+
+/**
+ * Calculate normalized betweenness centrality (betweenness / phenotype count)
+ * @param {Object} cy - Cytoscape instance
+ * @returns {Map} Map of node id to normalized betweenness centrality value
+ */
+export function calculateNormalizedBetweennessCentrality(cy) {
+    const normalizedBetweennessCentrality = new Map();
+    const betweennessCentrality = calculateBetweennessCentrality(cy);
+    
+    // Get only visible nodes
+    const visibleNodes = cy.nodes().filter((node) => node.style("display") === "element");
+    
+    visibleNodes.forEach((node) => {
+        const betweenness = betweennessCentrality.get(node.id()) || 0;
+        const phenotypeCount = countNodePhenotypes(node);
+        
+        // Normalize by phenotype count, with minimum of 1 to avoid division by zero
+        const normalizedBetweenness = phenotypeCount > 0 ? betweenness / phenotypeCount : 0;
+        normalizedBetweennessCentrality.set(node.id(), normalizedBetweenness);
+    });
+    
+    return normalizedBetweennessCentrality;
 }
 
 /**
@@ -243,10 +319,14 @@ export function recalculateCentrality() {
     // Calculate centrality for visible nodes
     const degreeCentrality = calculateDegreeCentrality(cytoscapeInstance);
     const betweennessCentrality = calculateBetweennessCentrality(cytoscapeInstance);
+    const normalizedDegreeCentrality = calculateNormalizedDegreeCentrality(cytoscapeInstance);
+    const normalizedBetweennessCentrality = calculateNormalizedBetweennessCentrality(cytoscapeInstance);
 
     // Update node data with centrality values
     updateNodeCentrality(cytoscapeInstance, degreeCentrality, "degree");
     updateNodeCentrality(cytoscapeInstance, betweennessCentrality, "betweenness");
+    updateNodeCentrality(cytoscapeInstance, normalizedDegreeCentrality, "normalized_degree");
+    updateNodeCentrality(cytoscapeInstance, normalizedBetweennessCentrality, "normalized_betweenness");
 
     // Apply node size updates if sliders are active
     updateNodeSizeByCentrality();
@@ -302,6 +382,33 @@ function updateNodeSizeByCentrality() {
             // Ensure nodes with centrality > 0 are visually distinct from those with 0
             // Only apply minimum boost if there's actual scaling happening
             if (betweennessCentrality > 0 && centralityScale > 0 && scalingFactor < 2) {
+                size = baseSize + 2; // Minimum visible increase for non-zero centrality
+            }
+        } else if (centralityType === "normalized_degree" && centralityRange.max > centralityRange.min) {
+            const normalizedDegreeCentrality = node.data("normalized_degree_centrality") || 0;
+            const normalized =
+                (normalizedDegreeCentrality - centralityRange.min) / (centralityRange.max - centralityRange.min);
+            // Add scaling on top of base size
+            size = baseSize + normalized * 35 * centralityScale;
+        } else if (centralityType === "normalized_betweenness") {
+            const normalizedBetweennessCentrality = node.data("normalized_betweenness_centrality") || 0;
+
+            // Use logarithmic scaling for better differentiation
+            // Add a small value to avoid log(0) and ensure nodes with 0 centrality have minimum size
+            const logCentrality = Math.log10(normalizedBetweennessCentrality + 0.001);
+            const maxLogCentrality = Math.log10((centralityRange.max || 0.001) + 0.001);
+
+            // Normalize using log scale
+            const normalized = maxLogCentrality > Math.log10(0.002) ? 
+                (logCentrality - Math.log10(0.001)) / (maxLogCentrality - Math.log10(0.001)) : 0;
+
+            // Add scaling on top of base size
+            const scalingFactor = normalized * 35 * centralityScale;
+            size = baseSize + scalingFactor;
+
+            // Ensure nodes with centrality > 0 are visually distinct from those with 0
+            // Only apply minimum boost if there's actual scaling happening
+            if (normalizedBetweennessCentrality > 0 && centralityScale > 0 && scalingFactor < 2) {
                 size = baseSize + 2; // Minimum visible increase for non-zero centrality
             }
         }

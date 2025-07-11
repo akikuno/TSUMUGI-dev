@@ -6,13 +6,13 @@
 function countNodePhenotypes(node) {
     const nodeData = node.data();
     const phenotypes = nodeData.phenotype || [];
-    
+
     // Ensure phenotypes is an array
     const phenotypeArray = Array.isArray(phenotypes) ? phenotypes : [phenotypes];
-    
+
     // Filter out empty strings and nulls
-    const validPhenotypes = phenotypeArray.filter(p => p && p !== "");
-    
+    const validPhenotypes = phenotypeArray.filter((p) => p && p !== "");
+
     // Disease phenotypes are stored separately in the 'disease' field,
     // so we just count all valid phenotypes in the phenotype array
     return validPhenotypes.length;
@@ -160,19 +160,19 @@ export function calculateBetweennessCentrality(cy) {
 export function calculateNormalizedDegreeCentrality(cy) {
     const normalizedDegreeCentrality = new Map();
     const degreeCentrality = calculateDegreeCentrality(cy);
-    
+
     // Get only visible nodes
     const visibleNodes = cy.nodes().filter((node) => node.style("display") === "element");
-    
+
     visibleNodes.forEach((node) => {
         const degree = degreeCentrality.get(node.id()) || 0;
         const phenotypeCount = countNodePhenotypes(node);
-        
+
         // Normalize by phenotype count, with minimum of 1 to avoid division by zero
         const normalizedDegree = phenotypeCount > 0 ? degree / phenotypeCount : 0;
         normalizedDegreeCentrality.set(node.id(), normalizedDegree);
     });
-    
+
     return normalizedDegreeCentrality;
 }
 
@@ -184,19 +184,19 @@ export function calculateNormalizedDegreeCentrality(cy) {
 export function calculateNormalizedBetweennessCentrality(cy) {
     const normalizedBetweennessCentrality = new Map();
     const betweennessCentrality = calculateBetweennessCentrality(cy);
-    
+
     // Get only visible nodes
     const visibleNodes = cy.nodes().filter((node) => node.style("display") === "element");
-    
+
     visibleNodes.forEach((node) => {
         const betweenness = betweennessCentrality.get(node.id()) || 0;
         const phenotypeCount = countNodePhenotypes(node);
-        
+
         // Normalize by phenotype count, with minimum of 1 to avoid division by zero
         const normalizedBetweenness = phenotypeCount > 0 ? betweenness / phenotypeCount : 0;
         normalizedBetweennessCentrality.set(node.id(), normalizedBetweenness);
     });
-    
+
     return normalizedBetweennessCentrality;
 }
 
@@ -399,8 +399,10 @@ function updateNodeSizeByCentrality() {
             const maxLogCentrality = Math.log10((centralityRange.max || 0.001) + 0.001);
 
             // Normalize using log scale
-            const normalized = maxLogCentrality > Math.log10(0.002) ? 
-                (logCentrality - Math.log10(0.001)) / (maxLogCentrality - Math.log10(0.001)) : 0;
+            const normalized =
+                maxLogCentrality > Math.log10(0.002)
+                    ? (logCentrality - Math.log10(0.001)) / (maxLogCentrality - Math.log10(0.001))
+                    : 0;
 
             // Add scaling on top of base size
             const scalingFactor = normalized * 35 * centralityScale;
