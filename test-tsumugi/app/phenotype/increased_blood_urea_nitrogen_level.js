@@ -412,12 +412,12 @@ createSlider("font-size-slider", isGeneSymbolPage ? 10 : 20, 1, 50, 1, (intValue
 // Slider for Edge width
 // --------------------------------------------------------
 
-createSlider("edge-width-slider", isGeneSymbolPage ? 2 : 5, 1, 10, 1, (intValues) => {
+createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
     document.getElementById("edge-width-value").textContent = intValues;
     cy.style()
         .selector("edge")
         .style("width", function (ele) {
-            return scaleValue(ele.data("edge_size"), edgeMin, edgeMax, 0.5, 2) * intValues;
+            return scaleValue(ele.data("edge_size"), edgeMin, edgeMax, 0.5, 2) * (intValues * 0.4);
         })
         .update();
 });
