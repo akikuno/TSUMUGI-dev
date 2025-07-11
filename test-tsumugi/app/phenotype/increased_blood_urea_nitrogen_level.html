@@ -254,7 +254,15 @@
 
                         <div class="slider-container">
                             <div class="label-row">
-                                <label for="centrality-type-dropdown" class="control-label">Centrality:</label>
+                                <label for="centrality-type-dropdown" class="control-label">
+                                    Centrality:
+                                    <div class="info-tooltip-container">
+                                        <div class="info-tooltip-icon">i</div>
+                                        <div class="info-tooltip-content">
+                                            'Normalized' options divide the centrality score by the number of phenotypes observed in KO mice
+                                        </div>
+                                    </div>
+                                </label>
                                 <select
                                     class="exporter"
                                     id="centrality-type-dropdown"
