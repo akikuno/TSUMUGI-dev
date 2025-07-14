@@ -130,6 +130,7 @@ The left control panel allows you to adjust network display.
 
 The `Phenotypes similarity` slider allows you to set thresholds for gene pairs displayed in the network based on **edge phenotypic similarity** (Phenodigm score).  
 Similarity minimum and maximum values are converted to a 1-10 scale, allowing 10-level filtering.  
+Note that the Phenodigm score values are log-transformed for ensuring a more uniform distribution.
 
 > [!NOTE]
 > For details on phenotypic similarity, please see:  
@@ -140,6 +141,7 @@ Similarity minimum and maximum values are converted to a 1-10 scale, allowing 10
 The `Phenotype severity` slider allows you to adjust node display based on **phenotype severity (effect size) in KO mice**.  
 Higher effect sizes indicate stronger phenotypic impact.  
 This also scales the effect size range to 1-10, allowing 10-level filtering.  
+Note that for non-binary phenotypes, effect size values are log-transformed for ensuring a more uniform distribution.  
 
 > [!NOTE]
 > When IMPC phenotype evaluation is binary (present/absent) (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html): list of binary phenotypes available [here](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/binary_phenotypes.txt)) or when gene name is input, the `Phenotypes severity` slider is not available.

@@ -129,6 +129,7 @@ df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 
 `Phenotypes similarity`のスライダーでは、**エッジの表現型類似度**（Phenodigmスコア）に基づいて、ネットワークに表示する遺伝子ペアの閾値を設定できます。  
 類似度の最小値と最大値を 1〜10 のスケールに変換し、10段階でフィルタリングが可能です。  
+なお、10段階で表記されたPhenodigmスコアの値は、分布の偏りを是正するため、対数変換されています。  
 
 > [!NOTE]
 > 表現型類似度についての詳細は、以下を御覧ください  
@@ -139,6 +140,7 @@ df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 `Phenotype severity`のスライダーでは、**KOマウスにおける表現型の重症度**（効果量）に基づいて、ノードの表示を調整できます。  
 効果量が高いほど、表現型の影響が強く現れていることを示します。  
 こちらも、効果量の範囲を 1〜10 にスケールしており、10段階のフィルタリングが可能です。  
+なお、バイナリ表現型以外では、10段階で表記された効果量の値は、分布の偏りを是正するため、対数変換されています。  
 
 > [!NOTE]
 > IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Phenotypes severity`のスライダーはありません。
