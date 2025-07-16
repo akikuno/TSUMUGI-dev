@@ -206,7 +206,14 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 
 // Initialization of the Edge size slider
 const edgeSlider = document.getElementById("filter-edge-slider");
-noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
+// Set default to 5 for gene symbol pages, 1 for others
+const defaultPhenotypeSimMin = isGeneSymbolPage ? 5 : 1;
+noUiSlider.create(edgeSlider, {
+    start: [defaultPhenotypeSimMin, 10],
+    connect: true,
+    range: { min: 1, max: 10 },
+    step: 1,
+});
 
 // Update the slider values when the sliders are moved
 edgeSlider.noUiSlider.on("update", function (values) {
