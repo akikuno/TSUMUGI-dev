@@ -137,7 +137,7 @@ const cy = cytoscape({
         {
             selector: ".gene-highlight", // 遺伝子検索ハイライト用クラス
             style: {
-                color: "#00a497",
+                color: "#006400",
                 "font-weight": "bold",
             },
         },
