@@ -5,7 +5,7 @@ import io
 from pathlib import Path
 
 from directory_manager import make_directories
-from io_handler import download_file, save_csv, load_csv_as_dicts
+from io_handler import download_file, load_csv_as_dicts, save_csv
 
 IMPC_RELEASE = 23.0
 
@@ -52,10 +52,10 @@ if not Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv").exists():
     # )
 
 
-#=========================================
+# =========================================
 # Filter significant genes
 # significant genesはmp_term_nameが存在する列であることを利用
-#=========================================
+# =========================================
 
 columns = [
     "marker_symbol",
@@ -81,14 +81,21 @@ records = load_csv_as_dicts(Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv")
 
 records_filtered = (record for record in records if "mp_term_name" in record)
 
-#=========================================
+# =========================================
 # Subset columns
-#=========================================
+# =========================================
 records_subset = (
     {col: record.get(col, "") for col in columns}
     for record in records_filtered
     if record.get("mp_term_name") not in (None, "")
 )
 
-sum(1 for _ in records_subset)  # consume generator
-save_csv(records_subset, Path(TEMPDIR, f"statistical_filtered_{IMPC_RELEASE}.csv"))
+output_path = Path(TEMPDIR, f"statistical_filtered_{IMPC_RELEASE}.csv")
+
+with open(output_path, "w", newline="", encoding="utf-8") as f:
+    first = next(records_subset)  # 1件目を取り出してヘッダー確定
+    writer = csv.DictWriter(f, fieldnames=first.keys())
+    writer.writeheader()
+    writer.writerow(first)
+    for row in records_subset:
+        _ = writer.writerow(row)
