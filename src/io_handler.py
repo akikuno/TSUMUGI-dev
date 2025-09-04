@@ -6,7 +6,7 @@ import pickle
 import time
 import urllib.error
 import urllib.request
-from collections.abc import Iterable
+from collections.abc import Iterator
 from pathlib import Path
 
 from tqdm import tqdm
@@ -74,7 +74,7 @@ def download_file(
     raise RuntimeError(error_message) from last_err
 
 
-def save_csv(rows: Iterable[list[str]], output_path: str, *, csv_encoding: str = "utf-8") -> None:
+def save_csv(rows: Iterator[list[str]], output_path: str, *, csv_encoding: str = "utf-8") -> None:
     """
     CSVの行データをファイルに保存
     """
@@ -83,7 +83,7 @@ def save_csv(rows: Iterable[list[str]], output_path: str, *, csv_encoding: str =
         writer.writerows(rows)
 
 
-def load_csv_as_dicts(file_path: str | Path, encoding: str = "utf-8") -> Iterable[dict[str, str]]:
+def load_csv_as_dicts(file_path: str | Path, encoding: str = "utf-8") -> Iterator[dict[str, str]]:
     """
     CSVファイルを読み込み、各行を {header: value} のdictに変換して返す
     """
@@ -109,7 +109,7 @@ def read_pickle(file_path: str | Path) -> any:
         return pickle.load(f)
 
 
-def write_pickle_iter(iterable: Iterable, file_path: str | Path) -> None:
+def write_pickle_iter(iterable: Iterator, file_path: str | Path) -> None:
     """
     逐次（ストリーミング）pickle保存。
     メモリに展開せず、iterable（generator含む）から要素ごとに書く。
@@ -119,7 +119,7 @@ def write_pickle_iter(iterable: Iterable, file_path: str | Path) -> None:
             pickle.dump(item, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def read_pickle_iter(file_path: str | Path) -> Iterable[any]:
+def read_pickle_iter(file_path: str | Path) -> Iterator[any]:
     """
     逐次pickleを読み込むジェネレータ（EOFまで順次yield）
     """
@@ -129,4 +129,3 @@ def read_pickle_iter(file_path: str | Path) -> Iterable[any]:
                 yield pickle.load(f)
             except EOFError:
                 break
-

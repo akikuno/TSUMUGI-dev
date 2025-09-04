@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import csv
 import io
+from collections.abc import Iterator
 from pathlib import Path
 
 from directory_manager import make_directories
+from filterer import extract_significant_phenotypes, subset_columns
 from io_handler import download_file, load_csv_as_dicts, save_csv
 
 IMPC_RELEASE = 23.0
@@ -52,9 +54,10 @@ if not Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv").exists():
     # )
 
 
+records = load_csv_as_dicts(Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv"))
+
 # =========================================
-# Filter significant genes
-# significant genesはmp_term_nameが存在する列であることを利用
+# Filter colums and significant genes
 # =========================================
 
 columns = [
@@ -64,38 +67,18 @@ columns = [
     "mp_term_id",
     "p_value",
     "effect_size",
-    "female_ko_effect_p_value",
-    "male_ko_effect_p_value",
-    "female_ko_parameter_estimate",
-    "sex_effect_p_value",
+    "female_ko_effect_p_value",  # sex differences
+    "male_ko_effect_p_value",  # sex differences
+    "female_ko_parameter_estimate",  # sex differences
     "male_ko_parameter_estimate",  # sex differences
-    "genotype_effect_p_value",
-    "genotype_effect_parameter_estimate",
     "zygosity",  # zygosity
-    "pipeline_name",
+    "pipeline_name",  # life-stage
     "procedure_name",  # life-stage
     "allele_symbol",  # map to Phendigm
 ]
 
-records = load_csv_as_dicts(Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv"))
+records_subset: Iterator[dict[str, str]] = subset_columns(records, columns)
 
-records_filtered = (record for record in records if "mp_term_name" in record)
-
-# =========================================
-# Subset columns
-# =========================================
-records_subset = (
-    {col: record.get(col, "") for col in columns}
-    for record in records_filtered
-    if record.get("mp_term_name") not in (None, "")
+records_significants: list[dict[str, str | float]] = extract_significant_phenotypes(
+    records_subset, threshold=10 ** (-4)
 )
-
-output_path = Path(TEMPDIR, f"statistical_filtered_{IMPC_RELEASE}.csv")
-
-with open(output_path, "w", newline="", encoding="utf-8") as f:
-    first = next(records_subset)  # 1件目を取り出してヘッダー確定
-    writer = csv.DictWriter(f, fieldnames=first.keys())
-    writer.writeheader()
-    writer.writerow(first)
-    for row in records_subset:
-        _ = writer.writerow(row)
