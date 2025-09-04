@@ -7,10 +7,11 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import polars as pl
-from annotator import annotate_life_stage
-from directory_manager import make_directories
-from filterer import extract_significant_phenotypes, subset_columns
-from io_handler import download_file, load_csv_as_dicts, save_csv
+
+from TSUMUGI.annotator import annotate_life_stage
+from TSUMUGI.directory_manager import make_directories
+from TSUMUGI.filterer import extract_significant_phenotypes, subset_columns
+from TSUMUGI.io_handler import download_file, load_csv_as_dicts, save_csv
 
 IMPC_RELEASE = 23.0
 

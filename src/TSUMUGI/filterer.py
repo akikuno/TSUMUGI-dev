@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections.abc import Iterator
 from formatter import floatinize_columns
 
-INF = float("inf")
-
 
 def subset_columns(records: Iterator[dict[str, str]], columns: list[str]) -> Iterator[dict[str, str]]:
     """Yield dicts keeping only the requested columns; missing keys become empty strings."""
@@ -14,12 +12,9 @@ def subset_columns(records: Iterator[dict[str, str]], columns: list[str]) -> Ite
 
 def _normalized_record(record: dict[str, str]) -> dict[str, float | str]:
     """Return a shallow-copied record with numeric fields coerced to float/Inf."""
-    record = floatinize_columns(record, [
-        "p_value",
-        "female_ko_effect_p_value",
-        "male_ko_effect_p_value",
-        "effect_size"
-    ])
+    record = floatinize_columns(
+        record, ["p_value", "female_ko_effect_p_value", "male_ko_effect_p_value", "effect_size"]
+    )
     return record
 
 
@@ -27,7 +22,7 @@ def _is_significant(rec: dict[str, float | str], threshold: float) -> bool:
     """Significance rule:
     - If p_value is Inf and effect_size is finite -> keep.
     - OR any of the three p-values is below threshold -> keep."""
-    if rec["p_value"] == INF and rec["effect_size"] != INF:
+    if rec["p_value"] == float("inf") and rec["effect_size"] != float("inf"):
         return True
     return (
         rec["p_value"] < threshold
