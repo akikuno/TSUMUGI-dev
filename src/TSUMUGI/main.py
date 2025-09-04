@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 from collections.abc import Iterator
 from pathlib import Path
 
+import polars as pl
+from annotator import annotate_life_stage
 from directory_manager import make_directories
 from filterer import extract_significant_phenotypes, subset_columns
 from io_handler import download_file, load_csv_as_dicts, save_csv
@@ -82,3 +85,35 @@ records_subset: Iterator[dict[str, str]] = subset_columns(records, columns)
 records_significants: list[dict[str, str | float]] = extract_significant_phenotypes(
     records_subset, threshold=10 ** (-4)
 )
+
+# Cache results
+pl.write_csv(
+    pl.DataFrame(records_significants),
+    Path(TEMPDIR, f"statistical_significants_{IMPC_RELEASE}.csv"),
+)
+
+# =========================================
+# Annotate life stage and sexual dimorphisms
+# =========================================
+embryo_assays = {
+    "E9.5",
+    "E10.5",
+    "E12.5",
+    "Embryo LacZ",  # E12.5
+    "E14.5",
+    "E14.5-E15.5",
+    "E18.5",
+}
+
+embryo_pattern = re.compile("|".join(map(re.escape, embryo_assays)))
+
+for record in records_significants:
+    record["life_stage"] = annotate_life_stage(record["procedure_name"], record["pipeline_name"], embryo_pattern)
+
+
+def execute():
+    pass
+
+
+if __name__ == "__main__":
+    execute()

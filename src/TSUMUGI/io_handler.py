@@ -18,7 +18,12 @@ def _looks_gzip(url: str, headers: dict | None) -> bool:
         headers = {}
     enc = headers.get("Content-Encoding", "").lower()
     ctype = headers.get("Content-Type", "").lower()
-    return "gzip" in enc or "application/gzip" in ctype or "application/x-gzip" in ctype or url.endswith(".gz")
+    return (
+        "gzip" in enc
+        or "application/gzip" in ctype
+        or "application/x-gzip" in ctype
+        or url.endswith(".gz")
+    )
 
 
 def download_file(
@@ -65,7 +70,12 @@ def download_file(
 
             return raw.decode(encoding)
 
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, UnicodeDecodeError) as e:
+        except (
+            urllib.error.URLError,
+            urllib.error.HTTPError,
+            TimeoutError,
+            UnicodeDecodeError,
+        ) as e:
             last_err = e
             if attempt < retries:
                 time.sleep(2)
@@ -74,7 +84,9 @@ def download_file(
     raise RuntimeError(error_message) from last_err
 
 
-def save_csv(rows: Iterator[list[str]], output_path: str, *, csv_encoding: str = "utf-8") -> None:
+def save_csv(
+    rows: Iterator[list[str]], output_path: str, *, csv_encoding: str = "utf-8"
+) -> None:
     """
     CSVの行データをファイルに保存
     """
@@ -83,7 +95,9 @@ def save_csv(rows: Iterator[list[str]], output_path: str, *, csv_encoding: str =
         writer.writerows(rows)
 
 
-def load_csv_as_dicts(file_path: str | Path, encoding: str = "utf-8") -> Iterator[dict[str, str]]:
+def load_csv_as_dicts(
+    file_path: str | Path, encoding: str = "utf-8"
+) -> Iterator[dict[str, str]]:
     """
     CSVファイルを読み込み、各行を {header: value} のdictに変換して返す
     """

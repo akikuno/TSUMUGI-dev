@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
+from formatter import floatinize_columns
 
 INF = float("inf")
 
@@ -11,19 +12,15 @@ def subset_columns(records: Iterator[dict[str, str]], columns: list[str]) -> Ite
         yield {col: record.get(col, "") for col in columns}
 
 
-def _to_float_or_inf(x) -> float:
-    """Convert a string to float; empty/None becomes +Inf."""
-    return float(x) if x not in (None, "") else INF
-
-
 def _normalized_record(record: dict[str, str]) -> dict[str, float | str]:
     """Return a shallow-copied record with numeric fields coerced to float/Inf."""
-    out = dict(record)  # avoid mutating the input iterator's backing data
-    out["p_value"] = _to_float_or_inf(record.get("p_value"))
-    out["female_ko_effect_p_value"] = _to_float_or_inf(record.get("female_ko_effect_p_value"))
-    out["male_ko_effect_p_value"] = _to_float_or_inf(record.get("male_ko_effect_p_value"))
-    out["effect_size"] = _to_float_or_inf(record.get("effect_size"))
-    return out
+    record = floatinize_columns(record, [
+        "p_value",
+        "female_ko_effect_p_value",
+        "male_ko_effect_p_value",
+        "effect_size"
+    ])
+    return record
 
 
 def _is_significant(rec: dict[str, float | str], threshold: float) -> bool:
