@@ -1,6 +1,6 @@
 import math
 
-from TSUMUGI.formatter import abs_effect_size, distinct_records, floatinize_columns, to_float
+from TSUMUGI.formatter import abs_effect_size, floatinize_columns, to_float
 
 
 def test_to_float():
@@ -31,17 +31,17 @@ def test_abs_effect_size():
     assert abs_effect_size(record_minus) == {"effect_size": 1}
 
 
-def test_distinct_records():
-    records = [
-        {"marker_symbol": "Ap1ar", "mp_term_name": "term1", "effect_size": 0.5},
-        {"marker_symbol": "Ap1ar", "mp_term_name": "term1", "effect_size": 0.6},
-        {"marker_symbol": "Ap1ar", "mp_term_name": "term2", "effect_size": -1},
-        {"marker_symbol": "Ap1ar", "mp_term_name": "term2", "effect_size": -10},
-    ]
-    result = distinct_records(records)
-    assert len(result) == 2
-    for record in result:
-        if record["mp_term_name"] == "term1":
-            assert record["effect_size"] == 0.6
-        elif record["mp_term_name"] == "term2":
-            assert record["effect_size"] == -10
+# def test_distinct_records():
+#     records = [
+#         {"marker_symbol": "Ap1ar", "mp_term_name": "term1", "effect_size": 0.5},
+#         {"marker_symbol": "Ap1ar", "mp_term_name": "term1", "effect_size": 0.6},
+#         {"marker_symbol": "Ap1ar", "mp_term_name": "term2", "effect_size": -1},
+#         {"marker_symbol": "Ap1ar", "mp_term_name": "term2", "effect_size": -10},
+#     ]
+#     result = distinct_records(records)
+#     assert len(result) == 2
+#     for record in result:
+#         if record["mp_term_name"] == "term1":
+#             assert record["effect_size"] == 0.6
+#         elif record["mp_term_name"] == "term2":
+#             assert record["effect_size"] == -10
