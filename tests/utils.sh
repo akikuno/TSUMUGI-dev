@@ -1,9 +1,12 @@
 #!/bin/bash
 
+PYTHONPATH="src" python src/TSUMUGI/main.py
 PYTHONPATH="src" pytest -vv tests/
 
 
-WORD="0.4.0"
+WORD="inf"
+find src/ -type f | grep ".py$" | xargs grep "$WORD"
+
 
 find notebooks/ -type f | xargs grep "$WORD"
 find TSUMUGI/template -type f | xargs grep "$WORD"

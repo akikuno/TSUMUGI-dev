@@ -23,3 +23,20 @@ def annotate_sexual_dimorphism(
         return "male"
     else:
         return ""
+
+
+def annotate_human_disease(
+    allele_symbol: str, zygosity: str, life_stage: str, allele_phenodigm: dict[str, dict[str | str | float]]
+) -> dict[str | str | float] | dict:
+    """Annotate human disease information from Phenodigm records."""
+    record_phenodigm = allele_phenodigm.get(allele_symbol, {})
+
+    if not record_phenodigm:
+        return {}
+    zygosity_phenodigm = record_phenodigm["zygosity"]
+    life_stage_phenodigm = record_phenodigm["life_stage"]
+
+    if zygosity == zygosity_phenodigm and life_stage == life_stage_phenodigm:
+        return record_phenodigm
+    else:
+        return {}

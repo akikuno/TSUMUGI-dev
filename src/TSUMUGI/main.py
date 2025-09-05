@@ -2,16 +2,17 @@ from __future__ import annotations
 
 import csv
 import io
+import logging
 import re
 from collections.abc import Iterator
 from pathlib import Path
 
 import polars as pl
 
-from TSUMUGI.annotator import annotate_life_stage, annotate_sexual_dimorphism
+from TSUMUGI.annotator import annotate_human_disease, annotate_life_stage, annotate_sexual_dimorphism
 from TSUMUGI.directory_manager import make_directories
 from TSUMUGI.filterer import extract_significant_phenotypes, subset_columns
-from TSUMUGI.formatter import format_statistics_float
+from TSUMUGI.formatter import format_phenodigm_record, format_statistics_float
 from TSUMUGI.io_handler import download_file, load_csv_as_dicts, save_csv
 
 IMPC_RELEASE = 23.0
@@ -27,9 +28,15 @@ make_directories(ROOT_DIR, sub_dirs)
 
 TEMPDIR = ROOT_DIR / Path(".temp")
 
+
+# Logging Config
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 ###########################################################
 # Download data
 ###########################################################
+
+logging.info("Downloading data...")
 
 if not Path(TEMPDIR, "impc_phenodigm.csv").exists():
     url_phenodigm = "https://github.com/whri-phenogenomics/disease_models/raw/main/disease_models_app/data/phenodigm_matches_dr20.1.txt"
@@ -64,6 +71,7 @@ records = load_csv_as_dicts(Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv")
 # =========================================
 # Filter colums and significant genes
 # =========================================
+logging.info("Filtering columns and significant genes...")
 
 columns = [
     "marker_symbol",
@@ -108,8 +116,10 @@ pl.DataFrame(records_significants).write_parquet(
 )
 
 # =========================================
-# Annotate life stage, genotype, and sexual dimorphisms
+# Annotate life stage, sexual dimorphisms, and human disease
 # =========================================
+logging.info("Annotating life stage, sexual dimorphisms, and human disease...")
+
 embryo_assays = {
     "E9.5",
     "E10.5",
@@ -130,10 +140,25 @@ for record in records_significants:
         record["female_ko_effect_p_value"], record["male_ko_effect_p_value"], threshold=1e-4
     )
 
+records_phenodigm: list[dict[str | str | float]] = pl.read_csv(Path(TEMPDIR, "impc_phenodigm.csv")).to_dicts()
 
-def execute():
-    pass
+allele_phenodigm = format_phenodigm_record(records_phenodigm)
+
+for record in records_significants:
+    record |= annotate_human_disease(
+        record["allele_symbol"], record["zygosity"], record["life_stage"], allele_phenodigm
+    )
+
+# Cache results
+
+pl.DataFrame(records_significants).write_parquet(
+    Path(TEMPDIR, f"statistical_significants_annotated_{IMPC_RELEASE}.parquet"),
+)
 
 
-if __name__ == "__main__":
-    execute()
+# def execute():
+#     pass
+
+
+# if __name__ == "__main__":
+#     execute()
