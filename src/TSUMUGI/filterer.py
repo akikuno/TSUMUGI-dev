@@ -13,9 +13,9 @@ def subset_columns(records: Iterator[dict[str, str]], columns: list[str]) -> Ite
 
 def _is_significant(rec: dict[str, float | str], threshold: float) -> bool:
     """Significance rule:
-    - If p_value is Inf and effect_size is finite -> keep.
+    - If p_value is NaN and effect_size is finite -> keep.
     - OR any of the three p-values is below threshold -> keep."""
-    if rec["p_value"] == float("inf") and rec["effect_size"] != float("inf"):
+    if rec["p_value"] == float("nan") and rec["effect_size"] != float("nan"):
         return True
     return (
         rec["p_value"] < threshold

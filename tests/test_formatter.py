@@ -1,10 +1,12 @@
+import math
+
 from TSUMUGI.formatter import abs_effect_size, distinct_records, floatinize_columns, to_float
 
 
 def test_to_float():
     assert to_float("3.14") == 3.14
-    assert to_float("") == float("inf")
-    assert to_float(None) == float("inf")
+    assert math.isnan(to_float(""))
+    assert math.isnan(to_float(None))
 
 
 def test_floatinize_columns():

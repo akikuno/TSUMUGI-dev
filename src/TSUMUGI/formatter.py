@@ -2,16 +2,14 @@ from __future__ import annotations
 
 from itertools import groupby
 
-INF = float("inf")
-
 
 def to_float(x: str | None) -> float:
-    """Convert a string to float; empty/None becomes +Inf."""
-    return float(x) if x not in (None, "") else INF
+    """Convert a string to float; empty/None becomes NaN."""
+    return float(x) if x not in (None, "") else float("nan")
 
 
 def floatinize_columns(record: dict[str, str], columns: list[str]) -> dict[str, str | float]:
-    """Return a record with numeric fields coerced to float/Inf."""
+    """Return a record with numeric fields coerced to float/NaN."""
     for col in columns:
         record[col] = to_float(record.get(col))
     return record
