@@ -9,11 +9,7 @@ from pathlib import Path
 
 import polars as pl
 
-from TSUMUGI.annotator import annotate_human_disease, annotate_life_stage, annotate_sexual_dimorphism
-from TSUMUGI.directory_manager import make_directories
-from TSUMUGI.filterer import extract_significant_phenotypes, subset_columns
-from TSUMUGI.formatter import format_phenodigm_record, format_statistics_float
-from TSUMUGI.io_handler import download_file, load_csv_as_dicts, save_csv
+from TSUMUGI import annotator, directory_manager, filterer, formatter, io_handler
 
 IMPC_RELEASE = 23.0
 
@@ -24,7 +20,7 @@ IMPC_RELEASE = 23.0
 ROOT_DIR = Path("TSUMUGI")
 sub_dirs: list[str] = [".temp"]
 
-make_directories(ROOT_DIR, sub_dirs)
+directory_manager.make_directories(ROOT_DIR, sub_dirs)
 
 TEMPDIR = ROOT_DIR / Path(".temp")
 
@@ -43,30 +39,23 @@ if not Path(TEMPDIR, "impc_phenodigm.csv").exists():
 
     error_message = "Please manually download impc phenodigm data (impc_phenodigm.csv) from https://diseasemodels.research.its.qmul.ac.uk/."
 
-    phenodigm_tsv = download_file(url_phenodigm, error_message)
+    phenodigm_tsv = io_handler.download_file(url_phenodigm, error_message)
     reader = csv.reader(io.StringIO(phenodigm_tsv), delimiter="\t")
     phenodigm_csv = (row for row in reader)
-    save_csv(phenodigm_csv, Path(TEMPDIR, "impc_phenodigm.csv"))
-
-    # x = load_csv_as_dicts(Path(TEMPDIR, "impc_phenodigm.csv"))
-    # write_pickle_iter(load_csv_as_dicts(Path(TEMPDIR, "impc_phenodigm.csv")), Path(TEMPDIR, "impc_phenodigm.pkl"))
+    io_handler.save_csv(phenodigm_csv, Path(TEMPDIR, "impc_phenodigm.csv"))
 
 if not Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv").exists():
     url_impc = f"https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-{IMPC_RELEASE}/results/statistical-results-ALL.csv.gz"
 
     error_message = "Please manually download impc statistical data (statistical_results_ALL.csv) from https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results/."
 
-    statistical_all = download_file(url_impc, error_message)
+    statistical_all = io_handler.download_file(url_impc, error_message)
     reader = csv.reader(io.StringIO(statistical_all), delimiter=",")
     statistical_all_rows = (row for row in reader)
-    save_csv(statistical_all_rows, Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv"))
-    # write_pickle_iter(
-    #     load_csv_as_dicts(Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv")),
-    #     Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.pkl"),
-    # )
+    io_handler.save_csv(statistical_all_rows, Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv"))
 
 
-records = load_csv_as_dicts(Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv"))
+records = io_handler.load_csv_as_dicts(Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv"))
 
 # =========================================
 # Filter colums and significant genes
@@ -90,9 +79,9 @@ columns = [
     "allele_symbol",  # map to Phendigm
 ]
 
-records_subset: Iterator[dict[str, str]] = subset_columns(records, columns)
+records_subset: Iterator[dict[str, str]] = filterer.subset_columns(records, columns)
 
-records_significants: list[dict[str, str | float]] = extract_significant_phenotypes(
+records_significants: list[dict[str, str | float]] = filterer.extract_significant_phenotypes(
     records_subset, threshold=1e-4
 )  # 1 min
 
@@ -105,7 +94,7 @@ float_columns = [
     "male_ko_parameter_estimate",  # sex differences
 ]
 
-records_significants = format_statistics_float(records_significants, float_columns)
+records_significants = formatter.format_statistics_float(records_significants, float_columns)
 
 # Cache results
 pl.DataFrame(records_significants).write_csv(
@@ -133,24 +122,37 @@ embryo_assays = {
 embryo_pattern = re.compile("|".join(map(re.escape, embryo_assays)))
 
 for record in records_significants:
-    record["life_stage"] = annotate_life_stage(record["procedure_name"], record["pipeline_name"], embryo_pattern)
+    record["life_stage"] = annotator.annotate_life_stage(
+        record["procedure_name"], record["pipeline_name"], embryo_pattern
+    )
 
 for record in records_significants:
-    record["sexual_dimorphism"] = annotate_sexual_dimorphism(
+    record["sexual_dimorphism"] = annotator.annotate_sexual_dimorphism(
         record["female_ko_effect_p_value"], record["male_ko_effect_p_value"], threshold=1e-4
     )
 
 records_phenodigm: list[dict[str | str | float]] = pl.read_csv(Path(TEMPDIR, "impc_phenodigm.csv")).to_dicts()
 
-allele_phenodigm = format_phenodigm_record(records_phenodigm)
+allele_phenodigm = formatter.format_phenodigm_record(records_phenodigm)
 
 for record in records_significants:
-    record |= annotate_human_disease(
+    record |= annotator.annotate_human_disease(
         record["allele_symbol"], record["zygosity"], record["life_stage"], allele_phenodigm
     )
 
+
+for record in records_significants:
+    mp_term_id = record["mp_term_id"]
+    marker_accession_id = record["marker_accession_id"]
+    record["impc_url_gene"] = f"https://www.mousephenotype.org/data/genes/{marker_accession_id}"
+    record["impc_url_phenotype"] = f"https://www.mousephenotype.org/data/phenotypes/{mp_term_id}"
+
+
 # Cache results
 
+pl.DataFrame(records_significants).write_csv(
+    Path(TEMPDIR, f"statistical_significants_annotated_{IMPC_RELEASE}.csv"),
+)
 pl.DataFrame(records_significants).write_parquet(
     Path(TEMPDIR, f"statistical_significants_annotated_{IMPC_RELEASE}.parquet"),
 )

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from itertools import groupby
 
+import polars as pl
+
 ###########################################################
 # String to Float
 ###########################################################
@@ -87,3 +89,16 @@ def distinct_records(records: list[dict[str, str | float]]) -> list[dict[str, st
         records_distinct.append(records_max)
 
     return records_distinct
+
+
+def fill_nulls_to_nan_str(df_polars: pl.DataFrame) -> pl.DataFrame:
+    """Fill nulls in Float64 columns with NaN and in Utf8 columns with an empty string."""
+    exprs = []
+    for name, dtype in df_polars.schema.items():
+        if dtype == pl.Float64:
+            exprs.append(pl.col(name).fill_null(float("nan")))
+        elif dtype == pl.Utf8:
+            exprs.append(pl.col(name).fill_null(""))
+        else:
+            exprs.append(pl.col(name))  # No change
+    return df_polars.with_columns(exprs)
