@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PYTHONPATH="src" pytest -vv tests/
+
 
 WORD="0.4.0"
 

@@ -11,6 +11,7 @@ import polars as pl
 from TSUMUGI.annotator import annotate_life_stage
 from TSUMUGI.directory_manager import make_directories
 from TSUMUGI.filterer import extract_significant_phenotypes, subset_columns
+from TSUMUGI.formatter import format_statistics_float
 from TSUMUGI.io_handler import download_file, load_csv_as_dicts, save_csv
 
 IMPC_RELEASE = 23.0
@@ -84,13 +85,26 @@ columns = [
 records_subset: Iterator[dict[str, str]] = subset_columns(records, columns)
 
 records_significants: list[dict[str, str | float]] = extract_significant_phenotypes(
-    records_subset, threshold=10 ** (-4)
-)
+    records_subset, threshold=1e-4
+)  # 1 min
+
+float_columns = [
+    "p_value",
+    "effect_size",
+    "female_ko_effect_p_value",  # sex differences
+    "male_ko_effect_p_value",  # sex differences
+    "female_ko_parameter_estimate",  # sex differences
+    "male_ko_parameter_estimate",  # sex differences
+]
+
+records_significants = format_statistics_float(records_significants, float_columns)
 
 # Cache results
-pl.write_csv(
-    pl.DataFrame(records_significants),
+pl.DataFrame(records_significants).write_csv(
     Path(TEMPDIR, f"statistical_significants_{IMPC_RELEASE}.csv"),
+)
+pl.DataFrame(records_significants).write_parquet(
+    Path(TEMPDIR, f"statistical_significants_{IMPC_RELEASE}.parquet"),
 )
 
 # =========================================
