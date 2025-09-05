@@ -8,7 +8,7 @@ from pathlib import Path
 
 import polars as pl
 
-from TSUMUGI.annotator import annotate_life_stage
+from TSUMUGI.annotator import annotate_life_stage, annotate_sexual_dimorphism
 from TSUMUGI.directory_manager import make_directories
 from TSUMUGI.filterer import extract_significant_phenotypes, subset_columns
 from TSUMUGI.formatter import format_statistics_float
@@ -108,7 +108,7 @@ pl.DataFrame(records_significants).write_parquet(
 )
 
 # =========================================
-# Annotate life stage and sexual dimorphisms
+# Annotate life stage, genotype, and sexual dimorphisms
 # =========================================
 embryo_assays = {
     "E9.5",
@@ -124,6 +124,11 @@ embryo_pattern = re.compile("|".join(map(re.escape, embryo_assays)))
 
 for record in records_significants:
     record["life_stage"] = annotate_life_stage(record["procedure_name"], record["pipeline_name"], embryo_pattern)
+
+for record in records_significants:
+    record["sexual_dimorphism"] = annotate_sexual_dimorphism(
+        record["female_ko_effect_p_value"], record["male_ko_effect_p_value"], threshold=1e-4
+    )
 
 
 def execute():

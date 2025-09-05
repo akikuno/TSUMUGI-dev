@@ -25,8 +25,8 @@ def test_floatinize_columns():
 def test_abs_effect_size():
     record_plus = {"effect_size": 1}
     record_minus = {"effect_size": -1}
-    assert abs_effect_size(record_plus) == 1
-    assert abs_effect_size(record_minus) == 1
+    assert abs_effect_size(record_plus) == {"effect_size": 1}
+    assert abs_effect_size(record_minus) == {"effect_size": 1}
 
 
 def test_distinct_records():
