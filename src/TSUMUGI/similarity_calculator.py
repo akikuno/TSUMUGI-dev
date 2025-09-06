@@ -10,24 +10,24 @@ from tqdm import tqdm
 
 
 def parse_obo_file(file_path: str | Path) -> dict[str, dict]:
-    """Parse OBO file and extract term information.
-    {id, name, is_a (parent terms), is_obsolete}
+    """Parse ontology file (OBO format) and extract term information.
+    Returns dict with keys: id, name, is_a (parent terms), is_obsolete
     """
-    terms = {}
-    current_term = None
+    ontology_terms = {}
+    current_term_data = None
     with open(file_path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
 
             if line == "[Term]":
-                current_term = {}
+                current_term_data = {}
                 continue
 
             if line.startswith("[") and line.endswith("]") and line != "[Term]":
-                current_term = None
+                current_term_data = None
                 continue
 
-            if current_term is None:
+            if current_term_data is None:
                 continue
 
             if ":" in line:
@@ -36,135 +36,137 @@ def parse_obo_file(file_path: str | Path) -> dict[str, dict]:
                 value = value.strip()
 
                 if key == "id":
-                    current_term["id"] = value
+                    current_term_data["id"] = value
                 elif key == "name":
-                    current_term["name"] = value
+                    current_term_data["name"] = value
                 elif key == "is_a":
-                    if "is_a" not in current_term:
-                        current_term["is_a"] = []
+                    if "is_a" not in current_term_data:
+                        current_term_data["is_a"] = []
                     parent_id = value.split("!")[0].strip()
-                    current_term["is_a"].append(parent_id)
+                    current_term_data["is_a"].append(parent_id)
                 elif key == "is_obsolete":
-                    current_term["is_obsolete"] = value.lower() == "true"
+                    current_term_data["is_obsolete"] = value.lower() == "true"
 
-            if line == "" and current_term and "id" in current_term:
-                if not current_term.get("is_obsolete", False):
-                    terms[current_term["id"]] = current_term
-                current_term = None
+            if line == "" and current_term_data and "id" in current_term_data:
+                if not current_term_data.get("is_obsolete", False):
+                    ontology_terms[current_term_data["id"]] = current_term_data
+                current_term_data = None
 
-    return terms
+    return ontology_terms
 
 
-def build_parent_child_relations(
+def build_term_hierarchy(
     ontology_terms: dict[str, dict],
 ) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
-    """Build parent-child relationships from terms."""
-    parents = defaultdict(list)  # term_id -> [parent_ids]
-    children = defaultdict(list)  # term_id -> [child_ids]
+    """Build parent-child hierarchy relationships from ontology terms."""
+    parent_term_map = defaultdict(list)  # term_id -> [parent_ids]
+    child_term_map = defaultdict(list)  # term_id -> [child_ids]
 
     for term_id, term_data in ontology_terms.items():
         if "is_a" in term_data:
             for parent_id in term_data["is_a"]:
-                parents[term_id].append(parent_id)
-                children[parent_id].append(term_id)
+                parent_term_map[term_id].append(parent_id)
+                child_term_map[parent_id].append(term_id)
 
-    return dict(parents), dict(children)
-
-
-def get_all_ancestors(term_id: str, parents: dict[str, list[str]]) -> set[str]:
-    """Get all ancestor terms for a given term."""
-    ancestors = set()
-    queue = [term_id]
-
-    while queue:
-        current = queue.pop(0)
-        if current in parents:
-            for parent in parents[current]:
-                if parent not in ancestors:
-                    ancestors.add(parent)
-                    queue.append(parent)
-
-    return ancestors
+    return dict(parent_term_map), dict(child_term_map)
 
 
-def find_common_ancestors(term1_id: str, term2_id: str, parents: dict[str, list[str]]) -> set[str]:
+def find_all_ancestor_terms(term_id: str, parent_term_map: dict[str, list[str]]) -> set[str]:
+    """Find all ancestor terms for a given term."""
+    ancestor_terms = set()
+    terms_to_process = [term_id]
+
+    while terms_to_process:
+        current_term = terms_to_process.pop(0)
+        if current_term in parent_term_map:
+            for parent_term in parent_term_map[current_term]:
+                if parent_term not in ancestor_terms:
+                    ancestor_terms.add(parent_term)
+                    terms_to_process.append(parent_term)
+
+    return ancestor_terms
+
+
+def find_common_ancestors(term1_id: str, term2_id: str, parent_term_map: dict[str, list[str]]) -> set[str]:
     """Find common ancestors of two terms."""
-    ancestors1 = get_all_ancestors(term1_id, parents)
-    ancestors1.add(term1_id)  # Include the term itself
+    term1_ancestors = find_all_ancestor_terms(term1_id, parent_term_map)
+    term1_ancestors.add(term1_id)  # Include the term itself
 
-    ancestors2 = get_all_ancestors(term2_id, parents)
-    ancestors2.add(term2_id)  # Include the term itself
+    term2_ancestors = find_all_ancestor_terms(term2_id, parent_term_map)
+    term2_ancestors.add(term2_id)  # Include the term itself
 
-    return ancestors1.intersection(ancestors2)
-
-
-def get_all_descendants(term_id: str, children: dict[str, list[str]]) -> set[str]:
-    """Get all descendant terms for a given term."""
-    descendants = set()
-    queue = [term_id]
-
-    while queue:
-        current = queue.pop(0)
-        if current in children:
-            for child in children[current]:
-                if child not in descendants:
-                    descendants.add(child)
-                    queue.append(child)
-
-    return descendants
+    return term1_ancestors.intersection(term2_ancestors)
 
 
-def calculate_information_content(term_id: str, children: dict[str, list[str]], total_terms: int) -> float:
+def find_all_descendant_terms(term_id: str, child_term_map: dict[str, list[str]]) -> set[str]:
+    """Find all descendant terms for a given term."""
+    descendant_terms = set()
+    terms_to_process = [term_id]
+
+    while terms_to_process:
+        current_term = terms_to_process.pop(0)
+        if current_term in child_term_map:
+            for child_term in child_term_map[current_term]:
+                if child_term not in descendant_terms:
+                    descendant_terms.add(child_term)
+                    terms_to_process.append(child_term)
+
+    return descendant_terms
+
+
+def calculate_information_content(term_id: str, child_term_map: dict[str, list[str]], total_term_count: int) -> float:
     """Calculate information content for a term based on its descendants."""
-    descendants = get_all_descendants(term_id, children)
+    descendant_terms = find_all_descendant_terms(term_id, child_term_map)
     # Include the term itself in the count
-    term_count = len(descendants) + 1
-    probability = term_count / total_terms
+    term_count = len(descendant_terms) + 1
+    probability = term_count / total_term_count
     return -math.log(probability)
 
 
-def resnik_similarity(
+def calculate_resnik_similarity(
     term1_id: str,
     term2_id: str,
-    parents: dict[str, list[str]],
-    children: dict[str, list[str]],
-    total_terms: int,
+    parent_term_map: dict[str, list[str]],
+    child_term_map: dict[str, list[str]],
+    total_term_count: int,
 ) -> float:
     """Calculate Resnik similarity between two terms."""
     if term1_id == term2_id:
-        return calculate_information_content(term1_id, children, total_terms)
+        return calculate_information_content(term1_id, child_term_map, total_term_count)
 
-    common_ancestors = find_common_ancestors(term1_id, term2_id, parents)
+    common_ancestors = find_common_ancestors(term1_id, term2_id, parent_term_map)
 
     if not common_ancestors:
         return 0.0
 
     # Find the most informative common ancestor (MICA)
-    max_ic = 0.0
-    for ancestor in common_ancestors:
-        ic = calculate_information_content(ancestor, children, total_terms)
-        max_ic = max(max_ic, ic)
+    max_information_content = 0.0
+    for ancestor_term in common_ancestors:
+        information_content = calculate_information_content(ancestor_term, child_term_map, total_term_count)
+        max_information_content = max(max_information_content, information_content)
 
-    return max_ic
+    return max_information_content
 
 
 def calculate_all_pairwise_similarities(
-    path_obo: str | Path,
-    all_mp_term_ids: set[str],
+    ontology_file_path: str | Path,
+    all_term_ids: set[str],
 ) -> dict[frozenset[str], float]:
     """Calculate pairwise Resnik similarities for a list of terms."""
-    mp_terms = parse_obo_file(path_obo)
-    total_mp_terms = len(mp_terms)
-    parents, children = build_parent_child_relations(mp_terms)
+    ontology_terms = parse_obo_file(ontology_file_path)
+    total_term_count = len(ontology_terms)
+    parent_term_map, child_term_map = build_term_hierarchy(ontology_terms)
 
-    similarity_of_mp_term_id_pairs = {}
+    term_pair_similarity_map = {}
     for term1_id, term2_id in tqdm(
-        combinations(all_mp_term_ids, 2), total=(len(all_mp_term_ids) * (len(all_mp_term_ids) - 1)) // 2
+        combinations(all_term_ids, 2), total=(len(all_term_ids) * (len(all_term_ids) - 1)) // 2
     ):
-        key = frozenset([term1_id, term2_id])
-        similarity_of_mp_term_id_pairs[key] = resnik_similarity(term1_id, term2_id, parents, children, total_mp_terms)
+        term_pair_key = frozenset([term1_id, term2_id])
+        term_pair_similarity_map[term_pair_key] = calculate_resnik_similarity(
+            term1_id, term2_id, parent_term_map, child_term_map, total_term_count
+        )
 
-    return similarity_of_mp_term_id_pairs
+    return term_pair_similarity_map
 
 
 ###########################################################
@@ -172,32 +174,37 @@ def calculate_all_pairwise_similarities(
 ###########################################################
 
 
-def calculate_ic_by_term(
+def calculate_information_content_map(
     term_ids: set[str],
-    children: dict[str, list[str]],
+    child_term_map: dict[str, list[str]],
 ) -> dict[str, float]:
-    """Calculate information content for each term ID."""
+    """Calculate information content for each term ID and return as a map."""
 
-    total_terms = len(term_ids)
-    ic_by_term = {}
+    total_term_count = len(term_ids)
+    term_information_content_map = {}
     for term_id in term_ids:
-        ic_by_term[term_id] = calculate_information_content(term_id, children, total_terms)
+        term_information_content_map[term_id] = calculate_information_content(
+            term_id, child_term_map, total_term_count
+        )
 
-    return ic_by_term
+    return term_information_content_map
 
 
-def get_similarity_of_terms(
-    term_id_1: str, term_id_2: str, ic_by_term: dict[str, float], pairs_sim: dict[frozenset[str], float]
+def calculate_term_pair_similarity(
+    term_id_1: str,
+    term_id_2: str,
+    term_information_content_map: dict[str, float],
+    term_pair_similarity_map: dict[frozenset[str], float],
 ) -> float:
-    """Get similarity score between two terms based on their IC values."""
+    """Calculate similarity score between two terms based on their information content values."""
     if term_id_1 == term_id_2:
-        return ic_by_term.get(term_id_1, 0.0)
+        return term_information_content_map.get(term_id_1, 0.0)
     else:
-        return pairs_sim.get(frozenset([term_id_1, term_id_2]), 0.0)
+        return term_pair_similarity_map.get(frozenset([term_id_1, term_id_2]), 0.0)
 
 
-def adjust_score_by_annotations(
-    sim: float,
+def adjust_similarity_by_metadata(
+    similarity_score: float,
     gene1_zygosity: str,
     gene2_zygosity: str,
     gene1_life_stage: str,
@@ -205,39 +212,41 @@ def adjust_score_by_annotations(
     gene1_sexual_dimorphism: str,
     gene2_sexual_dimorphism: str,
 ) -> float:
-    """Adjust similarity score based on gene annotations."""
-    matches = sum(
+    """Adjust similarity score based on gene metadata (zygosity, life stage, sexual dimorphism)."""
+    matching_metadata_count = sum(
         [
             gene1_zygosity == gene2_zygosity,
             gene1_life_stage == gene2_life_stage,
             gene1_sexual_dimorphism == gene2_sexual_dimorphism,
         ]
     )
-    if matches == 3:
-        weight = 1.0
-    elif matches == 2:
-        weight = 0.75
-    elif matches == 1:
-        weight = 0.5
+    if matching_metadata_count == 3:
+        adjustment_weight = 1.0
+    elif matching_metadata_count == 2:
+        adjustment_weight = 0.75
+    elif matching_metadata_count == 1:
+        adjustment_weight = 0.5
     else:
-        weight = 0.25
-    return sim * weight
+        adjustment_weight = 0.25
+    return similarity_score * adjustment_weight
 
 
 def calculate_weighted_similarity_matrix(
     gene1_records: list[dict[str, str | float]],
     gene2_records: list[dict[str, str | float]],
-    ic_by_term: dict[str, float],
-    similarity_of_mp_term_id_pairs: dict[frozenset[str], float],
+    term_information_content_map: dict[str, float],
+    term_pair_similarity_map: dict[frozenset[str], float],
 ) -> np.ndarray:
-    """Calculate weighted similarity between two genes based on their phenotype records."""
+    """Calculate weighted similarity matrix between two genes based on their phenotype records."""
     weighted_similarity_matrix = []
     for gene1_record in gene1_records:
-        row = []
+        similarity_row = []
         for gene2_record in gene2_records:
-            gene1_id = gene1_record["mp_term_id"]
-            gene2_id = gene2_record["mp_term_id"]
-            sim = get_similarity_of_terms(gene1_id, gene2_id, ic_by_term, similarity_of_mp_term_id_pairs)
+            gene1_term_id = gene1_record["mp_term_id"]
+            gene2_term_id = gene2_record["mp_term_id"]
+            similarity = calculate_term_pair_similarity(
+                gene1_term_id, gene2_term_id, term_information_content_map, term_pair_similarity_map
+            )
 
             # Adjust score by zygosity, life stage, sexual dimorphism
             gene1_zygosity = gene1_record["zygosity"]
@@ -247,8 +256,8 @@ def calculate_weighted_similarity_matrix(
             gene1_sexual_dimorphism = gene1_record.get("sexual_dimorphism", "")
             gene2_sexual_dimorphism = gene2_record.get("sexual_dimorphism", "")
 
-            adjusted_sim = adjust_score_by_annotations(
-                sim,
+            adjusted_similarity = adjust_similarity_by_metadata(
+                similarity,
                 gene1_zygosity,
                 gene2_zygosity,
                 gene1_life_stage,
@@ -256,43 +265,53 @@ def calculate_weighted_similarity_matrix(
                 gene1_sexual_dimorphism,
                 gene2_sexual_dimorphism,
             )
-            row.append(adjusted_sim)
+            similarity_row.append(adjusted_similarity)
 
-        weighted_similarity_matrix.append(row)
+        weighted_similarity_matrix.append(similarity_row)
 
     return np.array(weighted_similarity_matrix)
 
 
-def scale_sim_by_phenodigm(
+def apply_phenodigm_scaling(
     weighted_similarity_matrix: np.ndarray,
-    term1_ids: set[str],
-    term2_ids: set[str],
-    ic_by_term: dict[str, float],
+    gene1_ids: set[str],
+    gene2_ids: set[str],
+    term_information_content_map: dict[str, float],
 ) -> tuple[float, float, float]:
-    """Scale similarity scores based on Phenodigm method."""
+    """Apply Phenodigm scaling method to similarity scores."""
 
-    rows_max = weighted_similarity_matrix.max(axis=1)
-    cols_max = weighted_similarity_matrix.max(axis=0)
+    row_max_similarities = weighted_similarity_matrix.max(axis=1)
+    column_max_similarities = weighted_similarity_matrix.max(axis=0)
 
-    max_score_real_model = np.max([np.max(rows_max), np.max(cols_max)])
-    ave_score_real_model = (rows_max.sum() + cols_max.sum()) / (len(rows_max) + len(cols_max))
+    max_score_actual = np.max([np.max(row_max_similarities), np.max(column_max_similarities)])
+    average_score_actual = (row_max_similarities.sum() + column_max_similarities.sum()) / (
+        len(row_max_similarities) + len(column_max_similarities)
+    )
 
-    term1_ic_scores = [ic_by_term[term1_id] for term1_id in term1_ids]
-    term2_ic_scores = [ic_by_term[term2_id] for term2_id in term2_ids]
+    gene1_information_content_scores = [term_information_content_map[term_id] for term_id in gene1_ids]
+    gene2_information_content_scores = [term_information_content_map[term_id] for term_id in gene2_ids]
 
-    term1_ic_scores_max = max(term1_ic_scores) if term1_ic_scores else 0.0
-    term2_ic_scores_max = max(term2_ic_scores) if term2_ic_scores else 0.0
+    max_gene1_information_content = max(gene1_information_content_scores) if gene1_information_content_scores else 0.0
+    max_gene2_information_content = max(gene2_information_content_scores) if gene2_information_content_scores else 0.0
 
-    max_score_best_model = max(term1_ic_scores_max, term2_ic_scores_max)
-    ave_score_best_model_term1 = sum(term1_ic_scores) / len(term1_ic_scores) if term1_ic_scores else 0.0
-    ave_score_best_model_term2 = sum(term2_ic_scores) / len(term2_ic_scores) if term2_ic_scores else 0.0
+    max_score_theoretical = max(max_gene1_information_content, max_gene2_information_content)
+    average_score_theoretical_gene1 = (
+        sum(gene1_information_content_scores) / len(gene1_information_content_scores)
+        if gene1_information_content_scores
+        else 0.0
+    )
+    average_score_theoretical_gene2 = (
+        sum(gene2_information_content_scores) / len(gene2_information_content_scores)
+        if gene2_information_content_scores
+        else 0.0
+    )
 
-    max_score = max_score_real_model / max_score_best_model
-    ave_score_term1 = ave_score_real_model / ave_score_best_model_term1
-    ave_score_term2 = ave_score_real_model / ave_score_best_model_term2
+    normalized_max_score = max_score_actual / max_score_theoretical
+    normalized_average_score_gene1 = average_score_actual / average_score_theoretical_gene1
+    normalized_average_score_gene2 = average_score_actual / average_score_theoretical_gene2
 
-    score_term1 = 100 * (max_score + ave_score_term1) / 2
-    score_term2 = 100 * (max_score + ave_score_term2) / 2
-    score_total = (score_term1 + score_term2) / 2
+    phenodigm_score_gene1 = 100 * (normalized_max_score + normalized_average_score_gene1) / 2
+    phenodigm_score_gene2 = 100 * (normalized_max_score + normalized_average_score_gene2) / 2
+    phenodigm_average_score = (phenodigm_score_gene1 + phenodigm_score_gene2) / 2
 
-    return score_total, score_term1, score_term2
+    return phenodigm_average_score, phenodigm_score_gene1, phenodigm_score_gene2
