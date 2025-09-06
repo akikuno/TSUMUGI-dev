@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 
 def _looks_gzip(url: str, headers: dict | None) -> bool:
-    """レスポンスヘッダおよびURLからgzipかどうかを推定"""
+    """Determine if content is gzipped based on response headers and URL"""
     if headers is None:
         headers = {}
     enc = headers.get("Content-Encoding", "").lower()
@@ -32,13 +32,13 @@ def download_file(
     retries: int = 3,
     timeout: int = 10,
     encoding: str = "utf-8",
-    chunk_size: int = 1024 * 32,  # 32KBずつ読む
+    chunk_size: int = 1024 * 32,  # Read in 32KB chunks
 ) -> str:
     """
-    URLからデータをダウンロード。gzipなら自動解凍。
-    tqdmで進捗を表示する。
-    - 成功: text(str) を返す
-    - 失敗(3回): 指定のRuntimeErrorをraise
+    Download data from URL. Automatically decompress if gzipped.
+    Display progress with tqdm.
+    - Success: returns text (str)
+    - Failure (after 3 attempts): raises specified RuntimeError
     """
     last_err = None
     for attempt in range(1, retries + 1):
@@ -61,12 +61,12 @@ def download_file(
                         raw.extend(chunk)
                         pbar.update(len(chunk))
 
-            # gzip判定と解凍
+            # Check if gzip and decompress
             if _looks_gzip(url, headers):
                 try:
                     raw = gzip.decompress(raw)
                 except OSError:
-                    pass  # gzipと判定されたが実際は違った場合はそのまま
+                    pass  # If detected as gzip but actually not, keep as is
 
             return raw.decode(encoding)
 
@@ -80,7 +80,7 @@ def download_file(
             if attempt < retries:
                 time.sleep(2)
 
-    # 3回失敗
+    # Failed after 3 attempts
     raise RuntimeError(error_message) from last_err
 
 
@@ -88,7 +88,7 @@ def save_csv(
     rows: Iterator[list[str]], output_path: str, *, csv_encoding: str = "utf-8"
 ) -> None:
     """
-    CSVの行データをファイルに保存
+    Save CSV row data to file
     """
     with open(output_path, "w", newline="", encoding=csv_encoding) as f:
         writer = csv.writer(f)
@@ -99,17 +99,17 @@ def load_csv_as_dicts(
     file_path: str | Path, encoding: str = "utf-8"
 ) -> Iterator[dict[str, str]]:
     """
-    CSVファイルを読み込み、各行を {header: value} のdictに変換して返す
+    Read CSV file and return each row as a {header: value} dict
     """
     with open(file_path, newline="", encoding=encoding) as f:
         reader = csv.DictReader(f)
         for row in reader:
-            yield dict(row)  # OrderedDictを通常のdictに変換
+            yield dict(row)  # Convert OrderedDict to regular dict
 
 
 def write_pickle(obj: any, file_path: str | Path) -> None:
     """
-    任意のPythonオブジェクトをpickle形式で保存する
+    Save any Python object in pickle format
     """
     with open(file_path, "wb") as f:
         pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -117,7 +117,7 @@ def write_pickle(obj: any, file_path: str | Path) -> None:
 
 def read_pickle(file_path: str | Path) -> any:
     """
-    pickleファイルを読み込み、Pythonオブジェクトとして返す
+    Load pickle file and return as Python object
     """
     with open(file_path, "rb") as f:
         return pickle.load(f)
@@ -125,8 +125,8 @@ def read_pickle(file_path: str | Path) -> any:
 
 def write_pickle_iter(iterable: Iterator, file_path: str | Path) -> None:
     """
-    逐次（ストリーミング）pickle保存。
-    メモリに展開せず、iterable（generator含む）から要素ごとに書く。
+    Sequential (streaming) pickle save.
+    Write element by element from iterable (including generators) without loading into memory.
     """
     with open(file_path, "wb") as f:
         for item in iterable:
@@ -135,7 +135,7 @@ def write_pickle_iter(iterable: Iterator, file_path: str | Path) -> None:
 
 def read_pickle_iter(file_path: str | Path) -> Iterator[any]:
     """
-    逐次pickleを読み込むジェネレータ（EOFまで順次yield）
+    Generator that reads pickle sequentially (yields until EOF)
     """
     with open(file_path, "rb") as f:
         while True:

@@ -14,7 +14,9 @@ def subset_columns(records: Iterator[dict[str, str]], columns: list[str]) -> Ite
 def _is_significant(rec: dict[str, float | str], threshold: float) -> bool:
     """Significance rule:
     - If p_value is NaN and effect_size is finite -> keep.
-    - OR any of the three p-values is below threshold -> keep."""
+        * preweaning lethal phenotypes may have significance without no p_value but an effect_size
+    - OR any of the three p-values is below threshold -> keep.
+    """
     if rec["p_value"] == float("nan") and rec["effect_size"] != float("nan"):
         return True
     return (
@@ -27,7 +29,9 @@ def _is_significant(rec: dict[str, float | str], threshold: float) -> bool:
 def extract_significant_phenotypes(
     records: Iterator[dict[str, str]], threshold: float = 1e-4
 ) -> list[dict[str, float | str]]:
-    """Filter significant phenotype records and drop exact duplicates (key+value match)."""
+    """
+    Filter significant phenotype records and drop exact duplicates (key+value match).
+    """
     significants: list[dict[str, float | str]] = []
 
     float_columns = [
