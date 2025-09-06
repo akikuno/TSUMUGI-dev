@@ -157,6 +157,11 @@ pl.DataFrame(records_significants).write_parquet(
     Path(TEMPDIR, f"statistical_significants_annotated_{IMPC_RELEASE}.parquet"),
 )
 
+# =========================================
+# Calculate phenotype similarity
+# =========================================
+
+
 
 # def execute():
 #     pass
