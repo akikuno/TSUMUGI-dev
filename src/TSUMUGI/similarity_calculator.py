@@ -5,6 +5,7 @@ from collections import defaultdict
 from itertools import combinations
 from pathlib import Path
 
+import numpy as np
 from tqdm import tqdm
 
 
@@ -162,4 +163,136 @@ def calculate_all_pairwise_similarities(
     ):
         key = frozenset([term1_id, term2_id])
         similarity_of_mp_term_id_pairs[key] = resnik_similarity(term1_id, term2_id, parents, children, total_mp_terms)
+
     return similarity_of_mp_term_id_pairs
+
+
+###########################################################
+# Phenodigm scaling
+###########################################################
+
+
+def calculate_ic_by_term(
+    term_ids: set[str],
+    children: dict[str, list[str]],
+) -> dict[str, float]:
+    """Calculate information content for each term ID."""
+
+    total_terms = len(term_ids)
+    ic_by_term = {}
+    for term_id in term_ids:
+        ic_by_term[term_id] = calculate_information_content(term_id, children, total_terms)
+
+    return ic_by_term
+
+
+def get_similarity_of_terms(
+    term_id_1: str, term_id_2: str, ic_by_term: dict[str, float], pairs_sim: dict[frozenset[str], float]
+) -> float:
+    """Get similarity score between two terms based on their IC values."""
+    if term_id_1 == term_id_2:
+        return ic_by_term.get(term_id_1, 0.0)
+    else:
+        return pairs_sim.get(frozenset([term_id_1, term_id_2]), 0.0)
+
+
+def adjust_score_by_annotations(
+    sim: float,
+    gene1_zygosity: str,
+    gene2_zygosity: str,
+    gene1_life_stage: str,
+    gene2_life_stage: str,
+    gene1_sexual_dimorphism: str,
+    gene2_sexual_dimorphism: str,
+) -> float:
+    """Adjust similarity score based on gene annotations."""
+    matches = sum(
+        [
+            gene1_zygosity == gene2_zygosity,
+            gene1_life_stage == gene2_life_stage,
+            gene1_sexual_dimorphism == gene2_sexual_dimorphism,
+        ]
+    )
+    if matches == 3:
+        weight = 1.0
+    elif matches == 2:
+        weight = 0.75
+    elif matches == 1:
+        weight = 0.5
+    else:
+        weight = 0.25
+    return sim * weight
+
+
+def calculate_weighted_similarity_matrix(
+    gene1_records: list[dict[str, str | float]],
+    gene2_records: list[dict[str, str | float]],
+    ic_by_term: dict[str, float],
+    similarity_of_mp_term_id_pairs: dict[frozenset[str], float],
+) -> np.ndarray:
+    """Calculate weighted similarity between two genes based on their phenotype records."""
+    weighted_similarity_matrix = []
+    for gene1_record in gene1_records:
+        row = []
+        for gene2_record in gene2_records:
+            gene1_id = gene1_record["mp_term_id"]
+            gene2_id = gene2_record["mp_term_id"]
+            sim = get_similarity_of_terms(gene1_id, gene2_id, ic_by_term, similarity_of_mp_term_id_pairs)
+
+            # Adjust score by zygosity, life stage, sexual dimorphism
+            gene1_zygosity = gene1_record["zygosity"]
+            gene2_zygosity = gene2_record["zygosity"]
+            gene1_life_stage = gene1_record["life_stage"]
+            gene2_life_stage = gene2_record["life_stage"]
+            gene1_sexual_dimorphism = gene1_record.get("sexual_dimorphism", "")
+            gene2_sexual_dimorphism = gene2_record.get("sexual_dimorphism", "")
+
+            adjusted_sim = adjust_score_by_annotations(
+                sim,
+                gene1_zygosity,
+                gene2_zygosity,
+                gene1_life_stage,
+                gene2_life_stage,
+                gene1_sexual_dimorphism,
+                gene2_sexual_dimorphism,
+            )
+            row.append(adjusted_sim)
+
+        weighted_similarity_matrix.append(row)
+
+    return np.array(weighted_similarity_matrix)
+
+
+def scale_sim_by_phenodigm(
+    weighted_similarity_matrix: np.ndarray,
+    term1_ids: set[str],
+    term2_ids: set[str],
+    ic_by_term: dict[str, float],
+) -> tuple[float, float, float]:
+    """Scale similarity scores based on Phenodigm method."""
+
+    rows_max = weighted_similarity_matrix.max(axis=1)
+    cols_max = weighted_similarity_matrix.max(axis=0)
+
+    max_score_real_model = np.max([np.max(rows_max), np.max(cols_max)])
+    ave_score_real_model = (rows_max.sum() + cols_max.sum()) / (len(rows_max) + len(cols_max))
+
+    term1_ic_scores = [ic_by_term[term1_id] for term1_id in term1_ids]
+    term2_ic_scores = [ic_by_term[term2_id] for term2_id in term2_ids]
+
+    term1_ic_scores_max = max(term1_ic_scores) if term1_ic_scores else 0.0
+    term2_ic_scores_max = max(term2_ic_scores) if term2_ic_scores else 0.0
+
+    max_score_best_model = max(term1_ic_scores_max, term2_ic_scores_max)
+    ave_score_best_model_term1 = sum(term1_ic_scores) / len(term1_ic_scores) if term1_ic_scores else 0.0
+    ave_score_best_model_term2 = sum(term2_ic_scores) / len(term2_ic_scores) if term2_ic_scores else 0.0
+
+    max_score = max_score_real_model / max_score_best_model
+    ave_score_term1 = ave_score_real_model / ave_score_best_model_term1
+    ave_score_term2 = ave_score_real_model / ave_score_best_model_term2
+
+    score_term1 = 100 * (max_score + ave_score_term1) / 2
+    score_term2 = 100 * (max_score + ave_score_term2) / 2
+    score_total = (score_term1 + score_term2) / 2
+
+    return score_total, score_term1, score_term2
