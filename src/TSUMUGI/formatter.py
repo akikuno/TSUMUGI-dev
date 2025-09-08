@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from itertools import groupby
+from operator import itemgetter
 
 import polars as pl
 
@@ -68,27 +69,30 @@ def format_phenodigm_record(records_phenodigm: list[dict[str, str | float]]) -> 
 ###########################################################
 # Others
 ###########################################################
-def distinct_records(records: list[dict[str, str | float]]) -> list[dict[str, str | float]]:
+
+
+def get_distinct_records_with_max_effect(
+    records: list[dict[str, str | float]], unique_keys: list[str]
+) -> list[dict[str, str | float]]:
     """
-    Return a list of distinct records with the maximum effect size.
-    Note: effect size is already absolute.
+    Groups records by the specified keys and returns the record with the maximum
+    effect_size from each group.
+    Note: effect_size is already an absolute value.
     """
+    # Dynamically define the key function based on unique_keys.
+    record_key_getter = itemgetter(*unique_keys)
 
-    def record_key(x: dict[str, str | float]) -> tuple[str, str, str, str]:
-        return (x["marker_symbol"], x["mp_term_name"], x["zygosity"], x["life_stage"])
+    # Pre-sort by the same key for groupby to function correctly.
+    records_sorted = sorted(records, key=record_key_getter)
 
-    records_distinct = []
-    records_sorted = sorted(records, key=record_key)
+    distinct_records = []
+    for _, group in groupby(records_sorted, key=record_key_getter):
+        # Find the record with the maximum effect_size within the group.
+        # Use .get() to safely handle cases where the 'effect_size' key might be missing.
+        record_with_max_effect = max(group, key=lambda r: r.get("effect_size", -1))
+        distinct_records.append(record_with_max_effect)
 
-    for _, group in groupby(records_sorted, key=record_key):
-        max_effect_size = -1
-        for record in group:
-            if record["effect_size"] > max_effect_size:
-                records_max = record
-                max_effect_size = record["effect_size"]
-        records_distinct.append(records_max)
-
-    return records_distinct
+    return distinct_records
 
 
 def fill_nulls_to_nan_str(df_polars: pl.DataFrame) -> pl.DataFrame:

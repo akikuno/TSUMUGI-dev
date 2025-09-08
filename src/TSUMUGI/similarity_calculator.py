@@ -248,8 +248,12 @@ def apply_phenodigm_scaling(
 ) -> dict[str, float]:
     """Apply Phenodigm scaling method to similarity scores."""
 
-    gene1_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids]
-    gene2_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene2_mp_term_ids]
+    gene1_information_content_scores = [
+        term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids
+    ]
+    gene2_information_content_scores = [
+        term_pair_similarity_map[frozenset([term_id])] for term_id in gene2_mp_term_ids
+    ]
 
     max_gene1_information_content = max(gene1_information_content_scores) if gene1_information_content_scores else 0.0
     max_gene2_information_content = max(gene2_information_content_scores) if gene2_information_content_scores else 0.0

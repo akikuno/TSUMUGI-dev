@@ -159,6 +159,16 @@ for record in records_significants:
     record["impc_url_phenotype"] = f"https://www.mousephenotype.org/data/phenotypes/{mp_term_id}"
 
 
+unique_keys = [
+    "marker_symbol",
+    "mp_term_id",
+    "zygosity",
+    "life_stage",
+    "sexual_dimorphism",
+]
+
+records_significants = formatter.get_distinct_records_with_max_effect(records_significants, unique_keys)
+
 # Cache results
 
 pl.DataFrame(records_significants).write_csv(
