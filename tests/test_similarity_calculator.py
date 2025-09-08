@@ -1,8 +1,10 @@
 import math
 
+import numpy as np
 import pytest
 
 from TSUMUGI.similarity_calculator import (
+    apply_phenodigm_scaling,
     build_term_hierarchy,
     calculate_information_content,
     calculate_resnik_similarity,
@@ -256,3 +258,83 @@ def test_calculate_resnik_similarity(sample_ontology, term1, term2, mica_id):
     # This call was already correct as it uses all the arguments in 'maps'
     result = calculate_resnik_similarity(term1, term2, **maps)
     assert result == pytest.approx(expected_similarity)
+
+
+def test_apply_phenodigm_scaling_identical_phenotypes():
+    """
+    Test Case 1: 完全に一致する表現型セットを持つ場合、スコアが100になることをテスト 💯
+    """
+    # --- データ準備 ---
+    gene1_mp_term_ids = {"MP:A", "MP:B"}
+    gene2_mp_term_ids = {"MP:A", "MP:B"}
+
+    term_pair_similarity_map = {
+        frozenset(["MP:A"]): 2.0,
+        frozenset(["MP:B"]): 4.0,
+        frozenset(["MP:A", "MP:B"]): 1.0,
+    }
+
+    weighted_similarity_matrix = np.array([[2.0, 1.0], [1.0, 4.0]])
+
+    # --- テスト実行 ---
+    result = apply_phenodigm_scaling(
+        weighted_similarity_matrix, gene1_mp_term_ids, gene2_mp_term_ids, term_pair_similarity_map
+    )
+
+    # --- 検証 ---
+    # スコアが100になるはず
+    assert result == pytest.approx(100.0)
+
+
+def test_apply_phenodigm_scaling_disjoint_phenotypes():
+    """
+    Test Case 2: 完全に無関係な表現型セットを持つ場合、スコアが0になることをテスト 🅾️
+    """
+    # --- データ準備 ---
+    gene1_mp_term_ids = {"MP:A", "MP:B"}
+    gene2_mp_term_ids = {"MP:C", "MP:D"}
+
+    term_pair_similarity_map = {
+        frozenset(["MP:A"]): 2.0,
+        frozenset(["MP:B"]): 4.0,
+        frozenset(["MP:C"]): 3.0,
+        frozenset(["MP:D"]): 5.0,
+    }
+
+    weighted_similarity_matrix = np.array([[0.0, 0.0], [0.0, 0.0]])
+
+    # --- テスト実行 ---
+    result = apply_phenodigm_scaling(
+        weighted_similarity_matrix, gene1_mp_term_ids, gene2_mp_term_ids, term_pair_similarity_map
+    )
+
+    # --- 検証 ---
+    # スコアが0になるはず
+    assert result == pytest.approx(0.0)
+
+
+def test_apply_phenodigm_scaling_average_score_50():
+    """
+    Test Case 3: 実測値が理論値のちょうど半分で、スコアが50になるケースをテスト 🌗
+    """
+    # --- データ準備 ---
+    gene1_mp_term_ids = {"MP:A"}
+    gene2_mp_term_ids = {"MP:B"}
+
+    term_pair_similarity_map = {
+        frozenset(["MP:A"]): 4.0,  # IC(A)
+        frozenset(["MP:B"]): 4.0,  # IC(B)
+        # sim(A,B)は weighted_similarity_matrix で直接指定
+    }
+
+    weighted_similarity_matrix = np.array([[2.0]])
+
+    # --- テスト実行 ---
+    result = apply_phenodigm_scaling(
+        weighted_similarity_matrix, gene1_mp_term_ids, gene2_mp_term_ids, term_pair_similarity_map
+    )
+
+    # --- 検証 ---
+    # 正規化スコアがそれぞれ0.5になり、最終スコアは50になるはず
+    # phenodigm_score = 100 * ( (2/4) + (2/4) ) / 2 = 50.0
+    assert result == pytest.approx(50.0)

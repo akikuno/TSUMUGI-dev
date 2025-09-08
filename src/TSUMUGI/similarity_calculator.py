@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import defaultdict
-from itertools import combinations
+from itertools import combinations, combinations_with_replacement
 from pathlib import Path
 
 import numpy as np
@@ -159,7 +159,7 @@ def calculate_all_pairwise_similarities(
 
     term_pair_similarity_map = {}
     for term1_id, term2_id in tqdm(
-        combinations(all_term_ids, 2), total=(len(all_term_ids) * (len(all_term_ids) - 1)) // 2
+        combinations_with_replacement(all_term_ids, 2), total=(len(all_term_ids) * (len(all_term_ids) - 1)) // 2
     ):
         term_pair_key = frozenset([term1_id, term2_id])
         term_pair_similarity_map[term_pair_key] = calculate_resnik_similarity(
@@ -172,35 +172,6 @@ def calculate_all_pairwise_similarities(
 ###########################################################
 # Phenodigm scaling
 ###########################################################
-
-
-def calculate_information_content_map(
-    term_ids: set[str],
-    child_term_map: dict[str, list[str]],
-) -> dict[str, float]:
-    """Calculate information content for each term ID and return as a map."""
-
-    total_term_count = len(term_ids)
-    term_information_content_map = {}
-    for term_id in term_ids:
-        term_information_content_map[term_id] = calculate_information_content(
-            term_id, child_term_map, total_term_count
-        )
-
-    return term_information_content_map
-
-
-def calculate_term_pair_similarity(
-    term_id_1: str,
-    term_id_2: str,
-    term_information_content_map: dict[str, float],
-    term_pair_similarity_map: dict[frozenset[str], float],
-) -> float:
-    """Calculate similarity score between two terms based on their information content values."""
-    if term_id_1 == term_id_2:
-        return term_information_content_map.get(term_id_1, 0.0)
-    else:
-        return term_pair_similarity_map.get(frozenset([term_id_1, term_id_2]), 0.0)
 
 
 def adjust_similarity_by_metadata(
@@ -234,7 +205,6 @@ def adjust_similarity_by_metadata(
 def calculate_weighted_similarity_matrix(
     gene1_records: list[dict[str, str | float]],
     gene2_records: list[dict[str, str | float]],
-    term_information_content_map: dict[str, float],
     term_pair_similarity_map: dict[frozenset[str], float],
 ) -> np.ndarray:
     """Calculate weighted similarity matrix between two genes based on their phenotype records."""
@@ -244,9 +214,7 @@ def calculate_weighted_similarity_matrix(
         for gene2_record in gene2_records:
             gene1_term_id = gene1_record["mp_term_id"]
             gene2_term_id = gene2_record["mp_term_id"]
-            similarity = calculate_term_pair_similarity(
-                gene1_term_id, gene2_term_id, term_information_content_map, term_pair_similarity_map
-            )
+            similarity = term_pair_similarity_map.get(frozenset([gene1_term_id, gene2_term_id]), 0.0)
 
             # Adjust score by zygosity, life stage, sexual dimorphism
             gene1_zygosity = gene1_record["zygosity"]
@@ -274,44 +242,71 @@ def calculate_weighted_similarity_matrix(
 
 def apply_phenodigm_scaling(
     weighted_similarity_matrix: np.ndarray,
-    gene1_ids: set[str],
-    gene2_ids: set[str],
-    term_information_content_map: dict[str, float],
-) -> tuple[float, float, float]:
+    gene1_mp_term_ids: set[str],
+    gene2_mp_term_ids: set[str],
+    term_pair_similarity_map: dict[frozenset[str], float],
+) -> dict[str, float]:
     """Apply Phenodigm scaling method to similarity scores."""
+
+    gene1_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids]
+    gene2_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene2_mp_term_ids]
+
+    max_gene1_information_content = max(gene1_information_content_scores) if gene1_information_content_scores else 0.0
+    max_gene2_information_content = max(gene2_information_content_scores) if gene2_information_content_scores else 0.0
 
     row_max_similarities = weighted_similarity_matrix.max(axis=1)
     column_max_similarities = weighted_similarity_matrix.max(axis=0)
 
     max_score_actual = np.max([np.max(row_max_similarities), np.max(column_max_similarities)])
-    average_score_actual = (row_max_similarities.sum() + column_max_similarities.sum()) / (
-        len(row_max_similarities) + len(column_max_similarities)
+    average_score_actual = (
+        np.mean(np.concatenate([row_max_similarities, column_max_similarities]))
+        if (len(row_max_similarities) > 0 or len(column_max_similarities) > 0)
+        else 0.0
     )
-
-    gene1_information_content_scores = [term_information_content_map[term_id] for term_id in gene1_ids]
-    gene2_information_content_scores = [term_information_content_map[term_id] for term_id in gene2_ids]
-
-    max_gene1_information_content = max(gene1_information_content_scores) if gene1_information_content_scores else 0.0
-    max_gene2_information_content = max(gene2_information_content_scores) if gene2_information_content_scores else 0.0
 
     max_score_theoretical = max(max_gene1_information_content, max_gene2_information_content)
-    average_score_theoretical_gene1 = (
-        sum(gene1_information_content_scores) / len(gene1_information_content_scores)
-        if gene1_information_content_scores
-        else 0.0
-    )
-    average_score_theoretical_gene2 = (
-        sum(gene2_information_content_scores) / len(gene2_information_content_scores)
-        if gene2_information_content_scores
+
+    average_score_theoretical = float(
+        np.mean(gene1_information_content_scores + gene2_information_content_scores)
+        if (gene1_information_content_scores or gene2_information_content_scores)
         else 0.0
     )
 
-    normalized_max_score = max_score_actual / max_score_theoretical
-    normalized_average_score_gene1 = average_score_actual / average_score_theoretical_gene1
-    normalized_average_score_gene2 = average_score_actual / average_score_theoretical_gene2
+    normalized_max_score = max_score_actual / max_score_theoretical if max_score_theoretical > 0 else 0.0
+    normalized_average_score = (
+        average_score_actual / average_score_theoretical if average_score_theoretical > 0 else 0.0
+    )
 
-    phenodigm_score_gene1 = 100 * (normalized_max_score + normalized_average_score_gene1) / 2
-    phenodigm_score_gene2 = 100 * (normalized_max_score + normalized_average_score_gene2) / 2
-    phenodigm_average_score = (phenodigm_score_gene1 + phenodigm_score_gene2) / 2
+    phenodigm_score = 100 * (normalized_max_score + normalized_average_score) / 2
 
-    return phenodigm_average_score, phenodigm_score_gene1, phenodigm_score_gene2
+    return float(phenodigm_score)
+
+
+def wrap_calculate_phenodigm_score(
+    records_significants: list[dict[str, str | float]],
+    term_pair_similarity_map: dict[frozenset[str], float],
+) -> dict[frozenset, float]:
+    """Wrapper function to calculate Phenodigm score between two genes."""
+    gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
+    for record in records_significants:
+        gene_records_map[record["marker_symbol"]].append(record)
+
+    all_gene_symbols = gene_records_map.keys()
+    phenodigm_scores = {}
+    for gene1_symbol, gene2_symbol in tqdm(
+        combinations(all_gene_symbols, 2), total=(len(all_gene_symbols) * (len(all_gene_symbols) - 1)) // 2
+    ):
+        gene1_records = gene_records_map[gene1_symbol]
+        gene2_records = gene_records_map[gene2_symbol]
+        gene1_mp_term_ids = {record["mp_term_id"] for record in gene1_records}
+        gene2_mp_term_ids = {record["mp_term_id"] for record in gene2_records}
+
+        weighted_similarity_matrix = calculate_weighted_similarity_matrix(
+            gene1_records, gene2_records, term_pair_similarity_map
+        )
+
+        phenodigm_scores[frozenset([gene1_symbol, gene2_symbol])] = apply_phenodigm_scaling(
+            weighted_similarity_matrix, gene1_mp_term_ids, gene2_mp_term_ids, term_pair_similarity_map
+        )
+
+    return phenodigm_scores

@@ -3,13 +3,14 @@ from __future__ import annotations
 import csv
 import io
 import logging
+import pickle
 import re
 from collections.abc import Iterator
 from pathlib import Path
 
 import polars as pl
 
-from TSUMUGI import annotator, directory_manager, filterer, formatter, io_handler
+from TSUMUGI import annotator, directory_manager, filterer, formatter, io_handler, similarity_calculator
 
 IMPC_RELEASE = 23.0
 
@@ -43,6 +44,16 @@ if not Path(TEMPDIR, "impc_phenodigm.csv").exists():
     reader = csv.reader(io.StringIO(phenodigm_tsv), delimiter="\t")
     phenodigm_csv = (row for row in reader)
     io_handler.save_csv(phenodigm_csv, Path(TEMPDIR, "impc_phenodigm.csv"))
+
+
+if not Path(TEMPDIR, "mp.obo").exists():
+    url_mp_obo = "https://purl.obolibrary.org/obo/mp.obo"
+
+    error_message = "Please manually download mp.obo data from https://purl.obolibrary.org/obo/mp.obo."
+
+    mp_obo = io_handler.download_file(url_mp_obo, error_message)
+    Path(TEMPDIR, "mp.obo").write_text(mp_obo)
+
 
 if not Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv").exists():
     url_impc = f"https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-{IMPC_RELEASE}/results/statistical-results-ALL.csv.gz"
@@ -161,7 +172,23 @@ pl.DataFrame(records_significants).write_parquet(
 # Calculate phenotype similarity
 # =========================================
 
+all_term_ids = {r["mp_term_id"] for r in records_significants}
 
+logging.info(f"Calculating pairwise similarity for {len(all_term_ids)} terms...")
+
+# Cached
+term_pair_similarity_map = similarity_calculator.calculate_all_pairwise_similarities(
+    Path(TEMPDIR / "mp.obo"), all_term_ids
+)
+
+logging.info(f"Calculating phenodigm similarity for {len(records_significants)} records...")
+phenodigm_scores: dict[frozenset[str], float] = similarity_calculator.wrap_calculate_phenodigm_score(
+    records_significants, term_pair_similarity_map
+)
+
+# Cache results
+with open(Path(TEMPDIR / "phenodigm_scores.pkl"), "wb") as f:
+    pickle.dump(phenodigm_scores, f)
 
 # def execute():
 #     pass
