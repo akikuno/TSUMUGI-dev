@@ -248,12 +248,8 @@ def apply_phenodigm_scaling(
 ) -> dict[str, float]:
     """Apply Phenodigm scaling method to similarity scores."""
 
-    gene1_information_content_scores = [
-        term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids
-    ]
-    gene2_information_content_scores = [
-        term_pair_similarity_map[frozenset([term_id])] for term_id in gene2_mp_term_ids
-    ]
+    gene1_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids]
+    gene2_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene2_mp_term_ids]
 
     max_gene1_information_content = max(gene1_information_content_scores) if gene1_information_content_scores else 0.0
     max_gene2_information_content = max(gene2_information_content_scores) if gene2_information_content_scores else 0.0
@@ -286,7 +282,7 @@ def apply_phenodigm_scaling(
     return float(phenodigm_score)
 
 
-def wrap_calculate_phenodigm_score(
+def calculate_phenodigm_score(
     records_significants: list[dict[str, str | float]],
     term_pair_similarity_map: dict[frozenset[str], float],
 ) -> dict[frozenset, float]:
@@ -314,3 +310,44 @@ def wrap_calculate_phenodigm_score(
         )
 
     return phenodigm_scores
+
+
+def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | float]]) -> dict[frozenset, float]:
+    """Calculate the number of shared phenotypes between two genes."""
+    gene_phenotypes_map = defaultdict(set)
+    for record in records_significants:
+        gene_phenotypes_map[record["marker_symbol"]].add(
+            frozenset(
+                [record["mp_term_id"], record["zygosity"], record["life_stage"], record.get("sexual_dimorphism", "")]
+            )
+        )
+    num_shared_phenotypes = {}
+    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
+        phenotypes_gene1 = gene_phenotypes_map[gene1]
+        phenotypes_gene2 = gene_phenotypes_map[gene2]
+
+        num_shared_phenotypes[frozenset([gene1, gene2])] = len(phenotypes_gene1.intersection(phenotypes_gene2))
+
+    return num_shared_phenotypes
+
+
+def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]) -> dict[frozenset, float]:
+    """Calculate the number of shared phenotypes between two genes."""
+    gene_phenotypes_map = defaultdict(set)
+    for record in records_significants:
+        gene_phenotypes_map[record["marker_symbol"]].add(
+            frozenset(
+                [record["mp_term_id"], record["zygosity"], record["life_stage"], record.get("sexual_dimorphism", "")]
+            )
+        )
+
+    jaccard_indices = {}
+    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
+        phenotypes_gene1 = gene_phenotypes_map[gene1]
+        phenotypes_gene2 = gene_phenotypes_map[gene2]
+
+        intersection = phenotypes_gene1.intersection(phenotypes_gene2)
+        union = phenotypes_gene1.union(phenotypes_gene2)
+        jaccard_indices[frozenset([gene1, gene2])] = len(intersection) / len(union) if union else 0
+
+    return jaccard_indices

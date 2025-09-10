@@ -191,15 +191,27 @@ term_pair_similarity_map = similarity_calculator.calculate_all_pairwise_similari
     Path(TEMPDIR / "mp.obo"), all_term_ids
 )
 
+# Cache results
+with open(Path(TEMPDIR / "term_pair_similarity_map.pkl"), "wb") as f:
+    pickle.dump(term_pair_similarity_map, f)
+
 logging.info(f"Calculating phenodigm similarity for {len(records_significants)} records...")
-phenodigm_scores: dict[frozenset[str], float] = similarity_calculator.wrap_calculate_phenodigm_score(
+phenodigm_scores: dict[frozenset[str], float] = similarity_calculator.calculate_phenodigm_score(
     records_significants, term_pair_similarity_map
 )
+
+num_shared_phenotypes = similarity_calculator.calculate_num_shared_phenotypes(records_significants)
+jaccard_indices = similarity_calculator.calculate_jaccard_indices(records_significants)
 
 # Cache results
 with open(Path(TEMPDIR / "phenodigm_scores.pkl"), "wb") as f:
     pickle.dump(phenodigm_scores, f)
 
+with open(Path(TEMPDIR / "num_shared_phenotypes.pkl"), "wb") as f:
+    pickle.dump(num_shared_phenotypes, f)
+
+with open(Path(TEMPDIR / "jaccard_indices.pkl"), "wb") as f:
+    pickle.dump(jaccard_indices, f)
 # def execute():
 #     pass
 
