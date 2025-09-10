@@ -245,7 +245,7 @@ def apply_phenodigm_scaling(
     gene1_mp_term_ids: set[str],
     gene2_mp_term_ids: set[str],
     term_pair_similarity_map: dict[frozenset[str], float],
-) -> dict[str, float]:
+) -> int:
     """Apply Phenodigm scaling method to similarity scores."""
 
     gene1_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids]
@@ -279,13 +279,13 @@ def apply_phenodigm_scaling(
 
     phenodigm_score = 100 * (normalized_max_score + normalized_average_score) / 2
 
-    return float(phenodigm_score)
+    return int(phenodigm_score)
 
 
 def calculate_phenodigm_score(
     records_significants: list[dict[str, str | float]],
     term_pair_similarity_map: dict[frozenset[str], float],
-) -> dict[frozenset, float]:
+) -> dict[frozenset, int]:
     """Wrapper function to calculate Phenodigm score between two genes."""
     gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
     for record in records_significants:
@@ -312,7 +312,7 @@ def calculate_phenodigm_score(
     return phenodigm_scores
 
 
-def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | float]]) -> dict[frozenset, float]:
+def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | float]]) -> dict[frozenset, int]:
     """Calculate the number of shared phenotypes between two genes."""
     gene_phenotypes_map = defaultdict(set)
     for record in records_significants:
@@ -331,7 +331,7 @@ def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | f
     return num_shared_phenotypes
 
 
-def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]) -> dict[frozenset, float]:
+def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]) -> dict[frozenset, int]:
     """Calculate the number of shared phenotypes between two genes."""
     gene_phenotypes_map = defaultdict(set)
     for record in records_significants:
@@ -348,6 +348,10 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
 
         intersection = phenotypes_gene1.intersection(phenotypes_gene2)
         union = phenotypes_gene1.union(phenotypes_gene2)
-        jaccard_indices[frozenset([gene1, gene2])] = len(intersection) / len(union) if union else 0
+        # 0-100 scale
+        jaccard_indices[frozenset([gene1, gene2])] = int(len(intersection) / len(union) * 100 if union else 0)
 
     return jaccard_indices
+
+
+
