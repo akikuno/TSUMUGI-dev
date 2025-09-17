@@ -248,8 +248,12 @@ def apply_phenodigm_scaling(
 ) -> int:
     """Apply Phenodigm scaling method to similarity scores."""
 
-    gene1_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids]
-    gene2_information_content_scores = [term_pair_similarity_map[frozenset([term_id])] for term_id in gene2_mp_term_ids]
+    gene1_information_content_scores = [
+        term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids
+    ]
+    gene2_information_content_scores = [
+        term_pair_similarity_map[frozenset([term_id])] for term_id in gene2_mp_term_ids
+    ]
 
     max_gene1_information_content = max(gene1_information_content_scores) if gene1_information_content_scores else 0.0
     max_gene2_information_content = max(gene2_information_content_scores) if gene2_information_content_scores else 0.0
@@ -322,7 +326,9 @@ def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | f
             )
         )
     num_shared_phenotypes = {}
-    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
+    for gene1, gene2 in tqdm(
+        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
+    ):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
@@ -342,7 +348,9 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
         )
 
     jaccard_indices = {}
-    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
+    for gene1, gene2 in tqdm(
+        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
+    ):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
@@ -352,6 +360,3 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
         jaccard_indices[frozenset([gene1, gene2])] = int(len(intersection) / len(union) * 100 if union else 0)
 
     return jaccard_indices
-
-
-

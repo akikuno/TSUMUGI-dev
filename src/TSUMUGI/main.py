@@ -18,7 +18,7 @@ IMPC_RELEASE = 23.0
 # Preparation
 ###########################################################
 
-ROOT_DIR = Path(".")
+ROOT_DIR = Path("TSUMUGI-dev")
 sub_dirs: list[str] = ["data/.temp"]
 
 directory_manager.make_directories(ROOT_DIR, sub_dirs)
