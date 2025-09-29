@@ -9,7 +9,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-def parse_obo_file(file_path: str | Path) -> dict[str, dict]:
+def parse_obo_file(file_path: str | Path) -> dict[str, dict[str, str]]:
     """Parse ontology file (OBO format) and extract term information.
     Returns dict with keys: id, name, is_a (parent terms), is_obsolete
     """
@@ -148,10 +148,29 @@ def calculate_resnik_similarity(
     return max_information_content
 
 
+def extract_common_ancestor(
+    term1_id: str,
+    term2_id: str,
+    parent_term_map: dict[str, list[str]],
+    child_term_map: dict[str, list[str]],
+    total_term_count: int,
+) -> str | None:
+    """Extract the most specific common ancestor (MSCA) of two terms."""
+    if term1_id == term2_id:
+        return term1_id
+    common_ancestors = find_common_ancestors(term1_id, term2_id, parent_term_map)
+    if not common_ancestors:
+        return None
+    # Return the most specific common ancestor (MSCA)
+    return max(
+        common_ancestors, key=lambda ancestor: calculate_information_content(ancestor, child_term_map, total_term_count)
+    )
+
+
 def calculate_all_pairwise_similarities(
     ontology_file_path: str | Path,
     all_term_ids: set[str],
-) -> dict[frozenset[str], float]:
+) -> dict[frozenset[str], dict[str, float]]:
     """Calculate pairwise Resnik similarities for a list of terms."""
     ontology_terms = parse_obo_file(ontology_file_path)
     total_term_count = len(ontology_terms)
@@ -162,15 +181,60 @@ def calculate_all_pairwise_similarities(
         combinations_with_replacement(all_term_ids, 2), total=(len(all_term_ids) * (len(all_term_ids) - 1)) // 2
     ):
         term_pair_key = frozenset([term1_id, term2_id])
-        term_pair_similarity_map[term_pair_key] = calculate_resnik_similarity(
-            term1_id, term2_id, parent_term_map, child_term_map, total_term_count
-        )
+        common_ancestor = extract_common_ancestor(term1_id, term2_id, parent_term_map, child_term_map, total_term_count)
+        similarity = calculate_resnik_similarity(term1_id, term2_id, parent_term_map, child_term_map, total_term_count)
+        term_pair_similarity_map[term_pair_key] = {common_ancestor: similarity}
 
     return term_pair_similarity_map
 
 
 ###########################################################
-# Phenodigm scaling
+# Common ancestor annotation
+###########################################################
+
+
+def annotate_phenotype_ancestors(
+    records_significants: list[dict[str, str | float]],
+    term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
+) -> dict[frozenset, list[dict[str, dict[str, str]]]]:
+    """Wrapper function to calculate Phenodigm score between two genes."""
+    gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
+    for record in records_significants:
+        gene_records_map[record["marker_symbol"]].append(record)
+
+    all_gene_symbols = gene_records_map.keys()
+    annotations = {"zygosity", "life_stage", "sexual_dimorphism"}
+    phenotype_ancestors = defaultdict(list)
+    for gene1_symbol, gene2_symbol in tqdm(
+        combinations(all_gene_symbols, 2), total=(len(all_gene_symbols) * (len(all_gene_symbols) - 1)) // 2
+    ):
+        gene1_records = gene_records_map[gene1_symbol]
+        gene2_records = gene_records_map[gene2_symbol]
+
+        for gene1_record in gene1_records:
+            for gene2_record in gene2_records:
+                gene1_mp_term_id = gene1_record["mp_term_id"]
+                gene2_mp_term_id = gene2_record["mp_term_id"]
+                common_ancestor = next(
+                    iter(term_pair_similarity_map[frozenset([gene1_mp_term_id, gene2_mp_term_id])].keys()), None
+                )
+                similarity = next(
+                    iter(term_pair_similarity_map[frozenset([gene1_mp_term_id, gene2_mp_term_id])].values()), 0.0
+                )
+
+                gene1_metadata = {k: v for k, v in gene1_record.items() if k in annotations}
+                gene2_metadata = {k: v for k, v in gene2_record.items() if k in annotations}
+
+                if common_ancestor and similarity > 0.0 and gene1_metadata == gene2_metadata:
+                    phenotype_annotation = {common_ancestor: gene1_metadata}
+
+                    phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])].append(phenotype_annotation)
+
+    return dict(phenotype_ancestors)
+
+
+###########################################################
+# Phenodigm score calculation
 ###########################################################
 
 
@@ -205,7 +269,7 @@ def adjust_similarity_by_metadata(
 def calculate_weighted_similarity_matrix(
     gene1_records: list[dict[str, str | float]],
     gene2_records: list[dict[str, str | float]],
-    term_pair_similarity_map: dict[frozenset[str], float],
+    term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
 ) -> np.ndarray:
     """Calculate weighted similarity matrix between two genes based on their phenotype records."""
     weighted_similarity_matrix = []
@@ -214,7 +278,10 @@ def calculate_weighted_similarity_matrix(
         for gene2_record in gene2_records:
             gene1_term_id = gene1_record["mp_term_id"]
             gene2_term_id = gene2_record["mp_term_id"]
-            similarity = term_pair_similarity_map.get(frozenset([gene1_term_id, gene2_term_id]), 0.0)
+            similarity = next(iter(term_pair_similarity_map[frozenset([gene1_term_id, gene2_term_id])].values()), 0.0)
+            if similarity == 0.0:
+                similarity_row.append(0.0)
+                continue
 
             # Adjust score by zygosity, life stage, sexual dimorphism
             gene1_zygosity = gene1_record["zygosity"]
@@ -244,15 +311,14 @@ def apply_phenodigm_scaling(
     weighted_similarity_matrix: np.ndarray,
     gene1_mp_term_ids: set[str],
     gene2_mp_term_ids: set[str],
-    term_pair_similarity_map: dict[frozenset[str], float],
+    term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
 ) -> int:
     """Apply Phenodigm scaling method to similarity scores."""
-
     gene1_information_content_scores = [
-        term_pair_similarity_map[frozenset([term_id])] for term_id in gene1_mp_term_ids
+        next(iter(term_pair_similarity_map[frozenset([term_id])].values()), 0.0) for term_id in gene1_mp_term_ids
     ]
     gene2_information_content_scores = [
-        term_pair_similarity_map[frozenset([term_id])] for term_id in gene2_mp_term_ids
+        next(iter(term_pair_similarity_map[frozenset([term_id])].values()), 0.0) for term_id in gene2_mp_term_ids
     ]
 
     max_gene1_information_content = max(gene1_information_content_scores) if gene1_information_content_scores else 0.0
@@ -288,7 +354,7 @@ def apply_phenodigm_scaling(
 
 def calculate_phenodigm_score(
     records_significants: list[dict[str, str | float]],
-    term_pair_similarity_map: dict[frozenset[str], float],
+    term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
 ) -> dict[frozenset, int]:
     """Wrapper function to calculate Phenodigm score between two genes."""
     gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
@@ -316,6 +382,11 @@ def calculate_phenodigm_score(
     return phenodigm_scores
 
 
+# -----------------------------------------------------------
+# Additional similarity evaluation metrics
+# -----------------------------------------------------------
+
+
 def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | float]]) -> dict[frozenset, int]:
     """Calculate the number of shared phenotypes between two genes."""
     gene_phenotypes_map = defaultdict(set)
@@ -326,9 +397,7 @@ def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | f
             )
         )
     num_shared_phenotypes = {}
-    for gene1, gene2 in tqdm(
-        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
-    ):
+    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
@@ -348,9 +417,7 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
         )
 
     jaccard_indices = {}
-    for gene1, gene2 in tqdm(
-        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
-    ):
+    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
