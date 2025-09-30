@@ -134,3 +134,49 @@ def read_pickle_iter(file_path: str | Path) -> Iterator[any]:
                 yield pickle.load(f)
             except EOFError:
                 break
+
+
+def parse_obo_file(file_path: str | Path) -> dict[str, dict[str, str]]:
+    """Parse ontology file (OBO format) and extract term information.
+    Returns dict with keys: id, name, is_a (parent terms), is_obsolete
+    """
+    ontology_terms = {}
+    current_term_data = None
+    with open(file_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+
+            if line == "[Term]":
+                current_term_data = {}
+                continue
+
+            if line.startswith("[") and line.endswith("]") and line != "[Term]":
+                current_term_data = None
+                continue
+
+            if current_term_data is None:
+                continue
+
+            if ":" in line:
+                key, value = line.split(":", 1)
+                key = key.strip()
+                value = value.strip()
+
+                if key == "id":
+                    current_term_data["id"] = value
+                elif key == "name":
+                    current_term_data["name"] = value
+                elif key == "is_a":
+                    if "is_a" not in current_term_data:
+                        current_term_data["is_a"] = []
+                    parent_id = value.split("!")[0].strip()
+                    current_term_data["is_a"].append(parent_id)
+                elif key == "is_obsolete":
+                    current_term_data["is_obsolete"] = value.lower() == "true"
+
+            if line == "" and current_term_data and "id" in current_term_data:
+                if not current_term_data.get("is_obsolete", False):
+                    ontology_terms[current_term_data["id"]] = current_term_data
+                current_term_data = None
+
+    return ontology_terms
