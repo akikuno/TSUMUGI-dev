@@ -16,7 +16,6 @@ from TSUMUGI.similarity_calculator import (
 )
 
 
-
 @pytest.fixture
 def sample_ontology():
     """
@@ -174,7 +173,7 @@ def test_apply_phenodigm_scaling_identical_phenotypes():
     term_pair_similarity_map = {
         frozenset(["MP:A"]): {"MP:A": 2.0},
         frozenset(["MP:B"]): {"MP:B": 4.0},
-        frozenset(["MP:A", "MP:B"]): {"MP:A":1.0},
+        frozenset(["MP:A", "MP:B"]): {"MP:A": 1.0},
     }
 
     weighted_similarity_matrix = np.array([[2.0, 1.0], [1.0, 4.0]])

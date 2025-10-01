@@ -181,9 +181,12 @@ def annotate_phenotype_ancestors(
                 gene2_metadata = {k: v for k, v in gene2_record.items() if k in annotations}
 
                 if common_ancestor and similarity > 0.0 and gene1_metadata == gene2_metadata:
-                    phenotype_annotation = {common_ancestor: gene1_metadata}
+                    phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])].append(
+                        {common_ancestor: gene1_metadata}
+                    )
 
-                    phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])].append(phenotype_annotation)
+        if not phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])]:
+            phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])].append({})
 
     return dict(phenotype_ancestors)
 

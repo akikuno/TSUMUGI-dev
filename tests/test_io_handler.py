@@ -102,4 +102,3 @@ def test_parse_obo_file(tmp_path, obo_content, expected_output):
     # 文字列のパスを引数にしてテスト
     result_from_str = parse_obo_file(str(p))
     assert result_from_str == expected_output
-
