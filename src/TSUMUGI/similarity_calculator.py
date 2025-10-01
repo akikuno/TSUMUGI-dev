@@ -3,7 +3,6 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 from itertools import combinations, combinations_with_replacement
-from pathlib import Path
 
 import numpy as np
 from tqdm import tqdm
@@ -117,7 +116,8 @@ def extract_common_ancestor(
         return None
     # Return the most specific common ancestor (MSCA)
     return max(
-        common_ancestors, key=lambda ancestor: calculate_information_content(ancestor, child_term_map, total_term_count)
+        common_ancestors,
+        key=lambda ancestor: calculate_information_content(ancestor, child_term_map, total_term_count),
     )
 
 
@@ -134,7 +134,9 @@ def calculate_all_pairwise_similarities(
         combinations_with_replacement(all_term_ids, 2), total=(len(all_term_ids) * (len(all_term_ids) - 1)) // 2
     ):
         term_pair_key = frozenset([term1_id, term2_id])
-        common_ancestor = extract_common_ancestor(term1_id, term2_id, parent_term_map, child_term_map, total_term_count)
+        common_ancestor = extract_common_ancestor(
+            term1_id, term2_id, parent_term_map, child_term_map, total_term_count
+        )
         similarity = calculate_resnik_similarity(term1_id, term2_id, parent_term_map, child_term_map, total_term_count)
         term_pair_similarity_map[term_pair_key] = {common_ancestor: similarity}
 
@@ -350,7 +352,9 @@ def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | f
             )
         )
     num_shared_phenotypes = {}
-    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
+    for gene1, gene2 in tqdm(
+        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
+    ):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
@@ -370,7 +374,9 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
         )
 
     jaccard_indices = {}
-    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
+    for gene1, gene2 in tqdm(
+        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
+    ):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
