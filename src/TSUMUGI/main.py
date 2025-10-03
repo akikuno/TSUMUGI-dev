@@ -13,7 +13,15 @@ from pathlib import Path
 
 import polars as pl
 
-from TSUMUGI import annotator, directory_manager, filterer, formatter, io_handler, similarity_calculator
+from TSUMUGI import (
+    annotator,
+    directory_manager,
+    filterer,
+    formatter,
+    io_handler,
+    network_constructor,
+    similarity_calculator,
+)
 
 TSUMUGI_VERSION = "1.0.0"
 IMPC_RELEASE = 23.0
@@ -277,11 +285,27 @@ with open(Path(TEMPDIR / "pair_similarity_annotations.pkl"), "wb") as f:
 # Generate network
 ###########################################################
 
-pair_similarity_annotations_non_zero = {
-    k: v for k, v in pair_similarity_annotations.items() if v["phenotype_similarity_score"] > 0
+pair_similarity_annotations_with_shared_phenotype = {
+    k: v for k, v in pair_similarity_annotations.items() if len(v["phenotype_shared_annotations"]) > 3
 }
 
 
+with open(Path(TEMPDIR / "impc_phenodigm.csv")) as f:
+    reader = csv.DictReader(f)
+    impc_disease = [record for record in reader if len(record["description"].split(" ")) == 3]
+
+output_dir = Path(TEMPDIR / "network" / "phenotype")
+output_dir.mkdir(parents=True, exist_ok=True)
+network_constructor.build_phenotype_network_json(
+    records_significants, pair_similarity_annotations_with_shared_phenotype, impc_disease, output_dir
+)
+
+output_dir = Path(TEMPDIR / "network" / "genesymbol")
+output_dir.mkdir(parents=True, exist_ok=True)
+
+network_constructor.build_gene_network_json(
+    records_significants, pair_similarity_annotations_with_shared_phenotype, impc_disease, output_dir
+)
 # def execute():
 #     pass
 

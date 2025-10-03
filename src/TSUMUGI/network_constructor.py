@@ -1,0 +1,444 @@
+from __future__ import annotations
+
+import gzip
+import json
+import math
+import random
+from collections import defaultdict
+from itertools import combinations
+from pathlib import Path
+
+from tqdm import tqdm
+
+random.seed(0)
+
+
+ZYGOSITY_MAP = {
+    "homozygote": "Homo",
+    "heterozygote": "Hetero",
+    "hemizygote": "Hemi",
+    "hom": "Homo",
+    "het": "Hetero",
+    "hem": "Hemi",
+}
+
+
+MAX_GENE_COUNT = 200
+GENE_COUNT_LOWER_BOUND = 150
+GENE_COUNT_UPPER_BOUND = 250
+
+###############################################################################
+# Format datasets
+###############################################################################
+
+
+def _create_annotation_string(*parts: str) -> str:
+    """空でない要素をカンマ区切りで結合する"""
+    return ", ".join(part for part in parts if part)
+
+
+# ----------------------------------------------------------
+# Format records_significants
+# ----------------------------------------------------------
+def format_records_significants(
+    records_significants: list[dict[str, str | float]],
+) -> dict[str, list[dict[str, str | float]]]:
+    gene_records_map = defaultdict(list)
+    for record in records_significants:
+        zygosity = ZYGOSITY_MAP.get(record["zygosity"], record["zygosity"])
+        life_stage = record.get("life_stage", "").capitalize()
+        sexual_dimorphism = record.get("sexual_dimorphism", "").capitalize()
+
+        annotation_str = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
+        phenotype = f"{record['mp_term_name']} ({annotation_str})"
+
+        effect_size = record["effect_size"] if not math.isnan(record["effect_size"]) else 0
+        effect_size_log = math.log(effect_size + 1)
+
+        gene_records_map[record["marker_symbol"]].append(
+            {
+                "mp_term_name": record["mp_term_name"],
+                "effect_size": effect_size,
+                "phenotype": phenotype,
+                "impc_url_gene": record["impc_url_gene"],
+                "impc_url_phenotype": record["impc_url_phenotype"],
+                "effect_size_log": effect_size_log,
+            }
+        )
+
+    return dict(gene_records_map)
+
+
+# ----------------------------------------------------------
+# Format biological annotations
+# ----------------------------------------------------------
+
+
+def format_pair_similarity_annotations(
+    pair_similarity_annotations: dict[frozenset[str], dict[str, list[dict[str, dict[str, str]] | float]]],
+) -> dict[frozenset[str], dict[str, list[str] | float]]:
+    pair_similarity_annotations_formatted = {}
+    for key, record in pair_similarity_annotations.items():
+        annotations_formatted = []
+        for phenotype_shared_annotation in record["phenotype_shared_annotations"]:
+            for mp_term_name, annotation in phenotype_shared_annotation.items():
+                zygosity = ZYGOSITY_MAP.get(annotation["zygosity"], annotation["zygosity"])
+                life_stage = annotation.get("life_stage", "").capitalize()
+                sexual_dimorphism = annotation.get("sexual_dimorphism", "").capitalize()
+
+                annotation_str = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
+                annotations_formatted.append(f"{mp_term_name} ({annotation_str})")
+
+        pair_similarity_annotations_formatted[key] = {
+            "phenotype_shared_annotations": annotations_formatted,
+            "phenotype_similarity_score": record["phenotype_similarity_score"],
+        }
+    return pair_similarity_annotations_formatted
+
+
+# ----------------------------------------------------------
+# Format impc_disease
+# ----------------------------------------------------------
+def format_impc_disease(
+    impc_disease: list[dict[str, str | float]],
+) -> dict[str, set[str]]:
+    # Remove records with invalid description
+    impc_disease = [record for record in impc_disease if len(record["description"].split(" ")) == 3]
+
+    # Format impc_disease
+    impc_disease_formatted = defaultdict(set)
+    for record in impc_disease:
+        description = record["description"]
+
+        marker_symbol = description.split("<")[0]
+        zygosity = description.split(" ")[1]
+        life_stage = description.split(" ")[2]
+
+        annotation = []
+
+        if zygosity == "hom":
+            zygosity = "Homo"
+        elif zygosity == "het":
+            zygosity = "Hetero"
+        elif zygosity == "hem":
+            zygosity = "Hemi"
+
+        life_stage = life_stage.capitalize()
+
+        annotation.append(zygosity)
+        annotation.append(life_stage)
+        annotation = ", ".join(annotation)
+        disease = f"{record['disorder_name']} ({annotation})"
+        impc_disease_formatted[marker_symbol].add(disease)
+
+    return dict(impc_disease_formatted)
+
+
+###############################################################################
+# Build network JSON
+###############################################################################
+
+
+def convert_to_nodes_json(
+    related_genes: set[str],
+    mp_term_name: str,
+    gene_records_map: dict[str, list[dict[str, str | float]]],
+    impc_disease_formatted: dict[str, set[str]],
+) -> list[dict[str, dict[str, str | list[str] | float]]]:
+    nodes_json = []
+    for gene in related_genes:
+        records: list[dict[str, str | float]] = gene_records_map.get(gene)
+
+        phenotypes: list[str] = [r["phenotype"] for r in records]
+        diseases: list[str] = list(impc_disease_formatted.get(gene, []))
+        node_color: float = next((r["effect_size"] for r in records if r["mp_term_name"] == mp_term_name), 0.0)
+
+        nodes_json.append(
+            {
+                "data": {
+                    "id": gene,
+                    "label": gene,
+                    "phenotype": phenotypes,
+                    "disease": diseases if diseases else "",
+                    "node_color": node_color,
+                }
+            }
+        )
+
+    return nodes_json
+
+
+def convert_to_edges_json(
+    related_genes: set[str],
+    pair_similarity_annotations: dict[frozenset, dict[str, list[dict[str, dict[str, str]] | float]]],
+) -> list[dict[str, dict[str, str | list[str] | float]]]:
+    edges_json = []
+    for gene1, gene2 in combinations(sorted(related_genes), 2):
+        if frozenset([gene1, gene2]) not in pair_similarity_annotations:
+            continue
+        pair_annotations = pair_similarity_annotations[frozenset([gene1, gene2])]
+        edges_json.append(
+            {
+                "data": {
+                    "source": gene1,
+                    "target": gene2,
+                    "phenotype": pair_annotations["phenotype_shared_annotations"],
+                    "edge_size": pair_annotations["phenotype_similarity_score"],
+                }
+            }
+        )
+    return edges_json
+
+
+def _find_optimal_scores(
+    sorted_scores,
+    related_genes,
+    pair_similarity_annotations,
+    low_threshold=GENE_COUNT_LOWER_BOUND,
+    high_threshold=GENE_COUNT_UPPER_BOUND,
+):
+    low = 0
+    high = len(sorted_scores) - 1
+    while low <= high:
+        mid = (low + high) // 2
+
+        count_genes = set()
+        for gene1, gene2 in combinations(sorted(related_genes), 2):
+            if frozenset([gene1, gene2]) not in pair_similarity_annotations:
+                continue
+            pair_annotations = pair_similarity_annotations[frozenset([gene1, gene2])]
+            if pair_annotations["phenotype_similarity_score"] >= sorted_scores[mid]:
+                count_genes.add(gene1)
+                count_genes.add(gene2)
+
+        n = len(count_genes)
+
+        if low_threshold <= n <= high_threshold:
+            return sorted_scores[mid]
+        elif n < low_threshold:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1
+
+
+def filter_related_genes(
+    records: list[dict[str, str | float]],
+    related_genes: set[str],
+    pair_similarity_annotations: dict[frozenset[str], dict[str, float]],
+    is_gene_network: bool = False,
+) -> set[str]:
+    """
+    Strategy:
+      1) If possible, select by a threshold on phenotype similarity score found via _find_optimal_scores().
+      2) Otherwise, rank by:
+         - effect size (desc),
+         - then number of shared phenotypes (desc),
+         - then phenotype similarity score (desc),
+         - then gene symbol (asc, for stability),
+         and take the top MAX_GENE_COUNT.
+    Notes:
+      - NaN effect sizes are treated as 0.
+      - For speed, pair stats are computed in a single pass over unique gene pairs.
+    """
+
+    # --- Compute maximum values per gene ---
+    phenotype_similarity_scores = []
+    gene_max_score = defaultdict(float)
+    gene_max_shared_phenotype = defaultdict(int)
+
+    for gene1, gene2 in combinations(sorted(related_genes), 2):
+        pair_key = frozenset([gene1, gene2])
+        if pair_key not in pair_similarity_annotations:
+            continue
+
+        pair_annotations = pair_similarity_annotations[pair_key]
+        score = pair_annotations["phenotype_similarity_score"]
+        num_shared_phenotypes = len(pair_annotations["phenotype_shared_annotations"])
+
+        phenotype_similarity_scores.append(score)
+
+        # Update maximum similarity score for each gene
+        gene_max_score[gene1] = max(gene_max_score[gene1], score)
+        gene_max_score[gene2] = max(gene_max_score[gene2], score)
+
+        # Update maximum number of shared phenotypes for each gene
+        gene_max_shared_phenotype[gene1] = max(gene_max_shared_phenotype[gene1], num_shared_phenotypes)
+        gene_max_shared_phenotype[gene2] = max(gene_max_shared_phenotype[gene2], num_shared_phenotypes)
+
+    # 1. Filter genes by phenotype similarity score
+    unique_phenotype_similarity_scores = sorted(set(phenotype_similarity_scores))
+
+    optimal_score = _find_optimal_scores(
+        unique_phenotype_similarity_scores,
+        related_genes,
+        pair_similarity_annotations,
+        low_threshold=GENE_COUNT_LOWER_BOUND,
+        high_threshold=GENE_COUNT_UPPER_BOUND,
+    )
+    if optimal_score > -1:
+        return {gene for gene, max_score in gene_max_score.items() if max_score >= optimal_score}
+
+    if is_gene_network is False:
+        # For gene networks, effect size is only 0 or 1, so skip effect size filtering
+
+        # Compute maximum effect size per gene
+        gene_max_effect_sizes = defaultdict(float)
+        for record in records:
+            gene = record["marker_symbol"]
+            if gene in related_genes:
+                effect_size = record["effect_size"] if not math.isnan(record["effect_size"]) else 0.0
+                gene_max_effect_sizes[gene] = max(gene_max_effect_sizes[gene], effect_size)
+
+        # 2. Filter genes by effect size
+        filtered_effect_sizes = {g: s for g, s in gene_max_effect_sizes.items() if g in related_genes}
+        gene_max_effect_sizes_sorted = sorted(filtered_effect_sizes.items(), key=lambda x: x[1], reverse=True)
+
+        # If the top MAX_GENE_COUNT entries have different effect sizes, return them
+        if len({score for _, score in gene_max_effect_sizes_sorted[:MAX_GENE_COUNT]}) > 1:
+            return {gene for gene, _ in gene_max_effect_sizes_sorted[:MAX_GENE_COUNT]}
+
+    # 3. Filter genes by number of shared phenotypes
+    filtered_shared_phenotypes = {g: s for g, s in gene_max_shared_phenotype.items() if g in related_genes}
+    gene_max_shared_phenotype_sorted = sorted(filtered_shared_phenotypes.items(), key=lambda x: x[1], reverse=True)
+    return {gene for gene, _ in gene_max_shared_phenotype_sorted[:MAX_GENE_COUNT]}
+
+
+def _prepare_data(records_significants, pair_similarity_annotations, impc_disease):
+    """各種データを整形して返す"""
+    gene_records_map = format_records_significants(records_significants)
+    pair_similarity_annotations_formatted = format_pair_similarity_annotations(pair_similarity_annotations)
+    impc_disease_formatted = format_impc_disease(impc_disease)
+    return gene_records_map, pair_similarity_annotations_formatted, impc_disease_formatted
+
+
+def build_phenotype_network_json(
+    records_significants: list[dict[str, str | float]], pair_similarity_annotations, impc_disease, output_dir
+) -> None:
+    gene_records_map, pair_similarity_annotations_formatted, impc_disease_formatted = _prepare_data(
+        records_significants, pair_similarity_annotations, impc_disease
+    )
+
+    phenotype_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
+    for record in records_significants:
+        phenotype_records_map[record["mp_term_name"]].append(record)
+    phenotype_records_map = dict(phenotype_records_map)
+
+    gene_lists = set()
+    for keys in pair_similarity_annotations_formatted.keys():
+        for gene in keys:
+            gene_lists.add(gene)
+
+    for mp_term_name in tqdm(phenotype_records_map.keys(), total=len(phenotype_records_map)):
+        records = phenotype_records_map[mp_term_name]
+        related_genes = {r["marker_symbol"] for r in records if r["marker_symbol"] in gene_lists}
+
+        if len(related_genes) < 2:
+            continue
+
+        if len(related_genes) > MAX_GENE_COUNT:
+            related_genes = filter_related_genes(records, related_genes, pair_similarity_annotations_formatted)
+
+        nodes_json = convert_to_nodes_json(related_genes, mp_term_name, gene_records_map, impc_disease_formatted)
+        edges_json = convert_to_edges_json(related_genes, pair_similarity_annotations_formatted)
+
+        network_json = nodes_json + edges_json
+
+        mp_term_name_underscore = mp_term_name.replace(" ", "_").replace("/", "_")
+        output_json = Path(output_dir / f"{mp_term_name_underscore}.json.gz")
+        with gzip.open(output_json, "wt", encoding="utf-8") as f:
+            json.dump(network_json, f, indent=4)
+
+
+def _build_node_info(
+    gene: str,
+    gene_records_map: dict[str, list[dict[str, str | float]]],
+    impc_disease_formatted: dict[str, set[str]],
+    target_gene: str,
+) -> dict[str, dict[str, str | list[str] | float]]:
+    phenotypes: list[str] = [r["phenotype"] for r in gene_records_map.get(gene, [])]
+    diseases: list[str] = list(impc_disease_formatted.get(gene, []))
+    node_color: float = 1.0 if target_gene == gene else 0.0
+
+    return {
+        "data": {
+            "id": gene,
+            "label": gene,
+            "phenotype": phenotypes,
+            "disease": diseases if diseases else "",
+            "node_color": node_color,
+        }
+    }
+
+
+def build_gene_network_json(
+    records_significants: list[dict[str, str | float]], pair_similarity_annotations, impc_disease, output_dir
+) -> None:
+    gene_records_map, pair_similarity_annotations_formatted, impc_disease_formatted = _prepare_data(
+        records_significants, pair_similarity_annotations, impc_disease
+    )
+
+    gene_lists = set()
+    for keys in pair_similarity_annotations_formatted.keys():
+        for gene in keys:
+            gene_lists.add(gene)
+
+    for target_gene in tqdm(gene_lists, total=len(gene_lists)):
+        related_pairs = []
+        for keys in pair_similarity_annotations_formatted.keys():
+            if target_gene not in keys:
+                continue
+            related_pairs.append(keys)
+
+        related_genes = set()
+        for genes in related_pairs:
+            gene1, gene2 = genes
+            related_genes.add(gene1)
+            related_genes.add(gene2)
+        # Skip if less than 2 related genes
+        if len(related_genes) < 2:
+            continue
+
+        # Filter genes if more than MAX_GENE_COUNT
+        if len(related_genes) > MAX_GENE_COUNT:
+            related_genes_filtered = filter_related_genes(
+                records_significants, related_genes, pair_similarity_annotations_formatted
+            )
+            related_genes_filtered.add(target_gene)
+            related_pairs = [pairs for pairs in related_pairs if all(gene in related_genes_filtered for gene in pairs)]
+
+        # Node
+        nodes_json = []
+        visited_genes = set()
+        for pair in related_pairs:
+            gene1, gene2 = pair
+            if gene1 not in visited_genes:
+                visited_genes.add(gene1)
+                node_json = _build_node_info(gene1, gene_records_map, impc_disease_formatted, target_gene)
+                nodes_json.append(node_json)
+            if gene2 not in visited_genes:
+                visited_genes.add(gene2)
+                node_json = _build_node_info(gene2, gene_records_map, impc_disease_formatted, target_gene)
+                nodes_json.append(node_json)
+
+        # Edges
+        edges_json = []
+        for pair in related_pairs:
+            gene1, gene2 = pair
+            phenotypes = pair_similarity_annotations_formatted[pair]["phenotype_shared_annotations"]
+            phenodigm_score = pair_similarity_annotations_formatted[pair]["phenotype_similarity_score"]
+            edges_json.append(
+                {
+                    "data": {
+                        "source": gene1,
+                        "target": gene2,
+                        "phenotype": phenotypes,
+                        "edge_size": phenodigm_score,
+                    }
+                }
+            )
+        network_json = nodes_json + edges_json
+
+        output_json = Path(output_dir / f"{target_gene}.json.gz")
+        with gzip.open(output_json, "wt", encoding="utf-8") as f:
+            json.dump(network_json, f, indent=4)
