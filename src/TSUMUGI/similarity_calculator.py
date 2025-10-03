@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import math
 from collections import defaultdict
 from itertools import combinations, combinations_with_replacement
@@ -153,6 +154,7 @@ def annotate_phenotype_ancestors(
     term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
 ) -> dict[frozenset, list[dict[str, dict[str, str]]]]:
     """Wrapper function to calculate Phenodigm score between two genes."""
+
     gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
     for record in records_significants:
         gene_records_map[record["marker_symbol"]].append(record)
@@ -166,6 +168,7 @@ def annotate_phenotype_ancestors(
         gene1_records = gene_records_map[gene1_symbol]
         gene2_records = gene_records_map[gene2_symbol]
 
+        appended_ancestors = set()
         for gene1_record in gene1_records:
             for gene2_record in gene2_records:
                 gene1_mp_term_id = gene1_record["mp_term_id"]
@@ -181,9 +184,12 @@ def annotate_phenotype_ancestors(
                 gene2_metadata = {k: v for k, v in gene2_record.items() if k in annotations}
 
                 if common_ancestor and similarity > 0.0 and gene1_metadata == gene2_metadata:
-                    phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])].append(
-                        {common_ancestor: gene1_metadata}
-                    )
+                    # Avoid duplicate entries
+                    ancestor_info = {common_ancestor: gene1_metadata}
+                    ancestor_info_json = json.dumps(ancestor_info, sort_keys=True)  # Use JSON string to add to set
+                    if ancestor_info_json not in appended_ancestors:
+                        appended_ancestors.add(ancestor_info_json)
+                        phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])].append(ancestor_info)
 
         if not phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])]:
             phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])].append({})

@@ -18,9 +18,9 @@ from TSUMUGI import annotator, directory_manager, filterer, formatter, io_handle
 TSUMUGI_VERSION = "1.0.0"
 IMPC_RELEASE = 23.0
 
-###########################################################
+############################################################
 # Preparation
-###########################################################
+############################################################
 
 ROOT_DIR = Path("TSUMUGI-dev")
 sub_dirs: list[str] = ["data/.temp"]
@@ -73,9 +73,10 @@ if not Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv").exists():
 records = io_handler.load_csv_as_dicts(Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv"))
 ontology_terms = io_handler.parse_obo_file(Path(TEMPDIR / "mp.obo"))
 
-# =========================================
-# Select colums, maintained mp term, and significant genes
-# =========================================
+###########################################################
+# Select columns, maintained mp term, and significant genes
+###########################################################
+
 logging.info("Selecting columns and significant genes...")
 
 columns = [
@@ -125,9 +126,9 @@ pl.DataFrame(records_significants).write_parquet(
     Path(TEMPDIR, f"statistical_significants_{IMPC_RELEASE}.parquet"),
 )
 
-# =========================================
+###########################################################
 # Annotate life stage, sexual dimorphisms, and human disease
-# =========================================
+###########################################################
 logging.info("Annotating life stage, sexual dimorphisms, and human disease...")
 
 embryo_assays = {
@@ -189,9 +190,9 @@ pl.DataFrame(records_significants).write_parquet(
 )
 pickle.dump(records_significants, open(Path(TEMPDIR / f"statistical_significants_annotated_{IMPC_RELEASE}.pkl"), "wb"))
 
-# =========================================
+###########################################################
 # Calculate phenotype similarity
-# =========================================
+###########################################################
 
 all_term_ids = {r["mp_term_id"] for r in records_significants}
 
@@ -211,8 +212,8 @@ with open(Path(TEMPDIR / "term_pair_similarity_map.pkl"), "wb") as f:
 # ----------------------------------------
 
 logging.info(f"Annotate phenotype ancestors for {len(records_significants)} records...")
-phenotype_ancestors: dict[frozenset[str], list[str]] = similarity_calculator.annotate_phenotype_ancestors(
-    records_significants, term_pair_similarity_map
+phenotype_ancestors: dict[frozenset, list[dict[str, dict[str, str]]]] = (
+    similarity_calculator.annotate_phenotype_ancestors(records_significants, term_pair_similarity_map)
 )
 # 20 min
 
@@ -262,7 +263,7 @@ pair_similarity_annotations = dict(pair_similarity_annotations)
 output_file = f"data/TSUMUGI_v{TSUMUGI_VERSION}_phenotype_similarity.jsonl.gz"
 with gzip.open(output_file, "wt", encoding="utf-8") as f:
     for genes, annotations in pair_similarity_annotations.items():
-        gene1, gene2 = sorted(genes)  # 並びを安定させる
+        gene1, gene2 = sorted(genes)
         record = {"gene1": gene1, "gene2": gene2, **annotations}
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
@@ -271,6 +272,14 @@ with open(Path(TEMPDIR / "pair_similarity_annotations.pkl"), "wb") as f:
     pickle.dump(pair_similarity_annotations, f)
 
 # 1 min
+
+###########################################################
+# Generate network
+###########################################################
+
+pair_similarity_annotations_non_zero = {
+    k: v for k, v in pair_similarity_annotations.items() if v["phenotype_similarity_score"] > 0
+}
 
 
 # def execute():
