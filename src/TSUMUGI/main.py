@@ -20,22 +20,18 @@ from TSUMUGI import (
     formatter,
     io_handler,
     network_constructor,
+    report_generator,
     similarity_calculator,
 )
-
-TSUMUGI_VERSION = "1.0.0"
-IMPC_RELEASE = 23.0
+from TSUMUGI.config import IMPC_RELEASE, ROOT_DIR, TEMPDIR, TSUMUGI_VERSION
 
 ############################################################
 # Preparation
 ############################################################
 
-ROOT_DIR = Path("TSUMUGI-dev")
 sub_dirs: list[str] = ["data/.temp"]
 
 directory_manager.make_directories(ROOT_DIR, sub_dirs)
-
-TEMPDIR = ROOT_DIR / Path("data/.temp")
 
 
 # Logging Config
@@ -310,6 +306,30 @@ network_constructor.build_gene_network_json(
     records_significants, pair_similarity_annotations_with_shared_phenotype, impc_disease, output_dir
 )
 
+###########################################################
+# Output reports
+###########################################################
+
+output_dir_reports = Path(TEMPDIR / "reports")  # reports for open
+output_dir_reports.mkdir(parents=True, exist_ok=True)
+
+output_dir_webapp = Path(TEMPDIR / "webapp")  # data for webapp
+output_dir_webapp.mkdir(parents=True, exist_ok=True)
+
+# available mp terms
+report_generator.write_available_mp_terms_txt(Path(output_dir_reports / "available_mp_terms.txt"))
+report_generator.write_available_mp_terms_json(Path(output_dir_webapp / "available_mp_terms.json"))
+
+# binary phenotypes
+report_generator.write_binary_phenotypes_txt(records_significants, Path(output_dir_reports / "binary_phenotypes.txt"))
+
+# available gene symbols
+report_generator.write_available_gene_symbols_txt(Path(output_dir_reports / "available_gene_symbols.txt"))
+
+# marker symbol to accession id
+report_generator.write_marker_symbol_accession_id_json(
+    records_significants, Path(output_dir_webapp / "marker_symbol_accession_id.json")
+)
 
 # def execute():
 #     pass
