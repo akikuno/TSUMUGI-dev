@@ -22,6 +22,7 @@ from TSUMUGI import (
     network_constructor,
     report_generator,
     similarity_calculator,
+    web_deployer,
 )
 from TSUMUGI.config import IMPC_RELEASE, ROOT_DIR, TEMPDIR, TSUMUGI_VERSION
 
@@ -307,29 +308,42 @@ network_constructor.build_gene_network_json(
 )
 
 ###########################################################
-# Output reports
+# Output data for web application
 ###########################################################
 
-output_dir_reports = Path(TEMPDIR / "reports")  # reports for open
-output_dir_reports.mkdir(parents=True, exist_ok=True)
 
 output_dir_webapp = Path(TEMPDIR / "webapp")  # data for webapp
 output_dir_webapp.mkdir(parents=True, exist_ok=True)
 
 # available mp terms
-report_generator.write_available_mp_terms_txt(Path(output_dir_reports / "available_mp_terms.txt"))
+report_generator.write_available_mp_terms_txt(Path(output_dir_webapp / "available_mp_terms.txt"))
 report_generator.write_available_mp_terms_json(Path(output_dir_webapp / "available_mp_terms.json"))
 
 # binary phenotypes
-report_generator.write_binary_phenotypes_txt(records_significants, Path(output_dir_reports / "binary_phenotypes.txt"))
+report_generator.write_binary_phenotypes_txt(records_significants, Path(output_dir_webapp / "binary_phenotypes.txt"))
 
 # available gene symbols
-report_generator.write_available_gene_symbols_txt(Path(output_dir_reports / "available_gene_symbols.txt"))
+report_generator.write_available_gene_symbols_txt(Path(output_dir_webapp / "available_gene_symbols.txt"))
 
 # marker symbol to accession id
 report_generator.write_marker_symbol_accession_id_json(
     records_significants, Path(output_dir_webapp / "marker_symbol_accession_id.json")
 )
+
+
+###########################################################
+# Deploy to web application
+###########################################################
+
+logging.info("Building gene network JSON files...")
+is_test = True
+
+targetted_phenotypes = web_deployer.select_targetted_phenotypes(is_test=is_test)
+targetted_genes = web_deployer.select_targetted_genes(is_test=is_test)
+
+web_deployer.generate_phenotype_pages(records_significants, targetted_phenotypes, is_test=is_test)
+web_deployer.generate_gene_pages(records_significants, targetted_genes, is_test=is_test)
+web_deployer.generate_genelist_page(is_test=is_test)
 
 # def execute():
 #     pass
