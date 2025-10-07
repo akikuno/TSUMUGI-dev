@@ -23,9 +23,9 @@ ZYGOSITY_MAP = {
 }
 
 
-MAX_GENE_COUNT = 200
-GENE_COUNT_LOWER_BOUND = 150
-GENE_COUNT_UPPER_BOUND = 250
+MAX_GENE_COUNT = 150
+GENE_COUNT_LOWER_BOUND = 100
+GENE_COUNT_UPPER_BOUND = 150
 
 ###############################################################################
 # Format datasets
@@ -305,7 +305,6 @@ def filter_related_genes(
 
 
 def _prepare_data(records_significants, pair_similarity_annotations, impc_disease):
-    """各種データを整形して返す"""
     gene_records_map = format_records_significants(records_significants)
     pair_similarity_annotations_formatted = format_pair_similarity_annotations(pair_similarity_annotations)
     impc_disease_formatted = format_impc_disease(impc_disease)
@@ -384,20 +383,27 @@ def build_gene_network_json(
             gene_lists.add(gene)
 
     for target_gene in tqdm(gene_lists, total=len(gene_lists)):
-        related_pairs = []
+        related_pairs_with_target_gene = []
         for keys in pair_similarity_annotations_formatted.keys():
             if target_gene not in keys:
                 continue
-            related_pairs.append(keys)
+            related_pairs_with_target_gene.append(keys)
 
         related_genes = set()
-        for genes in related_pairs:
+        for genes in related_pairs_with_target_gene:
             gene1, gene2 = genes
             related_genes.add(gene1)
             related_genes.add(gene2)
+
         # Skip if less than 2 related genes
         if len(related_genes) < 2:
             continue
+
+        related_pairs = []
+        for gene1, gene2 in combinations(related_genes, 2):
+            if frozenset([gene1, gene2]) not in pair_similarity_annotations_formatted:
+                continue
+            related_pairs.append(frozenset([gene1, gene2]))
 
         # Filter genes if more than MAX_GENE_COUNT
         if len(related_genes) > MAX_GENE_COUNT:
