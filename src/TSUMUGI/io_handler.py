@@ -12,6 +12,12 @@ from pathlib import Path
 from tqdm import tqdm
 
 
+def make_directories(ROOT_DIR: Path, sub_dirs: list[str]) -> None:
+    for sub_dir in sub_dirs:
+        sub_dir = Path(sub_dir)
+        (ROOT_DIR / sub_dir).mkdir(parents=True, exist_ok=True)
+
+
 def _looks_gzip(url: str, headers: dict | None) -> bool:
     """Determine if content is gzipped based on response headers and URL"""
     if headers is None:
