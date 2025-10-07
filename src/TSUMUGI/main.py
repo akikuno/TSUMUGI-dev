@@ -8,7 +8,6 @@ import logging
 import pickle
 import re
 import shutil
-from collections import defaultdict
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -234,8 +233,8 @@ with open(Path(TEMPDIR / "phenotype_similarity", "term_pair_similarity_map.pkl")
 # ----------------------------------------
 
 logging.info(f"Annotate phenotype ancestors for {len(records_significants)} records...")
-phenotype_ancestors: dict[frozenset, list[dict[str, dict[str, str]]]] = (
-    similarity_calculator.annotate_phenotype_ancestors(records_significants, term_pair_similarity_map)
+phenotype_ancestors: dict[frozenset, dict[str, dict[str, str]]] = (
+    similarity_calculator.annotate_phenotype_ancestors(records_significants, term_pair_similarity_map, ontology_terms)
 )
 # 20 min
 
@@ -266,28 +265,16 @@ with open(Path(TEMPDIR / "phenotype_similarity", "jaccard_indices.pkl"), "wb") a
 # Summarize the phenotype similarity results
 # ----------------------------------------
 
-map_id_to_name = {v["id"]: v["name"] for v in ontology_terms.values()}
+pair_similarity_annotations: dict[frozenset, dict[str, dict[str, str] | int]] = (
+    similarity_calculator.summarize_similarity_annotations(ontology_terms, phenotype_ancestors, phenodigm_scores)
+)
 
-pair_similarity_annotations = defaultdict(list)
-
-for gene1_symbol, gene2_symbol in phenotype_ancestors.keys():
-    phenotype_ancestor = phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])]
-    phenotype_ancestor_name = [{map_id_to_name[k]: v for k, v in ancestor.items()} for ancestor in phenotype_ancestor]
-    phenodigm_score = phenodigm_scores[frozenset([gene1_symbol, gene2_symbol])]
-
-    pair_similarity_annotations[frozenset([gene1_symbol, gene2_symbol])] = {
-        "phenotype_shared_annotations": phenotype_ancestor_name,
-        "phenotype_similarity_score": phenodigm_score,
-    }
-
-pair_similarity_annotations = dict(pair_similarity_annotations)
-
-output_file = f"data/TSUMUGI_v{TSUMUGI_VERSION}_phenotype_similarity.jsonl.gz"
-with gzip.open(output_file, "wt", encoding="utf-8") as f:
-    for genes, annotations in pair_similarity_annotations.items():
-        gene1, gene2 = sorted(genes)
-        record = {"gene1": gene1, "gene2": gene2, **annotations}
-        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+# output_file = f"data/TSUMUGI_v{TSUMUGI_VERSION}_phenotype_similarity.jsonl.gz"
+# with gzip.open(output_file, "wt", encoding="utf-8") as f:
+#     for genes, annotations in pair_similarity_annotations.items():
+#         gene1, gene2 = sorted(genes)
+#         record = {"gene1": gene1, "gene2": gene2, **annotations}
+#         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 # Cache results
 with open(Path(TEMPDIR / "phenotype_similarity", "pair_similarity_annotations.pkl"), "wb") as f:
@@ -301,17 +288,16 @@ with open(Path(TEMPDIR / "phenotype_similarity", "pair_similarity_annotations.pk
 MIN_NUM_PHENOTYPES = 3
 
 pair_similarity_annotations_with_shared_phenotype = {
-    k: v
-    for k, v in pair_similarity_annotations.items()
-    if len(v["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
+    k: v for k, v in pair_similarity_annotations.items() if len(v["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
 }
 
 
-with open(Path(TEMPDIR / "impc_phenodigm.csv")) as f:
+with open(Path(TEMPDIR, "download", "impc_phenodigm.csv")) as f:
     reader = csv.DictReader(f)
     impc_disease = [record for record in reader if len(record["description"].split(" ")) == 3]
 
 logging.info("Building phenotype network JSON files...")
+
 output_dir = Path(TEMPDIR / "network" / "phenotype")
 output_dir.mkdir(parents=True, exist_ok=True)
 network_constructor.build_phenotype_network_json(
