@@ -37,16 +37,16 @@ def format_statistics_float(records: list[dict[str, str | None]], columns: list[
 
 
 ###########################################################
-# Phenodigm
+# IMPC human disease_annotations
 ###########################################################
 
 
-def format_phenodigm_record(records_phenodigm: list[dict[str, str | float]]) -> dict[str, dict[str, str | float]]:
-    """Format the phenodigm records for output."""
+def format_disease_annotations(disease_annotations: list[dict[str, str | float]]) -> dict[str, dict[str, str | float]]:
+    """Format the IMPC human disease_annotations for output."""
 
     zygosity_converter = {"het": "heterozygote", "hom": "homozygote", "hem": "hemizygote"}
     life_stage_converter = {"middle": "interval"}
-    for record in records_phenodigm:
+    for record in disease_annotations:
         description = record["description"]
         description_split = description.split(" ")
         allele_symbol = "".join(description_split[:-2])
@@ -63,7 +63,7 @@ def format_phenodigm_record(records_phenodigm: list[dict[str, str | float]]) -> 
         del record["description"]
 
     # Using allele_symbol as the key makes it easier to join with IMPC phenotype records later
-    return {r["allele_symbol"]: r for r in records_phenodigm}
+    return {r["allele_symbol"]: r for r in disease_annotations}
 
 
 ###########################################################

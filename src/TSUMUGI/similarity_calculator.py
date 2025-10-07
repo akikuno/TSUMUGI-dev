@@ -134,7 +134,9 @@ def calculate_all_pairwise_similarities(
         combinations_with_replacement(all_term_ids, 2), total=(len(all_term_ids) * (len(all_term_ids) - 1)) // 2
     ):
         term_pair_key = frozenset([term1_id, term2_id])
-        common_ancestor = extract_common_ancestor(term1_id, term2_id, parent_term_map, child_term_map, total_term_count)
+        common_ancestor = extract_common_ancestor(
+            term1_id, term2_id, parent_term_map, child_term_map, total_term_count
+        )
         similarity = calculate_resnik_similarity(term1_id, term2_id, parent_term_map, child_term_map, total_term_count)
         term_pair_similarity_map[term_pair_key] = {common_ancestor: similarity}
 
@@ -398,7 +400,9 @@ def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | f
             )
         )
     num_shared_phenotypes = {}
-    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
+    for gene1, gene2 in tqdm(
+        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
+    ):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
@@ -418,7 +422,9 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
         )
 
     jaccard_indices = {}
-    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
+    for gene1, gene2 in tqdm(
+        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
+    ):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 

@@ -1,6 +1,6 @@
 import re
 
-from TSUMUGI.annotator import annotate_life_stage, annotate_sexual_dimorphism
+from TSUMUGI.annotator import _annotate_life_stage, _annotate_sexual_dimorphism
 
 
 def test_annotate_life_stage():
@@ -16,17 +16,17 @@ def test_annotate_life_stage():
     embryo_pattern = re.compile("|".join(map(re.escape, embryo_assays)))
     procedure_name = "Gross Morphology Embryo E9.5"
     pipeline_name = "TCP"
-    assert annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "embryo"
+    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "embryo"
 
     procedure_name = "Calorimetry"
     pipeline_name = "KMPC interval pipeline"
-    assert annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "interval"
+    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "interval"
 
     pipeline_name = "KMPC late pipeline"
-    assert annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "late"
+    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "late"
 
     pipeline_name = "IMPC Pipeline"
-    assert annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "early"
+    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "early"
 
 
 def test_annotate_sexual_dimorphism():
@@ -34,4 +34,4 @@ def test_annotate_sexual_dimorphism():
     male_ko_effect_p_values = [1, 1e-5, 1]
     expected_results = ["female", "male", ""]
     for f_p, m_p, expected in zip(female_ko_effect_p_values, male_ko_effect_p_values, expected_results):
-        assert annotate_sexual_dimorphism(f_p, m_p) == expected
+        assert _annotate_sexual_dimorphism(f_p, m_p) == expected

@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import csv
-import gzip
 import io
-import json
 import logging
 import pickle
-import re
 import shutil
 from collections.abc import Iterator
 from pathlib import Path
@@ -23,7 +20,7 @@ from TSUMUGI import (
     similarity_calculator,
     web_deployer,
 )
-from TSUMUGI.config import IMPC_RELEASE, TEMPDIR, TSUMUGI_VERSION
+from TSUMUGI.config import IMPC_RELEASE, TEMPDIR
 
 # Logging Config
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -84,6 +81,10 @@ if not path_output.exists():
 records = io_handler.load_csv_as_dicts(path_output)
 ontology_terms = io_handler.parse_obo_file(Path(TEMPDIR / "mp.obo"))
 
+with open(Path(TEMPDIR, "download", "impc_phenodigm.csv")) as f:
+    reader = csv.DictReader(f)
+    disease_annotations = [record for record in reader if len(record["description"].split(" ")) == 3]
+
 ###########################################################
 # Preprocess data
 ###########################################################
@@ -113,12 +114,16 @@ columns = [
 
 records_subset: Iterator[dict[str, str]] = filterer.subset_columns(records, columns)
 
+# --------------------------------------------------------
 # Extract significant phenotypes (p_value < 1e-4)
+# --------------------------------------------------------
 records_significants: list[dict[str, str | float]] = filterer.extract_significant_phenotypes(
     records_subset, threshold=1e-4
 )  # 1 min
 
+# --------------------------------------------------------
 # Convert string to float and take absolute value of effect size
+# --------------------------------------------------------
 float_columns = [
     "p_value",
     "effect_size",
@@ -130,10 +135,14 @@ float_columns = [
 
 records_significants = formatter.format_statistics_float(records_significants, float_columns)
 
+# --------------------------------------------------------
 # Keep only records with mp_term_id in the ontology file (= not obsolete)
+# --------------------------------------------------------
 records_significants = [record for record in records_significants if record["mp_term_id"] in ontology_terms]
 
+# --------------------------------------------------------
 # Cache results
+# --------------------------------------------------------
 pl.DataFrame(records_significants).write_csv(
     Path(TEMPDIR, "preprocessed", f"statistical_significants_{IMPC_RELEASE}.csv"),
 )
@@ -142,10 +151,10 @@ pl.DataFrame(records_significants).write_parquet(
 )
 
 # --------------------------------------------------------
-# Annotate life stage, sexual dimorphisms, and human disease
+# Annotate life stage, sexual dimorphisms, human disease, and IMPC URLs
 # --------------------------------------------------------
 
-logging.info("Annotating life stage, sexual dimorphisms, and human disease...")
+logging.info("Annotating life stage, sexual dimorphisms, human disease, and IMPC URLs...")
 
 embryo_assays = {
     "E9.5",
@@ -157,36 +166,14 @@ embryo_assays = {
     "E18.5",
 }
 
-embryo_pattern = re.compile("|".join(map(re.escape, embryo_assays)))
+records_significants = annotator.annotate_life_stage(records_significants, embryo_assays)
+records_significants = annotator.annotate_sexual_dimorphism(records_significants, threshold=1e-4)
+records_significants = annotator.annotate_human_disease(records_significants, disease_annotations)
+records_significants = annotator.annotate_impc_urls(records_significants)
 
-for record in records_significants:
-    record["life_stage"] = annotator.annotate_life_stage(
-        record["procedure_name"], record["pipeline_name"], embryo_pattern
-    )
-
-for record in records_significants:
-    record["sexual_dimorphism"] = annotator.annotate_sexual_dimorphism(
-        record["female_ko_effect_p_value"], record["male_ko_effect_p_value"], threshold=1e-4
-    )
-
-records_phenodigm: list[dict[str | str | float]] = pl.read_csv(
-    Path(TEMPDIR, "download", "impc_phenodigm.csv")
-).to_dicts()
-
-allele_phenodigm = formatter.format_phenodigm_record(records_phenodigm)
-
-for record in records_significants:
-    record |= annotator.annotate_human_disease(
-        record["allele_symbol"], record["zygosity"], record["life_stage"], allele_phenodigm
-    )
-
-
-for record in records_significants:
-    mp_term_id = record["mp_term_id"]
-    marker_accession_id = record["marker_accession_id"]
-    record["impc_url_gene"] = f"https://www.mousephenotype.org/data/genes/{marker_accession_id}"
-    record["impc_url_phenotype"] = f"https://www.mousephenotype.org/data/phenotypes/{mp_term_id}"
-
+# --------------------------------------------------------
+# Select distinct records with max effect size
+# --------------------------------------------------------
 
 unique_keys = [
     "marker_symbol",
@@ -198,7 +185,9 @@ unique_keys = [
 
 records_significants = formatter.get_distinct_records_with_max_effect(records_significants, unique_keys)
 
+# --------------------------------------------------------
 # Cache results
+# --------------------------------------------------------
 
 pl.DataFrame(records_significants).write_csv(
     Path(TEMPDIR, "preprocessed", f"statistical_significants_annotated_{IMPC_RELEASE}.csv"),
@@ -224,7 +213,9 @@ term_pair_similarity_map: dict[frozenset[str], dict[str, float]] = (
 )
 # 30 min
 
+# --------------------------------------------------------
 # Cache results
+# --------------------------------------------------------
 with open(Path(TEMPDIR / "phenotype_similarity", "term_pair_similarity_map.pkl"), "wb") as f:
     pickle.dump(term_pair_similarity_map, f)
 
@@ -233,8 +224,8 @@ with open(Path(TEMPDIR / "phenotype_similarity", "term_pair_similarity_map.pkl")
 # ----------------------------------------
 
 logging.info(f"Annotate phenotype ancestors for {len(records_significants)} records...")
-phenotype_ancestors: dict[frozenset, dict[str, dict[str, str]]] = (
-    similarity_calculator.annotate_phenotype_ancestors(records_significants, term_pair_similarity_map, ontology_terms)
+phenotype_ancestors: dict[frozenset, dict[str, dict[str, str]]] = similarity_calculator.annotate_phenotype_ancestors(
+    records_significants, term_pair_similarity_map, ontology_terms
 )
 # 20 min
 
@@ -247,7 +238,9 @@ phenodigm_scores: dict[frozenset[str], int] = similarity_calculator.calculate_ph
 num_shared_phenotypes = similarity_calculator.calculate_num_shared_phenotypes(records_significants)
 jaccard_indices = similarity_calculator.calculate_jaccard_indices(records_significants)
 
+# --------------------------------------------------------
 # Cache results
+# --------------------------------------------------------
 with open(Path(TEMPDIR / "phenotype_similarity", "phenotype_ancestors.pkl"), "wb") as f:
     pickle.dump(phenotype_ancestors, f)
 
@@ -276,7 +269,9 @@ pair_similarity_annotations: dict[frozenset, dict[str, dict[str, str] | int]] = 
 #         record = {"gene1": gene1, "gene2": gene2, **annotations}
 #         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
+# --------------------------------------------------------
 # Cache results
+# --------------------------------------------------------
 with open(Path(TEMPDIR / "phenotype_similarity", "pair_similarity_annotations.pkl"), "wb") as f:
     pickle.dump(pair_similarity_annotations, f)
 
@@ -288,20 +283,18 @@ with open(Path(TEMPDIR / "phenotype_similarity", "pair_similarity_annotations.pk
 MIN_NUM_PHENOTYPES = 3
 
 pair_similarity_annotations_with_shared_phenotype = {
-    k: v for k, v in pair_similarity_annotations.items() if len(v["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
+    k: v
+    for k, v in pair_similarity_annotations.items()
+    if len(v["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
 }
 
-
-with open(Path(TEMPDIR, "download", "impc_phenodigm.csv")) as f:
-    reader = csv.DictReader(f)
-    impc_disease = [record for record in reader if len(record["description"].split(" ")) == 3]
 
 logging.info("Building phenotype network JSON files...")
 
 output_dir = Path(TEMPDIR / "network" / "phenotype")
 output_dir.mkdir(parents=True, exist_ok=True)
 network_constructor.build_phenotype_network_json(
-    records_significants, pair_similarity_annotations_with_shared_phenotype, impc_disease, output_dir
+    records_significants, pair_similarity_annotations_with_shared_phenotype, disease_annotations, output_dir
 )
 
 logging.info("Building gene network JSON files...")
@@ -309,7 +302,7 @@ output_dir = Path(TEMPDIR / "network" / "genesymbol")
 output_dir.mkdir(parents=True, exist_ok=True)
 
 network_constructor.build_gene_network_json(
-    records_significants, pair_similarity_annotations_with_shared_phenotype, impc_disease, output_dir
+    records_significants, pair_similarity_annotations_with_shared_phenotype, disease_annotations, output_dir
 )
 
 ###########################################################

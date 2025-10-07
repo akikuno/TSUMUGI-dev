@@ -48,17 +48,17 @@ def sample_ontology():
 
 def test_build_term_hierarchy(sample_ontology):
     expected_parent_map = {
-        "B": ["A"],
-        "C": ["A"],
-        "D": ["B"],
-        "E": ["B", "C"],
-        "F": ["E"],
+        "B": {"A"},
+        "C": {"A"},
+        "D": {"B"},
+        "E": {"B", "C"},
+        "F": {"E"},
     }
     expected_child_map = {
-        "A": ["B", "C"],
-        "B": ["D", "E"],
-        "C": ["E"],
-        "E": ["F"],
+        "A": {"B", "C"},
+        "B": {"D", "E"},
+        "C": {"E"},
+        "E": {"F"},
     }
     assert sample_ontology["parent_map"] == expected_parent_map
     assert sample_ontology["child_map"] == expected_child_map
