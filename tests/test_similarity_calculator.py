@@ -4,15 +4,15 @@ import numpy as np
 import pytest
 
 from TSUMUGI.similarity_calculator import (
-    apply_phenodigm_scaling,
-    build_term_hierarchy,
-    calculate_information_content,
+    _apply_phenodigm_scaling,
+    _build_term_hierarchy,
+    _calculate_information_content,
+    _calculate_resnik_similarity,
+    _find_all_ancestor_terms,
+    _find_all_descendant_terms,
+    _find_common_ancestors,
     calculate_jaccard_indices,
     calculate_num_shared_phenotypes,
-    calculate_resnik_similarity,
-    find_all_ancestor_terms,
-    find_all_descendant_terms,
-    find_common_ancestors,
 )
 
 
@@ -37,7 +37,7 @@ def sample_ontology():
         "E": {"id": "E", "name": "Term E", "is_a": ["B", "C"]},
         "F": {"id": "F", "name": "Term F", "is_a": ["E"]},
     }
-    parent_map, child_map = build_term_hierarchy(ontology_terms)
+    parent_map, child_map = _build_term_hierarchy(ontology_terms)
     return {
         "ontology_terms": ontology_terms,
         "parent_map": parent_map,
@@ -46,7 +46,7 @@ def sample_ontology():
     }
 
 
-def test_build_term_hierarchy(sample_ontology):
+def test__build_term_hierarchy(sample_ontology):
     expected_parent_map = {
         "B": {"A"},
         "C": {"A"},
@@ -74,8 +74,8 @@ def test_build_term_hierarchy(sample_ontology):
         ("Z", set()),  # 存在しないID
     ],
 )
-def test_find_all_ancestor_terms(sample_ontology, term_id, expected_ancestors):
-    result = find_all_ancestor_terms(term_id, sample_ontology["parent_map"])
+def test__find_all_ancestor_terms(sample_ontology, term_id, expected_ancestors):
+    result = _find_all_ancestor_terms(term_id, sample_ontology["parent_map"])
     assert result == expected_ancestors
 
 
@@ -90,13 +90,13 @@ def test_find_all_ancestor_terms(sample_ontology, term_id, expected_ancestors):
         ("D", "C", {"D", "B", "A", "C"}),
     ],
 )
-def test_find_common_ancestors(sample_ontology, term1, term2, expected_common):
+def test__find_common_ancestors(sample_ontology, term1, term2, expected_common):
     # 関数の仕様上、自分自身も祖先集合に含まれるため、期待値もそれに合わせる
-    ancestors1 = find_all_ancestor_terms(term1, sample_ontology["parent_map"]) | {term1}
-    ancestors2 = find_all_ancestor_terms(term2, sample_ontology["parent_map"]) | {term2}
+    ancestors1 = _find_all_ancestor_terms(term1, sample_ontology["parent_map"]) | {term1}
+    ancestors2 = _find_all_ancestor_terms(term2, sample_ontology["parent_map"]) | {term2}
     expected = ancestors1.intersection(ancestors2)
 
-    result = find_common_ancestors(term1, term2, sample_ontology["parent_map"])
+    result = _find_common_ancestors(term1, term2, sample_ontology["parent_map"])
     assert result == expected
 
 
@@ -110,8 +110,8 @@ def test_find_common_ancestors(sample_ontology, term1, term2, expected_common):
         ("Z", set()),  # 存在しないID
     ],
 )
-def test_find_all_descendant_terms(sample_ontology, term_id, expected_descendants):
-    result = find_all_descendant_terms(term_id, sample_ontology["child_map"])
+def test__find_all_descendant_terms(sample_ontology, term_id, expected_descendants):
+    result = _find_all_descendant_terms(term_id, sample_ontology["child_map"])
     assert result == expected_descendants
 
 
@@ -124,13 +124,13 @@ def test_find_all_descendant_terms(sample_ontology, term_id, expected_descendant
         ("F", 0),  # Leaf node
     ],
 )
-def test_calculate_information_content(sample_ontology, term_id, num_descendants):
+def test__calculate_information_content(sample_ontology, term_id, num_descendants):
     total = sample_ontology["total_term_count"]
     # 子孫の数 + 自分自身(1)
     term_count = num_descendants + 1
     expected_ic = -math.log(term_count / total)
 
-    result = calculate_information_content(term_id, sample_ontology["child_map"], total)
+    result = _calculate_information_content(term_id, sample_ontology["child_map"], total)
     assert result == pytest.approx(expected_ic)
 
 
@@ -143,7 +143,7 @@ def test_calculate_information_content(sample_ontology, term_id, num_descendants
         ("F", "F", "F"),  # Same term
     ],
 )
-def test_calculate_resnik_similarity(sample_ontology, term1, term2, mica_id):
+def test__calculate_resnik_similarity(sample_ontology, term1, term2, mica_id):
     # This dictionary is correct for the main function call below
     maps = {
         "parent_term_map": sample_ontology["parent_map"],
@@ -151,18 +151,18 @@ def test_calculate_resnik_similarity(sample_ontology, term1, term2, mica_id):
         "total_term_count": sample_ontology["total_term_count"],
     }
 
-    # FIX: Call calculate_information_content with only the specific arguments it needs,
+    # FIX: Call _calculate_information_content with only the specific arguments it needs,
     # instead of unpacking the entire 'maps' dictionary.
-    expected_similarity = calculate_information_content(
+    expected_similarity = _calculate_information_content(
         mica_id, sample_ontology["child_map"], sample_ontology["total_term_count"]
     )
 
     # This call was already correct as it uses all the arguments in 'maps'
-    result = calculate_resnik_similarity(term1, term2, **maps)
+    result = _calculate_resnik_similarity(term1, term2, **maps)
     assert result == pytest.approx(expected_similarity)
 
 
-def test_apply_phenodigm_scaling_identical_phenotypes():
+def test__apply_phenodigm_scaling_identical_phenotypes():
     """
     Test Case 1: 完全に一致する表現型セットを持つ場合、スコアが100になることをテスト 💯
     """
@@ -179,7 +179,7 @@ def test_apply_phenodigm_scaling_identical_phenotypes():
     weighted_similarity_matrix = np.array([[2.0, 1.0], [1.0, 4.0]])
 
     # --- テスト実行 ---
-    result = apply_phenodigm_scaling(
+    result = _apply_phenodigm_scaling(
         weighted_similarity_matrix, gene1_mp_term_ids, gene2_mp_term_ids, term_pair_similarity_map
     )
 
@@ -188,7 +188,7 @@ def test_apply_phenodigm_scaling_identical_phenotypes():
     assert result == 100
 
 
-def test_apply_phenodigm_scaling_disjoint_phenotypes():
+def test__apply_phenodigm_scaling_disjoint_phenotypes():
     """
     Test Case 2: 完全に無関係な表現型セットを持つ場合、スコアが0になることをテスト 🅾️
     """
@@ -206,7 +206,7 @@ def test_apply_phenodigm_scaling_disjoint_phenotypes():
     weighted_similarity_matrix = np.array([[0.0, 0.0], [0.0, 0.0]])
 
     # --- テスト実行 ---
-    result = apply_phenodigm_scaling(
+    result = _apply_phenodigm_scaling(
         weighted_similarity_matrix, gene1_mp_term_ids, gene2_mp_term_ids, term_pair_similarity_map
     )
 
@@ -215,7 +215,7 @@ def test_apply_phenodigm_scaling_disjoint_phenotypes():
     assert result == 0
 
 
-def test_apply_phenodigm_scaling_average_score_50():
+def test__apply_phenodigm_scaling_average_score_50():
     """
     Test Case 3: 実測値が理論値のちょうど半分で、スコアが50になるケースをテスト 🌗
     """
@@ -232,7 +232,7 @@ def test_apply_phenodigm_scaling_average_score_50():
     weighted_similarity_matrix = np.array([[2.0]])
 
     # --- テスト実行 ---
-    result = apply_phenodigm_scaling(
+    result = _apply_phenodigm_scaling(
         weighted_similarity_matrix, gene1_mp_term_ids, gene2_mp_term_ids, term_pair_similarity_map
     )
 

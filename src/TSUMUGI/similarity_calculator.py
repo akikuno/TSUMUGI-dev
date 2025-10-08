@@ -8,7 +8,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-def build_term_hierarchy(
+def _build_term_hierarchy(
     ontology_terms: dict[str, dict],
 ) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
     """Build parent-child hierarchy relationships from ontology terms."""
@@ -24,7 +24,7 @@ def build_term_hierarchy(
     return dict(parent_term_map), dict(child_term_map)
 
 
-def find_all_ancestor_terms(term_id: str, parent_term_map: dict[str, set[str]]) -> set[str]:
+def _find_all_ancestor_terms(term_id: str, parent_term_map: dict[str, set[str]]) -> set[str]:
     """Find all ancestor terms for a given term."""
     ancestor_terms = set()
     terms_to_process = [term_id]
@@ -40,7 +40,7 @@ def find_all_ancestor_terms(term_id: str, parent_term_map: dict[str, set[str]]) 
     return ancestor_terms
 
 
-def find_all_descendant_terms(term_id: str, child_term_map: dict[str, set[str]]) -> set[str]:
+def _find_all_descendant_terms(term_id: str, child_term_map: dict[str, set[str]]) -> set[str]:
     """Find all descendant terms for a given term."""
     descendant_terms = set()
     terms_to_process = [term_id]
@@ -56,27 +56,27 @@ def find_all_descendant_terms(term_id: str, child_term_map: dict[str, set[str]])
     return descendant_terms
 
 
-def find_common_ancestors(term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]]) -> set[str]:
+def _find_common_ancestors(term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]]) -> set[str]:
     """Find common ancestors of two terms."""
-    term1_ancestors = find_all_ancestor_terms(term1_id, parent_term_map)
+    term1_ancestors = _find_all_ancestor_terms(term1_id, parent_term_map)
     term1_ancestors.add(term1_id)  # Include the term itself
 
-    term2_ancestors = find_all_ancestor_terms(term2_id, parent_term_map)
+    term2_ancestors = _find_all_ancestor_terms(term2_id, parent_term_map)
     term2_ancestors.add(term2_id)  # Include the term itself
 
     return term1_ancestors.intersection(term2_ancestors)
 
 
-def calculate_information_content(term_id: str, child_term_map: dict[str, set[str]], total_term_count: int) -> float:
+def _calculate_information_content(term_id: str, child_term_map: dict[str, set[str]], total_term_count: int) -> float:
     """Calculate information content for a term based on its descendants."""
-    descendant_terms = find_all_descendant_terms(term_id, child_term_map)
+    descendant_terms = _find_all_descendant_terms(term_id, child_term_map)
     # Include the term itself in the count
     term_count = len(descendant_terms) + 1
     probability = term_count / total_term_count
     return -math.log(probability)
 
 
-def calculate_resnik_similarity(
+def _calculate_resnik_similarity(
     term1_id: str,
     term2_id: str,
     parent_term_map: dict[str, set[str]],
@@ -85,9 +85,9 @@ def calculate_resnik_similarity(
 ) -> float:
     """Calculate Resnik similarity between two terms."""
     if term1_id == term2_id:
-        return calculate_information_content(term1_id, child_term_map, total_term_count)
+        return _calculate_information_content(term1_id, child_term_map, total_term_count)
 
-    common_ancestors = find_common_ancestors(term1_id, term2_id, parent_term_map)
+    common_ancestors = _find_common_ancestors(term1_id, term2_id, parent_term_map)
 
     if not common_ancestors:
         return 0.0
@@ -95,13 +95,13 @@ def calculate_resnik_similarity(
     # Find the most informative common ancestor (MICA)
     max_information_content = 0.0
     for ancestor_term in common_ancestors:
-        information_content = calculate_information_content(ancestor_term, child_term_map, total_term_count)
+        information_content = _calculate_information_content(ancestor_term, child_term_map, total_term_count)
         max_information_content = max(max_information_content, information_content)
 
     return max_information_content
 
 
-def extract_common_ancestor(
+def _extract_common_ancestor(
     term1_id: str,
     term2_id: str,
     parent_term_map: dict[str, set[str]],
@@ -111,13 +111,13 @@ def extract_common_ancestor(
     """Extract the most specific common ancestor (MSCA) of two terms."""
     if term1_id == term2_id:
         return term1_id
-    common_ancestors = find_common_ancestors(term1_id, term2_id, parent_term_map)
+    common_ancestors = _find_common_ancestors(term1_id, term2_id, parent_term_map)
     if not common_ancestors:
         return None
     # Return the most specific common ancestor (MSCA)
     return max(
         common_ancestors,
-        key=lambda ancestor: calculate_information_content(ancestor, child_term_map, total_term_count),
+        key=lambda ancestor: _calculate_information_content(ancestor, child_term_map, total_term_count),
     )
 
 
@@ -127,17 +127,19 @@ def calculate_all_pairwise_similarities(
 ) -> dict[frozenset[str], dict[str, float]]:
     """Calculate pairwise Resnik similarities for a list of terms."""
     total_term_count = len(ontology_terms)
-    parent_term_map, child_term_map = build_term_hierarchy(ontology_terms)
+    parent_term_map, child_term_map = _build_term_hierarchy(ontology_terms)
 
     term_pair_similarity_map = {}
     for term1_id, term2_id in tqdm(
         combinations_with_replacement(all_term_ids, 2), total=(len(all_term_ids) * (len(all_term_ids) - 1)) // 2
     ):
         term_pair_key = frozenset([term1_id, term2_id])
-        common_ancestor = extract_common_ancestor(
+        common_ancestor = _extract_common_ancestor(
             term1_id, term2_id, parent_term_map, child_term_map, total_term_count
         )
-        similarity = calculate_resnik_similarity(term1_id, term2_id, parent_term_map, child_term_map, total_term_count)
+        similarity = _calculate_resnik_similarity(
+            term1_id, term2_id, parent_term_map, child_term_map, total_term_count
+        )
         term_pair_similarity_map[term_pair_key] = {common_ancestor: similarity}
 
     return term_pair_similarity_map
@@ -177,20 +179,36 @@ def _delete_parent_terms_from_ancestors(
     return candidate_ancestors
 
 
+def _get_terms_with_low_ic(
+    ontology_terms: dict[str, dict[str, str]], child_term_map: dict[str, set[str]], ic_threshold=10
+) -> set[str]:
+    total_term_count = len(ontology_terms)
+    map_term_to_ic = {}
+    for term_id in ontology_terms.keys():
+        ic = _calculate_information_content(term_id, child_term_map, total_term_count)
+        map_term_to_ic[term_id] = ic
+
+    ic_values = list(map_term_to_ic.values())
+    ic_min_values = np.percentile(ic_values, ic_threshold)
+    return {map_term for map_term, ic in map_term_to_ic.items() if ic < ic_min_values}
+
+
 def annotate_phenotype_ancestors(
     records_significants: list[dict[str, str | float]],
     term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
     ontology_terms: dict[str, dict[str, str]],
 ) -> dict[frozenset, dict[str, dict[str, str]]]:
-    """Wrapper function to calculate Phenodigm score between two genes."""
+    """Wrapper function for annotating phenotype ancestors."""
 
     gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
     for record in records_significants:
         gene_records_map[record["marker_symbol"]].append(record)
     all_gene_symbols = gene_records_map.keys()
 
-    _, child_term_map = build_term_hierarchy(ontology_terms)
+    _, child_term_map = _build_term_hierarchy(ontology_terms)
     annotations = {"zygosity", "life_stage", "sexual_dimorphism"}
+
+    terms_with_low_ic: set[str] = _get_terms_with_low_ic(ontology_terms, child_term_map, ic_threshold=10)
 
     phenotype_ancestors = defaultdict(dict)
     for gene1_symbol, gene2_symbol in tqdm(
@@ -212,6 +230,9 @@ def annotate_phenotype_ancestors(
                 if not common_ancestor or similarity == 0.0:
                     continue
 
+                if common_ancestor in terms_with_low_ic:
+                    continue
+
                 gene1_metadata = {k: v for k, v in gene1_record.items() if k in annotations}
                 gene2_metadata = {k: v for k, v in gene2_record.items() if k in annotations}
 
@@ -231,7 +252,7 @@ def annotate_phenotype_ancestors(
         candidate_ancestors = _delete_parent_terms_from_ancestors(candidate_ancestors, child_term_map)
 
         key = frozenset([gene1_symbol, gene2_symbol])
-        phenotype_ancestors[key] = candidate_ancestors if candidate_ancestors else {}
+        phenotype_ancestors[key] = dict(candidate_ancestors) if candidate_ancestors else {}
 
     return dict(phenotype_ancestors)
 
@@ -241,7 +262,7 @@ def annotate_phenotype_ancestors(
 ###########################################################
 
 
-def adjust_similarity_by_metadata(
+def _adjust_similarity_by_metadata(
     similarity_score: float,
     gene1_zygosity: str,
     gene2_zygosity: str,
@@ -269,7 +290,7 @@ def adjust_similarity_by_metadata(
     return similarity_score * adjustment_weight
 
 
-def calculate_weighted_similarity_matrix(
+def _calculate_weighted_similarity_matrix(
     gene1_records: list[dict[str, str | float]],
     gene2_records: list[dict[str, str | float]],
     term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
@@ -294,7 +315,7 @@ def calculate_weighted_similarity_matrix(
             gene1_sexual_dimorphism = gene1_record.get("sexual_dimorphism", "")
             gene2_sexual_dimorphism = gene2_record.get("sexual_dimorphism", "")
 
-            adjusted_similarity = adjust_similarity_by_metadata(
+            adjusted_similarity = _adjust_similarity_by_metadata(
                 similarity,
                 gene1_zygosity,
                 gene2_zygosity,
@@ -310,7 +331,7 @@ def calculate_weighted_similarity_matrix(
     return np.array(weighted_similarity_matrix)
 
 
-def apply_phenodigm_scaling(
+def _apply_phenodigm_scaling(
     weighted_similarity_matrix: np.ndarray,
     gene1_mp_term_ids: set[str],
     gene2_mp_term_ids: set[str],
@@ -374,11 +395,11 @@ def calculate_phenodigm_score(
         gene1_mp_term_ids = {record["mp_term_id"] for record in gene1_records}
         gene2_mp_term_ids = {record["mp_term_id"] for record in gene2_records}
 
-        weighted_similarity_matrix = calculate_weighted_similarity_matrix(
+        weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
             gene1_records, gene2_records, term_pair_similarity_map
         )
 
-        phenodigm_scores[frozenset([gene1_symbol, gene2_symbol])] = apply_phenodigm_scaling(
+        phenodigm_scores[frozenset([gene1_symbol, gene2_symbol])] = _apply_phenodigm_scaling(
             weighted_similarity_matrix, gene1_mp_term_ids, gene2_mp_term_ids, term_pair_similarity_map
         )
 
@@ -443,18 +464,18 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
 
 def summarize_similarity_annotations(
     ontology_terms: dict[str, dict[str, str]],
-    phenotype_ancestors: dict[frozenset, dict[str, dict[str, str]]],
-    phenodigm_scores: dict[frozenset, int],
-) -> dict[frozenset, dict[str, dict[str, str] | int]]:
+    phenotype_ancestors: dict[frozenset[str], dict[str, dict[str, str]]],
+    phenodigm_scores: dict[frozenset[str], int],
+) -> dict[frozenset[str], dict[str, dict[str, str] | int]]:
     """Summarize similarity annotations including common ancestors and Phenodigm scores."""
 
-    map_id_to_name = {v["id"]: v["name"] for v in ontology_terms.values()}
+    id_name_map = {v["id"]: v["name"] for v in ontology_terms.values()}
 
     pair_similarity_annotations = defaultdict(list)
 
     for gene1_symbol, gene2_symbol in tqdm(phenotype_ancestors.keys(), total=len(phenotype_ancestors)):
         phenotype_ancestor = phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])]
-        phenotype_ancestor_name = {map_id_to_name[k]: v for k, v in phenotype_ancestor.items()}
+        phenotype_ancestor_name = {id_name_map[k]: v for k, v in phenotype_ancestor.items()}
         phenodigm_score = phenodigm_scores[frozenset([gene1_symbol, gene2_symbol])]
 
         pair_similarity_annotations[frozenset([gene1_symbol, gene2_symbol])] = {
