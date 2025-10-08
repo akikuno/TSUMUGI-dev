@@ -5,14 +5,12 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from TSUMUGI.config import TEMPDIR
-
 ###########################################################
 # Select targetted phenotypes and gene symbols
 ###########################################################
 
 
-def select_targetted_phenotypes(is_test: bool = True) -> set[str]:
+def select_targetted_phenotypes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
     if is_test:
         targetted_phenotypes = [
             "edema",
@@ -30,7 +28,7 @@ def select_targetted_phenotypes(is_test: bool = True) -> set[str]:
     return set(targetted_phenotypes)
 
 
-def select_targetted_genes(is_test: bool = True) -> set[str]:
+def select_targetted_genes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
     if is_test:
         targetted_genes = [
             "Rab10",
@@ -76,7 +74,7 @@ def _copy_css_js_files(output_dir: str | Path) -> None:
         shutil.copytree(src, dst)
 
 
-def _copy_json_files(targetted_phenotypes, targetted_genes, output_dir: str | Path) -> None:
+def _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, output_dir: str | Path) -> None:
     src_phenotype_dir = Path(TEMPDIR, "network", "phenotype")
     src_gene_dir = Path(TEMPDIR, "network", "genesymbol")
 
@@ -98,7 +96,7 @@ def _copy_json_files(targetted_phenotypes, targetted_genes, output_dir: str | Pa
             shutil.copy(src_file, dst_gene_dir / src_file.name)
 
 
-def _copy_webapp_files(output_dir: str | Path) -> None:
+def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
     data_dir = output_dir / "data"
 
     file_map = {
@@ -126,11 +124,11 @@ def _generate_index_html(output_dir: str | Path) -> None:
                 outfile.write(line)
 
 
-def prepare_files(targetted_phenotypes, targetted_genes, output_dir: str | Path) -> None:
+def prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, output_dir: str | Path) -> None:
     _prepare_directories(output_dir)
     _copy_css_js_files(output_dir)
-    _copy_json_files(targetted_phenotypes, targetted_genes, output_dir)
-    _copy_webapp_files(output_dir)
+    _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
+    _copy_webapp_files(TEMPDIR, output_dir)
     _generate_index_html(output_dir)
 
 
@@ -257,11 +255,12 @@ def _generate_phenotype_javascript(
     _write_file(f"{output_dir}/app/phenotype/{mp_term_name_underscored}.js", final_js)
 
 
-def generate_phenotype_pages(records_significants, targetted_phenotypes, output_dir) -> None:
+def generate_phenotype_pages(records_significants, targetted_phenotypes, TEMPDIR: Path, output_dir) -> None:
     map_mp_term_name_to_impc_url_phenotype = {}
     for record in records_significants:
         mp_term_name = record["mp_term_name"]
-        impc_url_phenotype = record["impc_url_phenotype"]
+        mp_term_id = record["mp_term_id"]
+        impc_url_phenotype = f"https://www.mousephenotype.org/data/phenotypes/{mp_term_id}"
         map_mp_term_name_to_impc_url_phenotype[mp_term_name] = impc_url_phenotype
 
     path_file = Path(TEMPDIR, "webapp", "binary_phenotypes.txt")
@@ -348,7 +347,8 @@ def generate_gene_pages(records_significants, targetted_gene_symbols, output_dir
     map_marker_symbol_to_impc_url_gene = {}
     for record in records_significants:
         marker_symbol = record["marker_symbol"]
-        impc_url_gene = record["impc_url_gene"]
+        marker_accession_id = record["marker_accession_id"]
+        impc_url_gene = f"https://www.mousephenotype.org/data/genes/{marker_accession_id}"
         map_marker_symbol_to_impc_url_gene[marker_symbol] = impc_url_gene
 
     for gene_symbol in tqdm(targetted_gene_symbols, desc="Processing gene symbols"):

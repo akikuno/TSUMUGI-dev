@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
+from tqdm import tqdm
+
 from TSUMUGI.formatter import floatinize_columns
 
 
@@ -27,23 +29,14 @@ def _is_significant(rec: dict[str, float | str], threshold: float) -> bool:
 
 
 def extract_significant_phenotypes(
-    records: Iterator[dict[str, str]], threshold: float = 1e-4
+    records: Iterator[dict[str, str]], float_columns: list[str], threshold: float = 1e-4
 ) -> list[dict[str, float | str]]:
     """
     Filter significant phenotype records and drop exact duplicates (key+value match).
     """
     significants: list[dict[str, float | str]] = []
 
-    float_columns = [
-        "p_value",
-        "effect_size",
-        "female_ko_effect_p_value",
-        "male_ko_effect_p_value",
-        "female_ko_parameter_estimate",
-        "male_ko_parameter_estimate",
-    ]
-
-    for record in records:
+    for record in tqdm(records, desc="Filtering significant phenotypes"):
         # Skip when 'mp_term_name' is empty
         if not record.get("mp_term_name"):
             continue
@@ -55,12 +48,12 @@ def extract_significant_phenotypes(
 
     # Deduplicate by full key-value equality; ordering does not matter
     # Use a sorted tuple of items as a stable, hashable fingerprint.
-    seen: set[tuple[tuple[str, float | str], ...]] = set()
-    unique: list[dict[str, float | str]] = []
-    for rec in significants:
-        fingerprint = tuple(sorted(rec.items()))
+    seen = set()
+    unique_records = []
+    for record in significants:
+        fingerprint = tuple(sorted(record.items()))
         if fingerprint not in seen:
             seen.add(fingerprint)
-            unique.append(rec)
+            unique_records.append(record)
 
-    return unique
+    return unique_records

@@ -1,5 +1,6 @@
 # Ad hoc
 tmp*
+.tempdir/*
 data/*
 TSUMUGI_raw_data.csv.gz
 TSUMUGI/.temp/*

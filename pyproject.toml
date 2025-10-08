@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "TSUMUGI"
-version = "0.3.2"
+version = "1.0.0"
 description = "Phenotype-driven gene module identifier"
 authors = ["Akihiro Kuno <akuno@md.tsukuba.ac.jp>"]
 readme = "README.md"
@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [tool.poetry.scripts]
-TSUMUGI = "TSUMUGI.main:execute"
+TSUMUGI = "TSUMUGI.main:main"
 
 [tool.poetry.dependencies]
 python = ">=3.10"

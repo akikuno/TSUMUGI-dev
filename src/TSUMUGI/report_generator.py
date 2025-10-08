@@ -4,18 +4,16 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from TSUMUGI.config import TEMPDIR
-
 
 # available mp terms
-def write_available_mp_terms_txt(output_file: Path) -> None:
+def write_available_mp_terms_txt(TEMPDIR: Path, output_file: Path) -> None:
     with open(output_file, "w") as f:
         for path_phenotype in Path(TEMPDIR, "network", "phenotype").glob("*.json.gz"):
             mp_term_name = path_phenotype.name.replace(".json.gz", "").replace("_", " ")
             f.write(f"{mp_term_name}\n")
 
 
-def write_available_mp_terms_json(output_file: Path) -> None:
+def write_available_mp_terms_json(TEMPDIR: Path, output_file: Path) -> None:
     mp_term_name_json = {}
     for path_phenotype in Path(TEMPDIR, "network", "phenotype").glob("*.json.gz"):
         mp_term_name_underscore = path_phenotype.name.replace(".json.gz", "")
@@ -27,7 +25,7 @@ def write_available_mp_terms_json(output_file: Path) -> None:
 
 
 # binary phenotypes
-def write_binary_phenotypes_txt(records_significants, output_file: Path) -> None:
+def write_binary_phenotypes_txt(records_significants, TEMPDIR: Path, output_file: Path) -> None:
     paths_available_mp_terms = Path(TEMPDIR, "network", "phenotype").glob("*.json.gz")
     available_mp_terms = {p.name.replace(".json.gz", "").replace("_", " ") for p in paths_available_mp_terms}
 
@@ -50,14 +48,14 @@ def write_binary_phenotypes_txt(records_significants, output_file: Path) -> None
 
 
 # available gene symbols
-def write_available_gene_symbols_txt(output_file: Path) -> None:
+def write_available_gene_symbols_txt(TEMPDIR: Path, output_file: Path) -> None:
     with open(output_file, "w") as f:
         for path_genesymbol in Path(TEMPDIR, "network", "genesymbol").glob("*.json.gz"):
             gene_symbol = path_genesymbol.name.replace(".json.gz", "")
             f.write(f"{gene_symbol}\n")
 
 
-def write_marker_symbol_accession_id_json(records_significants, output_file: Path) -> None:
+def write_marker_symbol_accession_id_json(records_significants, TEMPDIR: Path, output_file: Path) -> None:
     marker_symbol_accession_id = {}
     paths_genesymbol = Path(TEMPDIR, "network", "genesymbol").glob("*.json.gz")
     available_gene_symbols = {p.name.replace(".json.gz", "") for p in paths_genesymbol}

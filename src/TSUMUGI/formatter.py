@@ -4,6 +4,20 @@ from itertools import groupby
 from operator import itemgetter
 
 import polars as pl
+from sklearn.base import defaultdict
+
+###########################################################
+# Zygosity Formatting
+###########################################################
+
+
+def format_zygosity(records_significants) -> str:
+    """Format zygosity values to a consistent style."""
+    zygosity_converter = {"heterozygote": "Hetero", "homozygote": "Homo", "hemizygote": "Hemi"}
+    for record in records_significants:
+        record["zygosity"] = zygosity_converter.get(record["zygosity"], record["zygosity"])
+    return records_significants
+
 
 ###########################################################
 # String to Float
@@ -22,18 +36,12 @@ def floatinize_columns(record: dict[str, str], columns: list[str]) -> dict[str, 
     return record
 
 
-def abs_effect_size(record: dict[str, float | str]) -> dict[str, str | float]:
-    """Return a record with the absolute effect size."""
+def abs_effect_size(record: dict[str, str | float]) -> dict[str, str | float]:
+    """Return a record with the absolute effect size and NaN replaced with 0."""
     record["effect_size"] = abs(record["effect_size"])
+    if record["effect_size"] == float("nan"):
+        record["effect_size"] = 0
     return record
-
-
-def format_statistics_float(records: list[dict[str, str | None]], columns: list[str]) -> list[dict[str, str | float]]:
-    """Format statistics by converting string values to float."""
-    for record in records:
-        record = floatinize_columns(record, columns)
-        record = abs_effect_size(record)
-    return records
 
 
 ###########################################################
@@ -41,29 +49,73 @@ def format_statistics_float(records: list[dict[str, str | None]], columns: list[
 ###########################################################
 
 
-def format_disease_annotations(disease_annotations: list[dict[str, str | float]]) -> dict[str, dict[str, str | float]]:
+def _select_fields_from_disease_annotations(disease_annotations: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Select disorder_name and description fields from IMPC human disease_annotations."""
+
+    # Heuristic to identify the correct fields
+    prev_disorder_name = None
+    prev_description = None
+    for record in disease_annotations:
+        for key, value in record.items():
+            if "Syndrome" in value:
+                prev_disorder_name = key
+            if "<em1(IMPC)Bay>" in value:
+                prev_description = key
+        if prev_disorder_name is not None and prev_description is not None:
+            break
+
+    if prev_disorder_name is None or prev_description is None:
+        raise ValueError("Could not identify disorder_name or description fields in disease_annotations.")
+
+    # Select the fields
+    disease_annotations_selected = []
+    for record in disease_annotations:
+        disease_annotations_selected.append(
+            {"disorder_name": record[prev_disorder_name], "description": record[prev_description]}
+        )
+
+    return disease_annotations_selected
+
+
+def format_disease_annotations(disease_annotations: list[dict[str, str | float]]) -> dict[str, list[dict[str, str]]]:
     """Format the IMPC human disease_annotations for output."""
 
-    zygosity_converter = {"het": "heterozygote", "hom": "homozygote", "hem": "hemizygote"}
-    life_stage_converter = {"middle": "interval"}
+    # Select "description" and "disorder_name" fields
+    disease_annotations = _select_fields_from_disease_annotations(disease_annotations)
+
+    # Filter out records with unexpected description format: expected format is "<allele_symbol> <zygosity> <life_stage>"
+    disease_annotations = [record for record in disease_annotations if len(record["description"].split(" ")) == 3]
+
+    zygosity_converter = {"het": "Hetero", "hom": "Homo", "hem": "Hemi"}
+    life_stage_converter = {"middle": "Interval", "late": "Late", "early": "Early", "embryo": "Embryo"}
+
     for record in disease_annotations:
         description = record["description"]
         description_split = description.split(" ")
-        allele_symbol = "".join(description_split[:-2])
+        marker_symbol = description.split("<")[0].strip()
         zygosity = description_split[-2]
         life_stage = description_split[-1]
         # Apply converters
         zygosity = zygosity_converter.get(zygosity, zygosity)
         life_stage = life_stage_converter.get(life_stage, life_stage)
         # Update record with new values
-        record["allele_symbol"] = allele_symbol
+        record["marker_symbol"] = marker_symbol
         record["zygosity"] = zygosity
         record["life_stage"] = life_stage
         # Delete used fields
         del record["description"]
 
-    # Using allele_symbol as the key makes it easier to join with IMPC phenotype records later
-    return {r["allele_symbol"]: r for r in disease_annotations}
+    # Using marker_symbol as the key makes it easier to join with IMPC phenotype records later
+    disease_annotations_by_gene = defaultdict(list)
+    appended_records = set()
+    for record in disease_annotations:
+        if tuple(record.items()) not in appended_records:
+            appended_records.add(tuple(record.items()))
+            marker_symbol = record["marker_symbol"]
+            del record["marker_symbol"]
+            disease_annotations_by_gene[marker_symbol].append(record)
+
+    return dict(disease_annotations_by_gene)
 
 
 ###########################################################

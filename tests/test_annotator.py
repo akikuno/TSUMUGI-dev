@@ -16,22 +16,22 @@ def test_annotate_life_stage():
     embryo_pattern = re.compile("|".join(map(re.escape, embryo_assays)))
     procedure_name = "Gross Morphology Embryo E9.5"
     pipeline_name = "TCP"
-    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "embryo"
+    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "Embryo"
 
     procedure_name = "Calorimetry"
     pipeline_name = "KMPC interval pipeline"
-    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "interval"
+    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "Interval"
 
     pipeline_name = "KMPC late pipeline"
-    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "late"
+    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "Late"
 
     pipeline_name = "IMPC Pipeline"
-    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "early"
+    assert _annotate_life_stage(procedure_name, pipeline_name, embryo_pattern) == "Early"
 
 
 def test_annotate_sexual_dimorphism():
     female_ko_effect_p_values = [1e-5, 1, 1]
     male_ko_effect_p_values = [1, 1e-5, 1]
-    expected_results = ["female", "male", ""]
+    expected_results = ["Female", "Male", ""]
     for f_p, m_p, expected in zip(female_ko_effect_p_values, male_ko_effect_p_values, expected_results):
         assert _annotate_sexual_dimorphism(f_p, m_p) == expected
