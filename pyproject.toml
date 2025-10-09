@@ -20,8 +20,15 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
+include = [
+    "TSUMUGI/css/**/*",
+    "TSUMUGI/image/**/*",
+    "TSUMUGI/js/**/*",
+    "TSUMUGI/template/**/*"
+]
+
 [tool.poetry.scripts]
-TSUMUGI = "TSUMUGI.main:main"
+tsumugi = "TSUMUGI.main:main"
 
 [tool.poetry.dependencies]
 python = ">=3.10"
