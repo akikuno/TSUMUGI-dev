@@ -8,8 +8,6 @@ import shutil
 from collections.abc import Iterator
 from pathlib import Path
 
-import polars as pl
-
 from TSUMUGI import (
     annotator,
     filterer,
@@ -24,80 +22,69 @@ from TSUMUGI import (
 # Logging Config
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# ###########################################################
-# # Download data
-# ###########################################################
-
-# logging.info("Downloading data...")
-
-# path_output = Path(TEMPDIR, "download", "impc_phenodigm.csv")
-# if not path_output.exists():
-#     url_phenodigm = "https://github.com/whri-phenogenomics/disease_models/raw/main/disease_models_app/data/phenodigm_matches_dr20.1.txt"
-
-#     error_message = "Please manually download impc phenodigm data (impc_phenodigm.csv) from https://diseasemodels.research.its.qmul.ac.uk/."
-
-#     phenodigm_tsv = io_handler.download_file(url_phenodigm, error_message)
-#     reader = csv.reader(io.StringIO(phenodigm_tsv), delimiter="\t")
-#     phenodigm_csv = (row for row in reader)
-#     io_handler.save_csv(phenodigm_csv, path_output)
-
-# path_output = Path(TEMPDIR, "download", "mp.obo")
-# if not path_output.exists():
-#     url_mp_obo = "https://purl.obolibrary.org/obo/mp.obo"
-
-#     error_message = "Please manually download mp.obo data from https://purl.obolibrary.org/obo/mp.obo."
-
-#     mp_obo = io_handler.download_file(url_mp_obo, error_message)
-#     path_output.write_text(mp_obo)
-
-# path_output = Path(TEMPDIR, f"statistical_all_{IMPC_RELEASE}.csv")
-# if not path_output.exists():
-#     url_impc = f"https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-{IMPC_RELEASE}/results/statistical-results-ALL.csv.gz"
-
-#     error_message = "Please manually download impc statistical data (statistical_results_ALL.csv) from https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results/."
-
-#     statistical_all = io_handler.download_file(url_impc, error_message)
-#     reader = csv.reader(io.StringIO(statistical_all), delimiter=",")
-#     statistical_all_rows = (row for row in reader)
-#     io_handler.save_csv(statistical_all_rows, path_output)
-
-
-# records = io_handler.load_csv_as_dicts(path_output)
-# ontology_terms = io_handler.parse_obo_file(Path(TEMPDIR / "mp.obo"))
-
-# with open(Path(TEMPDIR, "download", "impc_phenodigm.csv")) as f:
-#     reader = csv.DictReader(f)
-#     disease_annotations_by_gene = [record for record in reader if len(record["description"].split(" ")) == 3]
-
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run TSUMUGI pipeline")
-    parser.add_argument("-o", "--output_dir", type=str, required=True, help="Output directory for TSUMUGI results")
+    parser = argparse.ArgumentParser(description="Run TSUMUGI pipeline", formatter_class=argparse.RawTextHelpFormatter)
+
+    parser.add_argument(
+        "-o",
+        "--output_dir",
+        type=str,
+        required=True,
+        help=(
+            "Output directory for TSUMUGI results.\n"
+            "All generated files (intermediate and final results) will be saved here.\n"
+            "Example: ./results/phenotype_network/"
+        ),
+    )
+
     parser.add_argument(
         "-s",
         "--statistical_results",
         type=str,
         required=True,
-        help="Path to statistical_results_ALL.csv",
+        help=(
+            "Path to IMPC statistical_results_ALL.csv file.\n"
+            "This file contains statistical test results (effect sizes, p-values, etc.) "
+            "for all IMPC phenotyping experiments.\n"
+            "Example: ./data/statistical-results-ALL.csv.gz\n"
+            "If not available, download 'statistical-results-ALL.csv.gz' manually from:\n"
+            "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/results/"
+        ),
     )
+
     parser.add_argument(
         "-m",
         "--mp_obo",
         type=str,
         required=True,
-        help="Path to mp.obo",
+        help=(
+            "Path to Mammalian Phenotype ontology file (mp.obo).\n"
+            "Used to map and infer hierarchical relationships among MP terms.\n"
+            "Example: ./data/mp.obo\n"
+            "If not available, download '/mp.obo' manually from:\n"
+            "https://obofoundry.org/ontology/mp.html"
+        ),
     )
+
     parser.add_argument(
         "-i",
         "--impc_phenodigm",
         type=str,
         required=True,
-        help="Path to impc_phenodigm.csv",
+        help=(
+            "Path to IMPC Phenodigm annotation file (impc_phenodigm.csv).\n"
+            "This file links mouse phenotypes to human diseases based on Phenodigm similarity.\n"
+            "Example: ./data/impc_phenodigm.csv\n"
+            "If not available, download manually from:\n"
+            "https://diseasemodels.research.its.qmul.ac.uk/\n"
+        ),
     )
+
     parser.add_argument(
         "--is_test",
         action="store_true",
-        help="If set, deploy to test webapp (TSUMUGI-testwebapp) instead of production (TSUMUGI-webapp)",
+        help=argparse.SUPPRESS,
     )
 
     args = parser.parse_args()
@@ -114,21 +101,6 @@ def main() -> None:
 
     logging.info("Loading data...")
     # TODO: validate data
-
-    ############################################################
-    # Preparation
-    ############################################################
-
-    sub_dirs: list[Path] = [
-        Path("preprocessed"),
-        Path("phenotype_similarity"),
-        Path("network", "phenotype"),
-        Path("network", "genesymbol"),
-        Path("webapp"),
-        Path("download"),
-    ]
-
-    io_handler.make_directories(TEMPDIR, sub_dirs)
 
     ###########################################################
     # Preprocess data
@@ -188,19 +160,6 @@ def main() -> None:
     records_significants = formatter.format_zygosity(records_significants)
 
     # --------------------------------------------------------
-    # Cache results
-    # --------------------------------------------------------
-    pl.DataFrame(records_significants).write_csv(
-        Path(TEMPDIR, "preprocessed", "statistical_significants.csv"),
-    )
-    pl.DataFrame(records_significants).write_parquet(
-        Path(TEMPDIR, "preprocessed", "statistical_significants.parquet"),
-    )
-    pickle.dump(
-        records_significants,
-        open(Path(TEMPDIR / "preprocessed" / "statistical_significants.pkl"), "wb"),
-    )
-    # --------------------------------------------------------
     # Annotate life stage and sexual dimorphisms
     # --------------------------------------------------------
 
@@ -216,8 +175,10 @@ def main() -> None:
         "E18.5",
     }
 
-    records_significants = annotator.annotate_life_stage(records_significants, embryo_assays)
-    records_significants = annotator.annotate_sexual_dimorphism(records_significants, threshold=1e-4)
+    records_significants_annotated = annotator.annotate_life_stage(records_significants, embryo_assays)
+    records_significants_annotated = annotator.annotate_sexual_dimorphism(
+        records_significants_annotated, threshold=1e-4
+    )
 
     # --------------------------------------------------------
     # Select distinct records with max effect size
@@ -231,24 +192,33 @@ def main() -> None:
         "sexual_dimorphism",
     ]
 
-    records_significants: list[dict[str, str | float]] = formatter.get_distinct_records_with_max_effect(
-        records_significants, unique_keys
+    records_significants_annotated: list[dict[str, str | float]] = formatter.get_distinct_records_with_max_effect(
+        records_significants_annotated, unique_keys
     )
 
     # --------------------------------------------------------
     # Cache results
     # --------------------------------------------------------
+    output_dir = Path(TEMPDIR / "preprocessed")
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     pickle.dump(
         records_significants,
-        open(Path(TEMPDIR / "preprocessed" / "statistical_significants_annotated.pkl"), "wb"),
+        open(output_dir / "statistical_significants.pkl", "wb"),
     )
+
+    pickle.dump(
+        records_significants_annotated,
+        open(output_dir / "statistical_significants_annotated.pkl", "wb"),
+    )
+
+    del records_significants
 
     ###########################################################
     # Calculate phenotype similarity
     ###########################################################
 
-    all_term_ids = {r["mp_term_id"] for r in records_significants}
+    all_term_ids = {r["mp_term_id"] for r in records_significants_annotated}
 
     logging.info(f"Calculating pairwise similarity for {len(all_term_ids)} terms...")
 
@@ -257,47 +227,26 @@ def main() -> None:
     )
     # 30 min
 
-    # --------------------------------------------------------
-    # Cache results
-    # --------------------------------------------------------
-    with open(Path(TEMPDIR / "phenotype_similarity", "term_pair_similarity_map.pkl"), "wb") as f:
-        pickle.dump(term_pair_similarity_map, f)
-
     # ----------------------------------------
     # Calculate phenotype similarity for genes
     # ----------------------------------------
 
-    logging.info(f"Annotate phenotype ancestors for {len(records_significants)} records...")
+    logging.info(f"Annotate phenotype ancestors for {len(records_significants_annotated)} records...")
     phenotype_ancestors: dict[frozenset[str], dict[str, dict[str, str]]] = (
         similarity_calculator.annotate_phenotype_ancestors(
-            records_significants, term_pair_similarity_map, ontology_terms
+            records_significants_annotated, term_pair_similarity_map, ontology_terms, ic_threshold=5
         )
     )
-    # 20 min
+    # 10 min
 
-    logging.info(f"Calculating phenodigm similarity for {len(records_significants)} records...")
+    logging.info(f"Calculating phenodigm similarity for {len(records_significants_annotated)} records...")
     phenodigm_scores: dict[frozenset[str], int] = similarity_calculator.calculate_phenodigm_score(
-        records_significants, term_pair_similarity_map
+        records_significants_annotated, term_pair_similarity_map
     )
     # 30 min
 
-    num_shared_phenotypes = similarity_calculator.calculate_num_shared_phenotypes(records_significants)
-    jaccard_indices = similarity_calculator.calculate_jaccard_indices(records_significants)
-
-    # --------------------------------------------------------
-    # Cache results
-    # --------------------------------------------------------
-    with open(Path(TEMPDIR / "phenotype_similarity", "phenotype_ancestors.pkl"), "wb") as f:
-        pickle.dump(phenotype_ancestors, f)
-
-    with open(Path(TEMPDIR / "phenotype_similarity", "phenodigm_scores.pkl"), "wb") as f:
-        pickle.dump(phenodigm_scores, f)
-
-    with open(Path(TEMPDIR / "phenotype_similarity", "num_shared_phenotypes.pkl"), "wb") as f:
-        pickle.dump(num_shared_phenotypes, f)
-
-    with open(Path(TEMPDIR / "phenotype_similarity", "jaccard_indices.pkl"), "wb") as f:
-        pickle.dump(jaccard_indices, f)
+    num_shared_phenotypes = similarity_calculator.calculate_num_shared_phenotypes(records_significants_annotated)
+    jaccard_indices = similarity_calculator.calculate_jaccard_indices(records_significants_annotated)
 
     # ----------------------------------------
     # Summarize the phenotype similarity results
@@ -310,8 +259,32 @@ def main() -> None:
     # --------------------------------------------------------
     # Cache results
     # --------------------------------------------------------
-    with open(Path(TEMPDIR / "phenotype_similarity", "pair_similarity_annotations.pkl"), "wb") as f:
+    output_dir = Path(TEMPDIR / "phenotype_similarity")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    with open(output_dir / "term_pair_similarity_map.pkl", "wb") as f:
+        pickle.dump(term_pair_similarity_map, f)
+
+    with open(output_dir / "pair_similarity_annotations.pkl", "wb") as f:
         pickle.dump(pair_similarity_annotations, f)
+
+    with open(output_dir / "phenotype_ancestors.pkl", "wb") as f:
+        pickle.dump(phenotype_ancestors, f)
+
+    with open(output_dir / "phenodigm_scores.pkl", "wb") as f:
+        pickle.dump(phenodigm_scores, f)
+
+    with open(output_dir / "num_shared_phenotypes.pkl", "wb") as f:
+        pickle.dump(num_shared_phenotypes, f)
+
+    with open(output_dir / "jaccard_indices.pkl", "wb") as f:
+        pickle.dump(jaccard_indices, f)
+
+    del term_pair_similarity_map
+    del phenotype_ancestors
+    del phenodigm_scores
+    del num_shared_phenotypes
+    del jaccard_indices
 
     ###########################################################
     # Generate network
@@ -334,7 +307,7 @@ def main() -> None:
     output_dir = Path(TEMPDIR / "network" / "phenotype")
     output_dir.mkdir(parents=True, exist_ok=True)
     network_constructor.build_phenotype_network_json(
-        records_significants,
+        records_significants_annotated,
         pair_similarity_annotations_with_shared_phenotype,
         disease_annotations_by_gene,
         output_dir,
@@ -345,11 +318,15 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     network_constructor.build_gene_network_json(
-        records_significants,
+        records_significants_annotated,
         pair_similarity_annotations_with_shared_phenotype,
         disease_annotations_by_gene,
         output_dir,
     )
+
+    del pair_similarity_annotations
+    del pair_similarity_annotations_with_shared_phenotype
+    del disease_annotations_by_gene
 
     ###########################################################
     # Output reports to public directory
@@ -368,7 +345,7 @@ def main() -> None:
     # Output data for web application
     ###########################################################
 
-    output_dir = Path(TEMPDIR / "webapp")  # data for webapp
+    output_dir = Path(TEMPDIR, "webapp")  # data for webapp
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # available mp terms
@@ -377,7 +354,7 @@ def main() -> None:
 
     # binary phenotypes
     report_generator.write_binary_phenotypes_txt(
-        records_significants, TEMPDIR, Path(output_dir / "binary_phenotypes.txt")
+        records_significants_annotated, TEMPDIR, Path(output_dir / "binary_phenotypes.txt")
     )
 
     # available gene symbols
@@ -385,7 +362,7 @@ def main() -> None:
 
     # marker symbol to accession id
     report_generator.write_marker_symbol_accession_id_json(
-        records_significants, TEMPDIR, Path(output_dir / "marker_symbol_accession_id.json")
+        records_significants_annotated, TEMPDIR, Path(output_dir / "marker_symbol_accession_id.json")
     )
 
     ###########################################################
@@ -395,8 +372,10 @@ def main() -> None:
     logging.info("Building gene network JSON files...")
     is_test = args.is_test
 
-    output_dir = Path(TEMPDIR, "TSUMUGI-testwebapp") if is_test else Path(TEMPDIR, "TSUMUGI-webapp")
-    shutil.rmtree(output_dir)
+    output_dir = Path(ROOT_DIR, "TSUMUGI-testwebapp") if is_test else Path(ROOT_DIR, "TSUMUGI-webapp")
+
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     targetted_phenotypes = web_deployer.select_targetted_phenotypes(TEMPDIR, is_test=is_test)
@@ -404,9 +383,11 @@ def main() -> None:
 
     web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
 
-    web_deployer.generate_phenotype_pages(records_significants, targetted_phenotypes, TEMPDIR, output_dir)
-    web_deployer.generate_gene_pages(records_significants, targetted_genes, output_dir)
+    web_deployer.generate_phenotype_pages(records_significants_annotated, targetted_phenotypes, TEMPDIR, output_dir)
+    web_deployer.generate_gene_pages(records_significants_annotated, targetted_genes, output_dir)
     web_deployer.generate_genelist_page(output_dir)
+
+    logging.info(f"Finished!🎊 Results are saved in {ROOT_DIR}")
 
 
 if __name__ == "__main__":
