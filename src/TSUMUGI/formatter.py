@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import math
 from itertools import groupby
 from operator import itemgetter
 
-import polars as pl
 from sklearn.base import defaultdict
 
 ###########################################################
@@ -38,9 +38,9 @@ def floatinize_columns(record: dict[str, str], columns: list[str]) -> dict[str, 
 
 def abs_effect_size(record: dict[str, str | float]) -> dict[str, str | float]:
     """Return a record with the absolute effect size and NaN replaced with 0."""
-    record["effect_size"] = abs(record["effect_size"])
-    if record["effect_size"] == float("nan"):
+    if math.isnan(record["effect_size"]):
         record["effect_size"] = 0
+    record["effect_size"] = abs(record["effect_size"])
     return record
 
 
@@ -145,16 +145,3 @@ def get_distinct_records_with_max_effect(
         distinct_records.append(record_with_max_effect)
 
     return distinct_records
-
-
-def fill_nulls_to_nan_str(df_polars: pl.DataFrame) -> pl.DataFrame:
-    """Fill nulls in Float64 columns with NaN and in Utf8 columns with an empty string."""
-    exprs = []
-    for name, dtype in df_polars.schema.items():
-        if dtype == pl.Float64:
-            exprs.append(pl.col(name).fill_null(float("nan")))
-        elif dtype == pl.Utf8:
-            exprs.append(pl.col(name).fill_null(""))
-        else:
-            exprs.append(pl.col(name))  # No change
-    return df_polars.with_columns(exprs)
