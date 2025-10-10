@@ -180,7 +180,7 @@ def _delete_parent_terms_from_ancestors(
 
 
 def _get_terms_with_low_ic(
-    ontology_terms: dict[str, dict[str, str]], child_term_map: dict[str, set[str]], ic_threshold=10
+    ontology_terms: dict[str, dict[str, str]], child_term_map: dict[str, set[str]], ic_threshold
 ) -> set[str]:
     total_term_count = len(ontology_terms)
     map_term_to_ic = {}
@@ -197,6 +197,7 @@ def annotate_phenotype_ancestors(
     records_significants: list[dict[str, str | float]],
     term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
     ontology_terms: dict[str, dict[str, str]],
+    ic_threshold,
 ) -> dict[frozenset, dict[str, dict[str, str]]]:
     """Wrapper function for annotating phenotype ancestors."""
 
@@ -208,7 +209,7 @@ def annotate_phenotype_ancestors(
     _, child_term_map = _build_term_hierarchy(ontology_terms)
     annotations = {"zygosity", "life_stage", "sexual_dimorphism"}
 
-    terms_with_low_ic: set[str] = _get_terms_with_low_ic(ontology_terms, child_term_map, ic_threshold=10)
+    terms_with_low_ic: set[str] = _get_terms_with_low_ic(ontology_terms, child_term_map, ic_threshold=ic_threshold)
 
     phenotype_ancestors = defaultdict(dict)
     for gene1_symbol, gene2_symbol in tqdm(
