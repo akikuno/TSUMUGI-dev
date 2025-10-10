@@ -64,7 +64,7 @@ def _generate_index_html(output_dir: str | Path) -> None:
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "index.html"
-    temp_file = files("TSUMUGI") / "template" / "template_index.html"
+    temp_file = files("TSUMUGI") / "web" / "template" / "template_index.html"
 
     with as_file(temp_file) as template_path:
         with template_path.open("r", encoding="utf-8") as src, output_path.open("w", encoding="utf-8") as dst:
@@ -79,28 +79,28 @@ def _copy_directories(output_dir: str | Path) -> None:
     for asset in ["css", "js"]:
         dst_dir = output_dir / asset
         dst_dir.mkdir(parents=True, exist_ok=True)
-        temp_file = files("TSUMUGI") / asset
+        temp_file = files("TSUMUGI") / "web" / asset
         with as_file(temp_file) as src_dir:
             shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
 
     for asset in ["css", "js"]:
         dst_dir = output_dir / "app" / asset
         dst_dir.mkdir(parents=True, exist_ok=True)
-        temp_file = files("TSUMUGI") / "app" / asset
+        temp_file = files("TSUMUGI") / "web" / "app" / asset
         with as_file(temp_file) as src_dir:
             shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
 
     # imageディレクトリをコピー
     dst_dir = output_dir / "image"
     dst_dir.mkdir(parents=True, exist_ok=True)
-    temp_file = files("TSUMUGI") / "image"
+    temp_file = files("TSUMUGI") / "web" / "image"
     with as_file(temp_file) as src_dir:
         shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
 
     # templateディレクトリをコピー
     dst_dir = output_dir / "template"
     dst_dir.mkdir(parents=True, exist_ok=True)
-    temp_file = files("TSUMUGI") / "template"
+    temp_file = files("TSUMUGI") / "web" / "template"
     with as_file(temp_file) as src_dir:
         shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
 
