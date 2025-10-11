@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import math
+from collections import defaultdict
 from itertools import groupby
 from operator import itemgetter
-
-from sklearn.base import defaultdict
 
 ###########################################################
 # Zygosity Formatting
