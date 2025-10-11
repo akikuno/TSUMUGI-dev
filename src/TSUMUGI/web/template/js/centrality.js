@@ -237,7 +237,7 @@ export function getCentralityRange(cy, centralityType) {
 // Centrality UI state and management
 // ############################################################################
 
-let centralityType = "none"; // 'none', 'degree', or 'betweenness'
+let centralityType = "normalized_degree"; // active options: none, degree, betweenness, normalized_degree, normalized_betweenness
 let centralityScale = 0; // 0 to 1 scale factor
 let cytoscapeInstance = null;
 let createSliderFunction = null;
@@ -256,6 +256,11 @@ export function initializeCentralitySystem(cy, createSlider) {
 
     // Initialize controls
     initializeCentralityControls();
+    const centralityDropdown = document.getElementById("centrality-type-dropdown");
+    if (centralityDropdown) {
+        centralityDropdown.value = centralityType;
+    }
+    handleCentralityTypeChange(centralityType);
 
     // Calculate initial centrality values
     setTimeout(() => {

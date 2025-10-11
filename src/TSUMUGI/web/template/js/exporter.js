@@ -19,6 +19,25 @@ export function exportGraphAsPNG(cy, file_name) {
 }
 
 // --------------------------------------------------------
+// JPG Exporter
+// --------------------------------------------------------
+
+export function exportGraphAsJPG(cy, file_name) {
+    const jpgContent = cy.jpg({
+        scale: 6.25,
+        full: true,
+        quality: 0.95,
+    });
+
+    const a = document.createElement("a");
+    a.href = jpgContent;
+    a.download = `${file_name}.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// --------------------------------------------------------
 // CSV Exporter
 // --------------------------------------------------------
 

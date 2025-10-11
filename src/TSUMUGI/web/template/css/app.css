@@ -195,7 +195,7 @@ a {
 /* Input style */
 #gene-search,
 #phenotype-search {
-    width: calc(100% - 20px);
+    width: 100%;
     padding: 10px 10px 10px 35px;
     font-size: 14px;
     border: 2px solid #ccc;
@@ -338,12 +338,13 @@ ul.suggestions li:hover {
 }
 
 .boxed-section.align-center {
-    /* 中央揃えのためのスタイル */
+    /* 左揃えに統一 */
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
+    width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     word-wrap: break-word;

@@ -176,15 +176,32 @@ a {
 /* search-container */
 /* ======================================================== */
 
+/* Search container styling */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    width: 100%;
+}
+
+.search-container i {
+    position: absolute;
+    left: 10px;
+    color: #999;
+    z-index: 1;
+}
+
 /* Input style */
 #gene-search,
 #phenotype-search {
-    width: 70%;
-    padding: 10px;
+    width: 100%;
+    padding: 10px 10px 10px 35px;
     font-size: 14px;
     border: 2px solid #ccc;
     border-radius: 5px;
     outline: none;
+    box-sizing: border-box;
 }
 
 /* Input focus */
@@ -316,12 +333,13 @@ ul.suggestions li:hover {
 }
 
 .boxed-section.align-center {
-    /* 中央揃えのためのスタイル */
+    /* 左揃えに統一 */
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
+    width: 100%;
     padding: 10px;
     margin-bottom: 20px;
 }

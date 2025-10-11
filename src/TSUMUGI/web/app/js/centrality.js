@@ -1,4 +1,16 @@
 /**
+ * Count the number of phenotypes for a node, excluding empty entries.
+ * @param {Object} node - Cytoscape node
+ * @returns {number} Number of phenotypes associated with the node
+ */
+function countNodePhenotypes(node) {
+    const nodeData = node.data();
+    const phenotypes = nodeData.phenotype || [];
+    const phenotypeArray = Array.isArray(phenotypes) ? phenotypes : [phenotypes];
+    return phenotypeArray.filter((p) => p && p !== "").length;
+}
+
+/**
  * Calculate degree centrality for all visible nodes in the network
  * @param {Object} cy - Cytoscape instance
  * @returns {Map} Map of node id to degree centrality value
@@ -117,15 +129,57 @@ export function calculateBetweennessCentrality(cy) {
     betweennessCentrality.forEach((value, key) => {
         betweennessCentrality.set(key, value / 2);
     });
-    
-    // Debug: Log the calculated values
-    console.log('Betweenness Centrality (Brandes Algorithm):');
-    visibleNodes.forEach(node => {
-        const value = betweennessCentrality.get(node.id()) || 0;
-        console.log(`Node ${node.id()}: ${value}`);
-    });
+
+    // Normalize by the maximum possible betweenness centrality: (n-1)(n-2)/2 for undirected graphs
+    const n = visibleNodes.length;
+    if (n > 2) {
+        const normalizationFactor = ((n - 1) * (n - 2)) / 2;
+        betweennessCentrality.forEach((value, key) => {
+            betweennessCentrality.set(key, value / normalizationFactor);
+        });
+    }
     
     return betweennessCentrality;
+}
+
+/**
+ * Calculate normalized degree centrality (degree divided by phenotype count)
+ * @param {Object} cy - Cytoscape instance
+ * @returns {Map} Map of node id to normalized degree centrality value
+ */
+export function calculateNormalizedDegreeCentrality(cy) {
+    const normalizedDegreeCentrality = new Map();
+    const degreeCentrality = calculateDegreeCentrality(cy);
+    const visibleNodes = cy.nodes().filter(node => node.style('display') === 'element');
+
+    visibleNodes.forEach(node => {
+        const degree = degreeCentrality.get(node.id()) || 0;
+        const phenotypeCount = countNodePhenotypes(node);
+        const normalizedDegree = phenotypeCount > 0 ? degree / phenotypeCount : 0;
+        normalizedDegreeCentrality.set(node.id(), normalizedDegree);
+    });
+
+    return normalizedDegreeCentrality;
+}
+
+/**
+ * Calculate normalized betweenness centrality (betweenness divided by phenotype count)
+ * @param {Object} cy - Cytoscape instance
+ * @returns {Map} Map of node id to normalized betweenness centrality value
+ */
+export function calculateNormalizedBetweennessCentrality(cy) {
+    const normalizedBetweennessCentrality = new Map();
+    const betweennessCentrality = calculateBetweennessCentrality(cy);
+    const visibleNodes = cy.nodes().filter(node => node.style('display') === 'element');
+
+    visibleNodes.forEach(node => {
+        const betweenness = betweennessCentrality.get(node.id()) || 0;
+        const phenotypeCount = countNodePhenotypes(node);
+        const normalizedBetweenness = phenotypeCount > 0 ? betweenness / phenotypeCount : 0;
+        normalizedBetweennessCentrality.set(node.id(), normalizedBetweenness);
+    });
+
+    return normalizedBetweennessCentrality;
 }
 
 /**
@@ -165,7 +219,7 @@ export function getCentralityRange(cy, centralityType) {
 // Centrality UI state and management
 // ############################################################################
 
-let centralityType = 'none'; // 'none', 'degree', or 'betweenness'
+let centralityType = 'normalized_degree'; // active options: none, degree, betweenness, normalized_degree, normalized_betweenness
 let centralityScale = 0; // 0 to 1 scale factor
 let cytoscapeInstance = null;
 let createSliderFunction = null;
@@ -184,6 +238,11 @@ export function initializeCentralitySystem(cy, createSlider) {
     
     // Initialize controls
     initializeCentralityControls();
+    const centralityDropdown = document.getElementById("centrality-type-dropdown");
+    if (centralityDropdown) {
+        centralityDropdown.value = centralityType;
+    }
+    handleCentralityTypeChange(centralityType);
     
     // Calculate initial centrality values
     setTimeout(() => {
@@ -250,10 +309,14 @@ export function recalculateCentrality() {
     // Calculate centrality for visible nodes
     const degreeCentrality = calculateDegreeCentrality(cytoscapeInstance);
     const betweennessCentrality = calculateBetweennessCentrality(cytoscapeInstance);
+    const normalizedDegreeCentrality = calculateNormalizedDegreeCentrality(cytoscapeInstance);
+    const normalizedBetweennessCentrality = calculateNormalizedBetweennessCentrality(cytoscapeInstance);
     
     // Update node data with centrality values
     updateNodeCentrality(cytoscapeInstance, degreeCentrality, 'degree');
     updateNodeCentrality(cytoscapeInstance, betweennessCentrality, 'betweenness');
+    updateNodeCentrality(cytoscapeInstance, normalizedDegreeCentrality, 'normalized_degree');
+    updateNodeCentrality(cytoscapeInstance, normalizedBetweennessCentrality, 'normalized_betweenness');
     
     // Apply node size updates if sliders are active
     updateNodeSizeByCentrality();
@@ -309,6 +372,25 @@ function updateNodeSizeByCentrality() {
             // Only apply minimum boost if there's actual scaling happening
             if (betweennessCentrality > 0 && centralityScale > 0 && scalingFactor < 2) {
                 size = baseSize + 2; // Minimum visible increase for non-zero centrality
+            }
+        } else if (centralityType === 'normalized_degree' && centralityRange.max > centralityRange.min) {
+            const normalizedDegreeCentrality = node.data('normalized_degree_centrality') || 0;
+            const normalizedValue = (normalizedDegreeCentrality - centralityRange.min) / (centralityRange.max - centralityRange.min);
+            size = baseSize + (normalizedValue * 35 * centralityScale);
+        } else if (centralityType === 'normalized_betweenness') {
+            const normalizedBetweennessCentrality = node.data('normalized_betweenness_centrality') || 0;
+            const epsilon = 0.001;
+            const logCentrality = Math.log10(normalizedBetweennessCentrality + epsilon);
+            const maxLogCentrality = Math.log10((centralityRange.max || epsilon) + epsilon);
+            const minLogCentrality = Math.log10(epsilon);
+            const normalizedLog = maxLogCentrality > minLogCentrality
+                ? (logCentrality - minLogCentrality) / (maxLogCentrality - minLogCentrality)
+                : 0;
+            const scalingFactor = normalizedLog * 35 * centralityScale;
+            size = baseSize + scalingFactor;
+
+            if (normalizedBetweennessCentrality > 0 && centralityScale > 0 && scalingFactor < 2) {
+                size = baseSize + 2;
             }
         }
         

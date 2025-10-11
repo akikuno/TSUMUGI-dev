@@ -1,4 +1,4 @@
-import { exportGraphAsPNG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/exporter.js";
+import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/exporter.js";
 import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
 import { removeTooltips, showTooltip } from "../js/tooltips.js";
 import { calculateConnectedComponents } from "../js/components.js";
@@ -361,38 +361,70 @@ const file_name = "TSUMUGI_XXX_NAME";
 // PNG Exporter
 // --------------------------------------------------------
 
-document.getElementById("export-png").addEventListener("click", function () {
-    exportGraphAsPNG(cy, file_name);
-});
+const exportPngButton = document.getElementById("export-png");
+if (exportPngButton) {
+    exportPngButton.addEventListener("click", function () {
+        exportGraphAsPNG(cy, file_name);
+    });
+}
+
+const exportJpgButton = document.getElementById("export-jpg");
+if (exportJpgButton) {
+    exportJpgButton.addEventListener("click", function () {
+        exportGraphAsJPG(cy, file_name);
+    });
+}
 
 // --------------------------------------------------------
 // CSV Exporter
 // --------------------------------------------------------
 
-document.getElementById("export-csv").addEventListener("click", function () {
-    exportGraphAsCSV(cy, file_name);
-});
+const exportCsvButton = document.getElementById("export-csv");
+if (exportCsvButton) {
+    exportCsvButton.addEventListener("click", function () {
+        exportGraphAsCSV(cy, file_name);
+    });
+}
 
 // --------------------------------------------------------
 // GraphML Exporter (Desktop Cytoscape Compatible)
 // --------------------------------------------------------
 
-document.getElementById("export-graphml").addEventListener("click", function () {
-    exportGraphAsGraphML(cy, file_name);
-});
+const exportGraphmlButton = document.getElementById("export-graphml");
+if (exportGraphmlButton) {
+    exportGraphmlButton.addEventListener("click", function () {
+        exportGraphAsGraphML(cy, file_name);
+    });
+}
 
 // --------------------------------------------------------
 // Mobile Export buttons
 // --------------------------------------------------------
 
-document.getElementById("export-png-mobile").addEventListener("click", function () {
-    exportGraphAsPNG(cy, file_name);
-});
+const exportPngMobileButton = document.getElementById("export-png-mobile");
+if (exportPngMobileButton) {
+    exportPngMobileButton.addEventListener("click", function () {
+        exportGraphAsPNG(cy, file_name);
+    });
+}
 
-document.getElementById("export-csv-mobile").addEventListener("click", function () {
-    exportGraphAsCSV(cy, file_name);
-});
+const exportJpgMobileButton = document.getElementById("export-jpg-mobile");
+if (exportJpgMobileButton) {
+    exportJpgMobileButton.addEventListener("click", function () {
+        exportGraphAsJPG(cy, file_name);
+    });
+}
 
-document.getElementById("export-graphml-mobile").addEventListener("click", function () {
-    exportGraphAsGraphML(cy, file_name);
-});
+const exportCsvMobileButton = document.getElementById("export-csv-mobile");
+if (exportCsvMobileButton) {
+    exportCsvMobileButton.addEventListener("click", function () {
+        exportGraphAsCSV(cy, file_name);
+    });
+}
+
+const exportGraphmlMobileButton = document.getElementById("export-graphml-mobile");
+if (exportGraphmlMobileButton) {
+    exportGraphmlMobileButton.addEventListener("click", function () {
+        exportGraphAsGraphML(cy, file_name);
+    });
+}
