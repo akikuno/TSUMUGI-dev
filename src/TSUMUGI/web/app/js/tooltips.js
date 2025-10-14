@@ -34,7 +34,13 @@ function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
         .join("<br>");
 }
 
-function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
+function createTooltip(
+    event,
+    cy,
+    map_symbol_to_id,
+    target_phenotype = null,
+    { allNodeColors } = {},
+) {
     const data = event.target.data();
     let tooltipText = "";
     let pos;
@@ -45,7 +51,15 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
     if (event.target.isNode()) {
         const geneID = map_symbol_to_id[data.id] || "UNKNOWN";
         const url_impc = `https://www.mousephenotype.org/data/genes/${geneID}`;
-        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a></b><br>`;
+        const rawSeverity = Number.isFinite(data.original_node_color) ? data.original_node_color : data.node_color;
+        const nodeColorSet = Array.isArray(allNodeColors) ? new Set(allNodeColors) : new Set();
+        const uniqueValues = [...nodeColorSet];
+        const isBinary =
+            uniqueValues.length === 1 &&
+            ["0", "1", "100"].includes(String(Math.round(Number(uniqueValues[0]))));
+        const severityValue = !isBinary && Number.isFinite(rawSeverity) ? Math.round(rawSeverity) : null;
+        const severityText = severityValue !== null ? ` (Severity: ${severityValue})` : "";
+        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b><br>`;
         tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
         // もしdiseasesが""出ない場合は、Associated Human Diseasesを追加
         if (diseases && diseases.length > 0 && diseases[0] !== "") {
@@ -56,7 +70,9 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
     } else if (event.target.isEdge()) {
         const sourceNode = cy.getElementById(data.source).data("label");
         const targetNode = cy.getElementById(data.target).data("label");
-        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>`;
+        const hasSimilarityValue = Number.isFinite(data.edge_size);
+        const similarityText = hasSimilarityValue ? ` (Similarity: ${Math.round(data.edge_size)})` : "";
+        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs${similarityText}</b><br>`;
         tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
 
         const sourcePos = cy.getElementById(data.source).renderedPosition();
@@ -128,10 +144,24 @@ function enableTooltipDrag(tooltip) {
 /*
     Accepts target_phenotype and passes it to createTooltip
 */
-export function showTooltip(event, cy, map_symbol_to_id, target_phenotype = null) {
+export function showTooltip(
+    event,
+    cy,
+    map_symbol_to_id,
+    target_phenotype = null,
+    nodeColorMin,
+    nodeColorMax,
+    edgeMin,
+    edgeMax,
+    nodeSizes,
+) {
     removeTooltips();
 
-    const { tooltipText, pos } = createTooltip(event, cy, map_symbol_to_id, target_phenotype);
+    const { tooltipText, pos } = createTooltip(event, cy, map_symbol_to_id, target_phenotype, {
+        nodeColorMin,
+        nodeColorMax,
+        allNodeColors: nodeSizes,
+    });
 
     const tooltip = document.createElement("div");
     tooltip.classList.add("cy-tooltip");

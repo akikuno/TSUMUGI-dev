@@ -2,8 +2,6 @@
 // Tooltip Handling Functions
 // ############################################################
 
-import { scaleValue } from "./value_scaler.js";
-
 /*
     Formats phenotypes for tooltips, placing and highlighting the target phenotype at the top.
 */
@@ -48,19 +46,21 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null, nod
         const geneID = map_symbol_to_id[data.id] || "UNKNOWN";
         const url_impc = `https://www.mousephenotype.org/data/genes/${geneID}`;
         
-        // Calculate severity score only if node colors are not binary (0 or 1 only)
+        // Calculate severity score only if node colors vary (non-binary phenotypes)
         let severityText = "";
         let isBinary = false;
         
-        // Check if all node colors are 0 or 1
-        if (allNodeColors && allNodeColors.length > 0) {
-            isBinary = allNodeColors.every(color => color === 0 || color === 1);
-        }
+        const nodeColorSet = allNodeColors && allNodeColors.length > 0 ? new Set(allNodeColors) : new Set();
+        const uniqueValues = [...nodeColorSet];
+        isBinary =
+            uniqueValues.length === 1 &&
+            ["0", "1", "100"].includes(String(Math.round(Number(uniqueValues[0]))));
         
-        if (nodeColorMin !== null && nodeColorMax !== null && !isBinary && Math.abs(nodeColorMax - nodeColorMin) > 0.0001) {
+        if (!isBinary) {
             const originalNodeColor = data.original_node_color || data.node_color;
-            const severityScore = scaleValue(originalNodeColor, nodeColorMin, nodeColorMax, 1, 10);
-            severityText = ` (Severity: ${severityScore.toFixed(1)}/10)`;
+            if (Number.isFinite(originalNodeColor)) {
+                severityText = ` (Severity: ${Math.round(originalNodeColor)})`;
+            }
         }
         
         tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b><br>`;
@@ -77,9 +77,8 @@ function createTooltip(event, cy, map_symbol_to_id, target_phenotype = null, nod
         
         // Calculate similarity score
         let similarityText = "";
-        if (edgeMin !== null && edgeMax !== null) {
-            const similarityScore = scaleValue(data.edge_size, edgeMin, edgeMax, 1, 10);
-            similarityText = ` (Similarity: ${similarityScore.toFixed(1)}/10)`;
+        if (Number.isFinite(data.edge_size)) {
+            similarityText = ` (Similarity: ${Math.round(data.edge_size)})`;
         }
         
         tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs${similarityText}</b><br>`;

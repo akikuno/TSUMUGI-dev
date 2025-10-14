@@ -129,19 +129,62 @@ def _compose_dataset(records_significants, pair_similarity_annotations, disease_
 ###############################################################################
 
 
+def _scale_to_1_100(x, min_val, max_val) -> int:
+    if max_val == min_val:
+        return 100
+    return int(1 + (x - min_val) * (99 / (max_val - min_val)))
+
+
+def _scale_effect_sizes(gene_records_map_filtered, mp_term_name):
+    effect_sizes = []
+    for records in gene_records_map_filtered.values():
+        for record in records:
+            if record["mp_term_name"] == mp_term_name:
+                effect_sizes.append(record["effect_size"])
+
+    # For binary effect sizes (0 or 1), set 1 to 100 directly
+    if all(es == 1 for es in effect_sizes):
+        for records in gene_records_map_filtered.values():
+            for record in records:
+                if record["mp_term_name"] == mp_term_name:
+                    record["effect_size"] = 100
+        return gene_records_map_filtered
+
+    effect_sizes_log1p = [math.log1p(es) for es in effect_sizes]
+    min_val = min(effect_sizes_log1p)
+    max_val = max(effect_sizes_log1p)
+    for records in gene_records_map_filtered.values():
+        for record in records:
+            if record["mp_term_name"] == mp_term_name:
+                effect_size_scaled = _scale_to_1_100(math.log1p(record["effect_size"]), min_val, max_val)
+                record["effect_size"] = effect_size_scaled
+    return gene_records_map_filtered
+
+
+def _scale_phenotype_similarity_scores(pair_similarity_annotations_filtered):
+    min_val = min(v["phenotype_similarity_score"] for v in pair_similarity_annotations_filtered.values())
+    max_val = max(v["phenotype_similarity_score"] for v in pair_similarity_annotations_filtered.values())
+    for v in pair_similarity_annotations_filtered.values():
+        v["phenotype_similarity_score"] = _scale_to_1_100(v["phenotype_similarity_score"], min_val, max_val)
+    return pair_similarity_annotations_filtered
+
+
 def _convert_to_nodes_json(
     related_genes: set[str],
     mp_term_name: str,
     gene_records_map: dict[str, list[dict[str, str | float]]],
     disease_annotations_composed: dict[str, set[str]],
-) -> list[dict[str, dict[str, str | list[str] | float]]]:
+) -> list[dict[str, dict[str, str | list[str] | int]]]:
     nodes_json = []
-    for gene in related_genes:
-        records: list[dict[str, str | float]] = gene_records_map.get(gene)
+    gene_records_map_filtered = {gene: gene_records_map[gene] for gene in related_genes}
 
+    # Scale effect sizes to 1-100
+    gene_records_map_filtered = _scale_effect_sizes(gene_records_map_filtered, mp_term_name)
+
+    for gene, records in gene_records_map_filtered.items():
         phenotypes: list[str] = [r["phenotype"] for r in records]
         diseases: set[str] = disease_annotations_composed.get(gene, set())
-        node_color: float = next((r["effect_size"] for r in records if r["mp_term_name"] == mp_term_name), 0.0)
+        node_color: int = next((r["effect_size"] for r in records if r["mp_term_name"] == mp_term_name), 1)
 
         nodes_json.append(
             {
@@ -163,10 +206,22 @@ def _convert_to_edges_json(
     pair_similarity_annotations_composed: dict[frozenset[str], dict[str, set[str] | int]],
 ) -> list[dict[str, dict[str, str | list[str] | float]]]:
     edges_json = []
+    pair_similarity_annotations_filtered = {}
     for gene1, gene2 in combinations(sorted(related_genes), 2):
         if frozenset([gene1, gene2]) not in pair_similarity_annotations_composed:
             continue
-        pair_annotations = pair_similarity_annotations_composed[frozenset([gene1, gene2])]
+        pair_similarity_annotations_filtered[frozenset([gene1, gene2])] = pair_similarity_annotations_composed[
+            frozenset([gene1, gene2])
+        ]
+
+    if not pair_similarity_annotations_filtered:
+        return []
+
+    # Scale phenotype similarity scores to 1-100
+    pair_similarity_annotations_filtered = _scale_phenotype_similarity_scores(pair_similarity_annotations_filtered)
+
+    for pair_key, pair_annotations in pair_similarity_annotations_filtered.items():
+        gene1, gene2 = pair_key
         edges_json.append(
             {
                 "data": {
@@ -228,7 +283,7 @@ def _filter_related_genes(
          - then gene symbol (asc, for stability),
          and take the top MAX_GENE_COUNT.
     Notes:
-      - NaN effect sizes are treated as 0.
+      - NaN effect sizes are treated as 1.
       - For speed, pair stats are computed in a single pass over unique gene pairs.
     """
 
@@ -324,10 +379,11 @@ def build_phenotype_network_json(
         if len(related_genes) > MAX_GENE_COUNT:
             related_genes = _filter_related_genes(records, related_genes, pair_similarity_annotations_composed)
 
-        nodes_json = _convert_to_nodes_json(
-            related_genes, mp_term_name, gene_records_map, disease_annotations_composed
-        )
+        nodes_json = _convert_to_nodes_json(related_genes, mp_term_name, gene_records_map, disease_annotations_composed)
         edges_json = _convert_to_edges_json(related_genes, pair_similarity_annotations_composed)
+
+        if not edges_json:
+            continue
 
         network_json = nodes_json + edges_json
 
@@ -345,7 +401,7 @@ def _build_node_info(
 ) -> dict[str, dict[str, str | list[str] | float]]:
     phenotypes: list[str] = [r["phenotype"] for r in gene_records_map.get(gene, [])]
     diseases: set[str] = disease_annotations_composed.get(gene, set())
-    node_color: float = 1.0 if target_gene == gene else 0.0
+    node_color: int = 100 if target_gene == gene else 1
 
     return {
         "data": {
