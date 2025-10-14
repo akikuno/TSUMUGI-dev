@@ -1,7 +1,7 @@
 function filterByNodeColorAndEdgeSize() {
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
-    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
-    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
+    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax, 1, 100);
+    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax, 1, 100);
 
     // 1. 一旦すべて非表示
     cy.elements().forEach((ele) => ele.style("display", "none"));

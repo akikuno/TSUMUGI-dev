@@ -94,8 +94,8 @@ const cy = cytoscape({
                 height: 15,
                 "background-color": function (ele) {
                     const originalColor = ele.data("original_node_color") || ele.data("node_color");
-                    const color_value = scaleValue(originalColor, nodeColorMin, nodeColorMax, 1, 10);
-                    return getColorForValue(color_value);
+                    const color_value = scaleValue(originalColor, nodeColorMin, nodeColorMax, 1, 100);
+                    return getColorForValue(color_value, 1, 100);
                 },
             },
         },
@@ -189,7 +189,7 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 
 // Initialization of the Edge size slider
 const edgeSlider = document.getElementById("filter-edge-slider");
-noUiSlider.create(edgeSlider, { start: [1, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
+noUiSlider.create(edgeSlider, { start: [1, 100], connect: true, range: { min: 1, max: 100 }, step: 1 });
 
 // Update the slider values when the sliders are moved
 edgeSlider.noUiSlider.on("update", function (values) {
@@ -204,8 +204,8 @@ edgeSlider.noUiSlider.on("update", function (values) {
 
 function filterByNodeColorAndEdgeSize() {
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
-    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
-    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
+    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax, 1, 100);
+    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax, 1, 100);
 
     // 1. 一旦すべてのノードを表示
     cy.nodes().forEach((node) => node.style("display", "element"));

@@ -1,14 +1,14 @@
 function filterByNodeColorAndEdgeSize() {
 
-    let nodeSliderValues = [1, 10];
+    let nodeSliderValues = [1, 100];
     nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat); // REMOVE_THIS_LINE_IF_BINARY_PHENOTYPE
 
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
 
-    const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax);
-    const nodeMaxValue = scaleToOriginalRange(nodeSliderValues[1], nodeMin, nodeMax);
-    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax);
-    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax);
+    const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax, 1, 100);
+    const nodeMaxValue = scaleToOriginalRange(nodeSliderValues[1], nodeMin, nodeMax, 1, 100);
+    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax, 1, 100);
+    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax, 1, 100);
 
     // 1. node_color 範囲に基づきノードを表示/非表示
     cy.nodes().forEach((node) => {

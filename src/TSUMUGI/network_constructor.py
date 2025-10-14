@@ -55,13 +55,11 @@ def _compose_records_significants(
         phenotype_composed = f"{record['mp_term_name']} ({annotation_str})"
 
         effect_size = record["effect_size"]
-        effect_size_log = math.log(effect_size + 1)
 
         gene_records_map[record["marker_symbol"]].append(
             {
                 "mp_term_name": record["mp_term_name"],
                 "effect_size": effect_size,
-                "effect_size_log": effect_size_log,
                 "phenotype": phenotype_composed,
             }
         )

@@ -120,8 +120,8 @@ const cy = cytoscape({
                 height: 15,
                 "background-color": function (ele) {
                     const originalColor = ele.data("original_node_color") || ele.data("node_color");
-                    const color_value = scaleValue(originalColor, nodeColorMin, nodeColorMax, 1, 10);
-                    return getColorForValue(color_value);
+                    const color_value = scaleValue(originalColor, nodeColorMin, nodeColorMax, 1, 100);
+                    return getColorForValue(color_value, 1, 100);
                 },
             },
         },
@@ -216,9 +216,9 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 
 // Initialization of the Edge size slider
 const edgeSlider = document.getElementById("filter-edge-slider");
-// Set default to 5 for gene symbol pages, 1 for others
-const defaultPhenotypeSimMin = isGeneSymbolPage ? 5 : 1;
-noUiSlider.create(edgeSlider, { start: [defaultPhenotypeSimMin, 10], connect: true, range: { min: 1, max: 10 }, step: 1 });
+// Set default to 50 for gene symbol pages, 1 for others
+const defaultPhenotypeSimMin = isGeneSymbolPage ? 50 : 1;
+noUiSlider.create(edgeSlider, { start: [defaultPhenotypeSimMin, 100], connect: true, range: { min: 1, max: 100 }, step: 1 });
 
 XXX_NODE_COLOR_INITIALIZATION
 
