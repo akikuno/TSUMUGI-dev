@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import gzip
+import json
 import math
 from collections import defaultdict
 from itertools import groupby
 from operator import itemgetter
+from pathlib import Path
 
 ###########################################################
 # Zygosity Formatting
@@ -144,3 +147,23 @@ def get_distinct_records_with_max_effect(
         distinct_records.append(record_with_max_effect)
 
     return distinct_records
+
+
+###########################################################
+# Convert report (jsonl.gz) files to `pair_similarity_annotations`:
+# dict[frozenset[str], dict[str, dict[str, str] | int]]
+###########################################################
+
+
+def convert_jsonl_gz_to_pair_map(path_jsonl_gz: str | Path) -> dict[frozenset[str], dict[str, dict[str, str] | int]]:
+    pair_similarity_annotations = {}
+    with gzip.open(path_jsonl_gz, "rt", encoding="utf-8") as f:
+        for obj in map(json.loads, f):
+            gene1 = obj["gene1_symbol"]
+            gene2 = obj["gene2_symbol"]
+            pair = frozenset([gene1, gene2])
+            del obj["gene1_symbol"]
+            del obj["gene2_symbol"]
+            pair_similarity_annotations[pair] = obj
+
+    return pair_similarity_annotations
