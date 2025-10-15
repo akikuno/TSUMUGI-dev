@@ -481,7 +481,7 @@ def summarize_similarity_annotations(
 
         pair_similarity_annotations[frozenset([gene1_symbol, gene2_symbol])] = {
             "phenotype_shared_annotations": phenotype_ancestor_name,
-            "phenotype_similarity_score": phenodigm_score,
+            "phenotype_similarity_score": phenodigm_score if phenotype_ancestor_name else 0,
         }
 
     return dict(pair_similarity_annotations)
