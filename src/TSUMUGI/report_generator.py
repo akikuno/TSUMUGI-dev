@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gzip
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -66,3 +67,29 @@ def write_marker_symbol_accession_id_json(records_significants, TEMPDIR: Path, o
     # Save as a JSON file
     with open(output_file, "w") as f:
         json.dump(marker_symbol_accession_id, f, ensure_ascii=False, indent=2)
+
+
+def write_records_significants_jsonl_gz(records_significants, output_file: Path) -> None:
+    with gzip.open(output_file, "wt", encoding="utf-8") as f:
+        for record in records_significants:
+            f.write(json.dumps(record) + "\n")
+
+
+def write_pair_similarity_annotations(pair_similarity_annotations, output_file: Path) -> None:
+    with gzip.open(output_file, "wt", encoding="utf-8") as f:
+        for gene_pair, annotation in pair_similarity_annotations.items():
+            gene1_symbol, gene2_symbol = sorted(gene_pair)
+            if not annotation["phenotype_shared_annotations"]:
+                continue
+            phenotype_similarity_score = annotation["phenotype_similarity_score"]
+            f.write(
+                json.dumps(
+                    {
+                        "gene1_symbol": gene1_symbol,
+                        "gene2_symbol": gene2_symbol,
+                        "phenotype_shared_annotations": annotation["phenotype_shared_annotations"],
+                        "phenotype_similarity_score": phenotype_similarity_score,
+                    }
+                )
+                + "\n"
+            )

@@ -204,12 +204,12 @@ def main() -> None:
 
     pickle.dump(
         records_significants,
-        open(output_dir / "statistical_significants.pkl", "wb"),
+        open(output_dir / "records_significants.pkl", "wb"),
     )
 
     pickle.dump(
         records_significants_annotated,
-        open(output_dir / "statistical_significants_annotated.pkl", "wb"),
+        open(output_dir / "records_significants_annotated.pkl", "wb"),
     )
 
     del records_significants
@@ -324,7 +324,6 @@ def main() -> None:
         output_dir,
     )
 
-    del pair_similarity_annotations
     del pair_similarity_annotations_with_shared_phenotype
     del disease_annotations_by_gene
 
@@ -332,14 +331,18 @@ def main() -> None:
     # Output reports to public directory
     ###########################################################
     logging.info("Generating reports...")
-    # TODO: make reports
 
-    # output_file = f"data/TSUMUGI_v{TSUMUGI_VERSION}_phenotype_similarity.jsonl.gz"
-    # with gzip.open(output_file, "wt", encoding="utf-8") as f:
-    #     for genes, annotations in pair_similarity_annotations.items():
-    #         gene1, gene2 = sorted(genes)
-    #         record = {"gene1": gene1, "gene2": gene2, **annotations}
-    #         f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    # records significants
+    report_generator.write_records_significants_jsonl_gz(
+        records_significants_annotated, Path(ROOT_DIR / "significant_phenotypes_per_gene.jsonl.gz")
+    )
+
+    # pair similarity annotations
+    report_generator.write_pair_similarity_annotations(
+        pair_similarity_annotations, Path(ROOT_DIR / "phenotype_similarity_per_gene_pair.jsonl.gz")
+    )
+
+    del pair_similarity_annotations
 
     ###########################################################
     # Output data for web application
