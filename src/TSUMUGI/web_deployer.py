@@ -140,6 +140,11 @@ def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
     for src, dst in file_map.items():
         shutil.copy(src, dst)
 
+    # Copy webapp launchers
+    for file_name in ["open_webapp_mac.command", "open_webapp_windows.bat", "open_webapp_linux.sh", "serve_index.py"]:
+        temp_file = files("TSUMUGI") / "web" / file_name
+        shutil.copy(temp_file, output_dir / file_name)
+
 
 def prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, output_dir: str | Path) -> None:
     _prepare_directories(output_dir)
