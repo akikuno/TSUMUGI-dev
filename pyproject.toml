@@ -29,6 +29,8 @@ numpy = ">=1.21.0"
 tqdm = ">=4.64.0"
 
 [tool.ruff]
+fix = true
+
 line-length = 119
 
 [tool.ruff.lint]

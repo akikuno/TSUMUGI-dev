@@ -379,7 +379,9 @@ def build_phenotype_network_json(
         if len(related_genes) > MAX_GENE_COUNT:
             related_genes = _filter_related_genes(records, related_genes, pair_similarity_annotations_composed)
 
-        nodes_json = _convert_to_nodes_json(related_genes, mp_term_name, gene_records_map, disease_annotations_composed)
+        nodes_json = _convert_to_nodes_json(
+            related_genes, mp_term_name, gene_records_map, disease_annotations_composed
+        )
         edges_json = _convert_to_edges_json(related_genes, pair_similarity_annotations_composed)
 
         if not edges_json:
