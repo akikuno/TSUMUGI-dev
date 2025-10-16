@@ -1,5 +1,5 @@
 import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/exporter.js";
-import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
+import { scaleToOriginalRange, getColorForValue } from "../js/value_scaler.js";
 import { removeTooltips, showTooltip } from "../js/tooltips.js";
 import { calculateConnectedComponents } from "../js/components.js";
 import { createSlider } from "../js/slider.js";
@@ -50,6 +50,14 @@ const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map
 
 XXX_EDGE_MIN_MAX
 
+function mapEdgeSizeToWidth(edgeSize) {
+    if (edgeMax === edgeMin) {
+        return 1.5;
+    }
+    const normalized = (edgeSize - edgeMin) / (edgeMax - edgeMin);
+    return 0.5 + normalized * 1.5;
+}
+
 // ############################################################################
 // Cytoscapeの初期化
 // ############################################################################
@@ -57,48 +65,13 @@ XXX_EDGE_MIN_MAX
 let currentLayout = "cose";
 
 const nodeRepulsionMin = 1;
-const nodeRepulsionMax = 20000;
-const componentSpacingMin = 20;
-const componentSpacingMax = 20000;
-const idealEdgeLengthMin = 80;
-const idealEdgeLengthMax = 4000;
-const gravityMin = -1.2;
-const gravityMax = -9;
-const edgeElasticityMin = 4;
-const edgeElasticityMax = 140;
+const nodeRepulsionMax = 10000;
+const componentSpacingMin = 1;
+const componentSpacingMax = 200;
 
 // Use different defaults for gene symbol pages only
 const isGeneSymbolPage = "XXX_ELEMENTS".includes("genesymbol");
 const defaultNodeRepulsion = isGeneSymbolPage ? 8 : 5;
-
-function computeLogScaledRange(sliderValue, min, max) {
-    // Use log scaling so low slider values stay compact while higher values stretch components substantially.
-    const clamped = Math.min(Math.max(sliderValue, 1), 10);
-    const normalized = (clamped - 1) / 9;
-    const logMin = Math.log(min);
-    const logMax = Math.log(max);
-    return Math.exp(logMin + normalized * (logMax - logMin));
-}
-
-function computeComponentSpacing(sliderValue) {
-    return computeLogScaledRange(sliderValue, componentSpacingMin, componentSpacingMax);
-}
-
-function computeIdealEdgeLength(sliderValue) {
-    return computeLogScaledRange(sliderValue, idealEdgeLengthMin, idealEdgeLengthMax);
-}
-
-function computeGravity(sliderValue) {
-    const clamped = Math.min(Math.max(sliderValue, 1), 10);
-    const normalized = (clamped - 1) / 9;
-    return gravityMin + normalized * (gravityMax - gravityMin);
-}
-
-function computeEdgeElasticity(sliderValue) {
-    const clamped = Math.min(Math.max(sliderValue, 1), 10);
-    const normalized = (clamped - 1) / 9;
-    return edgeElasticityMax - normalized * (edgeElasticityMax - edgeElasticityMin);
-}
 
 let nodeRepulsionValue = scaleToOriginalRange(
     defaultNodeRepulsion,
@@ -106,10 +79,11 @@ let nodeRepulsionValue = scaleToOriginalRange(
     nodeRepulsionMax,
 );
 
-let componentSpacingValue = computeComponentSpacing(defaultNodeRepulsion);
-let idealEdgeLengthValue = computeIdealEdgeLength(defaultNodeRepulsion);
-let gravityValue = computeGravity(defaultNodeRepulsion);
-let edgeElasticityValue = computeEdgeElasticity(defaultNodeRepulsion);
+let componentSpacingValue = scaleToOriginalRange(
+    defaultNodeRepulsion,
+    componentSpacingMin,
+    componentSpacingMax,
+);
 
 function getLayoutOptions() {
     const baseOptions = {
@@ -118,21 +92,21 @@ function getLayoutOptions() {
         componentSpacing: componentSpacingValue,
     };
 
-    // Add enhanced options for COSE layout to prevent hairball effect
-    if (currentLayout === "cose") {
+    // Add enhanced options for COSE layout to prevent hairball effect (gene symbol pages only)
+    if (currentLayout === "cose" && isGeneSymbolPage) {
         return {
             ...baseOptions,
-            idealEdgeLength: idealEdgeLengthValue,
+            idealEdgeLength: 100,
             nodeOverlap: 20,
-            padding: Math.max(30, componentSpacingValue / 6),
+            padding: 30,
             animate: true,
-            animationDuration: 600,
-            gravity: gravityValue,
-            numIter: 1800,
-            initialTemp: 300,
+            animationDuration: 500,
+            gravity: -1.2,
+            numIter: 1500,
+            initialTemp: 200,
             coolingFactor: 0.95,
-            minTemp: 0.5,
-            edgeElasticity: edgeElasticityValue,
+            minTemp: 1.0,
+            edgeElasticity: 100,
         };
     }
 
@@ -154,8 +128,7 @@ const cy = cytoscape({
                 height: 15,
                 "background-color": function (ele) {
                     const originalColor = ele.data("original_node_color") || ele.data("node_color");
-                    const color_value = scaleValue(originalColor, nodeColorMin, nodeColorMax, 1, 100);
-                    return getColorForValue(color_value, 1, 100);
+                    return getColorForValue(originalColor, nodeColorMin, nodeColorMax);
                 },
             },
         },
@@ -165,7 +138,7 @@ const cy = cytoscape({
                 "curve-style": "bezier",
                 "text-rotation": "autorotate",
                 width: function (ele) {
-                    return scaleValue(ele.data("edge_size"), edgeMin, edgeMax, 0.5, 2);
+                    return mapEdgeSizeToWidth(ele.data("edge_size"));
                 },
             },
         },
@@ -250,16 +223,33 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 
 // Initialization of the Edge size slider
 const edgeSlider = document.getElementById("filter-edge-slider");
-// Set default to 50 for gene symbol pages, 1 for others
-const defaultPhenotypeSimMin = isGeneSymbolPage ? 50 : 1;
-noUiSlider.create(edgeSlider, { start: [defaultPhenotypeSimMin, 100], connect: true, range: { min: 1, max: 100 }, step: 1 });
+const EDGE_SLIDER_MIN = 1;
+const EDGE_SLIDER_MAX = 100;
+let edgeSliderRangeMin = EDGE_SLIDER_MIN;
+let edgeSliderRangeMax = EDGE_SLIDER_MAX;
+let edgeSliderStartMin = EDGE_SLIDER_MIN;
+let edgeSliderStartMax = EDGE_SLIDER_MAX;
+
+if (isGeneSymbolPage) {
+    edgeSliderRangeMin = edgeMin;
+    edgeSliderRangeMax = edgeMax === edgeMin ? edgeMin + 1 : edgeMax;
+    edgeSliderStartMin = edgeSliderRangeMin;
+    edgeSliderStartMax = edgeSliderRangeMax;
+}
+
+noUiSlider.create(edgeSlider, {
+    start: [edgeSliderStartMin, edgeSliderStartMax],
+    connect: true,
+    range: { min: edgeSliderRangeMin, max: edgeSliderRangeMax },
+    step: 1,
+});
 
 XXX_NODE_COLOR_INITIALIZATION
 
 // Update the slider values when the sliders are moved
 edgeSlider.noUiSlider.on("update", function (values) {
-    const intValues = values.map((value) => Math.round(value));
-    document.getElementById("edge-size-value").textContent = intValues.join(" - ");
+    const formattedValues = values.map((value) => Math.round(Number(value)));
+    document.getElementById("edge-size-value").textContent = formattedValues.join(" - ");
     filterByNodeColorAndEdgeSize();
 });
 
@@ -332,7 +322,8 @@ createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
     cy.style()
         .selector("edge")
         .style("width", function (ele) {
-            return scaleValue(ele.data("edge_size"), edgeMin, edgeMax, 0.5, 2) * (intValues * 0.4);
+            const baseWidth = mapEdgeSizeToWidth(ele.data("edge_size"));
+            return baseWidth * (intValues * 0.4);
         })
         .update();
 });
@@ -354,10 +345,7 @@ layoutDropdown.addEventListener("change", updateNodeRepulsionVisibility);
 
 createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues) => {
     nodeRepulsionValue = scaleToOriginalRange(intValues, nodeRepulsionMin, nodeRepulsionMax);
-    componentSpacingValue = computeComponentSpacing(intValues);
-    idealEdgeLengthValue = computeIdealEdgeLength(intValues);
-    gravityValue = computeGravity(intValues);
-    edgeElasticityValue = computeEdgeElasticity(intValues);
+    componentSpacingValue = scaleToOriginalRange(intValues, componentSpacingMin, componentSpacingMax);
     document.getElementById("node-repulsion-value").textContent = intValues;
     cy.layout(getLayoutOptions()).run();
 });

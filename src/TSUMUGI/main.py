@@ -390,7 +390,7 @@ def main() -> None:
     web_deployer.generate_gene_pages(records_significants_annotated, targetted_genes, output_dir)
     web_deployer.generate_genelist_page(output_dir)
 
-    logging.info(f"Finished!🎊 Results are saved in {ROOT_DIR}")
+    logging.info(f"Finished!🎊 Results are saved in {Path(ROOT_DIR).resolve()}")
 
 
 if __name__ == "__main__":

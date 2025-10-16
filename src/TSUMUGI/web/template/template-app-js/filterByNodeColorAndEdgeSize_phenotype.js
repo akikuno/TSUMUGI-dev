@@ -1,14 +1,27 @@
 function filterByNodeColorAndEdgeSize() {
 
-    let nodeSliderValues = [1, 100];
-    nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat); // REMOVE_THIS_LINE_IF_BINARY_PHENOTYPE
-
+    const nodeSliderValues = nodeSlider.noUiSlider.get().map(Number); // REMOVE_THIS_LINE_IF_BINARY_PHENOTYPE
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
 
-    const nodeMinValue = scaleToOriginalRange(nodeSliderValues[0], nodeMin, nodeMax, 1, 100);
-    const nodeMaxValue = scaleToOriginalRange(nodeSliderValues[1], nodeMin, nodeMax, 1, 100);
-    const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax, 1, 100);
-    const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax, 1, 100);
+    const nodeLowerBound = Math.min(nodeMin, nodeMax);
+    const nodeUpperBound = Math.max(nodeMin, nodeMax);
+    const rawNodeMin = Math.min(...nodeSliderValues);
+    const rawNodeMax = Math.max(...nodeSliderValues);
+    let nodeMinValue = scaleToOriginalRange(rawNodeMin, nodeLowerBound, nodeUpperBound, NODE_SLIDER_MIN, NODE_SLIDER_MAX);
+    let nodeMaxValue = scaleToOriginalRange(rawNodeMax, nodeLowerBound, nodeUpperBound, NODE_SLIDER_MIN, NODE_SLIDER_MAX);
+    if (nodeLowerBound === nodeUpperBound) {
+        nodeMinValue = nodeLowerBound;
+        nodeMaxValue = nodeUpperBound;
+    }
+
+    const rawEdgeMin = Math.min(...edgeSliderValues);
+    const rawEdgeMax = Math.max(...edgeSliderValues);
+    let edgeMinValue = scaleToOriginalRange(rawEdgeMin, edgeMin, edgeMax, EDGE_SLIDER_MIN, EDGE_SLIDER_MAX);
+    let edgeMaxValue = scaleToOriginalRange(rawEdgeMax, edgeMin, edgeMax, EDGE_SLIDER_MIN, EDGE_SLIDER_MAX);
+    if (edgeMin === edgeMax) {
+        edgeMinValue = edgeMin;
+        edgeMaxValue = edgeMax;
+    }
 
     // 1. node_color 範囲に基づきノードを表示/非表示
     cy.nodes().forEach((node) => {
