@@ -122,7 +122,10 @@ def _extract_genes_without_specific_phenotype(
 
 
 def exclude_specific_phenotype(
-    path_phenotype_similarity_per_gene_pair: str | Path, path_path_statistical_all, path_mp_obo, mp_term_id: set[str]
+    path_phenotype_similarity_per_gene_pair: str | Path,
+    path_path_statistical_all: str | Path,
+    path_mp_obo: str | Path,
+    mp_term_id: set[str],
 ) -> None:
     ontology_terms = io_handler.parse_obo_file(path_mp_obo)
     term_parameters_map = _extract_term_parameters_map(path_path_statistical_all)
@@ -143,8 +146,9 @@ def exclude_specific_phenotype(
 
 
 def include_specific_phenotype(
-    path_phenotype_similarity_per_gene_pair: str | Path, term_id: str, ontology_terms: dict[str, dict[str, str]]
+    path_phenotype_similarity_per_gene_pair: str | Path, path_mp_obo: str | Path, term_id: str
 ) -> None:
+    ontology_terms = io_handler.parse_obo_file(path_mp_obo)
     _, child_term_map = similarity_calculator._build_term_hierarchy(ontology_terms)
     descendants_of_term_id: set[str] = similarity_calculator._find_all_descendant_terms(term_id, child_term_map)
     descendants_of_term_name = {
