@@ -14,7 +14,7 @@ export function scaleToOriginalRange(value, minValue, maxValue, scaleMin = 1, sc
 }
 
 export function scaleValue(value, minValue, maxValue, minScale, maxScale) {
-    // スケールをminScaleとmaxScaleの範囲に変換
+    // Map the value into the [minScale, maxScale] interval
     if (minValue == maxValue) {
         return (maxScale + minScale) / 2;
     }
@@ -22,12 +22,12 @@ export function scaleValue(value, minValue, maxValue, minScale, maxScale) {
 }
 
 export function getColorForValue(value, scaleMin = 1, scaleMax = 10) {
-    // value をscaleMin-scaleMaxの範囲から0-1の範囲に変換
+    // Normalize the value from [scaleMin, scaleMax] into [0, 1]
     const denominator = scaleMax - scaleMin;
     const clampedValue = Math.min(Math.max(value, scaleMin), scaleMax);
     const ratio = denominator === 0 ? 0 : (clampedValue - scaleMin) / denominator;
 
-    // Light Yellow から Orange へのグラデーション
+    // Interpolate from light yellow to orange
     const r1 = 248,
         g1 = 229,
         b1 = 140; // Light Yellow

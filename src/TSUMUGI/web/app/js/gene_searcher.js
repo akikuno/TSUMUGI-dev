@@ -7,7 +7,7 @@ export function setupGeneSearch({
     const input = document.getElementById(inputId);
     const suggestionsList = document.getElementById(listId);
 
-    // 🔍 共通の検索処理を関数にまとめる
+    // Shared helper that performs the gene search
     function performSearch(query) {
         const normalized = query.trim().toLowerCase();
         const matchedNode = cy.nodes().filter((node) => node.data("label").toLowerCase() === normalized);
@@ -25,7 +25,7 @@ export function setupGeneSearch({
         }
     }
 
-    // 🔍 候補を表示する共通関数
+    // Shared helper that renders suggestion items
     function showSuggestions(query = "") {
         const normalizedQuery = query.trim().toLowerCase();
         suggestionsList.innerHTML = "";
@@ -49,11 +49,11 @@ export function setupGeneSearch({
             const li = document.createElement("li");
             li.textContent = label;
 
-            // ✅ 候補をクリックした時に検索実行
+            // Trigger a search when the suggestion is clicked
             li.addEventListener("mousedown", () => {
                 input.value = label;
                 suggestionsList.hidden = true;
-                performSearch(label); // 🔥 検索発火
+                performSearch(label); // Fire the search immediately
             });
 
             suggestionsList.appendChild(li);
@@ -73,13 +73,13 @@ export function setupGeneSearch({
         showSuggestions(query);
     });
 
-    // クリック時に候補を表示
+    // Show suggestions on click
     input.addEventListener("click", () => {
         const query = input.value.trim().toLowerCase();
         showSuggestions(query);
     });
 
-    // フォーカス時にも候補を表示
+    // Show suggestions when the field gains focus
     input.addEventListener("focus", () => {
         const query = input.value.trim().toLowerCase();
         showSuggestions(query);

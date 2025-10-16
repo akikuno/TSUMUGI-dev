@@ -7,7 +7,7 @@
 */
 function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
     if (!target_phenotype) {
-        return phenotypes.map((anno) => "・ " + anno).join("<br>");
+        return phenotypes.map((anno) => "- " + anno).join("<br>");
     }
 
     const matching = [];
@@ -26,9 +26,9 @@ function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
     return ordered
         .map((phenotype) => {
             if (phenotype.startsWith(target_phenotype)) {
-                return `🚩 ${phenotype}`;
+                return `[!] ${phenotype}`;
             } else {
-                return "・ " + phenotype;
+                return "- " + phenotype;
             }
         })
         .join("<br>");
@@ -61,10 +61,10 @@ function createTooltip(
         const severityText = severityValue !== null ? ` (Severity: ${severityValue})` : "";
         tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b><br>`;
         tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
-        // もしdiseasesが""出ない場合は、Associated Human Diseasesを追加
+        // Append the associated human diseases section when data is available
         if (diseases && diseases.length > 0 && diseases[0] !== "") {
             tooltipText += `<br><br><b>Associated Human Diseases</b><br>`;
-            tooltipText += diseases.map((disease) => "・ " + disease).join("<br>");
+            tooltipText += diseases.map((disease) => "- " + disease).join("<br>");
         }
         pos = event.target.renderedPosition();
     } else if (event.target.isEdge()) {

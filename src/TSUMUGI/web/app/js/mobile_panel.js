@@ -1,22 +1,22 @@
-// DOMの読み込みが完了したら実行
+// Initialize once the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-    // アイコン、コントロールパネル、✕ボタンの要素を取得
+    // Look up the toggle icon, control panels, and close button
     const menuToggle = document.getElementById("menu-toggle");
     const leftPanel = document.querySelector(".left-control-panel-container");
     const rightPanel = document.querySelector(".right-control-panel-container");
     const closeButton = document.getElementById("close-panel");
 
-    // すべての要素が取得できている場合のみ処理を進める
+    // Proceed only when all required elements are present
     if (menuToggle && leftPanel && rightPanel && closeButton) {
-        // スマホ表示時のみ右パネルを左パネルに移動
+        // On small screens move the right panel beneath the left panel
         const reorganizePanels = () => {
             if (window.innerWidth <= 600) {
-                // 右パネルを左パネルの最後に追加
+                // Append the right panel to the left container
                 if (rightPanel.parentNode !== leftPanel) {
                     leftPanel.appendChild(rightPanel);
                 }
             } else {
-                // デスクトップ表示に戻す
+                // Restore the desktop layout
                 const bodyContainer = document.querySelector(".body-container");
                 if (rightPanel.parentNode === leftPanel && bodyContainer) {
                     bodyContainer.appendChild(rightPanel);
@@ -24,24 +24,24 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
-        // 初期化とリサイズ時の処理
+        // Handle the initial layout and respond to resizes
         reorganizePanels();
         window.addEventListener("resize", reorganizePanels);
 
         const openPanel = (event) => {
             event.stopPropagation();
-            event.preventDefault(); // デフォルト動作も防ぐ
+            event.preventDefault(); // Prevent default behavior as well
 
-            // menu-toggleを完全に非表示
+            // Hide the menu toggle icon
             menuToggle.style.display = "none";
 
-            // パネルを表示
+            // Reveal the panels
             leftPanel.classList.add("active");
             if (window.innerWidth <= 600) {
                 rightPanel.classList.add("active");
             }
 
-            // close-buttonを表示
+            // Show the close button
             closeButton.style.display = "block";
         };
 
@@ -51,30 +51,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 event.preventDefault();
             }
 
-            // パネルを非表示
+            // Hide both panels
             leftPanel.classList.remove("active");
             rightPanel.classList.remove("active");
 
-            // close-buttonを非表示
+            // Hide the close button
             closeButton.style.display = "none";
 
-            // menu-toggleを再表示（少し遅延させる）
+            // Bring back the menu toggle (with a slight delay)
             setTimeout(() => {
                 menuToggle.style.display = "block";
             }, 50);
         };
 
-        // アイコンに click と touchstart の両方を登録
+        // Support both click and touch events on the icon
         ["click", "touchstart"].forEach((evt) => {
             menuToggle.addEventListener(evt, openPanel);
         });
 
-        // ✕ボタンも同様に click と touchstart を登録
+        // Apply the same handlers to the close button
         ["click", "touchstart"].forEach((evt) => {
             closeButton.addEventListener(evt, closePanel);
         });
 
-        // 外部クリックで閉じる（click のみでOK）
+        // Close the panel when clicking outside
         document.addEventListener("click", (event) => {
             if (
                 leftPanel.classList.contains("active") &&

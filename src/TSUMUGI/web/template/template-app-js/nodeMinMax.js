@@ -1,8 +1,8 @@
 // ==========================================================
-// スライダーを上限値・下限値に合わせても、最低１つの遺伝子ペアが可視化できるようにする. Issue #72
+// Ensure at least one gene pair remains visible even at slider extremes. Issue #72
 // ==========================================================
 
-// Step 1: node_color を ID にマップし、ランクをつける
+// Step 1: Map node_color to ID and assign ranking
 const nodeColorMap = new Map();
 elements.forEach(ele => {
     if (ele.data.node_color !== undefined && ele.data.id !== undefined) {
@@ -10,14 +10,14 @@ elements.forEach(ele => {
     }
 });
 
-// ランク付け
+// Assign ranks
 const sortedNodeColors = [...new Set([...nodeColorMap.values()])].sort((a, b) => a - b);
 const nodeColorToRank = new Map();
 sortedNodeColors.forEach((val, idx) => {
-    nodeColorToRank.set(val, idx + 1);  // ランクは1スタート
+    nodeColorToRank.set(val, idx + 1);  // Ranks start from 1
 });
 
-// Step 2: エッジごとに source/target のランク合計と、元の値を保存
+// Step 2: Record source/target rank sums and original values per edge
 const edgeRankPairs = [];
 
 elements.forEach(ele => {
@@ -39,21 +39,21 @@ elements.forEach(ele => {
     }
 });
 
-// Step 3: 最小スコアのペアの max → nodeMin、最大スコアのペアの min → nodeMax
+// Step 3: Use the max of the lowest-ranked pair for nodeMin and the min of the highest-ranked pair for nodeMax
 const minRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum < b.rankSum ? a : b));
 const maxRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum > b.rankSum ? a : b));
 
-// フィルタリング用の範囲のみ更新（色表示用は元の値を保持）
+// Update only the filtering range (preserve original values for coloring)
 nodeMin = minRankEdge.maxVal;
 nodeMax = maxRankEdge.minVal;
 
-// 色表示用の元の値は保持し、フィルタリング用の値を新しく追加
+// Preserve original values for coloring and add clipped values for filtering
 elements.forEach(ele => {
     if (ele.data.node_color !== undefined) {
-        // 色表示用の元の値を保存
+        // Store the original value for coloring
         ele.data.original_node_color = ele.data.node_color;
         
-        // フィルタリング用の値をクリップ
+        // Clip the value used for filtering
         if (ele.data.node_color <= nodeMin) {
             ele.data.node_color_for_filter = nodeMin;
         } else if (ele.data.node_color >= nodeMax) {

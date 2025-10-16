@@ -4,7 +4,7 @@ export function loadJSONGz(url) {
 
     try {
         req.open("GET", url, false);
-        req.overrideMimeType("text/plain; charset=x-user-defined"); // バイナリデータとして扱う
+        req.overrideMimeType("text/plain; charset=x-user-defined"); // Treat the response as binary data
         req.send(null);
 
         if (req.status === 200) {

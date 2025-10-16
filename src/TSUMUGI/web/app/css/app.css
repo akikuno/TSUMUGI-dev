@@ -58,7 +58,7 @@ a {
 /* ======================================================== */
 /* control-panel-container */
 /* ======================================================== */
-/* 左パネル */
+/* Left panel */
 .left-control-panel-container {
     flex: 1;
     min-width: 120px;
@@ -69,7 +69,7 @@ a {
     background-color: white;
 }
 
-/* 右パネル */
+/* Right panel */
 .right-control-panel-container {
     flex: 1;
     min-width: 120px;
@@ -315,7 +315,7 @@ ul.suggestions li:hover {
     background-color: #fff;
 }
 
-/* タイトル風スタイルをつける */
+/* Title-style label overlay */
 .boxed-section > span {
     position: absolute;
     top: 0;
@@ -333,7 +333,7 @@ ul.suggestions li:hover {
 }
 
 .boxed-section.align-center {
-    /* 左揃えに統一 */
+    /* Keep the content left-aligned */
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -344,7 +344,7 @@ ul.suggestions li:hover {
     margin-bottom: 20px;
 }
 
-/* 丸型チェックボックススタイル */
+/* Rounded checkbox styling */
 .round-checkbox {
     position: relative;
     margin: 8px 0;
@@ -376,7 +376,7 @@ ul.suggestions li:hover {
     box-sizing: border-box;
 }
 
-/* チェック時だけ黄色背景に */
+/* Highlight in yellow only when checked */
 .round-checkbox input[type="checkbox"]:checked + label:before {
     background-color: #ff8c00;
 }
@@ -524,9 +524,9 @@ footer a:hover {
 }
 
 /* ======================================================== */
-/* スマホ向けデザイン */
+/* Mobile-friendly design */
 /* ======================================================== */
-/* 初期状態でアイコンを非表示 */
+/* Hide the icon by default */
 button.menu-toggle-icon {
     display: none;
     background-color: transparent;
@@ -591,7 +591,7 @@ button.menu-toggle-icon {
         justify-content: center;
     }
 
-    /* パネルコンテナの統合スタイル */
+    /* Consolidated styling for panel containers */
     .left-control-panel-container {
         position: fixed;
         top: 0;

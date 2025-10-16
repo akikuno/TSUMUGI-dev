@@ -6,13 +6,13 @@ export function initDynamicFontSize() {
         const containerWidth = header.parentElement.offsetWidth;
         const viewportWidth = window.innerWidth;
 
-        // ビューポート幅に基づく基本サイズ
+        // Base font size derived from viewport width
         let baseFontSize = viewportWidth * 0.04; // 4vw
 
-        // 最小・最大値で制限
+        // Clamp to reasonable min/max values
         baseFontSize = Math.max(14, Math.min(36, baseFontSize));
 
-        // スマホの場合はさらに調整
+        // Apply additional scaling for small screens
         if (viewportWidth <= 600) {
             baseFontSize = Math.min(baseFontSize, viewportWidth * 0.045);
         }
@@ -20,10 +20,10 @@ export function initDynamicFontSize() {
         header.style.fontSize = baseFontSize + "px";
     }
 
-    // 初期実行
+    // Run once on initialization
     adjustHeaderFontSize();
 
-    // リサイズ時の実行（デバウンス付き）
+    // Recalculate on resize (with debouncing)
     let resizeTimer;
     window.addEventListener("resize", () => {
         clearTimeout(resizeTimer);
@@ -31,5 +31,5 @@ export function initDynamicFontSize() {
     });
 }
 
-// 自動実行
+// Auto-run when the DOM is ready
 document.addEventListener("DOMContentLoaded", initDynamicFontSize);

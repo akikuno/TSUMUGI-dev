@@ -12,22 +12,22 @@ function filterByNodeColorAndEdgeSize() {
     const edgeMinValue = Math.max(edgeMin, selectedMin);
     const edgeMaxValue = Math.min(edgeMax, selectedMax);
 
-    // 1. 一旦すべて非表示
+    // 1. Hide everything for a clean slate
     cy.elements().forEach((ele) => ele.style("display", "none"));
 
-    // 2. edge_size 条件に一致するエッジのみ表示
+    // 2. Show edges that meet the edge_size condition
     cy.edges().forEach((edge) => {
         const edgeSize = edge.data("edge_size");
         const isVisible = edgeSize >= Math.min(edgeMinValue, edgeMaxValue) && edgeSize <= Math.max(edgeMinValue, edgeMaxValue);
         edge.style("display", isVisible ? "element" : "none");
     });
 
-    // 3. 表示されているエッジとその接続ノードから連結成分を計算
+    // 3. Compute components from the currently visible edges and nodes
     const visibleEdges = cy.edges().filter(edge => edge.style("display") === "element");
     const candidateElements = visibleEdges.union(visibleEdges.connectedNodes());
     const components = candidateElements.components();
 
-    // 4. 標的遺伝子と直接接続されているノードのみを特定
+    // 4. Identify only the nodes directly connected to the target gene
     const targetGene = "XXX_NAME";
     const targetNode = cy.getElementById(targetGene);
 
@@ -35,19 +35,19 @@ function filterByNodeColorAndEdgeSize() {
         return;
     }
 
-    // 5. 標的遺伝子を表示
+    // 5. Ensure the target gene is visible
     targetNode.style("display", "element");
 
-    // 6. 標的遺伝子と直接接続されているノードを特定
+    // 6. Collect nodes directly connected to the target gene
     const directlyConnectedNodes = new Set([targetGene]);
 
-    // まず標的遺伝子と直接接続されているノードを特定
+    // First gather nodes connected to the target gene
     cy.edges().forEach((edge) => {
         if (edge.style("display") === "element") {
             const source = edge.data("source");
             const target = edge.data("target");
 
-            // 標的遺伝子が関与するエッジから接続ノードを特定
+            // Track nodes joined by edges that involve the target gene
             if (source === targetGene) {
                 directlyConnectedNodes.add(target);
             } else if (target === targetGene) {
@@ -56,13 +56,13 @@ function filterByNodeColorAndEdgeSize() {
         }
     });
 
-    // 7. 直接接続されたノード間のすべてのエッジとノードを表示
+    // 7. Keep only edges whose endpoints are directly connected nodes
     cy.edges().forEach((edge) => {
         if (edge.style("display") === "element") {
             const source = edge.data("source");
             const target = edge.data("target");
 
-            // 両端のノードが直接接続されたノードセットに含まれている場合は表示
+            // Show edges only when both ends belong to the retained set
             if (directlyConnectedNodes.has(source) && directlyConnectedNodes.has(target)) {
                 edge.style("display", "element");
             } else {
@@ -71,7 +71,7 @@ function filterByNodeColorAndEdgeSize() {
         }
     });
 
-    // 8. 直接接続されたノードのみ表示
+    // 8. Hide nodes that are not in the directly connected set
     cy.nodes().forEach((node) => {
         const nodeId = node.data("id");
         if (directlyConnectedNodes.has(nodeId)) {
@@ -81,11 +81,11 @@ function filterByNodeColorAndEdgeSize() {
         }
     });
 
-    // 9. レイアウト再適用
+    // 9. Re-run the layout
     cy.layout(getLayoutOptions()).run();
 
 
-    // 10. 表現型リストを更新（フィルター変更後に現在表示されている遺伝子の表現型のみを表示）
+    // 10. Refresh the phenotype list so it reflects current visibility
     if (window.refreshPhenotypeList) {
         window.refreshPhenotypeList();
     }

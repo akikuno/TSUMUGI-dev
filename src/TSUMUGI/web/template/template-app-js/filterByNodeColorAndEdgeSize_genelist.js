@@ -3,10 +3,10 @@ function filterByNodeColorAndEdgeSize() {
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax, 1, 100);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax, 1, 100);
 
-    // 1. 一旦すべてのノードを表示
+    // 1. Start by showing all nodes
     cy.nodes().forEach((node) => node.style("display", "element"));
 
-    // 2. edge_size 条件に基づきエッジの表示/非表示を設定
+    // 2. Show or hide edges based on the edge_size threshold
     cy.edges().forEach((edge) => {
         const edgeSize = edge.data("edge_size");
         const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
@@ -15,7 +15,7 @@ function filterByNodeColorAndEdgeSize() {
         edge.style("display", isVisible ? "element" : "none");
     });
 
-    // 3. node_color === 1 を含むクラスタだけ残す
+    // 3. Keep only the connected components that include a node with node_color === 1
     const components = calculateConnectedComponents(cy);
     const validComponents = components.filter((comp) =>
         Object.keys(comp).some((label) => {
@@ -24,7 +24,7 @@ function filterByNodeColorAndEdgeSize() {
         })
     );
 
-    // 4. 対象クラスタのノードとエッジを再表示
+    // 4. Re-display nodes and edges for the retained components
     validComponents.forEach((comp) => {
         Object.keys(comp).forEach((label) => {
             const node = cy.$(`node[label="${label}"]`);
@@ -38,7 +38,7 @@ function filterByNodeColorAndEdgeSize() {
         });
     });
 
-    // 5. 孤立ノードを非表示にする
+    // 5. Hide isolated nodes
     cy.nodes().forEach((node) => {
         const visibleEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
         if (visibleEdges.length === 0) {
@@ -46,11 +46,11 @@ function filterByNodeColorAndEdgeSize() {
         }
     });
 
-    // 6. レイアウト再適用
+    // 6. Re-run the layout
     cy.layout(getLayoutOptions()).run();
 
 
-    // 7. 表現型リストを更新（フィルター変更後に現在表示されている遺伝子の表現型のみを表示）
+    // 7. Refresh the phenotype list so only visible genes remain
     if (window.refreshPhenotypeList) {
         window.refreshPhenotypeList();
     }

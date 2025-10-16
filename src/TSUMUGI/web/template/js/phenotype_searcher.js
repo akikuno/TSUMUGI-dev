@@ -2,47 +2,47 @@
 // Phenotype Search and Highlight Functions
 // ############################################################
 
-// 表現型リストを保持
+// Hold the available and selected phenotype lists
 let allPhenotypes = [];
 let selectedPhenotypes = new Set();
 let cytoscapeInstance = null;
 
 /**
- * 表現型検索機能を初期化
- * @param {Object} params - 初期化パラメータ
- * @param {Object} params.cy - Cytoscapeインスタンス
- * @param {Array} params.elements - ネットワークデータ要素
+ * Initialize the phenotype search feature.
+ * @param {Object} params - Initialization parameters
+ * @param {Object} params.cy - Cytoscape instance
+ * @param {Array} params.elements - Network elements
  */
 export function setupPhenotypeSearch({ cy, elements }) {
     cytoscapeInstance = cy;
     initializePhenotypeSearch(cy);
     setupPhenotypeSearchInput();
-    
-    // グローバル関数として定義（HTML内のonclickで使用）
+
+    // Expose helper for the inline onclick handlers
     window.removeSelectedPhenotype = removeSelectedPhenotype;
-    
-    // updatePhenotypeHighlight関数をグローバルに公開（他のモジュールから呼び出し可能）
+
+    // Make updatePhenotypeHighlight available to other modules
     window.updatePhenotypeHighlight = () => updatePhenotypeHighlight(cy);
-    
-    // refreshPhenotypeList関数をグローバルに公開（フィルター変更時に呼び出し可能）
+
+    // Allow other modules to refresh the phenotype list after filtering
     window.refreshPhenotypeList = () => refreshPhenotypeList();
 }
 
 /**
- * 現在表示されている遺伝子から表現型を抽出してリストを作成
- * @param {Object} cy - Cytoscapeインスタンス
+ * Build the phenotype list from the currently visible genes.
+ * @param {Object} cy - Cytoscape instance
  */
 function initializePhenotypeSearch(cy) {
     const phenotypeSet = new Set();
-    
-    // 現在表示されているノードのみから表現型を抽出
+
+    // Extract phenotypes only from visible nodes
     cy.nodes().forEach((node) => {
-        // ノードが表示されているかチェック
-        if (node.style('display') !== 'none' && !node.hidden()) {
+        // Skip nodes that are hidden
+        if (node.style("display") !== "none" && !node.hidden()) {
             const nodeData = node.data();
             if (nodeData.phenotype) {
                 const phenotypes = Array.isArray(nodeData.phenotype) ? nodeData.phenotype : [nodeData.phenotype];
-                phenotypes.forEach(phenotype => {
+                phenotypes.forEach((phenotype) => {
                     if (phenotype && phenotype.trim() !== "") {
                         phenotypeSet.add(phenotype.trim());
                     }
@@ -50,74 +50,68 @@ function initializePhenotypeSearch(cy) {
             }
         }
     });
-    
+
     allPhenotypes = Array.from(phenotypeSet).sort();
 }
 
 /**
- * 表現型検索入力フィールドのイベントリスナーを設定
+ * Wire up event handlers for the phenotype search input.
  */
 function setupPhenotypeSearchInput() {
     const searchInput = document.getElementById("phenotype-search");
     const suggestionsList = document.getElementById("phenotype-suggestions");
-    
+
     if (!searchInput || !suggestionsList) {
         console.warn("Phenotype search elements not found in DOM");
         return;
     }
-    
-    searchInput.addEventListener("input", function() {
+
+    searchInput.addEventListener("input", function () {
         const searchTerm = this.value.toLowerCase().trim();
-        
+
         if (searchTerm.length === 0) {
             suggestionsList.hidden = true;
             return;
         }
-        
-        // 既に選択されているものを除外して検索
-        const filteredPhenotypes = allPhenotypes.filter(phenotype => 
-            phenotype.toLowerCase().includes(searchTerm) && 
-            !selectedPhenotypes.has(phenotype)
+
+        // Filter out phenotypes that are already selected
+        const filteredPhenotypes = allPhenotypes.filter(
+            (phenotype) => phenotype.toLowerCase().includes(searchTerm) && !selectedPhenotypes.has(phenotype),
         );
-        
+
         displayPhenotypeSuggestions(filteredPhenotypes);
     });
 
-    // クリック時に候補を表示
-    searchInput.addEventListener("click", function() {
+    // Display suggestions when the field is clicked
+    searchInput.addEventListener("click", function () {
         const searchTerm = this.value.toLowerCase().trim();
-        
+
         if (searchTerm.length === 0) {
-            // 入力が空の場合は全ての表現型を表示（選択済みを除く）
-            const availablePhenotypes = allPhenotypes.filter(phenotype => 
-                !selectedPhenotypes.has(phenotype)
-            );
+            // If empty, show all phenotypes except the selected ones
+            const availablePhenotypes = allPhenotypes.filter((phenotype) => !selectedPhenotypes.has(phenotype));
             displayPhenotypeSuggestions(availablePhenotypes);
         } else {
-            // 入力がある場合は検索結果を表示
-            const filteredPhenotypes = allPhenotypes.filter(phenotype => 
-                phenotype.toLowerCase().includes(searchTerm) && 
-                !selectedPhenotypes.has(phenotype)
+            // Otherwise, show matching phenotypes
+            const filteredPhenotypes = allPhenotypes.filter(
+                (phenotype) => phenotype.toLowerCase().includes(searchTerm) && !selectedPhenotypes.has(phenotype),
             );
             displayPhenotypeSuggestions(filteredPhenotypes);
         }
     });
 
-    // フォーカス時にも候補を表示
-    searchInput.addEventListener("focus", function() {
+    // Also display suggestions when the field gains focus
+    searchInput.addEventListener("focus", function () {
         const searchTerm = this.value.toLowerCase().trim();
-        
+
         if (searchTerm.length === 0) {
-            // 入力が空の場合は全ての表現型を表示（選択済みを除く）
-            const availablePhenotypes = allPhenotypes.filter(phenotype => 
-                !selectedPhenotypes.has(phenotype)
-            );
+            // If empty, show all phenotypes except the selected ones
+            const availablePhenotypes = allPhenotypes.filter((phenotype) => !selectedPhenotypes.has(phenotype));
             displayPhenotypeSuggestions(availablePhenotypes);
         }
     });
-    
-    // 入力フィールド外をクリックしたら候補を隠す
-    document.addEventListener("click", function(event) {
+
+    // Hide the suggestions when clicking outside the input
+    document.addEventListener("click", function (event) {
         if (!searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
             suggestionsList.hidden = true;
         }
@@ -125,111 +119,111 @@ function setupPhenotypeSearchInput() {
 }
 
 /**
- * 表現型候補リストを表示
- * @param {Array} phenotypes - 表示する表現型のリスト
+ * Render the phenotype suggestions list.
+ * @param {Array} phenotypes - Phenotypes to display
  */
 function displayPhenotypeSuggestions(phenotypes) {
     const suggestionsList = document.getElementById("phenotype-suggestions");
     suggestionsList.innerHTML = "";
-    
+
     if (phenotypes.length === 0) {
         suggestionsList.hidden = true;
         return;
     }
-    
-    // 全て表示（スクロール可能）
+
+    // Use the full list (scroll is possible in the UI)
     const displayPhenotypes = phenotypes;
-    
-    displayPhenotypes.forEach(phenotype => {
+
+    displayPhenotypes.forEach((phenotype) => {
         const li = document.createElement("li");
         li.textContent = phenotype;
-        li.addEventListener("click", function() {
+        li.addEventListener("click", function () {
             addSelectedPhenotype(phenotype);
             document.getElementById("phenotype-search").value = "";
             suggestionsList.hidden = true;
         });
         suggestionsList.appendChild(li);
     });
-    
+
     suggestionsList.hidden = false;
 }
 
 /**
- * 選択された表現型を追加
- * @param {string} phenotype - 追加する表現型
+ * Add a selected phenotype as a tag.
+ * @param {string} phenotype - Phenotype to add
  */
 function addSelectedPhenotype(phenotype) {
     if (selectedPhenotypes.has(phenotype)) return;
-    
+
     selectedPhenotypes.add(phenotype);
     displaySelectedPhenotypes();
-    
-    // グローバルに公開されたupdatePhenotypeHighlight関数を呼び出し
+
+    // Invoke the globally exposed updatePhenotypeHighlight helper
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
     }
 }
 
 /**
- * 選択された表現型を削除（グローバル関数）
- * @param {string} phenotype - 削除する表現型
+ * Remove a selected phenotype (called from inline handlers).
+ * @param {string} phenotype - Phenotype to remove
  */
 function removeSelectedPhenotype(phenotype) {
     selectedPhenotypes.delete(phenotype);
     displaySelectedPhenotypes();
-    
-    // グローバルに公開されたupdatePhenotypeHighlight関数を呼び出し
+
+    // Invoke the globally exposed updatePhenotypeHighlight helper
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
     }
 }
 
 /**
- * 選択された表現型をタグとして表示
+ * Render the currently selected phenotypes as tags.
  */
 function displaySelectedPhenotypes() {
     const container = document.getElementById("selected-phenotypes");
     if (!container) return;
-    
+
     container.innerHTML = "";
-    
-    selectedPhenotypes.forEach(phenotype => {
+
+    selectedPhenotypes.forEach((phenotype) => {
         const tag = document.createElement("div");
         tag.className = "selected-phenotype-tag";
         tag.innerHTML = `
             <span class="phenotype-text">${phenotype}</span>
-            <button class="remove-btn" onclick="removeSelectedPhenotype('${phenotype.replace(/'/g, "\\'")}')">×</button>
+            <button class="remove-btn" onclick="removeSelectedPhenotype('${phenotype.replace(/'/g, "\\'")}')">&times;</button>
         `;
         container.appendChild(tag);
     });
 }
 
 /**
- * 選択された表現型に基づいて遺伝子をハイライト
- * @param {Object} cy - Cytoscapeインスタンス
+ * Highlight genes that match any of the selected phenotypes.
+ * @param {Object} cy - Cytoscape instance
  */
 function updatePhenotypeHighlight(cy) {
-    // 既存のハイライトをリセット
+    // Reset existing highlights
     cy.nodes().removeClass("phenotype-highlight");
-    
+
     if (selectedPhenotypes.size === 0) {
-        return; // 何も選択されていない場合は何もしない
+        return; // Nothing to highlight
     }
-    
-    // 選択された表現型を持つ遺伝子をハイライト
-    cy.nodes().forEach(node => {
+
+    // Highlight genes that match the selected phenotypes
+    cy.nodes().forEach((node) => {
         const nodeData = node.data();
-        
+
         if (nodeData.phenotype) {
             const nodePhenotypes = Array.isArray(nodeData.phenotype) ? nodeData.phenotype : [nodeData.phenotype];
-            
-            // 選択された表現型のいずれかがノードの表現型リストに含まれているかチェック
-            const hasSelectedPhenotype = Array.from(selectedPhenotypes).some(selectedPhenotype => 
-                nodePhenotypes.some(nodePhenotype => 
-                    nodePhenotype && nodePhenotype.trim() === selectedPhenotype.trim()
-                )
+
+            // Look for any overlap between the node's phenotypes and the selected ones
+            const hasSelectedPhenotype = Array.from(selectedPhenotypes).some((selectedPhenotype) =>
+                nodePhenotypes.some(
+                    (nodePhenotype) => nodePhenotype && nodePhenotype.trim() === selectedPhenotype.trim(),
+                ),
             );
-            
+
             if (hasSelectedPhenotype) {
                 node.addClass("phenotype-highlight");
             }
@@ -238,61 +232,60 @@ function updatePhenotypeHighlight(cy) {
 }
 
 /**
- * 選択された表現型のリストを取得
- * @returns {Set} 選択された表現型のセット
+ * Return the set of currently selected phenotypes.
+ * @returns {Set} Selected phenotype set
  */
 export function getSelectedPhenotypes() {
     return new Set(selectedPhenotypes);
 }
 
 /**
- * 表現型選択をクリア
+ * Clear all selected phenotypes.
  */
 export function clearSelectedPhenotypes() {
     selectedPhenotypes.clear();
     displaySelectedPhenotypes();
-    
+
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
     }
 }
 
 /**
- * フィルター変更時に表現型リストを更新
+ * Rebuild the phenotype list after filters change.
  */
 function refreshPhenotypeList() {
     if (!cytoscapeInstance) return;
-    
-    // 現在の検索入力値を保存
+
+    // Preserve the current search term
     const searchInput = document.getElementById("phenotype-search");
     const currentSearchValue = searchInput ? searchInput.value : "";
-    
-    // 表現型リストを再初期化
+
+    // Reinitialize the phenotype list
     initializePhenotypeSearch(cytoscapeInstance);
-    
-    // 選択済み表現型のうち、もう存在しないものを削除
+
+    // Drop selected phenotypes that no longer exist
     const updatedSelectedPhenotypes = new Set();
-    selectedPhenotypes.forEach(phenotype => {
+    selectedPhenotypes.forEach((phenotype) => {
         if (allPhenotypes.includes(phenotype)) {
             updatedSelectedPhenotypes.add(phenotype);
         }
     });
     selectedPhenotypes = updatedSelectedPhenotypes;
-    
-    // 表示を更新
+
+    // Refresh the UI
     displaySelectedPhenotypes();
-    
-    // 検索中だった場合は候補を更新
+
+    // Update suggestions if a search term was present
     if (searchInput && currentSearchValue.trim().length > 0) {
         const searchTerm = currentSearchValue.toLowerCase().trim();
-        const filteredPhenotypes = allPhenotypes.filter(phenotype => 
-            phenotype.toLowerCase().includes(searchTerm) && 
-            !selectedPhenotypes.has(phenotype)
+        const filteredPhenotypes = allPhenotypes.filter(
+            (phenotype) => phenotype.toLowerCase().includes(searchTerm) && !selectedPhenotypes.has(phenotype),
         );
         displayPhenotypeSuggestions(filteredPhenotypes);
     }
-    
-    // ハイライトを更新
+
+    // Refresh highlights
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
     }

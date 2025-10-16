@@ -58,7 +58,7 @@ a {
 /* ======================================================== */
 /* control-panel-container */
 /* ======================================================== */
-/* 左パネル */
+/* Left panel */
 .left-control-panel-container {
     flex: 1;
     min-width: 120px;
@@ -69,7 +69,7 @@ a {
     background-color: white;
 }
 
-/* 右パネル */
+/* Right panel */
 .right-control-panel-container {
     flex: 1;
     min-width: 120px;
@@ -320,7 +320,7 @@ ul.suggestions li:hover {
     background-color: #fff;
 }
 
-/* タイトル風スタイルをつける */
+/* Title-style label overlay */
 .boxed-section>span {
     position: absolute;
     top: 0;
@@ -338,7 +338,7 @@ ul.suggestions li:hover {
 }
 
 .boxed-section.align-center {
-    /* 左揃えに統一 */
+    /* Keep the content left-aligned */
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -351,7 +351,7 @@ ul.suggestions li:hover {
     overflow-wrap: break-word;
 }
 
-/* 丸型チェックボックススタイル */
+/* Rounded checkbox styling */
 .round-checkbox {
     position: relative;
     margin: 8px 0;
@@ -383,7 +383,7 @@ ul.suggestions li:hover {
     box-sizing: border-box;
 }
 
-/* チェック時だけ黄色背景に */
+/* Highlight in yellow only when checked */
 .round-checkbox input[type="checkbox"]:checked+label:before {
     background-color: #ff8c00;
 }
@@ -535,12 +535,12 @@ footer a {
 /* ======================================================== */
 /* Export section visibility */
 /* ======================================================== */
-/* デスクトップでは通常のExportを表示、モバイル用は非表示 */
+/* Hide the mobile export controls on desktop */
 .export-mobile {
     display: none;
 }
 
-/* デスクトップ用のExportセクション（独立した配置） */
+/* Desktop export section layout */
 .export-desktop {
     max-width: 800px;
     margin: 30px auto;
@@ -550,9 +550,9 @@ footer a {
 }
 
 /* ======================================================== */
-/* スマホ向けデザイン */
+/* Mobile-friendly design */
 /* ======================================================== */
-/* 初期状態でアイコンを非表示 */
+/* Hide the icon by default */
 button.menu-toggle-icon {
     display: none;
     background-color: transparent;
@@ -617,7 +617,7 @@ button.menu-toggle-icon {
         justify-content: center;
     }
 
-    /* パネルコンテナの統合スタイル */
+    /* Consolidated styling for panel containers */
     .left-control-panel-container {
         position: fixed;
         top: 0;

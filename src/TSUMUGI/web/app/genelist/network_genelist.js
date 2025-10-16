@@ -36,10 +36,10 @@ const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
 // ############################################################################
 
 let nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
-let nodeColorMin = Math.min(...nodeSizes); // 色表示用の元の範囲
-let nodeColorMax = Math.max(...nodeSizes); // 色表示用の元の範囲
+let nodeColorMin = Math.min(...nodeSizes); // Range used for color styling
+let nodeColorMax = Math.max(...nodeSizes); // Range used for color styling
 
-// フィルタリング用の範囲（元の値をコピー）
+// Copy the original range so filtering can adjust independently
 let nodeMin = nodeColorMin;
 let nodeMax = nodeColorMax;
 
@@ -49,7 +49,7 @@ const edgeMin = Math.min(...edgeSizes);
 const edgeMax = Math.max(...edgeSizes);
 
 // ############################################################################
-// Cytoscapeの初期化
+// Initialize Cytoscape
 // ############################################################################
 
 let currentLayout = "cose";
@@ -110,21 +110,21 @@ const cy = cytoscape({
             },
         },
         {
-            selector: ".disease-highlight", // 疾患ハイライト用クラス
+            selector: ".disease-highlight", // Class used for disease highlighting
             style: {
                 "border-width": 3,
                 "border-color": "#fc4c00",
             },
         },
         {
-            selector: ".gene-highlight", // 遺伝子検索ハイライト用クラス
+            selector: ".gene-highlight", // Class used when highlighting gene search hits
             style: {
                 color: "#028760",
                 "font-weight": "bold",
             },
         },
         {
-            selector: ".phenotype-highlight", // 表現型ハイライト用クラス
+            selector: ".phenotype-highlight", // Class used for phenotype search highlighting
             style: {
                 "border-width": 3,
                 "border-color": "#28a745",
@@ -134,13 +134,13 @@ const cy = cytoscape({
     layout: getLayoutOptions(),
 });
 
-// ★ デバッグ用：cyをグローバルに公開
+// * Expose cy globally for debugging convenience
 window.cy = cy;
 
-// ★ モバイル対応：Cytoscapeの表示問題を修正
+// * Improve Cytoscape rendering on mobile devices
 function handleMobileResize() {
     if (cy) {
-        // モバイルでのレイアウト変更後にCytoscapeを再描画
+        // Re-render Cytoscape after layout tweaks on mobile
         setTimeout(() => {
             cy.resize();
             cy.fit();
@@ -149,20 +149,20 @@ function handleMobileResize() {
     }
 }
 
-// モバイルでの初期化完了後にCytoscapeを調整
+// Adjust Cytoscape once initialization finishes on mobile
 setTimeout(() => {
     if (window.innerWidth <= 600) {
-        console.log("📱 Mobile device detected - applying mobile fixes");
+    console.log("[Mobile] Applying display adjustments");
         cy.resize();
         cy.fit();
         cy.center();
     }
 }, 500);
 
-// ウィンドウリサイズ時の対応
+// Handle browser resize events
 window.addEventListener("resize", handleMobileResize);
 
-// オリエンテーション変更時の対応（モバイル）
+// Handle orientation changes on mobile
 window.addEventListener("orientationchange", () => {
     setTimeout(handleMobileResize, 500);
 });
@@ -180,7 +180,7 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 });
 
 // =============================================================================
-// スライダーによる初期化とフィルター関数
+// Slider initialization and filtering helpers
 // =============================================================================
 
 // --------------------------------------------------------
@@ -207,10 +207,10 @@ function filterByNodeColorAndEdgeSize() {
     const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax, 1, 100);
     const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax, 1, 100);
 
-    // 1. 一旦すべてのノードを表示
+    // 1. Start by showing every node
     cy.nodes().forEach((node) => node.style("display", "element"));
 
-    // 2. edge_size 条件に基づきエッジの表示/非表示を設定
+    // 2. Show or hide edges according to the edge_size range
     cy.edges().forEach((edge) => {
         const edgeSize = edge.data("edge_size");
         const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
@@ -223,7 +223,7 @@ function filterByNodeColorAndEdgeSize() {
         edge.style("display", isVisible ? "element" : "none");
     });
 
-    // 3. node_color === 1 を含むクラスタだけ残す
+    // 3. Keep only the connected components that contain a node with node_color === 1
     const components = calculateConnectedComponents(cy);
     const validComponents = components.filter((comp) =>
         Object.keys(comp).some((label) => {
@@ -232,7 +232,7 @@ function filterByNodeColorAndEdgeSize() {
         }),
     );
 
-    // 4. 対象クラスタのノードとエッジを再表示
+    // 4. Re-display nodes and edges for the retained components
     validComponents.forEach((comp) => {
         Object.keys(comp).forEach((label) => {
             const node = cy.$(`node[label="${label}"]`);
@@ -249,7 +249,7 @@ function filterByNodeColorAndEdgeSize() {
         });
     });
 
-    // 5. 孤立ノードを非表示にする
+    // 5. Hide isolated nodes
     cy.nodes().forEach((node) => {
         const visibleEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
         if (visibleEdges.length === 0) {
@@ -257,33 +257,33 @@ function filterByNodeColorAndEdgeSize() {
         }
     });
 
-    // 6. レイアウト再適用
+    // 6. Re-run the layout
     cy.layout(getLayoutOptions()).run();
 
-    // 7. 表現型リストを更新（フィルター変更後に現在表示されている遺伝子の表現型のみを表示）
+    // 7. Refresh the phenotype list so only visible genes remain
     if (window.refreshPhenotypeList) {
         window.refreshPhenotypeList();
     }
 }
 
 // =============================================================================
-// 遺伝型・性差・ライフステージ特異的フィルタリング関数
+// Genotype, sex, and life-stage specific filtering
 // =============================================================================
 
 let target_phenotype = "";
 
-// フィルタリング関数のラッパー
+// Wrapper function that applies the filters
 function applyFiltering() {
     filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterByNodeColorAndEdgeSize);
 }
 
-// フォーム変更時にフィルタリング関数を実行
+// Reapply filters whenever the form values change
 document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("lifestage-filter-form").addEventListener("change", applyFiltering);
 
 // =============================================================================
-// ヒト疾患ハイライト
+// Highlight human disease annotations
 // =============================================================================
 highlightDiseaseAnnotation({ cy });
 
@@ -292,13 +292,13 @@ highlightDiseaseAnnotation({ cy });
 // ############################################################################
 
 // --------------------------------------------------------
-// 遺伝子名検索
+// Gene name search
 // --------------------------------------------------------
 
 setupGeneSearch({ cy });
 
 // =============================================================================
-// 表現型ハイライト（検索機能付き）
+// Phenotype highlighting (with search support)
 // =============================================================================
 setupPhenotypeSearch({ cy, elements });
 

@@ -1,4 +1,4 @@
-// 汎用スライダー作成関数（単一値 & 範囲スライダーに対応）
+// Generic slider factory supporting single-value and range sliders
 export function createSlider(id, start, min, max, step, updateCallback, isRange = false) {
     const slider = document.getElementById(id);
     if (!slider) {
@@ -7,7 +7,7 @@ export function createSlider(id, start, min, max, step, updateCallback, isRange 
     }
 
     noUiSlider.create(slider, {
-        start: isRange ? start : [start], // isRangeなら[start, end]、単一なら[start]
+        start: isRange ? start : [start], // Use [start, end] when range mode is enabled
         connect: true,
         range: { min: min, max: max },
         step: step,

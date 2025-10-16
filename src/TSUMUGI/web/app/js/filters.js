@@ -1,18 +1,18 @@
 import { highlightDiseaseNodes } from "../js/highlighter.js";
 
 // ========================================
-// ハイライト状態復元関数
+// Helpers for restoring highlight states
 // ========================================
 
 function restoreHighlightStates(cy) {
-    // Human Diseaseハイライトの復元
+    // Restore Human Disease highlighting if it was enabled
     const isDiseaseChecked = document.querySelector('#human-disease-filter-form input[type="checkbox"]:checked');
     if (isDiseaseChecked) {
-        // highlighter.jsの関数を呼び出してハイライトを再適用
+        // Reapply highlighting by delegating to highlighter.js
         highlightDiseaseNodes(cy);
     }
 
-    // Gene searchハイライトの復元
+    // Restore highlights from the gene search box
     const geneSearchInput = document.getElementById("gene-search");
     if (geneSearchInput && geneSearchInput.value.trim() !== "") {
         const searchTerm = geneSearchInput.value.trim().toLowerCase();
@@ -23,12 +23,12 @@ function restoreHighlightStates(cy) {
         }
     }
 
-    // Phenotype searchハイライトの復元
+    // Restore phenotype-based highlights
     if (window.updatePhenotypeHighlight) {
         window.updatePhenotypeHighlight();
     }
 
-    // Phenotype listの更新（フィルター後の遺伝子のみの表現型を表示）
+    // Refresh the phenotype list so it reflects the filtered genes
     if (window.refreshPhenotypeList) {
         window.refreshPhenotypeList();
     }
@@ -55,12 +55,12 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
         ...item,
         data: {
             ...item.data,
-            _originalPhenotypes: item.data.phenotype || [], // 🔁 元の phenotype を保持
+            _originalPhenotypes: item.data.phenotype || [], // Preserve the original phenotype list
             phenotype: item.data.phenotype || [],
         },
     }));
 
-    // 性別フィルター
+    // Apply sex filters
     if (checkedSexs.length !== allSexs.length) {
         filteredElements = filteredElements
             .map((item) => {
@@ -75,7 +75,7 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
             .filter((item) => item.data.phenotype.length > 0);
     }
 
-    // 遺伝型フィルター
+    // Apply genotype filters
     if (checkedGenotypes.length !== allGenotypes.length) {
         filteredElements = filteredElements
             .map((item) => {
@@ -91,7 +91,7 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
             .filter((item) => item.data.phenotype.length > 0);
     }
 
-    // ライフステージフィルター
+    // Apply life-stage filters
     if (checkedLifestages.length !== allLifestages.length) {
         filteredElements = filteredElements
             .map((item) => {
@@ -106,10 +106,10 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
             .filter((item) => item.data.phenotype.length > 0);
     }
 
-    // ✅ 2つ以上の phenotype を持つものだけ残す
+    // Keep only elements with at least two phenotypes
     filteredElements = filteredElements.filter((item) => item.data.phenotype && item.data.phenotype.length > 1);
 
-    // 🔁 target_phenotype を復元
+    // Restore any phenotypes that match the target phenotype
     if (target_phenotype) {
         filteredElements = filteredElements.map((item) => {
             const original = item.data._originalPhenotypes;
@@ -128,14 +128,14 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
         });
     }
 
-    // ✅ target_phenotype を含まない要素を除外する
+    // Remove elements that do not contain the target phenotype
     if (target_phenotype) {
         filteredElements = filteredElements.filter((item) =>
             item.data.phenotype.some((anno) => anno.includes(target_phenotype)),
         );
     }
 
-    // Cytoscape更新
+    // Replace the Cytoscape elements and apply the filter-specific adjustments
     cy.elements().remove();
     cy.add(filteredElements);
     filterElements();
