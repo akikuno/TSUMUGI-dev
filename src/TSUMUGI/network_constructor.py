@@ -33,7 +33,7 @@ GENE_COUNT_UPPER_BOUND = 150
 
 
 def _create_annotation_string(*parts: str) -> str:
-    """空でない要素をカンマ区切りで結合する"""
+    """Join non-empty parts with commas."""
     return ", ".join(part for part in parts if part)
 
 

@@ -90,14 +90,14 @@ def _copy_directories(output_dir: str | Path) -> None:
         with as_file(temp_file) as src_dir:
             shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
 
-    # imageディレクトリをコピー
+    # Copy the image directory
     dst_dir = output_dir / "image"
     dst_dir.mkdir(parents=True, exist_ok=True)
     temp_file = files("TSUMUGI") / "web" / "image"
     with as_file(temp_file) as src_dir:
         shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
 
-    # templateディレクトリをコピー
+    # Copy the template directory
     dst_dir = output_dir / "template"
     dst_dir.mkdir(parents=True, exist_ok=True)
     temp_file = files("TSUMUGI") / "web" / "template"
@@ -217,7 +217,7 @@ def _generate_phenotype_html(
         "/tmp/header.html",
         {"XXX_TITLE": header_insert},
     )
-    # template_app.html → 完成版HTML
+    # Assemble template_app.html into the final HTML document
     template = _read_file(f"{output_dir}/template/template-app-html/template_app.html")
     final_html = (
         template.replace("XXX_HEAD", _read_file("/tmp/head.html"))
@@ -250,7 +250,7 @@ def _generate_phenotype_javascript(
         _write_file(template_app_path, template)
 
     else:
-        # Binary phenotype の処理
+        # Special handling for binary phenotypes
         lines = _read_file(
             f"{output_dir}/template/template-app-js/filterByNodeColorAndEdgeSize_phenotype.js"
         ).splitlines()
