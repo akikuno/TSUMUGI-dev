@@ -1,396 +1,57 @@
 from __future__ import annotations
 
-import argparse
-import csv
 import logging
-import pickle
-import shutil
-from collections.abc import Iterator
-from pathlib import Path
+import sys
 
-from TSUMUGI import (
-    annotator,
-    filterer,
-    formatter,
-    io_handler,
-    network_constructor,
-    report_generator,
-    similarity_calculator,
-    web_deployer,
-)
+from TSUMUGI import argparser, core, mp_filterer, validator
 
-# Logging Config
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run TSUMUGI pipeline", formatter_class=argparse.RawTextHelpFormatter)
-
-    parser.add_argument(
-        "-o",
-        "--output_dir",
-        type=str,
-        required=True,
-        help=(
-            "Output directory for TSUMUGI results.\n"
-            "All generated files (intermediate and final results) will be saved here.\n"
-            "Example: ./results/phenotype_network/"
-        ),
-    )
-
-    parser.add_argument(
-        "-s",
-        "--statistical_results",
-        type=str,
-        required=True,
-        help=(
-            "Path to IMPC statistical_results_ALL.csv file.\n"
-            "This file contains statistical test results (effect sizes, p-values, etc.) "
-            "for all IMPC phenotyping experiments.\n"
-            "Example: ./data/statistical-results-ALL.csv.gz\n"
-            "If not available, download 'statistical-results-ALL.csv.gz' manually from:\n"
-            "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/results/"
-        ),
-    )
-
-    parser.add_argument(
-        "-m",
-        "--mp_obo",
-        type=str,
-        required=True,
-        help=(
-            "Path to Mammalian Phenotype ontology file (mp.obo).\n"
-            "Used to map and infer hierarchical relationships among MP terms.\n"
-            "Example: ./data/mp.obo\n"
-            "If not available, download '/mp.obo' manually from:\n"
-            "https://obofoundry.org/ontology/mp.html"
-        ),
-    )
-
-    parser.add_argument(
-        "-i",
-        "--impc_phenodigm",
-        type=str,
-        required=True,
-        help=(
-            "Path to IMPC Phenodigm annotation file (impc_phenodigm.csv).\n"
-            "This file links mouse phenotypes to human diseases based on Phenodigm similarity.\n"
-            "Example: ./data/impc_phenodigm.csv\n"
-            "If not available, download manually from:\n"
-            "https://diseasemodels.research.its.qmul.ac.uk/\n"
-        ),
-    )
-
-    parser.add_argument(
-        "--is_test",
-        action="store_true",
-        help=argparse.SUPPRESS,
-    )
-
-    args = parser.parse_args()
-
-    ROOT_DIR = Path(args.output_dir)
-    TEMPDIR = Path(ROOT_DIR / ".tempdir")
-
-    records = io_handler.load_csv_as_dicts(args.statistical_results)
-    ontology_terms = io_handler.parse_obo_file(Path(args.mp_obo))
+    args = argparser.parse_args()
 
     ###########################################################
     # Load and validate data
     ###########################################################
 
-    logging.info("Loading data...")
-    # TODO: validate data
+    if getattr(args, "statistical_results", None):
+        validator.validate_statistical_results(args.statistical_results)
+
+    if getattr(args, "obo", None):
+        validator.validate_obo_file(args.obo)
+
+    if getattr(args, "impc_phenodigm", None):
+        validator.validate_phenodigm_file(args.impc_phenodigm)
+
+    if getattr(args, "obo", None) and (getattr(args, "exclude", None) or getattr(args, "include", None)):
+        mp_term_id = args.exclude or args.include
+        validator.validate_mp_term_id(mp_term_id, args.obo)
 
     ###########################################################
-    # Preprocess data
+    # Run commands
     ###########################################################
 
-    # --------------------------------------------------------
-    # Select columns, maintained mp term, and significant genes
-    # --------------------------------------------------------
-
-    logging.info("Selecting columns and significant genes...")
-
-    columns = [
-        "marker_symbol",
-        "marker_accession_id",
-        "mp_term_name",
-        "mp_term_id",
-        "p_value",
-        "effect_size",
-        "female_ko_effect_p_value",  # sex differences
-        "male_ko_effect_p_value",  # sex differences
-        "zygosity",  # zygosity
-        "pipeline_name",  # life-stage
-        "procedure_name",  # life-stage
-        "allele_symbol",  # map to Phendigm
-    ]
-
-    records_subset: Iterator[dict[str, str]] = filterer.subset_columns(records, columns)
-
-    # --------------------------------------------------------
-    # Extract significant phenotypes (p_value < 1e-4)
-    # --------------------------------------------------------
-    float_columns = [
-        "p_value",
-        "effect_size",
-        "female_ko_effect_p_value",  # sex differences
-        "male_ko_effect_p_value",  # sex differences
-    ]
-
-    records_significants: list[dict[str, str | float]] = filterer.extract_significant_phenotypes(
-        records_subset, float_columns, threshold=1e-4
-    )  # 1 min
-
-    # --------------------------------------------------------
-    # Keep only records with mp_term_id in the ontology file (= not obsolete)
-    # --------------------------------------------------------
-    records_significants = [record for record in records_significants if record["mp_term_id"] in ontology_terms]
-
-    # --------------------------------------------------------
-    # Take absolute value of effect size
-    # --------------------------------------------------------
-
-    records_significants = [formatter.abs_effect_size(record) for record in records_significants]
-
-    # --------------------------------------------------------
-    # Format zygosity (e.g: heterozygote -> Hetero)
-    # --------------------------------------------------------
-    records_significants = formatter.format_zygosity(records_significants)
-
-    # --------------------------------------------------------
-    # Annotate life stage and sexual dimorphisms
-    # --------------------------------------------------------
-
-    logging.info("Annotating life stage and sexual dimorphisms...")
-
-    embryo_assays = {
-        "E9.5",
-        "E10.5",
-        "E12.5",
-        "Embryo LacZ",  # E12.5
-        "E14.5",
-        "E14.5-E15.5",
-        "E18.5",
-    }
-
-    records_significants_annotated = annotator.annotate_life_stage(records_significants, embryo_assays)
-    records_significants_annotated = annotator.annotate_sexual_dimorphism(
-        records_significants_annotated, threshold=1e-4
-    )
-
-    # --------------------------------------------------------
-    # Select distinct records with max effect size
-    # --------------------------------------------------------
-
-    unique_keys = [
-        "marker_symbol",
-        "mp_term_id",
-        "zygosity",
-        "life_stage",
-        "sexual_dimorphism",
-    ]
-
-    records_significants_annotated: list[dict[str, str | float]] = formatter.get_distinct_records_with_max_effect(
-        records_significants_annotated, unique_keys
-    )
-
-    # --------------------------------------------------------
-    # Cache results
-    # --------------------------------------------------------
-    output_dir = Path(TEMPDIR / "preprocessed")
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    pickle.dump(
-        records_significants,
-        open(output_dir / "records_significants.pkl", "wb"),
-    )
-
-    pickle.dump(
-        records_significants_annotated,
-        open(output_dir / "records_significants_annotated.pkl", "wb"),
-    )
-
-    del records_significants
-
-    ###########################################################
-    # Calculate phenotype similarity
-    ###########################################################
-
-    all_term_ids = {r["mp_term_id"] for r in records_significants_annotated}
-
-    logging.info(f"Calculating pairwise similarity for {len(all_term_ids)} terms...")
-
-    term_pair_similarity_map: dict[frozenset[str], dict[str, float]] = (
-        similarity_calculator.calculate_all_pairwise_similarities(ontology_terms, all_term_ids)
-    )
-    # 30 min
-
-    # ----------------------------------------
-    # Calculate phenotype similarity for genes
-    # ----------------------------------------
-
-    logging.info(f"Annotate phenotype ancestors for {len(records_significants_annotated)} records...")
-    phenotype_ancestors: dict[frozenset[str], dict[str, dict[str, str]]] = (
-        similarity_calculator.annotate_phenotype_ancestors(
-            records_significants_annotated, term_pair_similarity_map, ontology_terms, ic_threshold=5
-        )
-    )
-    # 10 min
-
-    logging.info(f"Calculating phenodigm similarity for {len(records_significants_annotated)} records...")
-    phenodigm_scores: dict[frozenset[str], int] = similarity_calculator.calculate_phenodigm_score(
-        records_significants_annotated, term_pair_similarity_map
-    )
-    # 30 min
-
-    num_shared_phenotypes = similarity_calculator.calculate_num_shared_phenotypes(records_significants_annotated)
-    jaccard_indices = similarity_calculator.calculate_jaccard_indices(records_significants_annotated)
-
-    # ----------------------------------------
-    # Summarize the phenotype similarity results
-    # ----------------------------------------
-
-    pair_similarity_annotations: dict[frozenset[str], dict[str, dict[str, str] | int]] = (
-        similarity_calculator.summarize_similarity_annotations(ontology_terms, phenotype_ancestors, phenodigm_scores)
-    )
-
-    # --------------------------------------------------------
-    # Cache results
-    # --------------------------------------------------------
-    output_dir = Path(TEMPDIR / "phenotype_similarity")
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    with open(output_dir / "term_pair_similarity_map.pkl", "wb") as f:
-        pickle.dump(term_pair_similarity_map, f)
-
-    with open(output_dir / "pair_similarity_annotations.pkl", "wb") as f:
-        pickle.dump(pair_similarity_annotations, f)
-
-    with open(output_dir / "phenotype_ancestors.pkl", "wb") as f:
-        pickle.dump(phenotype_ancestors, f)
-
-    with open(output_dir / "phenodigm_scores.pkl", "wb") as f:
-        pickle.dump(phenodigm_scores, f)
-
-    with open(output_dir / "num_shared_phenotypes.pkl", "wb") as f:
-        pickle.dump(num_shared_phenotypes, f)
-
-    with open(output_dir / "jaccard_indices.pkl", "wb") as f:
-        pickle.dump(jaccard_indices, f)
-
-    del term_pair_similarity_map
-    del phenotype_ancestors
-    del phenodigm_scores
-    del num_shared_phenotypes
-    del jaccard_indices
-
-    ###########################################################
-    # Generate network
-    ###########################################################
-    MIN_NUM_PHENOTYPES = 3
-
-    pair_similarity_annotations_with_shared_phenotype = {
-        k: v
-        for k, v in pair_similarity_annotations.items()
-        if len(v["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
-    }
-
-    with open(Path(args.impc_phenodigm)) as f:
-        disease_annotations_by_gene: dict[str, list[dict[str, str]]] = formatter.format_disease_annotations(
-            list(csv.DictReader(f))
-        )
-
-    logging.info("Building phenotype network JSON files...")
-
-    output_dir = Path(TEMPDIR / "network" / "phenotype")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    network_constructor.build_phenotype_network_json(
-        records_significants_annotated,
-        pair_similarity_annotations_with_shared_phenotype,
-        disease_annotations_by_gene,
-        output_dir,
-    )
-
-    logging.info("Building gene network JSON files...")
-    output_dir = Path(TEMPDIR / "network" / "genesymbol")
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    network_constructor.build_gene_network_json(
-        records_significants_annotated,
-        pair_similarity_annotations_with_shared_phenotype,
-        disease_annotations_by_gene,
-        output_dir,
-    )
-
-    del pair_similarity_annotations_with_shared_phenotype
-    del disease_annotations_by_gene
-
-    ###########################################################
-    # Output reports to public directory
-    ###########################################################
-    logging.info("Generating reports...")
-
-    # records significants
-    report_generator.write_records_significants_jsonl_gz(
-        records_significants_annotated, Path(ROOT_DIR / "significant_phenotypes_per_gene.jsonl.gz")
-    )
-
-    # pair similarity annotations
-    report_generator.write_pair_similarity_annotations(
-        pair_similarity_annotations, Path(ROOT_DIR / "phenotype_similarity_per_gene_pair.jsonl.gz")
-    )
-
-    del pair_similarity_annotations
-
-    ###########################################################
-    # Output data for web application
-    ###########################################################
-
-    output_dir = Path(TEMPDIR, "webapp")  # data for webapp
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # available mp terms
-    report_generator.write_available_mp_terms_txt(TEMPDIR, Path(output_dir / "available_mp_terms.txt"))
-    report_generator.write_available_mp_terms_json(TEMPDIR, Path(output_dir / "available_mp_terms.json"))
-
-    # binary phenotypes
-    report_generator.write_binary_phenotypes_txt(
-        records_significants_annotated, TEMPDIR, Path(output_dir / "binary_phenotypes.txt")
-    )
-
-    # available gene symbols
-    report_generator.write_available_gene_symbols_txt(TEMPDIR, Path(output_dir / "available_gene_symbols.txt"))
-
-    # marker symbol to accession id
-    report_generator.write_marker_symbol_accession_id_json(
-        records_significants_annotated, TEMPDIR, Path(output_dir / "marker_symbol_accession_id.json")
-    )
-
-    ###########################################################
-    # Deploy to web application
-    ###########################################################
-
-    logging.info("Building gene network JSON files...")
-    is_test = args.is_test
-
-    output_dir = Path(ROOT_DIR, "TSUMUGI-testwebapp") if is_test else Path(ROOT_DIR, "TSUMUGI-webapp")
-
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    targetted_phenotypes = web_deployer.select_targetted_phenotypes(TEMPDIR, is_test=is_test)
-    targetted_genes = web_deployer.select_targetted_genes(TEMPDIR, is_test=is_test)
-
-    web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
-
-    web_deployer.generate_phenotype_pages(records_significants_annotated, targetted_phenotypes, TEMPDIR, output_dir)
-    web_deployer.generate_gene_pages(records_significants_annotated, targetted_genes, output_dir)
-    web_deployer.generate_genelist_page(output_dir)
-
-    logging.info(f"Finished!🎊 Results are saved in {Path(ROOT_DIR).resolve()}")
+    if args.cmd == "run":
+        logging.info("Running TSUMUGI pipeline")
+        core.run_pipeline(args)
+
+    elif args.cmd == "mp":
+        if args.include:
+            logging.info(f"Including gene pairs with phenotypes related to MP term: {args.include}")
+            mp_filterer.include_specific_phenotype(
+                path_phenotype_similarity_per_gene_pair=args.infile or sys.stdin,
+                path_obo=args.obo,
+                term_id=args.include,
+            )
+        elif args.exclude:
+            logging.info(f"Excluding gene pairs with phenotypes related to MP term: {args.exclude}")
+            mp_filterer.exclude_specific_phenotype(
+                path_phenotype_similarity_per_gene_pair=args.infile or sys.stdin,
+                path_statistical_all=args.statistical_results,
+                path_obo=args.obo,
+                mp_term_id=args.exclude,
+            )
 
 
 if __name__ == "__main__":

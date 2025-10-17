@@ -84,19 +84,21 @@ def build_parser() -> argparse.ArgumentParser:
     # =========================================================
     mp = subparsers.add_parser(
         "mp",
-        help="Filter gene pairs by a specific MP term (descendants by default)",
+        help="Filter gene pairs by a specific MP term and its descendants",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
     group = mp.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "-i",
+        "--include",
         dest="include",
         metavar="MP_ID",
         help=("Include gene pairs that share the specified MP term (descendants included).\nExample: -i MP:0001146"),
     )
     group.add_argument(
         "-e",
+        "--exclude",
         dest="exclude",
         metavar="MP_ID",
         help=(
@@ -107,15 +109,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     mp.add_argument(
-        "-m",
-        "--mp_obo",
+        "-o",
+        "--obo",
         type=str,
         required=True,
-        help=(
-            "Path to Mammalian Phenotype ontology file (mp.obo).\n"
-            "Used to expand descendants of the specified MP term.\n"
-            "Example: ./data/mp.obo"
-        ),
+        help=("Path to ontology file.\nExample: ./data/mp.obo"),
     )
 
     mp.add_argument(
@@ -162,7 +160,8 @@ def parse_args(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    # 追加バリデーション：mpサブコマンドで -e/--exclude を使う場合は --statistical_results が必須
+    # When using -e / --exclude with the mp subcommand,
+    # the --statistical_results option is required.
     if args.cmd == "mp" and args.exclude and not args.statistical_results:
         parser.error(
             "mp: '-s/--statistical_results' is required when using '-e/--exclude'.\n"
@@ -171,10 +170,3 @@ def parse_args(argv=None):
         )
 
     return args
-
-
-# if __name__ == "__main__":
-#     args = parse_args()
-#     # ここから先は args.cmd に応じて処理を分岐:
-#     # if args.cmd == "run": ...
-#     # elif args.cmd == "mp": ...

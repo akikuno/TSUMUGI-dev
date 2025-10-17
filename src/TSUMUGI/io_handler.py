@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import csv
 import gzip
+import json
 import pickle
+import sys
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -105,3 +107,43 @@ def parse_obo_file(file_path: str | Path) -> dict[str, dict[str, str]]:
                 current_term_data = None
 
     return ontology_terms
+
+
+###########################################################
+# Parse report (jsonl.gz) files to `pair_similarity_annotations`:
+# dict[frozenset[str], dict[str, dict[str, str] | int]]
+###########################################################
+
+
+def parse_jsonl_gz_to_pair_map(
+    path_jsonl_gz: str | Path | None,
+) -> dict[frozenset[str], dict[str, dict[str, str] | int]]:
+    """
+    Read a JSONL (.gz) file or standard input and return a mapping of gene pairs to their annotations.
+    """
+    pair_similarity_annotations = {}
+
+    # --- When reading from standard input ---
+    if path_jsonl_gz in (None, sys.stdin):
+        file_iter = (json.loads(line) for line in sys.stdin if line.strip())
+    else:
+        path_jsonl_gz = Path(path_jsonl_gz)
+        if path_jsonl_gz.suffix == ".gz":
+            f = gzip.open(path_jsonl_gz, "rt", encoding="utf-8")
+        else:
+            f = open(path_jsonl_gz, encoding="utf-8")
+        file_iter = map(json.loads, f)
+
+    # --- Common reading process ---
+    for obj in file_iter:
+        gene1 = obj["gene1_symbol"]
+        gene2 = obj["gene2_symbol"]
+        pair = frozenset([gene1, gene2])
+        del obj["gene1_symbol"], obj["gene2_symbol"]
+        pair_similarity_annotations[pair] = obj
+
+    # Explicitly close gzip.open() / open() only when used
+    if "f" in locals():
+        f.close()
+
+    return pair_similarity_annotations
