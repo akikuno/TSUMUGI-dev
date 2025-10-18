@@ -87,15 +87,15 @@ def exclude_specific_phenotype(
         path_statistical_all, related_parameter_ids
     )
 
-    pair_similarity_annotations = io_handler.parse_jsonl_gz_to_pair_map(path_phenotype_similarity_per_gene_pair)
-    for gene_pair, annotation in tqdm(pair_similarity_annotations.items(), desc="Filtering gene pairs"):
-        if gene_pair.isdisjoint(genes_without_specific_phenotype):
-            continue
-        # output to stdout as JSON
-        gene1, gene2 = sorted(gene_pair)
-        record = {"gene1_symbol": gene1, "gene2_symbol": gene2, **annotation}
-        json.dump(record, sys.stdout, ensure_ascii=False)
-        sys.stdout.write("\n")
+    pair_similarity_annotations = io_handler.read_jsonl(path_phenotype_similarity_per_gene_pair)
+    for record in tqdm(pair_similarity_annotations, desc="Filtering gene pairs"):
+        if (
+            record["gene1_symbol"] in genes_without_specific_phenotype
+            and record["gene2_symbol"] in genes_without_specific_phenotype
+        ):
+            # output to stdout as JSON
+            json.dump(record, sys.stdout, ensure_ascii=False)
+            sys.stdout.write("\n")
 
 
 def include_specific_phenotype(
@@ -115,12 +115,10 @@ def include_specific_phenotype(
     else:
         descendants_of_term_name = pickle.load(open(cache_dir / "descendants_of_term_name.pkl", "rb"))
 
-    pair_similarity_annotations = io_handler.parse_jsonl_gz_to_pair_map(path_phenotype_similarity_per_gene_pair)
-    for gene_pair, annotation in tqdm(pair_similarity_annotations.items(), desc="Filtering gene pairs"):
-        if not set(annotation["phenotype_shared_annotations"].keys()).intersection(descendants_of_term_name):
+    pair_similarity_annotations = io_handler.read_jsonl(path_phenotype_similarity_per_gene_pair)
+    for record in tqdm(pair_similarity_annotations, desc="Filtering gene pairs"):
+        if not set(record["phenotype_shared_annotations"].keys()).intersection(descendants_of_term_name):
             continue
         # output to stdout as JSON
-        gene1, gene2 = sorted(gene_pair)
-        record = {"gene1_symbol": gene1, "gene2_symbol": gene2, **annotation}
         json.dump(record, sys.stdout, ensure_ascii=False)
         sys.stdout.write("\n")

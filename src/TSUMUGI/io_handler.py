@@ -9,6 +9,16 @@ from collections.abc import Iterator
 from pathlib import Path
 
 
+def count_newline(file_path: str | Path, chunk_size: int = 1024 * 1024) -> int:
+    """Count newline characters in plain text or gzip-compressed file efficiently."""
+    open_func = gzip.open if Path(file_path).suffix == ".gz" else open
+    count = 0
+    with open_func(file_path, "rb") as f:
+        while chunk := f.read(chunk_size):
+            count += chunk.count(b"\n")
+    return count
+
+
 def load_csv_as_dicts(file_path: str | Path, encoding: str = "utf-8") -> Iterator[dict[str, str]]:
     """
     Read CSV file and return each row as a {header: value} dict
@@ -115,68 +125,23 @@ def parse_obo_file(file_path: str | Path) -> dict[str, dict[str, str]]:
 ###########################################################
 
 
-def parse_jsonl_gz_to_pair_map(
-    path_jsonl_gz: str | Path | None,
-) -> dict[frozenset[str], dict[str, dict[str, str] | int]]:
+def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
     """
-    Read a JSONL (.gz) file or standard input and return a mapping of gene pairs to their annotations.
+    Stream JSONL (.jsonl or .jsonl.gz). If path_jsonl is None or "-", read from stdin.
+    Keeps the file open during iteration (no 'I/O operation on closed file').
     """
-    pair_similarity_annotations = {}
+    # stdin
+    if path_jsonl is None or str(path_jsonl) == "-" or path_jsonl == sys.stdin:
+        for line in sys.stdin:
+            if line.strip():
+                yield json.loads(line)
+        return
 
-    # --- When reading from standard input ---
-    if path_jsonl_gz in (None, sys.stdin):
-        file_iter = (json.loads(line) for line in sys.stdin if line.strip())
-    else:
-        path_jsonl_gz = Path(path_jsonl_gz)
-        if path_jsonl_gz.suffix == ".gz":
-            f = gzip.open(path_jsonl_gz, "rt", encoding="utf-8")
-        else:
-            f = open(path_jsonl_gz, encoding="utf-8")
-        file_iter = map(json.loads, f)
+    p = Path(path_jsonl)
+    open_func = gzip.open if p.suffix == ".gz" else open
 
-    # --- Common reading process ---
-    for obj in file_iter:
-        gene1 = obj["gene1_symbol"]
-        gene2 = obj["gene2_symbol"]
-        pair = frozenset([gene1, gene2])
-        del obj["gene1_symbol"], obj["gene2_symbol"]
-        pair_similarity_annotations[pair] = obj
-
-    # Explicitly close gzip.open() / open() only when used
-    if "f" in locals():
-        f.close()
-
-    return pair_similarity_annotations
-
-
-###########################################################
-# Parse report (jsonl.gz) files to `records_significants`:
-###########################################################
-
-
-def parse_jsonl_gz_to_records_significants(
-    path_jsonl_gz: str | Path | None,
-) -> list[dict[str, str | float]]:
-    """
-    Read a JSONL (.gz) file or standard input and return a mapping of gene pairs to their annotations.
-    """
-    records_significants = []
-
-    # --- When reading from standard input ---
-    if path_jsonl_gz in (None, sys.stdin):
-        file_iter = (json.loads(line) for line in sys.stdin if line.strip())
-    else:
-        path_jsonl_gz = Path(path_jsonl_gz)
-        if path_jsonl_gz.suffix == ".gz":
-            f = gzip.open(path_jsonl_gz, "rt", encoding="utf-8")
-        else:
-            f = open(path_jsonl_gz, encoding="utf-8")
-        file_iter = map(json.loads, f)
-
-    records_significants = list(file_iter)
-
-    # Explicitly close gzip.open() / open() only when used
-    if "f" in locals():
-        f.close()
-
-    return records_significants
+    # file / gzip
+    with open_func(p, "rt", encoding="utf-8") as f:
+        for line in f:
+            if line.strip():
+                yield json.loads(line)

@@ -16,7 +16,7 @@ def filter_by_number_of_phenotypes_per_gene(
     min_phenotypes: int | None = None,
     max_phenotypes: int | None = None,
 ) -> list[dict[str, str]]:
-    records_significants = io_handler.parse_jsonl_gz_to_records_significants(path_significant_phenotypes_per_gene)
+    records_significants = io_handler.read_jsonl(path_significant_phenotypes_per_gene)
 
     cnt = Counter(rec["marker_symbol"] for rec in records_significants)
     matched_genes = {
@@ -24,17 +24,13 @@ def filter_by_number_of_phenotypes_per_gene(
         for marker, c in cnt.items()
         if (min_phenotypes is None or c >= min_phenotypes) and (max_phenotypes is None or c <= max_phenotypes)
     }
-
-    pair_similarity_annotations = io_handler.parse_jsonl_gz_to_pair_map(path_phenotype_similarity_per_gene_pair)
-    for gene_pair, annotation in tqdm(pair_similarity_annotations.items(), desc="Filtering gene pairs"):
-        if not gene_pair.issubset(matched_genes):
-            continue
-
-        # output to stdout as JSON
-        gene1, gene2 = sorted(gene_pair)
-        record = {"gene1_symbol": gene1, "gene2_symbol": gene2, **annotation}
-        json.dump(record, sys.stdout, ensure_ascii=False)
-        sys.stdout.write("\n")
+    records = io_handler.read_jsonl(path_phenotype_similarity_per_gene_pair)
+    for record in tqdm(records, desc="Filtering gene pairs"):
+        # check both genes in the pair match the criteria
+        if record["gene1_symbol"] in matched_genes and record["gene2_symbol"] in matched_genes:
+            # output to stdout as JSON
+            json.dump(record, sys.stdout, ensure_ascii=False)
+            sys.stdout.write("\n")
 
 
 def filter_by_number_of_phenotypes_per_pair(
@@ -42,15 +38,14 @@ def filter_by_number_of_phenotypes_per_pair(
     min_phenotypes: int | None = None,
     max_phenotypes: int | None = None,
 ) -> list[dict[str, str]]:
-    pair_similarity_annotations = io_handler.parse_jsonl_gz_to_pair_map(path_phenotype_similarity_per_gene_pair)
-    for gene_pair, annotation in tqdm(pair_similarity_annotations.items(), desc="Filtering gene pairs"):
-        num_shared_phenotypes = len(annotation["phenotype_shared_annotations"])
+    records = io_handler.read_jsonl(path_phenotype_similarity_per_gene_pair)
+    for record in tqdm(records, desc="Filtering gene pairs"):
+        num_shared_phenotypes = len(record["phenotype_shared_annotations"])
         if min_phenotypes is not None and num_shared_phenotypes < min_phenotypes:
             continue
         if max_phenotypes is not None and num_shared_phenotypes > max_phenotypes:
             continue
+
         # output to stdout as JSON
-        gene1, gene2 = sorted(gene_pair)
-        record = {"gene1_symbol": gene1, "gene2_symbol": gene2, **annotation}
         json.dump(record, sys.stdout, ensure_ascii=False)
         sys.stdout.write("\n")
