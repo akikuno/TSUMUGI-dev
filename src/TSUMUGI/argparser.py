@@ -10,7 +10,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="cmd", required=True)
 
     # =========================================================
-    # run: 既存のパイプライン実行（従来の引数をそのまま移設）
+    # run: Run TSUMUGI pipeline
     # =========================================================
     run = subparsers.add_parser(
         "run",
@@ -80,23 +80,23 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     # =========================================================
-    # mp: MP指定でペアをフィルタ（descendants固定）
+    # mp: Filter gene pairs by a specific MP term and its descendants
     # =========================================================
-    mp = subparsers.add_parser(
+    mp_parser = subparsers.add_parser(
         "mp",
         help="Filter gene pairs by a specific MP term and its descendants",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
-    group = mp.add_mutually_exclusive_group(required=True)
-    group.add_argument(
+    group_mp = mp_parser.add_mutually_exclusive_group(required=True)
+    group_mp.add_argument(
         "-i",
         "--include",
         dest="include",
         metavar="MP_ID",
         help=("Include gene pairs that share the specified MP term (descendants included).\nExample: -i MP:0001146"),
     )
-    group.add_argument(
+    group_mp.add_argument(
         "-e",
         "--exclude",
         dest="exclude",
@@ -108,7 +108,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    mp.add_argument(
+    mp_parser.add_argument(
         "-o",
         "--obo",
         type=str,
@@ -116,7 +116,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=("Path to ontology file.\nExample: ./data/mp.obo"),
     )
 
-    mp.add_argument(
+    mp_parser.add_argument(
         "-s",
         "--statistical_results",
         type=str,
@@ -129,7 +129,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    mp.add_argument(
+    mp_parser.add_argument(
         "--in",
         dest="infile",
         type=str,
@@ -141,7 +141,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    mp.add_argument(
+    mp_parser.add_argument(
         "--out",
         dest="outfile",
         type=str,
@@ -150,6 +150,63 @@ def build_parser() -> argparse.ArgumentParser:
             "Path to output file (JSONL or JSONL.gz).\n"
             "If omitted, data are written to STDOUT.\n"
             "Example: ./results/pairs.filtered.jsonl.gz"
+        ),
+    )
+
+    # =========================================================
+    # n-phenos (Filter by the number of phenotypes)
+    # =========================================================
+
+    nphenos_parser = subparsers.add_parser(
+        "n-phenos",
+        help="Filter by number of phenotypes",
+        description="Filter genes by the number of phenotypes per KO or shared between KO pairs.",
+    )
+
+    group_nphenos = nphenos_parser.add_mutually_exclusive_group(required=True)
+    group_nphenos.add_argument(
+        "-g", "--genewise", action="store_true", help="Filter by number of phenotypes per KO mouse"
+    )
+    group_nphenos.add_argument(
+        "-p", "--pairwise", action="store_true", help="Filter by number of shared phenotypes between KO pairs"
+    )
+
+    nphenos_parser.add_argument("--min", type=int, help="Minimum number threshold")
+    nphenos_parser.add_argument("--max", type=int, help="Maximum number threshold")
+
+    nphenos_parser.add_argument(
+        "--in",
+        dest="infile",
+        type=str,
+        required=False,
+        help=(
+            "Path to input gene pair file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+            "Example: ./results/phenotype_similarity_per_gene_pair.jsonl.gz"
+        ),
+    )
+
+    nphenos_parser.add_argument(
+        "--out",
+        dest="outfile",
+        type=str,
+        required=False,
+        help=(
+            "Path to output file (JSONL or JSONL.gz).\n"
+            "If omitted, data are written to STDOUT.\n"
+            "Example: ./results/pairs.filtered.jsonl.gz"
+        ),
+    )
+
+    nphenos_parser.add_argument(
+        "-s",
+        "--sig",
+        type=str,
+        required=False,
+        help=(
+            "Path to significant phenotypes per gene file (JSONL or JSONL.gz).\n"
+            "Required when using '-g/--genewise' to determine genes that were measured\n"
+            "Example: ./results/significant_phenotypes_per_gene.jsonl.gz"
         ),
     )
 
@@ -167,6 +224,19 @@ def parse_args(argv=None):
             "mp: '-s/--statistical_results' is required when using '-e/--exclude'.\n"
             "Provide IMPC 'statistical_results_ALL.csv.gz' to identify genes measured "
             "without the specified phenotype."
+        )
+
+    # When using the n-phenos subcommand, at least one of --min or --max must be specified.
+    if args.cmd == "n-phenos":
+        if args.min is None and args.max is None:
+            parser.error("n-phenos: At least one of '--min' or '--max' must be specified.")
+
+    # When using -g / --genewise with the n-phenos subcommand,
+    # the --sig option is required.
+    if args.cmd == "n-phenos" and args.genewise and not args.sig:
+        parser.error(
+            "n-phenos: '-s/--sig' is required when using '-g/--genewise'.\n"
+            "Provide significant phenotypes per gene file to identify genes measured."
         )
 
     return args

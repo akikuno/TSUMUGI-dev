@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import sys
 
-from TSUMUGI import argparser, core, mp_filterer, validator
+from TSUMUGI import argparser, core, mp_filterer, n_phenos_filterer, validator
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -51,6 +51,22 @@ def main() -> None:
                 path_statistical_all=args.statistical_results,
                 path_obo=args.obo,
                 mp_term_id=args.exclude,
+            )
+
+    elif args.cmd == "n-phenos":
+        logging.info("Filtering gene pairs based on number of phenotypes per gene")
+        if args.genewise:
+            n_phenos_filterer.filter_by_number_of_phenotypes_per_gene(
+                path_phenotype_similarity_per_gene_pair=args.infile or sys.stdin,
+                path_significant_phenotypes_per_gene=args.sig,
+                min_phenotypes=args.min,
+                max_phenotypes=args.max,
+            )
+        elif args.pairwise:
+            n_phenos_filterer.filter_by_number_of_phenotypes_per_pair(
+                path_phenotype_similarity_per_gene_pair=args.infile or sys.stdin,
+                min_phenotypes=args.min,
+                max_phenotypes=args.max,
             )
 
 

@@ -147,3 +147,36 @@ def parse_jsonl_gz_to_pair_map(
         f.close()
 
     return pair_similarity_annotations
+
+
+###########################################################
+# Parse report (jsonl.gz) files to `records_significants`:
+###########################################################
+
+
+def parse_jsonl_gz_to_records_significants(
+    path_jsonl_gz: str | Path | None,
+) -> list[dict[str, str | float]]:
+    """
+    Read a JSONL (.gz) file or standard input and return a mapping of gene pairs to their annotations.
+    """
+    records_significants = []
+
+    # --- When reading from standard input ---
+    if path_jsonl_gz in (None, sys.stdin):
+        file_iter = (json.loads(line) for line in sys.stdin if line.strip())
+    else:
+        path_jsonl_gz = Path(path_jsonl_gz)
+        if path_jsonl_gz.suffix == ".gz":
+            f = gzip.open(path_jsonl_gz, "rt", encoding="utf-8")
+        else:
+            f = open(path_jsonl_gz, encoding="utf-8")
+        file_iter = map(json.loads, f)
+
+    records_significants = list(file_iter)
+
+    # Explicitly close gzip.open() / open() only when used
+    if "f" in locals():
+        f.close()
+
+    return records_significants
