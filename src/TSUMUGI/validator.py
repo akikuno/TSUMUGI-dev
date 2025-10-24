@@ -51,18 +51,17 @@ def validate_obo_file(file_path: str) -> None:
         raise ValueError("Invalid OBO file: missing '[Term]' stanza.")
 
 
-def validate_phenodigm_file(file_path: str) -> None:
-    # Implementation for validating Phenodigm file
-    columns = {"Disorder name", "Mouse model description"}
-    with open(file_path, encoding="utf-8") as f:
-        record_columns = next(io_handler.load_csv_as_dicts(f)).keys()
-        missing_columns = columns - record_columns
-        if missing_columns:
-            raise ValueError(f"Invalid file: Missing columns in record {record}: {missing_columns} in {file_path}")
-
-
 def validate_mp_term_id(term_id: str, mp_obo_path: str) -> None:
     # Implementation for validating MP term ID
     ontology_terms = io_handler.parse_obo_file(mp_obo_path)
     if term_id not in ontology_terms:
         raise ValueError(f"MP term ID '{term_id}' not found in OBO file '{mp_obo_path}'.")
+
+
+def validate_phenodigm_file(file_path: str) -> None:
+    # Implementation for validating Phenodigm file
+    columns = {"Disorder name", "Mouse model description"}
+    record_columns = next(io_handler.load_csv_as_dicts(file_path)).keys()
+    missing_columns = columns - record_columns
+    if missing_columns:
+        raise ValueError(f"Invalid file: Missing columns in record {record}: {missing_columns} in {file_path}")
