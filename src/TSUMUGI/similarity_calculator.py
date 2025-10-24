@@ -130,9 +130,8 @@ def calculate_all_pairwise_similarities(
     parent_term_map, child_term_map = _build_term_hierarchy(ontology_terms)
 
     term_pair_similarity_map = {}
-    for term1_id, term2_id in tqdm(
-        combinations_with_replacement(all_term_ids, 2), total=(len(all_term_ids) * (len(all_term_ids) - 1)) // 2
-    ):
+    total_pairs = (len(all_term_ids) * (len(all_term_ids) + 1)) // 2
+    for term1_id, term2_id in tqdm(combinations_with_replacement(all_term_ids, 2), total=total_pairs):
         term_pair_key = frozenset([term1_id, term2_id])
         common_ancestor = _extract_common_ancestor(
             term1_id, term2_id, parent_term_map, child_term_map, total_term_count
