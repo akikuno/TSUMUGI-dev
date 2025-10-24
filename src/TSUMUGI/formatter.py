@@ -2,28 +2,14 @@ from __future__ import annotations
 
 import math
 from collections import defaultdict
-from itertools import groupby
-from operator import itemgetter
-
-###########################################################
-# Zygosity Formatting
-###########################################################
-
-
-def format_zygosity(records_significants) -> str:
-    """Format zygosity values to a consistent style."""
-    zygosity_converter = {"heterozygote": "Hetero", "homozygote": "Homo", "hemizygote": "Hemi"}
-    for record in records_significants:
-        record["zygosity"] = zygosity_converter.get(record["zygosity"], record["zygosity"])
-    return records_significants
-
+from collections.abc import Iterable
 
 ###########################################################
 # String to Float
 ###########################################################
 
 
-def to_float(x: str | None) -> float:
+def _to_float(x: str | None) -> float:
     """Convert a string to float; empty/None becomes NaN."""
     return float(x) if x not in (None, "") else float("nan")
 
@@ -31,16 +17,29 @@ def to_float(x: str | None) -> float:
 def floatinize_columns(record: dict[str, str], columns: list[str]) -> dict[str, str | float]:
     """Return a record with numeric fields coerced to float/NaN."""
     for col in columns:
-        record[col] = to_float(record.get(col))
+        record[col] = _to_float(record.get(col))
     return record
 
 
-def abs_effect_size(record: dict[str, str | float]) -> dict[str, str | float]:
+def abs_effect_size(record: dict[str, str | float], effect_size_columns: list[str]) -> dict[str, str | float]:
     """Return a record with the absolute effect size and NaN replaced with 0."""
-    if math.isnan(record["effect_size"]):
-        record["effect_size"] = 0
-    record["effect_size"] = abs(record["effect_size"])
+    for col in effect_size_columns:
+        if math.isnan(record[col]):
+            record[col] = 0.0
+        record[col] = abs(record[col])
     return record
+
+
+###########################################################
+# Zygosity Formatting
+###########################################################
+
+
+def format_zygosity(records: Iterable[dict], zygosity_converter: dict[str, str]) -> Iterable[dict]:
+    """Format zygosity values to a consistent style."""
+    for record in records:
+        record["zygosity"] = zygosity_converter.get(record["zygosity"], record["zygosity"])
+    return records
 
 
 ###########################################################
@@ -115,32 +114,3 @@ def format_disease_annotations(disease_annotations: list[dict[str, str | float]]
             disease_annotations_by_gene[marker_symbol].append(record)
 
     return dict(disease_annotations_by_gene)
-
-
-###########################################################
-# Others
-###########################################################
-
-
-def get_distinct_records_with_max_effect(
-    records: list[dict[str, str | float]], unique_keys: list[str]
-) -> list[dict[str, str | float]]:
-    """
-    Groups records by the specified keys and returns the record with the maximum
-    effect_size from each group.
-    Note: effect_size is already an absolute value.
-    """
-    # Dynamically define the key function based on unique_keys.
-    record_key_getter = itemgetter(*unique_keys)
-
-    # Pre-sort by the same key for groupby to function correctly.
-    records_sorted = sorted(records, key=record_key_getter)
-
-    distinct_records = []
-    for _, group in groupby(records_sorted, key=record_key_getter):
-        # Find the record with the maximum effect_size within the group.
-        # Use .get() to safely handle cases where the 'effect_size' key might be missing.
-        record_with_max_effect = max(group, key=lambda r: r.get("effect_size", -1))
-        distinct_records.append(record_with_max_effect)
-
-    return distinct_records

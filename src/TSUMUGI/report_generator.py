@@ -69,9 +69,9 @@ def write_marker_symbol_accession_id_json(records_significants, TEMPDIR: Path, o
         json.dump(marker_symbol_accession_id, f, ensure_ascii=False, indent=2)
 
 
-def write_records_significants_jsonl_gz(records_significants, output_file: Path) -> None:
+def write_records_jsonl_gz(records, output_file: Path) -> None:
     with gzip.open(output_file, "wt", encoding="utf-8") as f:
-        for record in records_significants:
+        for record in records:
             f.write(json.dumps(record) + "\n")
 
 

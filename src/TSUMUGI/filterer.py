@@ -2,16 +2,17 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterator
+from itertools import groupby
+from operator import itemgetter
 
 from tqdm import tqdm
 
 from TSUMUGI.formatter import floatinize_columns
 
 
-def subset_columns(records: Iterator[dict[str, str]], columns: list[str]) -> Iterator[dict[str, str]]:
-    """Yield dicts keeping only the requested columns; missing keys become empty strings."""
-    for record in records:
-        yield {col: record.get(col, "") for col in columns}
+def subset_columns(records: Iterator[dict[str, str]], columns: set[str]) -> list[dict[str, str]]:
+    """Return list[dict] keeping only the requested columns; missing keys become empty strings."""
+    return [{col: record.get(col, "") for col in columns} for record in records]
 
 
 def _is_significant(rec: dict[str, float | str], threshold: float) -> bool:
@@ -59,3 +60,32 @@ def extract_significant_phenotypes(
             unique_records.append(record)
 
     return unique_records
+
+
+###########################################################
+# Others
+###########################################################
+
+
+def distinct_records_with_max_effect(
+    records: list[dict[str, str | float]], unique_keys: list[str]
+) -> list[dict[str, str | float]]:
+    """
+    Groups records by the specified keys and returns the record with the maximum
+    effect_size from each group.
+    Note: effect_size is already an absolute value.
+    """
+    # Dynamically define the key function based on unique_keys.
+    record_key_getter = itemgetter(*unique_keys)
+
+    # Pre-sort by the same key for groupby to function correctly.
+    records_sorted = sorted(records, key=record_key_getter)
+
+    distinct_records = []
+    for _, group in groupby(records_sorted, key=record_key_getter):
+        # Find the record with the maximum effect_size within the group.
+        # Use .get() to safely handle cases where the 'effect_size' key might be missing.
+        record_with_max_effect = max(group, key=lambda r: r.get("effect_size", -1))
+        distinct_records.append(record_with_max_effect)
+
+    return distinct_records
