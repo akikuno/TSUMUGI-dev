@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import gzip
-import json
 import logging
 import pickle
 import shutil
@@ -114,6 +112,7 @@ def run_pipeline(args) -> None:
         "sexual_dimorphism",
         "effect_size",
         "significant",
+        "disease_annotation",
     }
     records_filtered = filterer.subset_columns(records_filtered, to_keep_columns)
 
@@ -127,9 +126,6 @@ def run_pipeline(args) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     pickle.dump(records_all, open(output_dir / "records_all.pkl", "wb"))
-    with gzip.open(Path(TEMPDIR) / "preprocessed" / "records_all.jsonl.gz", "wt", encoding="utf-8") as f:
-        for record in records_all:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
     pickle.dump(records_significants, open(output_dir / "records_significants.pkl", "wb"))
 
     del records_formatted
