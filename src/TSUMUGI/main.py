@@ -40,14 +40,14 @@ def main() -> None:
         if args.include:
             logging.info(f"Including gene pairs with phenotypes related to MP term: {args.include}")
             mp_filterer.include_specific_phenotype(
-                path_phenotype_similarity_per_gene_pair=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.infile or sys.stdin,
                 path_obo=args.obo,
                 term_id=args.include,
             )
         elif args.exclude:
             logging.info(f"Excluding gene pairs with phenotypes related to MP term: {args.exclude}")
             mp_filterer.exclude_specific_phenotype(
-                path_phenotype_similarity_per_gene_pair=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.infile or sys.stdin,
                 path_statistical_all=args.statistical_results,
                 path_obo=args.obo,
                 mp_term_id=args.exclude,
@@ -57,14 +57,14 @@ def main() -> None:
         logging.info("Filtering gene pairs based on number of phenotypes per gene")
         if args.genewise:
             n_phenos_filterer.filter_by_number_of_phenotypes_per_gene(
-                path_phenotype_similarity_per_gene_pair=args.infile or sys.stdin,
-                path_significant_phenotypes_per_gene=args.sig,
+                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_genewise_phenotype_annotations=args.path_genewise,
                 min_phenotypes=args.min,
                 max_phenotypes=args.max,
             )
         elif args.pairwise:
             n_phenos_filterer.filter_by_number_of_phenotypes_per_pair(
-                path_phenotype_similarity_per_gene_pair=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.infile or sys.stdin,
                 min_phenotypes=args.min,
                 max_phenotypes=args.max,
             )

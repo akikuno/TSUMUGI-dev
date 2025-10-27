@@ -26,7 +26,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Output directory for TSUMUGI results.\n"
             "All generated files (intermediate and final results) will be saved here.\n"
-            "Example: ./results/phenotype_network/"
+            "Example: ./TSUMUGI-results/phenotype_network/"
         ),
     )
 
@@ -41,7 +41,7 @@ def build_parser() -> argparse.ArgumentParser:
             "for all IMPC phenotyping experiments.\n"
             "Example: ./data/statistical-results-ALL.csv.gz\n"
             "If not available, download 'statistical-results-ALL.csv.gz' manually from:\n"
-            "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/results/"
+            "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/TSUMUGI-results/"
         ),
     )
 
@@ -137,7 +137,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Path to input gene pair file (JSONL or JSONL.gz).\n"
             "If omitted, data are read from STDIN.\n"
-            "Example: ./results/phenotype_similarity_per_gene_pair.jsonl.gz"
+            "Example: ./TSUMUGI-results/pairwise_similarity_annotations.jsonl.gz"
         ),
     )
 
@@ -149,7 +149,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Path to output file (JSONL or JSONL.gz).\n"
             "If omitted, data are written to STDOUT.\n"
-            "Example: ./results/pairs.filtered.jsonl.gz"
+            "Example: ./TSUMUGI-results/pairs.filtered.jsonl.gz"
         ),
     )
 
@@ -182,7 +182,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Path to input gene pair file (JSONL or JSONL.gz).\n"
             "If omitted, data are read from STDIN.\n"
-            "Example: ./results/phenotype_similarity_per_gene_pair.jsonl.gz"
+            "Example: ./TSUMUGI-results/pairwise_similarity_annotations.jsonl.gz"
         ),
     )
 
@@ -194,19 +194,20 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Path to output file (JSONL or JSONL.gz).\n"
             "If omitted, data are written to STDOUT.\n"
-            "Example: ./results/pairs.filtered.jsonl.gz"
+            "Example: ./TSUMUGI-results/pairs.filtered.jsonl.gz"
         ),
     )
 
     nphenos_parser.add_argument(
-        "-s",
-        "--sig",
+        "-a",
+        "--genewise_annotations",
+        dest="path_genewise",
         type=str,
         required=False,
         help=(
-            "Path to significant phenotypes per gene file (JSONL or JSONL.gz).\n"
-            "Required when using '-g/--genewise' to determine genes that were measured\n"
-            "Example: ./results/significant_phenotypes_per_gene.jsonl.gz"
+            "Path to the gene-level phenotype annotations file (JSONL or JSONL.gz).\n"
+            "Required when using '-g/--genewise' to determine genes that were measured.\n"
+            "Example: ./TSUMUGI-results/gene_phenotype_annotations.jsonl.gz"
         ),
     )
 
@@ -232,11 +233,11 @@ def parse_args(argv=None):
             parser.error("n-phenos: At least one of '--min' or '--max' must be specified.")
 
     # When using -g / --genewise with the n-phenos subcommand,
-    # the --sig option is required.
-    if args.cmd == "n-phenos" and args.genewise and not args.sig:
+    # the --genewise_annotations option is required.
+    if args.cmd == "n-phenos" and args.genewise and not args.path_genewise:
         parser.error(
-            "n-phenos: '-s/--sig' is required when using '-g/--genewise'.\n"
-            "Provide significant phenotypes per gene file to identify genes measured."
+            "n-phenos: '-a/--genewise_annotations' is required when using '-g/--genewise'.\n"
+            "Provide the gene phenotype annotations JSONL(.gz) file to identify genes that were measured."
         )
 
     return args
