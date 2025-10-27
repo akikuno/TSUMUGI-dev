@@ -129,11 +129,6 @@ def parse_impc_phenodigm(file_path: str | Path) -> dict[str, list[dict[str, str]
     return disease_annotations_by_gene
 
 
-# Parse report (jsonl.gz) files to `pair_similarity_annotations`:
-# dict[frozenset[str], dict[str, dict[str, str] | int]]
-###########################################################
-
-
 def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
     """
     Stream JSONL (.jsonl or .jsonl.gz). If path_jsonl is None or "-", read from stdin.
