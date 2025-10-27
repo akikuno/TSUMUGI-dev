@@ -8,6 +8,8 @@ import sys
 from collections.abc import Iterator
 from pathlib import Path
 
+from TSUMUGI import formatter
+
 
 def count_newline(file_path: str | Path, chunk_size: int = 1024 * 1024) -> int:
     """Count newline characters in plain text or gzip-compressed file efficiently."""
@@ -119,7 +121,14 @@ def parse_obo_file(file_path: str | Path) -> dict[str, dict[str, str]]:
     return ontology_terms
 
 
-###########################################################
+def parse_impc_phenodigm(file_path: str | Path) -> dict[str, list[dict[str, str]]]:
+    with open(Path(file_path)) as f:
+        disease_annotations_by_gene: dict[str, list[dict[str, str]]] = formatter.format_disease_annotations(
+            list(csv.DictReader(f))
+        )
+    return disease_annotations_by_gene
+
+
 # Parse report (jsonl.gz) files to `pair_similarity_annotations`:
 # dict[frozenset[str], dict[str, dict[str, str] | int]]
 ###########################################################

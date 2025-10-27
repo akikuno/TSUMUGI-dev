@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import csv
 import gzip
 import json
 import logging
 import pickle
 import shutil
+from collections.abc import Iterator
 from pathlib import Path
 
 from TSUMUGI import (
@@ -24,12 +24,13 @@ def run_pipeline(args) -> None:
     ROOT_DIR = Path(args.output_dir)
     TEMPDIR = Path(ROOT_DIR / ".tempdir")
 
-    records = io_handler.load_csv_as_dicts(args.statistical_results)
-    ontology_terms = io_handler.parse_obo_file(Path(args.mp_obo))
-    with open(Path(args.impc_phenodigm)) as f:
-        disease_annotations_by_gene: dict[str, list[dict[str, str]]] = formatter.format_disease_annotations(
-            list(csv.DictReader(f))
-        )
+    records: Iterator[dict[str, str | float]] = io_handler.load_csv_as_dicts(Path(args.statistical_results))
+
+    ontology_terms: dict[str, dict[str, str | list[str]]] = io_handler.parse_obo_file(Path(args.mp_obo))
+
+    disease_annotations_by_gene: dict[str, list[dict[str, str]]] = io_handler.parse_impc_phenodigm(
+        Path(args.impc_phenodigm)
+    )
 
     ###########################################################
     # Preprocess data
@@ -100,13 +101,12 @@ def run_pipeline(args) -> None:
         "life_stage",
         "sexual_dimorphism",
     ]
-    records_filtered: list[dict[str, str | float]] = filterer.distinct_records_with_max_effect(
-        records_filtered, unique_keys
-    )
+    records_filtered = filterer.distinct_records_with_max_effect(records_filtered, unique_keys)
 
     # Subset columns
     to_keep_columns = {
         "marker_symbol",
+        "marker_accession_id",
         "mp_term_id",
         "mp_term_name",
         "zygosity",
@@ -115,9 +115,9 @@ def run_pipeline(args) -> None:
         "effect_size",
         "significant",
     }
-    records_annotated = filterer.subset_columns(records_annotated, to_keep_columns)
+    records_filtered = filterer.subset_columns(records_filtered, to_keep_columns)
 
-    records_all = records_annotated.copy()
+    records_all = records_filtered.copy()
     records_significants = [record for record in records_all if record["significant"]]
 
     # --------------------------------------------------------
