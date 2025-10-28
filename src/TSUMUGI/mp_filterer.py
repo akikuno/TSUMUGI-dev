@@ -24,14 +24,15 @@ def exclude_specific_phenotype(
     ancesters_of_term_id = ontology_handler.find_all_ancestor_terms(mp_term_id, parent_term_map)
 
     # If a gene exhibits a significant abnormal phenotype annotated to
-    # the target mp_term_id or any of its descendant terms,
+    # the target mp_term_id or any of its ancestor/descendant terms,
     # the gene is classified as “having a phenotype.”
     genewise_phenotype_annotations = io_handler.read_jsonl(Path(path_genewise_phenotype_annotations))
     genes_with_phenotype = set()
     for record in genewise_phenotype_annotations:
         condition1 = record["mp_term_id"] == mp_term_id
-        condition2 = record["mp_term_id"] in descendants_of_term_id
-        if (condition1 or condition2) and record["significant"] is True:
+        condition2 = record["mp_term_id"] in ancesters_of_term_id
+        condition3 = record["mp_term_id"] in descendants_of_term_id
+        if (condition1 or condition2 or condition3) and record["significant"] is True:
             if life_stage is not None and record["life_stage"] != life_stage:
                 continue
             if sex is not None and record["sexual_dimorphism"] != sex:
@@ -42,7 +43,7 @@ def exclude_specific_phenotype(
 
     # For genes whose phenotype status remains undetermined in (1),
     # if a non-significant phenotype annotation exists for the target mp_term_id or any of
-    # its ancestor terms, the gene is classified as “confirmed as having no phenotype.”
+    # its ancestor/descendant terms, the gene is classified as “confirmed as having no phenotype.”
     genewise_phenotype_annotations = io_handler.read_jsonl(Path(path_genewise_phenotype_annotations))
     genes_without_phenotype = set()
     for record in genewise_phenotype_annotations:
@@ -51,7 +52,8 @@ def exclude_specific_phenotype(
 
         condition1 = record["mp_term_id"] == mp_term_id
         condition2 = record["mp_term_id"] in ancesters_of_term_id
-        if (condition1 or condition2) and record["significant"] is False:
+        condition3 = record["mp_term_id"] in descendants_of_term_id
+        if (condition1 or condition2 or condition3) and record["significant"] is False:
             if life_stage is not None and record["life_stage"] != life_stage:
                 continue
             if sex is not None and record["sexual_dimorphism"] != sex:

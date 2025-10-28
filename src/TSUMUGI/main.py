@@ -42,7 +42,7 @@ def main() -> None:
             mp_filterer.include_specific_phenotype(
                 path_pairwise_similarity_annotations=args.infile or sys.stdin,
                 path_obo=args.obo,
-                term_id=args.include,
+                mp_term_id=args.include,
                 life_stage=args.life_stage,
                 sex=args.sex,
                 zygosity=args.zygosity,
