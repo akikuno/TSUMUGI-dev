@@ -5,12 +5,12 @@ from TSUMUGI.filterer import distinct_records_with_max_effect
 @pytest.mark.parametrize(
     "records, unique_keys, expected",
     [
-        # Test Case 1: 基本的な動作。'gene'でグループ化し、各グループで最大のeffect_sizeを持つレコードが選ばれる。
+        # Test Case 1: Basic behavior—group by 'gene' and pick the record with the maximum effect_size per group.
         (
             [
                 {"gene": "A", "effect_size": 1.0},
-                {"gene": "A", "effect_size": 5.0},  # group Aの最大
-                {"gene": "B", "effect_size": 2.0},  # group Bの最大 (唯一)
+                {"gene": "A", "effect_size": 5.0},  # Max within group A
+                {"gene": "B", "effect_size": 2.0},  # Max within group B (only entry)
             ],
             ["gene"],
             [
@@ -18,12 +18,12 @@ from TSUMUGI.filterer import distinct_records_with_max_effect
                 {"gene": "B", "effect_size": 2.0},
             ],
         ),
-        # Test Case 2: 複数のキーでグループ化する。
+        # Test Case 2: Grouping by multiple keys.
         (
             [
-                {"gene": "A", "phenotype": "P1", "effect_size": 10.0},  # group (A, P1) の最大
+                {"gene": "A", "phenotype": "P1", "effect_size": 10.0},  # Max within group (A, P1)
                 {"gene": "A", "phenotype": "P1", "effect_size": 2.0},
-                {"gene": "A", "phenotype": "P2", "effect_size": 5.0},  # group (A, P2) の最大
+                {"gene": "A", "phenotype": "P2", "effect_size": 5.0},  # Max within group (A, P2)
             ],
             ["gene", "phenotype"],
             [
@@ -31,12 +31,12 @@ from TSUMUGI.filterer import distinct_records_with_max_effect
                 {"gene": "A", "phenotype": "P2", "effect_size": 5.0},
             ],
         ),
-        # Test Case 3: effect_sizeキーが存在しないレコードが含まれる場合。デフォルト値(-1)と比較される。
+        # Test Case 3: Records lacking effect_size fall back to the default value (-1).
         (
             [
-                {"gene": "C", "effect_size": 3.0},  # group Cの最大
-                {"gene": "C"},  # effect_sizeがない -> -1として扱われる
-                {"gene": "D", "effect_size": 0.0},  # group Dの最大
+                {"gene": "C", "effect_size": 3.0},  # Max within group C
+                {"gene": "C"},  # Missing effect_size -> treated as -1
+                {"gene": "D", "effect_size": 0.0},  # Max within group D
                 {"gene": "D"},
             ],
             ["gene"],
@@ -45,13 +45,13 @@ from TSUMUGI.filterer import distinct_records_with_max_effect
                 {"gene": "D", "effect_size": 0.0},
             ],
         ),
-        # Test Case 4: エッジケース - 入力リストが空の場合。
+        # Test Case 4: Edge case—input list is empty.
         (
             [],
             ["gene"],
             [],
         ),
-        # Test Case 5: エッジケース - 全てのレコードがユニークな場合。
+        # Test Case 5: Edge case—all records are already unique.
         (
             [
                 {"gene": "E", "effect_size": 1.0},
@@ -63,21 +63,20 @@ from TSUMUGI.filterer import distinct_records_with_max_effect
                 {"gene": "F", "effect_size": 2.0},
             ],
         ),
-        # Test Case 6: effect_sizeがすべて同じ値の場合、先に出てくる（ソート後）レコードが選ばれる。
+        # Test Case 6: When all effect_size values match, the first record after sorting is kept.
         (
             [
                 {"gene": "G", "id": 1, "effect_size": 5.0},
                 {"gene": "G", "id": 2, "effect_size": 5.0},
             ],
             ["gene"],
-            # max()は安定なので、同値の場合は最初の要素を返す
+            # max() is stable, so tied values return the first element
             [{"gene": "G", "id": 1, "effect_size": 5.0}],
         ),
     ],
 )
 def test_distinct_records_with_max_effect(records, unique_keys, expected):
     """
-    distinct_records_with_max_effect関数が、様々な入力に対して
-    正しく動作することを検証します。
+    Verify that distinct_records_with_max_effect behaves correctly across a range of inputs.
     """
     assert distinct_records_with_max_effect(records, unique_keys) == expected

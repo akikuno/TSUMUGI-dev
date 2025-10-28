@@ -26,7 +26,6 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Output directory for TSUMUGI results.\n"
             "All generated files (intermediate and final results) will be saved here.\n"
-            "Example: ./TSUMUGI-results/phenotype_network/"
         ),
     )
 
@@ -39,7 +38,6 @@ def build_parser() -> argparse.ArgumentParser:
             "Path to IMPC statistical_results_ALL.csv file.\n"
             "This file contains statistical test results (effect sizes, p-values, etc.) "
             "for all IMPC phenotyping experiments.\n"
-            "Example: ./data/statistical-results-ALL.csv.gz\n"
             "If not available, download 'statistical-results-ALL.csv.gz' manually from:\n"
             "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/TSUMUGI-results/"
         ),
@@ -53,7 +51,6 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Path to Mammalian Phenotype ontology file (mp.obo).\n"
             "Used to map and infer hierarchical relationships among MP terms.\n"
-            "Example: ./data/mp.obo\n"
             "If not available, download '/mp.obo' manually from:\n"
             "https://obofoundry.org/ontology/mp.html"
         ),
@@ -67,7 +64,6 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Path to IMPC Phenodigm annotation file (impc_phenodigm.csv).\n"
             "This file links mouse phenotypes to human diseases based on Phenodigm similarity.\n"
-            "Example: ./data/impc_phenodigm.csv\n"
             "If not available, download manually from:\n"
             "https://diseasemodels.research.its.qmul.ac.uk/\n"
         ),
@@ -117,15 +113,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     mp_parser.add_argument(
-        "-s",
-        "--statistical_results",
+        "-a",
+        "--genewise_annotations",
+        dest="path_genewise",
         type=str,
         required=False,
         help=(
-            "Path to IMPC statistical_results_ALL.csv file.\n"
+            "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
             "Required when using '-e/--exclude' to determine genes that were measured\n"
             "and showed no phenotype for the target MP term.\n"
-            "Example: ./data/statistical-results-ALL.csv.gz"
         ),
     )
 
@@ -135,9 +131,8 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         required=False,
         help=(
-            "Path to input gene pair file (JSONL or JSONL.gz).\n"
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
             "If omitted, data are read from STDIN.\n"
-            "Example: ./TSUMUGI-results/pairwise_similarity_annotations.jsonl.gz"
         ),
     )
 
@@ -146,13 +141,25 @@ def build_parser() -> argparse.ArgumentParser:
         dest="outfile",
         type=str,
         required=False,
-        help=(
-            "Path to output file (JSONL or JSONL.gz).\n"
-            "If omitted, data are written to STDOUT.\n"
-            "Example: ./TSUMUGI-results/pairs.filtered.jsonl.gz"
-        ),
+        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
     )
 
+    # Annotations
+    mp_parser.add_argument(
+        "--life_stage",
+        type=str,
+        required=False,
+        help=("Filter by life stage. 'Embryo', 'Early', 'Interval', and 'Late'."),
+    )
+    mp_parser.add_argument(
+        "--sex",
+        type=str,
+        required=False,
+        help=("Filter by sexual dimorphism. 'Male' or 'Female'."),
+    )
+    mp_parser.add_argument(
+        "--zygosity", type=str, required=False, help=("Filter by zygosity.  'Homo', 'Hetero' or 'Hemi'.")
+    )
     # =========================================================
     # n-phenos (Filter by the number of phenotypes)
     # =========================================================
@@ -180,9 +187,8 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         required=False,
         help=(
-            "Path to input gene pair file (JSONL or JSONL.gz).\n"
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
             "If omitted, data are read from STDIN.\n"
-            "Example: ./TSUMUGI-results/pairwise_similarity_annotations.jsonl.gz"
         ),
     )
 
@@ -191,11 +197,7 @@ def build_parser() -> argparse.ArgumentParser:
         dest="outfile",
         type=str,
         required=False,
-        help=(
-            "Path to output file (JSONL or JSONL.gz).\n"
-            "If omitted, data are written to STDOUT.\n"
-            "Example: ./TSUMUGI-results/pairs.filtered.jsonl.gz"
-        ),
+        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
     )
 
     nphenos_parser.add_argument(
@@ -205,9 +207,8 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         required=False,
         help=(
-            "Path to the gene-level phenotype annotations file (JSONL or JSONL.gz).\n"
+            "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
             "Required when using '-g/--genewise' to determine genes that were measured.\n"
-            "Example: ./TSUMUGI-results/gene_phenotype_annotations.jsonl.gz"
         ),
     )
 
@@ -219,12 +220,12 @@ def parse_args(argv=None):
     args = parser.parse_args(argv)
 
     # When using -e / --exclude with the mp subcommand,
-    # the --statistical_results option is required.
-    if args.cmd == "mp" and args.exclude and not args.statistical_results:
+    # the --path_genewise option is required.
+    if args.cmd == "mp" and args.exclude and not args.path_genewise:
         parser.error(
-            "mp: '-s/--statistical_results' is required when using '-e/--exclude'.\n"
-            "Provide IMPC 'statistical_results_ALL.csv.gz' to identify genes measured "
-            "without the specified phenotype."
+            "mp: '-a/--path_genewise' is required when using '-e/--exclude'.\n"
+            "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
+            "and showed no phenotype for the target MP term.\n"
         )
 
     # When using the n-phenos subcommand, at least one of --min or --max must be specified.

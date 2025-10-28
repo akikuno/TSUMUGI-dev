@@ -149,3 +149,16 @@ def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
         for line in f:
             if line.strip():
                 yield json.loads(line)
+
+
+def safe_jsonl_dump(record: dict) -> None:
+    """Write record as JSONL and suppress BrokenPipeError cleanly."""
+    try:
+        json.dump(record, sys.stdout, ensure_ascii=False)
+        sys.stdout.write("\n")
+    except BrokenPipeError:
+        try:
+            sys.stdout.close()
+        except Exception:
+            pass
+        sys.exit(0)

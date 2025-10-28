@@ -43,14 +43,20 @@ def main() -> None:
                 path_pairwise_similarity_annotations=args.infile or sys.stdin,
                 path_obo=args.obo,
                 term_id=args.include,
+                life_stage=args.life_stage,
+                sex=args.sex,
+                zygosity=args.zygosity,
             )
         elif args.exclude:
             logging.info(f"Excluding gene pairs with phenotypes related to MP term: {args.exclude}")
             mp_filterer.exclude_specific_phenotype(
                 path_pairwise_similarity_annotations=args.infile or sys.stdin,
-                path_statistical_all=args.statistical_results,
+                path_genewise_phenotype_annotations=args.path_genewise,
                 path_obo=args.obo,
                 mp_term_id=args.exclude,
+                life_stage=args.life_stage,
+                sex=args.sex,
+                zygosity=args.zygosity,
             )
 
     elif args.cmd == "n-phenos":

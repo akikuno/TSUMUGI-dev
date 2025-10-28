@@ -7,69 +7,16 @@ from itertools import combinations, combinations_with_replacement
 import numpy as np
 from tqdm import tqdm
 
-
-def _build_term_hierarchy(
-    ontology_terms: dict[str, dict],
-) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
-    """Build parent-child hierarchy relationships from ontology terms."""
-    parent_term_map = defaultdict(set)  # term_id -> [parent_ids]
-    child_term_map = defaultdict(set)  # term_id -> [child_ids]
-
-    for term_id, term_data in ontology_terms.items():
-        if "is_a" in term_data:
-            for parent_id in term_data["is_a"]:
-                parent_term_map[term_id].add(parent_id)
-                child_term_map[parent_id].add(term_id)
-
-    return dict(parent_term_map), dict(child_term_map)
-
-
-def _find_all_ancestor_terms(term_id: str, parent_term_map: dict[str, set[str]]) -> set[str]:
-    """Find all ancestor terms for a given term."""
-    ancestor_terms = set()
-    terms_to_process = [term_id]
-
-    while terms_to_process:
-        current_term = terms_to_process.pop(0)
-        if current_term in parent_term_map:
-            for parent_term in parent_term_map[current_term]:
-                if parent_term not in ancestor_terms:
-                    ancestor_terms.add(parent_term)
-                    terms_to_process.append(parent_term)
-
-    return ancestor_terms
-
-
-def _find_all_descendant_terms(term_id: str, child_term_map: dict[str, set[str]]) -> set[str]:
-    """Find all descendant terms for a given term."""
-    descendant_terms = set()
-    terms_to_process = [term_id]
-
-    while terms_to_process:
-        current_term = terms_to_process.pop(0)
-        if current_term in child_term_map:
-            for child_term in child_term_map[current_term]:
-                if child_term not in descendant_terms:
-                    descendant_terms.add(child_term)
-                    terms_to_process.append(child_term)
-
-    return descendant_terms
-
-
-def _find_common_ancestors(term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]]) -> set[str]:
-    """Find common ancestors of two terms."""
-    term1_ancestors = _find_all_ancestor_terms(term1_id, parent_term_map)
-    term1_ancestors.add(term1_id)  # Include the term itself
-
-    term2_ancestors = _find_all_ancestor_terms(term2_id, parent_term_map)
-    term2_ancestors.add(term2_id)  # Include the term itself
-
-    return term1_ancestors.intersection(term2_ancestors)
+from TSUMUGI.ontology_handler import (
+    build_term_hierarchy,
+    find_all_descendant_terms,
+    find_common_ancestors,
+)
 
 
 def _calculate_information_content(term_id: str, child_term_map: dict[str, set[str]], total_term_count: int) -> float:
     """Calculate information content for a term based on its descendants."""
-    descendant_terms = _find_all_descendant_terms(term_id, child_term_map)
+    descendant_terms = find_all_descendant_terms(term_id, child_term_map)
     # Include the term itself in the count
     term_count = len(descendant_terms) + 1
     probability = term_count / total_term_count
@@ -87,7 +34,7 @@ def _calculate_resnik_similarity(
     if term1_id == term2_id:
         return _calculate_information_content(term1_id, child_term_map, total_term_count)
 
-    common_ancestors = _find_common_ancestors(term1_id, term2_id, parent_term_map)
+    common_ancestors = find_common_ancestors(term1_id, term2_id, parent_term_map)
 
     if not common_ancestors:
         return 0.0
@@ -111,7 +58,7 @@ def _extract_common_ancestor(
     """Extract the most specific common ancestor (MSCA) of two terms."""
     if term1_id == term2_id:
         return term1_id
-    common_ancestors = _find_common_ancestors(term1_id, term2_id, parent_term_map)
+    common_ancestors = find_common_ancestors(term1_id, term2_id, parent_term_map)
     if not common_ancestors:
         return None
     # Return the most specific common ancestor (MSCA)
@@ -127,7 +74,7 @@ def calculate_all_pairwise_similarities(
 ) -> dict[frozenset[str], dict[str, float]]:
     """Calculate pairwise Resnik similarities for a list of terms."""
     total_term_count = len(ontology_terms)
-    parent_term_map, child_term_map = _build_term_hierarchy(ontology_terms)
+    parent_term_map, child_term_map = build_term_hierarchy(ontology_terms)
 
     term_pair_similarity_map = {}
     total_pairs = (len(all_term_ids) * (len(all_term_ids) + 1)) // 2
@@ -205,7 +152,7 @@ def annotate_phenotype_ancestors(
         gene_records_map[record["marker_symbol"]].append(record)
     all_gene_symbols = gene_records_map.keys()
 
-    _, child_term_map = _build_term_hierarchy(ontology_terms)
+    _, child_term_map = build_term_hierarchy(ontology_terms)
     annotations = {"zygosity", "life_stage", "sexual_dimorphism"}
 
     terms_with_low_ic: set[str] = _get_terms_with_low_ic(ontology_terms, child_term_map, ic_threshold=ic_threshold)

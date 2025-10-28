@@ -4,10 +4,10 @@ from TSUMUGI.io_handler import (
     parse_obo_file,
 )
 
-# テストケースを定義
-# (oboファイルの内容, 期待される出力の辞書)
+# Define test cases.
+# Each tuple contains (OBO file contents, expected output dictionary).
 TEST_CASES = [
-    # 1. 基本的なケース: 2つの正常なTerm
+    # 1. Basic case: two well-formed Term entries.
     (
         """
 [Term]
@@ -25,7 +25,7 @@ is_a: MP:0000001
             "MP:0000002": {"id": "MP:0000002", "name": "another term", "is_a": ["MP:0000001"]},
         },
     ),
-    # 2. is_aが複数あるTermと、is_aがないルートTerm
+    # 2. A term with multiple is_a entries and a root term without is_a.
     (
         """
 [Term]
@@ -43,7 +43,7 @@ is_a: ANOTHER:PARENT
             "CHILD:01": {"id": "CHILD:01", "name": "Child Term", "is_a": ["ROOT:01", "ANOTHER:PARENT"]},
         },
     ),
-    # 3. is_obsolete: trueを持つTermは無視される
+    # 3. Terms with is_obsolete: true are ignored.
     (
         """
 [Term]
@@ -59,7 +59,7 @@ is_obsolete: true
             "VALID:01": {"id": "VALID:01", "name": "Valid Term"},
         },
     ),
-    # 4. [Term]以外のセクションは無視される
+    # 4. Sections other than [Term] are ignored.
     (
         """
 format-version: 1.2
@@ -76,9 +76,9 @@ name: A Real Term
             "T:003": {"id": "T:003", "name": "A Real Term"},
         },
     ),
-    # 5. 空のファイル
+    # 5. Empty file.
     ("", {}),
-    # 6. [Term]セクションがないファイル
+    # 6. File without any [Term] section.
     ("format-version: 1.2\ndata-version: 2025", {}),
 ]
 
@@ -86,19 +86,19 @@ name: A Real Term
 @pytest.mark.parametrize("obo_content, expected_output", TEST_CASES)
 def test_parse_obo_file(tmp_path, obo_content, expected_output):
     """
-    parse_obo_file関数をパラメータ化してテストする。
-    - 一時ファイルにOBOコンテントを書き込む
-    - Pathオブジェクトとstrの両方のパスタイプで関数を呼び出す
-    - 結果が期待通りであることを確認する
+    Parameterized test for parse_obo_file.
+    - Write the OBO content to a temporary file.
+    - Call the function with both Path objects and str paths.
+    - Assert that the results match expectations.
     """
-    # 一時ファイルを作成
+    # Create a temporary file.
     p = tmp_path / "test.obo"
     p.write_text(obo_content, encoding="utf-8")
 
-    # Pathオブジェクトを引数にしてテスト
+    # Test with a Path object argument.
     result_from_path = parse_obo_file(p)
     assert result_from_path == expected_output
 
-    # 文字列のパスを引数にしてテスト
+    # Test with a string path argument.
     result_from_str = parse_obo_file(str(p))
     assert result_from_str == expected_output
