@@ -6,7 +6,6 @@ from collections import Counter
 from pathlib import Path
 
 from tqdm import tqdm
-
 from TSUMUGI import io_handler
 
 
@@ -39,7 +38,7 @@ def filter_by_number_of_phenotypes_per_pair(
     max_phenotypes: int | None = None,
 ) -> None:
     pairwise_similarity_annotations = io_handler.read_jsonl(path_pairwise_similarity_annotations)
-    for record in tqdm(pairwise_similarity_annotations, desc="Filtering gene pairs"):
+    for record in pairwise_similarity_annotations:
         num_shared_phenotypes = len(record["phenotype_shared_annotations"])
         if min_phenotypes is not None and num_shared_phenotypes < min_phenotypes:
             continue
