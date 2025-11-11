@@ -20,28 +20,68 @@
 
 <!-- ############################################################ # -->
 
-## v1.0.0 (2025-MM-DD)
+## v0.4.0 (2025-11-12)
 
-## 📝 Documentation
+## 🌟 New Features
 
-+ Add FAQ section to the documentation, addressing common user questions and providing troubleshooting tips.  
++ Adopted the Phenodigm/Resnik similarity pipeline so phenotype matching now respects the hierarchical structure of MPO instead of relying on plain Jaccard overlap.  
+  Issue: [#71](https://github.com/akikuno/TSUMUGI-dev/issues/71)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/648f2787e3bd705ad921346d8e594a7eb3219eaf)]  
+
++ Expanded the phenotype similarity and severity scales from 0–10 to 1–100 so users get Phenodigm-level precision when scoring networks.  
+  Issue: [#119](https://github.com/akikuno/TSUMUGI-dev/issues/119)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/91309d636ecaf285aeaaeca9320408b23bb1a3db)]  
+
++ Surface common ancestor MP terms on KO mouse edges, filtering out low-information matches to highlight meaningful shared phenotypes.  
+  Issue: [#118](https://github.com/akikuno/TSUMUGI-dev/issues/118)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/547506a5762769e6aa698d47f50ce35150869540)]  
+
++ Added a JPEG export mode alongside the existing PNG and SVG download options for Cytoscape.js views.  
+  Issue: [#117](https://github.com/akikuno/TSUMUGI-dev/issues/117)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/637183d5f35b0e89bb369c0069e5b375ecfa6e35)]  
+
++ Normalized degree and betweenness scores by phenotype count and introduced an optional log-scale transform to curb hub bias.  
+  Issue: [#113](https://github.com/akikuno/TSUMUGI-dev/issues/113)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/00e9157c3a16a3d65c6bb2774c83848150d60a32)]  
+
++ Pre-compute degree and betweenness centrality for every node and expose slider-based filters to spotlight highly connected genes.  
+  Issue: [#108](https://github.com/akikuno/TSUMUGI-dev/issues/108)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9c7b443bdd7960c3a6a1168ee3b8da392fb517b2)]  
+
++ Delivered Cytoscape Desktop–compatible GraphML exports (nodes and edges) for seamless round-tripping between the web app and local analyses.  
+  Issue: [#92](https://github.com/akikuno/TSUMUGI-dev/issues/92)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/3c8bf960f4e648f3eda4d5f7d540abe823116c8b)]  
+
++ Introduced phenotype inclusion/exclusion controls, making it easy to hide lethal phenotypes or isolate only the traits relevant to a study.  
+  Issue: [#36](https://github.com/akikuno/TSUMUGI-dev/issues/36)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/14a3124042e6aa2318bfc0792403424931efc23a)]  
 
 ## 🐛 Bug Fixes
 
++ Recompute centrality metrics whenever filters change so node sizes and values stay in sync with the visible subnetwork.  
+  Issue: [#112](https://github.com/akikuno/TSUMUGI-dev/issues/112)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/14a3124042e6aa2318bfc0792403424931efc23a)]  
+
 + Fix gene search bug for single character input  
   Issue: [#86](https://github.com/akikuno/TSUMUGI-dev/issues/86)  
-  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/0822ae2424d685be487858f5d53a7b49768918dc)]  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/04060df136c36b04c08a47cba5b510f58f0f6f6e)]  
 
 
 ## 🖼️ User Interface
 
-+ Add Phenotype Severity and Similarity Scores to Network Tooltips
++ Add Phenotype Severity and Similarity Scores to Network Tooltips  
   Issue: [#107](https://github.com/akikuno/TSUMUGI-dev/issues/107)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/107)]  
 
-+ Improve Network Visualization for Gene Symbol Pages
++ Improve Network Visualization for Gene Symbol Pages  
   Issue: [#105](https://github.com/akikuno/TSUMUGI-dev/issues/105)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/105)]  
+
++ Provide in-product tooltips and an info icon that explain phenotype metrics directly within the interface.  
+  Issue: [#100](https://github.com/akikuno/TSUMUGI-dev/issues/100)  
+
++ Allow tooltips to be repositioned via touch interactions so tablet users can keep data in view.  
+  Issue: [#97](https://github.com/akikuno/TSUMUGI-dev/issues/97)  
 
 
 -------------------------------------------------------------
