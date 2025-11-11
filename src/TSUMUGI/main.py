@@ -11,6 +11,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 def main() -> None:
     args = argparser.parse_args()
 
+    logging.info(f"TSUMUGI version: {args.version}")
+
     ###########################################################
     # Load and validate data
     ###########################################################

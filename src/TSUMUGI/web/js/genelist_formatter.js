@@ -14,23 +14,68 @@ export async function fetchGzippedJson(url) {
 }
 
 export function filterJson(jsonDataList, geneKeys) {
-    let elements = new Set();
+    const elementsMap = new Map();
+
+    const serializePhenotypes = (phenotype) => {
+        if (Array.isArray(phenotype)) {
+            return JSON.stringify([...phenotype].sort());
+        }
+        if (typeof phenotype === "string") {
+            return JSON.stringify([phenotype]);
+        }
+        return JSON.stringify([]);
+    };
+
+    const buildEdgeKey = (data) => {
+        if (!("source" in data) || !("target" in data)) return null;
+        const pairKey = [data.source, data.target].sort().join("||");
+        return `edge:${pairKey}|${serializePhenotypes(data.phenotype)}`;
+    };
+
+    const buildNodeKey = (data) => ("id" in data ? `node:${data.id}` : null);
+
+    const upsertEdge = (key, item) => {
+        const existing = elementsMap.get(key);
+        const newEdgeSize = Number.isFinite(item.data.edge_size) ? item.data.edge_size : Number.NEGATIVE_INFINITY;
+        if (!existing) {
+            elementsMap.set(key, item);
+            return;
+        }
+        const existingEdgeSize = Number.isFinite(existing.data.edge_size)
+            ? existing.data.edge_size
+            : Number.NEGATIVE_INFINITY;
+        if (newEdgeSize > existingEdgeSize) {
+            elementsMap.set(key, item);
+        }
+    };
 
     jsonDataList.forEach((jsonData) => {
         jsonData.forEach((item) => {
             const data = item.data;
 
             if ("node_color" in data && data.node_color !== 1) return;
-            if ("source" in data && "target" in data) {
+
+            const isEdge = "source" in data && "target" in data;
+
+            if (isEdge) {
                 if (!geneKeys.includes(data.source) || !geneKeys.includes(data.target)) return;
+                const edgeKey = buildEdgeKey(data);
+                if (!edgeKey) return;
+                upsertEdge(edgeKey, item);
+                return;
             }
+
             if ("id" in data && !geneKeys.includes(data.id)) return;
 
-            elements.add(JSON.stringify(item));
+            const nodeKey = buildNodeKey(data);
+            if (!nodeKey) return;
+            if (!elementsMap.has(nodeKey)) {
+                elementsMap.set(nodeKey, item);
+            }
         });
     });
 
-    return Array.from(elements).map((item) => JSON.parse(item));
+    return Array.from(elementsMap.values());
 }
 
 export async function fetchGeneData() {

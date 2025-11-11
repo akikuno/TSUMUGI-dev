@@ -4,6 +4,7 @@ import logging
 import pickle
 import shutil
 from collections.abc import Iterator
+from datetime import date
 from pathlib import Path
 
 from TSUMUGI import (
@@ -116,8 +117,8 @@ def run_pipeline(args) -> None:
     }
     records_filtered = filterer.subset_columns(records_filtered, to_keep_columns)
 
-    records_all = records_filtered.copy()
-    records_significants = [record for record in records_all if record["significant"]]
+    genewise_phenotype_annotations = records_filtered.copy()
+    genewise_phenotype_significants = [record for record in genewise_phenotype_annotations if record["significant"]]
 
     # --------------------------------------------------------
     # Cache results
@@ -125,8 +126,8 @@ def run_pipeline(args) -> None:
     output_dir = Path(TEMPDIR / "preprocessed")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    pickle.dump(records_all, open(output_dir / "records_all.pkl", "wb"))
-    pickle.dump(records_significants, open(output_dir / "records_significants.pkl", "wb"))
+    pickle.dump(genewise_phenotype_annotations, open(output_dir / "genewise_phenotype_annotations.pkl", "wb"))
+    pickle.dump(genewise_phenotype_significants, open(output_dir / "genewise_phenotype_significants.pkl", "wb"))
 
     del records_formatted
     del records_annotated
@@ -136,12 +137,12 @@ def run_pipeline(args) -> None:
     # Calculate phenotype similarity
     ###########################################################
 
-    all_term_ids = {r["mp_term_id"] for r in records_significants}
+    all_term_ids = {r["mp_term_id"] for r in genewise_phenotype_significants}
 
     logging.info(f"Calculating pairwise similarity for {len(all_term_ids)} terms...")
 
     term_pair_similarity_map: dict[frozenset[str], dict[str, float]] = (
-        similarity_calculator.calculate_all_pairwise_similarities(ontology_terms, all_term_ids)
+        similarity_calculator.calculate_all_pairwise_similarities(ontology_terms, all_term_ids, threads=args.threads)
     )
     # 30 min
 
@@ -149,28 +150,34 @@ def run_pipeline(args) -> None:
     # Calculate phenotype similarity for genes
     # ----------------------------------------
 
-    logging.info(f"Annotate phenotype ancestors for {len(records_significants)} records...")
+    logging.info(f"Annotate phenotype ancestors for {len(genewise_phenotype_significants)} records...")
     phenotype_ancestors: dict[frozenset[str], dict[str, dict[str, str]]] = (
         similarity_calculator.annotate_phenotype_ancestors(
-            records_significants, term_pair_similarity_map, ontology_terms, ic_threshold=5
+            genewise_phenotype_significants,
+            term_pair_similarity_map,
+            ontology_terms,
+            ic_threshold=5,
+            threads=1,  # Set to 1 because passing large objects to the initializer causes the process to hang; this will be improved in the future.
         )
     )
     # 10 min
 
-    logging.info(f"Calculating phenodigm similarity for {len(records_significants)} records...")
+    logging.info(f"Calculating phenodigm similarity for {len(genewise_phenotype_significants)} records...")
     phenodigm_scores: dict[frozenset[str], int] = similarity_calculator.calculate_phenodigm_score(
-        records_significants, term_pair_similarity_map
+        genewise_phenotype_significants,
+        term_pair_similarity_map,
+        threads=1,  # Set to 1 because passing large objects to the initializer causes the process to hang; this will be improved in the future.
     )
     # 30 min
 
-    num_shared_phenotypes = similarity_calculator.calculate_num_shared_phenotypes(records_significants)
-    jaccard_indices = similarity_calculator.calculate_jaccard_indices(records_significants)
+    num_shared_phenotypes = similarity_calculator.calculate_num_shared_phenotypes(genewise_phenotype_significants)
+    jaccard_indices = similarity_calculator.calculate_jaccard_indices(genewise_phenotype_significants)
 
     # ----------------------------------------
     # Summarize the phenotype similarity results
     # ----------------------------------------
 
-    pair_similarity_annotations: dict[frozenset[str], dict[str, dict[str, str] | int]] = (
+    pairwise_similarity_annotations: dict[frozenset[str], dict[str, dict[str, str] | int]] = (
         similarity_calculator.summarize_similarity_annotations(ontology_terms, phenotype_ancestors, phenodigm_scores)
     )
 
@@ -183,8 +190,8 @@ def run_pipeline(args) -> None:
     with open(output_dir / "term_pair_similarity_map.pkl", "wb") as f:
         pickle.dump(term_pair_similarity_map, f)
 
-    with open(output_dir / "pair_similarity_annotations.pkl", "wb") as f:
-        pickle.dump(pair_similarity_annotations, f)
+    with open(output_dir / "pairwise_similarity_annotations.pkl", "wb") as f:
+        pickle.dump(pairwise_similarity_annotations, f)
 
     with open(output_dir / "phenotype_ancestors.pkl", "wb") as f:
         pickle.dump(phenotype_ancestors, f)
@@ -209,9 +216,9 @@ def run_pipeline(args) -> None:
     ###########################################################
     MIN_NUM_PHENOTYPES = 3
 
-    pair_similarity_annotations_with_shared_phenotype = {
+    pairwise_similarity_annotations_with_shared_phenotype = {
         k: v
-        for k, v in pair_similarity_annotations.items()
+        for k, v in pairwise_similarity_annotations.items()
         if len(v["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
     }
 
@@ -220,8 +227,8 @@ def run_pipeline(args) -> None:
     output_dir = Path(TEMPDIR / "network" / "phenotype")
     output_dir.mkdir(parents=True, exist_ok=True)
     network_constructor.build_phenotype_network_json(
-        records_significants,
-        pair_similarity_annotations_with_shared_phenotype,
+        genewise_phenotype_significants,
+        pairwise_similarity_annotations_with_shared_phenotype,
         disease_annotations_by_gene,
         output_dir,
     )
@@ -231,29 +238,33 @@ def run_pipeline(args) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     network_constructor.build_gene_network_json(
-        records_significants,
-        pair_similarity_annotations_with_shared_phenotype,
+        genewise_phenotype_significants,
+        pairwise_similarity_annotations_with_shared_phenotype,
         disease_annotations_by_gene,
         output_dir,
     )
 
-    del pair_similarity_annotations_with_shared_phenotype
+    del pairwise_similarity_annotations_with_shared_phenotype
     del disease_annotations_by_gene
 
     ###########################################################
     # Output reports to public directory
     ###########################################################
     logging.info("Generating reports...")
-
+    Path(ROOT_DIR / "README.md").write_text(
+        f"TSUMUGI version: {args.version}\n Running Date: {date.today().isoformat()}"
+    )
     # records all
-    report_generator.write_records_jsonl_gz(records_all, Path(ROOT_DIR / "gene_phenotype_annotations.jsonl.gz"))
-
-    # pair similarity annotations
-    report_generator.write_pair_similarity_annotations(
-        pair_similarity_annotations, Path(ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz")
+    report_generator.write_records_jsonl_gz(
+        genewise_phenotype_annotations, Path(ROOT_DIR / "genewise_phenotype_annotations.jsonl.gz")
     )
 
-    del pair_similarity_annotations
+    # pair similarity annotations
+    report_generator.write_pairwise_similarity_annotations(
+        pairwise_similarity_annotations, Path(ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz")
+    )
+    del genewise_phenotype_annotations
+    del pairwise_similarity_annotations
 
     ###########################################################
     # Output data for web application
@@ -268,7 +279,7 @@ def run_pipeline(args) -> None:
 
     # binary phenotypes
     report_generator.write_binary_phenotypes_txt(
-        records_significants, TEMPDIR, Path(output_dir / "binary_phenotypes.txt")
+        genewise_phenotype_significants, TEMPDIR, Path(output_dir / "binary_phenotypes.txt")
     )
 
     # available gene symbols
@@ -276,7 +287,7 @@ def run_pipeline(args) -> None:
 
     # marker symbol to accession id
     report_generator.write_marker_symbol_accession_id_json(
-        records_significants, TEMPDIR, Path(output_dir / "marker_symbol_accession_id.json")
+        genewise_phenotype_significants, TEMPDIR, Path(output_dir / "marker_symbol_accession_id.json")
     )
 
     ###########################################################
@@ -297,8 +308,11 @@ def run_pipeline(args) -> None:
 
     web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
 
-    web_deployer.generate_phenotype_pages(records_significants, targetted_phenotypes, TEMPDIR, output_dir)
-    web_deployer.generate_gene_pages(records_significants, targetted_genes, output_dir)
+    web_deployer.generate_phenotype_pages(genewise_phenotype_significants, targetted_phenotypes, TEMPDIR, output_dir)
+    web_deployer.generate_gene_pages(genewise_phenotype_significants, targetted_genes, output_dir)
     web_deployer.generate_genelist_page(output_dir)
+
+    # Remove template directory for web app
+    shutil.rmtree(output_dir / "template")
 
     logging.info(f"Finished!🎊 Results are saved in {Path(ROOT_DIR).resolve()}")

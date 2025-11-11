@@ -39,6 +39,8 @@ def select_targetted_genes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
             "Kcnma1",
             "Plekha8",
             "Dstn",
+            "Vrk1",
+            "Sox4",
         ]
     else:
         gene_symbols_file = Path(TEMPDIR, "webapp", "available_gene_symbols.txt")
@@ -129,12 +131,17 @@ def _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, outpu
 
 def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
     data_dir = output_dir / "data"
+    ROOT_DIR = Path(TEMPDIR).parent
 
     file_map = {
         Path(TEMPDIR, "webapp", "available_mp_terms.json"): data_dir / "available_mp_terms.json",
         Path(TEMPDIR, "webapp", "available_mp_terms.txt"): data_dir / "available_mp_terms.txt",
         Path(TEMPDIR, "webapp", "available_gene_symbols.txt"): data_dir / "available_gene_symbols.txt",
         Path(TEMPDIR, "webapp", "marker_symbol_accession_id.json"): data_dir / "marker_symbol_accession_id.json",
+        Path(ROOT_DIR / "genewise_phenotype_annotations.jsonl.gz"): data_dir
+        / "genewise_phenotype_annotations.jsonl.gz",
+        Path(ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz"): data_dir
+        / "pairwise_similarity_annotations.jsonl.gz",
     }
 
     for src, dst in file_map.items():

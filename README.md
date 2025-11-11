@@ -58,57 +58,51 @@ Gene lists should be entered separated by line breaks.
 > **If phenotypically similar genes exceed 200**,
 > `Too many genes submitted. Please limit the number to 200 or fewer.` alert will be displayed and processing will stop to prevent browser overload.
 
-### 📥 Raw Data Download (`TSUMUGI_{version}_raw_data`)
+### 📥 Raw Data Download
 
-You can download raw data of phenotypic similarity between gene pairs (in Gzip-compressed CSV format or Parquet format).  
+TSUMUGI publishes Gzip-compressed JSONL files that capture the curated phenotype knowledge.
 
-Contents include:  
+#### `genewise_phenotype_annotations.jsonl.gz`
 
-- Paired gene names (Gene1, Gene2)
-- Phenotypic similarity between pairs (Jaccard Similarity)
-- Number of shared phenotypes between pairs (Number of shared phenotype)
-- List of shared phenotypes between pairs (List of shared phenotype)
+Gene-wise phenotype annotations. Each JSON line contains:
 
-> [!CAUTION]
-> File size is approximately 50-100MB. Download may take some time.
+- Gene symbol and marker accession ID (e.g., `"1110059G10Rik"`, `"MGI:1913452"`)
+- Mammalian Phenotype term name and ID
+- Absolute effect size and significance flag
+- Zygosity (`Homo`, `Hetero`, `Hemi`)
+- Life stage (`Embryo`, `Early`, `Interval`, `Late`)
+- Sexual dimorphism label (`""`, `Male`, `Female`)
+- Disease annotations mapped from the IMPC Phenodigm resource
 
-We recommend using Parquet format when working with `Polars` or `Pandas`.  
-You can load the data as follows:  
+Example:
 
-#### Polars
-
-```bash
-# Install Polars and PyArrow using conda
-conda create -y -n env-tsumugi polars pyarrow
-conda activate env-tsumugi
+```
+{"life_stage": "Early", "marker_symbol": "1110059G10Rik", "marker_accession_id": "MGI:1913452", "effect_size": 0.0, "mp_term_name": "fused joints", "disease_annotation": [], "significant": false, "zygosity": "Homo", "sexual_dimorphism": "", "mp_term_id": "MP:0000137"}
 ```
 
-```python
-# Load Parquet file using Polars
-import polars as pl
-df_tsumugi = pl.read_parquet("TSUMUGI_{version}_raw_data.parquet")
+#### `pairwise_similarity_annotations.jsonl.gz`
+
+Phenotypic similarity statistics for every gene pair. Fields:
+
+- `gene1_symbol` / `gene2_symbol`
+- `phenotype_shared_annotations`: phenotype names keyed to metadata (life stage, zygosity, sexual dimorphism)
+- `phenotype_similarity_score`: Resnik-based Phenodigm score on a 0–100 scale
+
+Example:
+
+```
+{"gene1_symbol": "1110059G10Rik", "gene2_symbol": "Cog6", "phenotype_shared_annotations": {"vertebral transformation": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"}}, "phenotype_similarity_score": 42}
 ```
 
-#### Pandas
-
-```bash
-# Install Pandas and PyArrow using conda
-conda create -y -n env-tsumugi pandas pyarrow
-conda activate env-tsumugi
-```
-
-```python
-# Load Parquet file using Pandas
-import pandas as pd
-df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
-```
+> [!NOTE]
+> Files are tens of megabytes. When loading them with `pandas`, `polars`, or similar tools, prefer streaming (e.g., iterating line by line) to avoid exhausting memory.
 
 ## 🌐 Network Visualization
 
 Based on the input, the page transitions and the network is automatically drawn.  
 
 > [!IMPORTANT]
-> **Gene pairs with 2 or more shared abnormal phenotypes AND phenotypic similarity of 0.2 or higher** are subject to visualization.  
+> **Gene pairs with 3 or more shared abnormal phenotypes and phenotypic similarity scores of 0 or higher** are visualized.  
 
 ### Network Panel
 
@@ -128,8 +122,7 @@ The left control panel allows you to adjust network display.
 
 #### Filter by Phenotypic Similarity
 
-The `Phenotypes similarity` slider allows you to set thresholds for gene pairs displayed in the network based on **edge phenotypic similarity** (Jaccard coefficient).  
-Similarity minimum and maximum values are converted to a 1-10 scale, allowing 10-level filtering.  
+The `Phenotypes similarity` slider allows you to set thresholds for gene pairs displayed in the network based on **edge phenotypic similarity** (Resnik-based Phenodigm score).  
 
 > [!NOTE]
 > For details on phenotypic similarity, please see:  
@@ -139,7 +132,6 @@ Similarity minimum and maximum values are converted to a 1-10 scale, allowing 10
 
 The `Phenotype severity` slider allows you to adjust node display based on **phenotype severity (effect size) in KO mice**.  
 Higher effect sizes indicate stronger phenotypic impact.  
-This also scales the effect size range to 1-10, allowing 10-level filtering.  
 
 > [!NOTE]
 > When IMPC phenotype evaluation is binary (present/absent) (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html): list of binary phenotypes available [here](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/binary_phenotypes.txt)) or when gene name is input, the `Phenotypes severity` slider is not available.
@@ -210,25 +202,36 @@ Extract gene-phenotype pairs where KO mouse phenotype P-values (`p_value`, `fema
 
 ## Phenotypic Similarity Calculation
 
-**Jaccard coefficient** is used as the phenotypic similarity metric.  
-This is a similarity measure that expresses the proportion of shared phenotypes as a 0-1 numerical value.
+TSUMUGI now evaluates phenotypic similarity with **Resnik similarity** between Mammalian Phenotype (MP) terms and converts pairwise gene scores to a **Phenodigm scale (0-100)**.
+
+### 1. Resnik Similarity Between Phenotype Terms
+
+For each MP term, TSUMUGI builds the ontology hierarchy and computes its Information Content (IC) from the proportion of descendants (including the term itself) within the ontology:
 
 ```
-Jaccard(A, B) = |A ∩ B| / |A ∪ B|
+IC(term) = -log( (|Descendants(term)| + 1) / |All MP terms| )
 ```
 
-For example, suppose gene A and gene B KO mice have the following abnormal phenotypes:  
+Given two MP terms, all common ancestors are identified and the Resnik similarity is defined as the IC of the **most informative common ancestor (MICA)**:
 
 ```
-A: {abnormal embryo development, abnormal heart morphology, abnormal kidney morphology}
-B: {abnormal embryo development, abnormal heart morphology, abnormal lung morphology}
+Resnik(term_1, term_2) = max_{c in intersection(Anc(term_1), Anc(term_2))} IC(c)
 ```
 
-In this case, there are 2 shared phenotypes and 4 total unique phenotypes, so the Jaccard coefficient is calculated as follows:
+If the two terms do not share any ancestor, the similarity is 0.
+
+### 2. Phenodigm Scaling for Gene Pairs
+
+1. For every pair of genes, TSUMUGI creates a weighted similarity matrix whose entries are Resnik scores between their significant MP terms. Each cell is further scaled by metadata agreement (zygosity, life stage, sexual dimorphism) with weights of 1.0, 0.75, 0.5, or 0.25 depending on how many attributes match.  
+2. Row-wise and column-wise maxima provide the **actual** maximum and average similarity observed between the two genes.  
+3. Using the IC values of the individual terms, TSUMUGI derives **theoretical** maxima (best possible max and average) for the same pair.  
+4. The Phenodigm score is obtained by normalizing the actual scores with the theoretical ones and averaging the normalized max and mean:
 
 ```
-Jaccard(A, B) = 2 / 4 = 0.5
+Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )
 ```
+
+When the theoretical denominator is zero, the corresponding normalized value is set to zero. The resulting 0-100 score feeds both the downloadable tables and the `Phenotypes similarity` slider in the web UI.
 
 # ✉️ Contact
 
