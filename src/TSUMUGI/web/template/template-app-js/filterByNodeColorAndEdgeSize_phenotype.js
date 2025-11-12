@@ -1,6 +1,8 @@
 function filterByNodeColorAndEdgeSize() {
-
-    const nodeSliderValues = nodeSlider.noUiSlider.get().map(Number); // REMOVE_THIS_LINE_IF_BINARY_PHENOTYPE
+    const hasNodeSlider = nodeSlider && nodeSlider.noUiSlider;
+    const nodeSliderValues = hasNodeSlider
+        ? nodeSlider.noUiSlider.get().map(Number)
+        : [NODE_SLIDER_MIN, NODE_SLIDER_MAX];
     const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
 
     const nodeLowerBound = Math.min(nodeMin, nodeMax);

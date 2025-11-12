@@ -240,33 +240,20 @@ def _generate_phenotype_javascript(
 ) -> None:
     template_app_path = "/tmp/template_app.js"
 
-    if mode == "non-binary-phenotype":
-        shutil.copy(
-            f"{output_dir}/template/template-app-js/filterByNodeColorAndEdgeSize_phenotype.js",
-            "/tmp/filterByNodeColorAndEdgeSize_phenotype.js",
-        )
-        template = _read_file(f"{output_dir}/template/template-app-js/template_app.js")
-        node_min_max = _read_file(f"{output_dir}/template/template-app-js/nodeMinMax.js")
-        init = _read_file(f"{output_dir}/template/template-app-js/node_color_initialization.js")
-        update = _read_file(f"{output_dir}/template/template-app-js/node_color_update.js")
-        template = (
-            template.replace("XXX_NODE_MIN_MAX", node_min_max)
-            .replace("XXX_NODE_COLOR_INITIALIZATION", init)
-            .replace("XXX_NODE_COLOR_UPDATE", update)
-        )
-        _write_file(template_app_path, template)
-
-    else:
-        # Special handling for binary phenotypes
-        lines = _read_file(
-            f"{output_dir}/template/template-app-js/filterByNodeColorAndEdgeSize_phenotype.js"
-        ).splitlines()
-        filtered_lines = "\n".join(line for line in lines if "REMOVE_THIS_LINE_IF_BINARY_PHENOTYPE" not in line)
-        _write_file("/tmp/filterByNodeColorAndEdgeSize_phenotype.js", filtered_lines)
-
-        template = _read_file(f"{output_dir}/template/template-app-js/template_app.js")
-        template = template.replace("XXX_NODE_COLOR_INITIALIZATION", "").replace("XXX_NODE_COLOR_UPDATE", "")
-        _write_file(template_app_path, template)
+    shutil.copy(
+        f"{output_dir}/template/template-app-js/filterByNodeColorAndEdgeSize_phenotype.js",
+        "/tmp/filterByNodeColorAndEdgeSize_phenotype.js",
+    )
+    template = _read_file(f"{output_dir}/template/template-app-js/template_app.js")
+    node_min_max = _read_file(f"{output_dir}/template/template-app-js/nodeMinMax.js")
+    init = _read_file(f"{output_dir}/template/template-app-js/node_color_initialization.js")
+    update = _read_file(f"{output_dir}/template/template-app-js/node_color_update.js")
+    template = (
+        template.replace("XXX_NODE_MIN_MAX", node_min_max)
+        .replace("XXX_NODE_COLOR_INITIALIZATION", init)
+        .replace("XXX_NODE_COLOR_UPDATE", update)
+    )
+    _write_file(template_app_path, template)
 
     main_template = _read_file(template_app_path)
     insert = _read_file("/tmp/filterByNodeColorAndEdgeSize_phenotype.js")
@@ -295,12 +282,18 @@ def generate_phenotype_pages(records_significants, targetted_phenotypes, TEMPDIR
         map_mp_term_name_to_impc_url_phenotype[mp_term_name] = impc_url_phenotype
 
     path_file = Path(TEMPDIR, "webapp", "binary_phenotypes.txt")
-    binary_phenotypes = set(path_file.read_text().splitlines())
+    # Keep both space-separated and underscored names to avoid mismatches when checking binary phenotypes.
+    binary_phenotypes_raw = {line.strip() for line in path_file.read_text().splitlines() if line.strip()}
+    binary_phenotypes = binary_phenotypes_raw | {bp.replace(" ", "_") for bp in binary_phenotypes_raw}
 
     for mp_term_name in tqdm(targetted_phenotypes, desc="Processing phenotypes"):
         mp_term_name_underscored = mp_term_name.replace(" ", "_")
         impc_url = map_mp_term_name_to_impc_url_phenotype.get(mp_term_name, "")
-        mode = "binary_phenotype" if mp_term_name_underscored in binary_phenotypes else "non-binary-phenotype"
+        mode = (
+            "binary_phenotype"
+            if mp_term_name in binary_phenotypes or mp_term_name_underscored in binary_phenotypes
+            else "non-binary-phenotype"
+        )
 
         _generate_phenotype_html(mp_term_name_underscored, mp_term_name, impc_url, mode, output_dir)
         _generate_phenotype_javascript(mp_term_name_underscored, mp_term_name, mode, output_dir)
