@@ -315,6 +315,6 @@ def run_pipeline(args) -> None:
     web_deployer.generate_genelist_page(output_dir)
 
     # Remove template directory for web app
-    shutil.rmtree(output_dir / "template")
+    shutil.rmtree(output_dir / "template", ignore_errors=True)
 
     logging.info(f"Finished!🎊 Results are saved in {Path(ROOT_DIR).resolve()}")
