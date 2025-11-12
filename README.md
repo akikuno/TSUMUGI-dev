@@ -126,7 +126,7 @@ The `Phenotypes similarity` slider allows you to set thresholds for gene pairs d
 
 > [!NOTE]
 > For details on phenotypic similarity, please see:  
-> 👉 [🔍 Calculation Method for Phenotypically Similar Gene Groups](https://github.com/akikuno/TSUMUGI-dev#-method-for-identifying-phenotypically-similar-gene-groups)
+> 👉 [🔍 Calculation Method for Phenotypically Similar Gene Groups](https://github.com/akikuno/TSUMUGI-dev#-calculation-method-for-phenotypically-similar-gene-groups)
 
 #### Filter by Phenotype Severity
 
