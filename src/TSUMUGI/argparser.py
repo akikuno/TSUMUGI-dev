@@ -1,10 +1,33 @@
+from __future__ import annotations
+
 import argparse
+from importlib.metadata import PackageNotFoundError, version as pkg_version
+
+
+def _get_version() -> str:
+    """
+    Get TSUMUGI version defined in pyproject.toml.
+    The argument must match [project.name] (distribution name).
+    """
+    try:
+        return pkg_version("tsumugi")
+    except PackageNotFoundError:
+        return "not-available"
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Run TSUMUGI pipeline and subcommands",
         formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    # tsumugi -v / --version
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"%(prog)s {_get_version()}",
+        help="Show TSUMUGI version and exit.",
     )
 
     subparsers = parser.add_subparsers(dest="cmd", required=True)
@@ -67,6 +90,14 @@ def build_parser() -> argparse.ArgumentParser:
             "If not available, download manually from:\n"
             "https://diseasemodels.research.its.qmul.ac.uk/\n"
         ),
+    )
+
+    run.add_argument(
+        "-t",
+        "--threads",
+        type=int,
+        default=1,
+        help=("Number of threads to use for TSUMUGI pipeline.\nIf not specified, defaults to 1.\n"),
     )
 
     run.add_argument(
@@ -240,5 +271,7 @@ def parse_args(argv=None):
             "n-phenos: '-a/--genewise_annotations' is required when using '-g/--genewise'.\n"
             "Provide the gene phenotype annotations JSONL(.gz) file to identify genes that were measured."
         )
+
+    args.version = _get_version()
 
     return args

@@ -75,9 +75,9 @@ def write_records_jsonl_gz(records, output_file: Path) -> None:
             f.write(json.dumps(record) + "\n")
 
 
-def write_pair_similarity_annotations(pair_similarity_annotations, output_file: Path) -> None:
+def write_pairwise_similarity_annotations(pairwise_similarity_annotations, output_file: Path) -> None:
     with gzip.open(output_file, "wt", encoding="utf-8") as f:
-        for gene_pair, annotation in pair_similarity_annotations.items():
+        for gene_pair, annotation in pairwise_similarity_annotations.items():
             gene1_symbol, gene2_symbol = sorted(gene_pair)
             if not annotation["phenotype_shared_annotations"]:
                 continue

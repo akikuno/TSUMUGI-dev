@@ -26,7 +26,7 @@ function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
     return ordered
         .map((phenotype) => {
             if (phenotype.startsWith(target_phenotype)) {
-                return `[!] ${phenotype}`;
+                return `🚩 ${phenotype}`;
             } else {
                 return "- " + phenotype;
             }

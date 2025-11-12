@@ -56,49 +56,41 @@ TSUMUGIで現在検索可能な遺伝子名の一覧はこちら：
 > `Too many genes submitted. Please limit the number to 200 or fewer.` というアラートが表示され、ブラウザの負荷を防ぐため処理が停止されます。
 
 
-### 📥 生データ(`TSUMUGI_{version}_raw_data`)のダウンロード
+### 📥 生データのダウンロード
 
-遺伝子ペアにおける表現型類似度の生データ（Gzip圧縮CSV形式、またはParquet形式）をダウンロードすることができます。  
+TSUMUGIにおける表現型情報（Gzip圧縮JSONL形式）をダウンロードできます。  
 
-内容は以下のとおりです：  
+#### `genewise_phenotype_annotations.jsonl.gz`
 
-- ペアとなる遺伝子名（Gene1, Gene2）
-- ペアに共通する表現型の類似度（Jaccard Similarity）
-- ペアに共通する表現型の数（Number of shared phenotype）
-- ペアに共通する表現型のリスト（List of shared phenotype）
+遺伝子ごとの表現型情報がまとまっています。  
+各レコードの内容は以下のとおりです：  
 
-> [!CAUTION]
-> ファイルサイズは約50-100MBあります。ダウンロードに時間がかかる場合があります。
+- 遺伝子シンボル（Gene symbol；例："1110059G10Rik"）  
+- 遺伝子アクセッションID（Marker accession ID；例："MGI:1913452"）  
+- 表現型名（Phenotype term name；例："fused joints"）  
+- 表現型ID（Phenotype term ID；例："MP:0000137"）  
+- 効果量（Effect size；例：0.0, 1.324）  
+- 有意性（Statistical significance；True/false）  
+- 接合型（Zygosity；"Homo", "Hetero", "Hemi"）  
+- 発達段階（Life stage；"Embryo", "Early", "Interval", "Late"）  
+- 性差情報（Sexual dimorphism；："", "Male", "Female"）  
+- 疾患注釈（Disease annotation；例：[] または "Premature Ovarian Failure 18" など）  
 
-`Polars` または `Pandas` を用いる場合には、Parquet形式のご利用を推奨します。  
-次のようにデータを読み込むことができます：  
-
-#### Polars
-
-```bash
-# condaを使用してPolarsとPyArrowをインストールします
-conda create -y -n env-tsumugi polars pyarrow
-conda activate env-tsumugi
+```
+{"life_stage": "Early", "marker_symbol": "1110059G10Rik", "marker_accession_id": "MGI:1913452", "effect_size": 0.0, "mp_term_name": "fused joints", "disease_annotation": [], "significant": false, "zygosity": "Homo", "sexual_dimorphism": "", "mp_term_id": "MP:0000137"}
 ```
 
-```python
-# Polarsを使用してParquetファイルを読み込みます
-import polars as pl
-df_tsumugi = pl.read_parquet("TSUMUGI_{version}_raw_data.parquet")
+#### `pairwise_similarity_annotations.jsonl.gz`
+
+遺伝子ペアにおける表現型類似度情報がまとまっています。  
+各レコードの内容は以下のとおりです：  
+
+- 遺伝子ペアの名称（Gene1_symbol, Gene2_symbol）  
+- 共通する表現型の注釈情報（Phenotype shared annotations；各表現型ごとに発達段階、接合型、性差情報などを保持）  
+- ペア間の表現型類似度（Phenotype similarity score；Resnik類似度に基づくPhenodigmスコア；0–100スケール）  
+
 ```
-
-#### Pandas
-
-```bash
-# condaを使用してPandasとPyArrowをインストールします
-conda create -y -n env-tsumugi pandas pyarrow
-conda activate env-tsumugi
-```
-
-```python
-# Pandasを使用してParquetファイルを読み込みます
-import pandas as pd
-df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
+{"gene1_symbol": "1110059G10Rik", "gene2_symbol": "Cog6", "phenotype_shared_annotations": {"vertebral transformation": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"}}, "phenotype_similarity_score": 42}
 ```
 
 ## 🌐 ネットワーク描出
@@ -106,7 +98,7 @@ df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 入力内容に基づいてページが遷移し、ネットワークが自動的に描画されます。  
 
 > [!IMPORTANT]
-> **共通する異常表現型が2つ以上 かつ 表現型類似度が0.2以上**の遺伝子ペアが、可視化の対象となります。  
+> **共通する異常表現型が3つ以上 かつ 表現型類似度が0.0以上**の遺伝子ペアが、可視化の対象となります。  
 
 ### ネットワークパネル
 
@@ -126,8 +118,7 @@ df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 
 #### 表現型類似度によるフィルター
 
-`Phenotypes similarity`のスライダーでは、**エッジの表現型類似度**（Jaccard係数）に基づいて、ネットワークに表示する遺伝子ペアの閾値を設定できます。  
-類似度の最小値と最大値を 1〜10 のスケールに変換し、10段階でフィルタリングが可能です。  
+`Phenotypes similarity`のスライダーでは、**エッジの表現型類似度**（Resnik類似度をPhenodigmスコアに変換した値）に基づいて、ネットワークに表示する遺伝子ペアの閾値を設定できます。  
 
 > [!NOTE]
 > 表現型類似度についての詳細は、以下を御覧ください  
@@ -137,7 +128,6 @@ df_tsumugi = pd.read_parquet("TSUMUGI_{version}_raw_data.parquet")
 
 `Phenotype severity`のスライダーでは、**KOマウスにおける表現型の重症度**（効果量）に基づいて、ノードの表示を調整できます。  
 効果量が高いほど、表現型の影響が強く現れていることを示します。  
-こちらも、効果量の範囲を 1〜10 にスケールしており、10段階のフィルタリングが可能です。  
 
 > [!NOTE]
 > IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Phenotypes severity`のスライダーはありません。
@@ -207,25 +197,36 @@ KOマウスの示す表現型のP値（`p_value` `female_ko_effect_p_value` `mal
 
 ## 表現型類似度の計算
 
-表現型類似度の指標としては、**Jaccard係数**を用いています。  
-こちらは、共通する表現型の割合を0-1の数値で表す類似度指標です。
+TSUMUGIではMammalian Phenotype (MP) 用語間の**Resnik類似度**を算出し、その結果を基に遺伝子ペアのスコアを**Phenodigmスケール（0-100）**へ変換して表現型類似度を定義しています。
+
+### 1. 表現型用語間のResnik類似度
+
+MPオントロジーの階層構造を構築し、各用語の子孫（自身を含む）との割合から情報量（Information Content; IC）を計算します：
 
 ```
-Jaccard(A, B) = |A ∩ B| / |A ∪ B|
+IC(term) = -log((|Descendants(term)| + 1) / |MP用語総数|)
 ```
 
-例えば、遺伝子Aと遺伝子BのKOマウスが、以下のような異常表現型を持つとします：  
+任意の2用語に対して共通祖先を列挙し、そのうち**最も情報量が大きい共通祖先（MICA）**のICをResnik類似度とします：
 
 ```
-A: {abnormal embryo development, abnormal heart morphology, abnormal kidney morphology}
-B: {abnormal embryo development, abnormal heart morphology, abnormal lung morphology}
+Resnik(term_1, term_2) = max_{c ∈ Anc(term_1) ∩ Anc(term_2)} IC(c)
 ```
 
-このとき、共通する表現型は2つ、全体のユニークな表現型は4つなので、Jaccard係数は次のように計算されます：
+共通祖先が存在しない場合、類似度は0になります。
+
+### 2. 遺伝子ペアへのPhenodigmスケーリング
+
+1. 各遺伝子ペアについて、有意なMP用語同士のResnik類似度をマトリクス化し、遺伝型（zygosity）、ライフステージ、性差の一致度に応じて 1.0 / 0.75 / 0.5 / 0.25 の重みを掛けます。  
+2. 行・列ごとの最大値から、その遺伝子ペアで実際に観測された類似度の最大値・平均値を求めます。  
+3. 個々のMP用語のICから、理論上達成しうる最大値・平均値を算出します。  
+4. 実測値を理論値で正規化し、最大値と平均値の2つを平均してPhenodigmスコアを得ます：
 
 ```
-Jaccard(A, B) = 2 / 4 = 0.5
+Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )
 ```
+
+理論値が0となる場合は該当する正規化値を0とし、最終的な0〜100のスコアを生データおよびWeb UIの`Phenotypes similarity`スライダーで用いています。
 
 
 # ✉️ お問い合わせ
