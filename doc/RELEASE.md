@@ -22,19 +22,29 @@
 
 ## v0.4.0 (2025-11-12)
 
-## 🌟 New Features
+
+## 💥 Breaking
 
 + Adopted the Phenodigm/Resnik similarity pipeline so phenotype matching now respects the hierarchical structure of MPO instead of relying on plain Jaccard overlap.  
   Issue: [#71](https://github.com/akikuno/TSUMUGI-dev/issues/71)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/648f2787e3bd705ad921346d8e594a7eb3219eaf)]  
 
++ Surface common ancestor MP terms on KO mouse edges, filtering out low-information matches to highlight meaningful shared phenotypes.  
+  Issue: [#118](https://github.com/akikuno/TSUMUGI-dev/issues/118)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/547506a5762769e6aa698d47f50ce35150869540)]  
+
++ Pre-compute degree and betweenness centrality for every node and expose slider-based filters to spotlight highly connected genes.  
+  Issue: [#108](https://github.com/akikuno/TSUMUGI-dev/issues/108)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9c7b443bdd7960c3a6a1168ee3b8da392fb517b2)]  
+
+
+## 🌟 New Features
+
+
 + Expanded the phenotype similarity and severity scales from 0–10 to 1–100 so users get Phenodigm-level precision when scoring networks.  
   Issue: [#119](https://github.com/akikuno/TSUMUGI-dev/issues/119)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/91309d636ecaf285aeaaeca9320408b23bb1a3db)]  
 
-+ Surface common ancestor MP terms on KO mouse edges, filtering out low-information matches to highlight meaningful shared phenotypes.  
-  Issue: [#118](https://github.com/akikuno/TSUMUGI-dev/issues/118)  
-  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/547506a5762769e6aa698d47f50ce35150869540)]  
 
 + Added a JPEG export mode alongside the existing PNG and SVG download options for Cytoscape.js views.  
   Issue: [#117](https://github.com/akikuno/TSUMUGI-dev/issues/117)  
@@ -44,17 +54,10 @@
   Issue: [#113](https://github.com/akikuno/TSUMUGI-dev/issues/113)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/00e9157c3a16a3d65c6bb2774c83848150d60a32)]  
 
-+ Pre-compute degree and betweenness centrality for every node and expose slider-based filters to spotlight highly connected genes.  
-  Issue: [#108](https://github.com/akikuno/TSUMUGI-dev/issues/108)  
-  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9c7b443bdd7960c3a6a1168ee3b8da392fb517b2)]  
-
 + Delivered Cytoscape Desktop–compatible GraphML exports (nodes and edges) for seamless round-tripping between the web app and local analyses.  
   Issue: [#92](https://github.com/akikuno/TSUMUGI-dev/issues/92)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/3c8bf960f4e648f3eda4d5f7d540abe823116c8b)]  
 
-+ Introduced phenotype inclusion/exclusion controls, making it easy to hide lethal phenotypes or isolate only the traits relevant to a study.  
-  Issue: [#36](https://github.com/akikuno/TSUMUGI-dev/issues/36)  
-  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/14a3124042e6aa2318bfc0792403424931efc23a)]  
 
 ## 🐛 Bug Fixes
 
