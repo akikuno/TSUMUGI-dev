@@ -126,8 +126,10 @@ def run_pipeline(args) -> None:
     output_dir = Path(TEMPDIR / "preprocessed")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    pickle.dump(genewise_phenotype_annotations, open(output_dir / "genewise_phenotype_annotations.pkl", "wb"))
-    pickle.dump(genewise_phenotype_significants, open(output_dir / "genewise_phenotype_significants.pkl", "wb"))
+    with open(output_dir / "genewise_phenotype_annotations.pkl", "wb") as f:
+        pickle.dump(genewise_phenotype_annotations, f)
+    with open(output_dir / "genewise_phenotype_significants.pkl", "wb") as f:
+        pickle.dump(genewise_phenotype_significants, f)
 
     del records_formatted
     del records_annotated
