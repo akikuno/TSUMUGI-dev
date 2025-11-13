@@ -33,7 +33,7 @@ When you input a phenotype of interest, TSUMUGI searches for **gene groups with 
 Phenotype names are based on [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology).
 
 List of currently searchable phenotypes in TSUMUGI:  
-👉 [Phenotype List](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_mp_terms.txt)
+👉 [Phenotype List](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
 ### 2. Gene
 
@@ -41,7 +41,7 @@ When you specify a single gene, TSUMUGI searches for **other gene groups whose K
 Gene names follow gene symbols registered in [MGI](http://www.informatics.jax.org/).
 
 List of currently searchable gene names in TSUMUGI:  
-👉 [Gene List](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_gene_symbols.txt)
+👉 [Gene List](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
 ### 3. Gene List
 
@@ -134,7 +134,7 @@ The `Phenotype severity` slider allows you to adjust node display based on **phe
 Higher effect sizes indicate stronger phenotypic impact.  
 
 > [!NOTE]
-> When IMPC phenotype evaluation is binary (present/absent) (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html): list of binary phenotypes available [here](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/binary_phenotypes.txt)) or when gene name is input, the `Phenotypes severity` slider is not available.
+> When IMPC phenotype evaluation is binary (present/absent) (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html): list of binary phenotypes available [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or when gene name is input, the `Phenotypes severity` slider is not available.
 
 #### Specify Genotype
 
