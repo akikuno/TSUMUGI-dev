@@ -29,7 +29,7 @@ TSUMUGIは、以下の3種類の入力に対応しています。
 表現型名は [Mammalian Phenotype Ontology（MPO）](https://www.informatics.jax.org/vocab/mp_ontology) に基づいています。
 
 TSUMUGIで現在検索可能な表現型の一覧はこちら：  
-👉 [表現型リスト](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_mp_terms.txt)
+👉 [表現型リスト](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
 ### 2. 遺伝子名（Gene）
 
@@ -37,7 +37,7 @@ TSUMUGIで現在検索可能な表現型の一覧はこちら：
 遺伝子名は [MGI](http://www.informatics.jax.org/) に登録された遺伝子シンボルに準拠しています。
 
 TSUMUGIで現在検索可能な遺伝子名の一覧はこちら：  
-👉 [遺伝子名リスト](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/available_gene_symbols.txt)
+👉 [遺伝子名リスト](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
 
 ### 3. 遺伝子リスト (Gene List)
@@ -130,7 +130,7 @@ TSUMUGIにおける表現型情報（Gzip圧縮JSONL形式）をダウンロー�
 効果量が高いほど、表現型の影響が強く現れていることを示します。  
 
 > [!NOTE]
-> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/akikuno/TSUMUGI-dev/blob/main/TSUMUGI/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Phenotypes severity`のスライダーはありません。
+> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Phenotypes severity`のスライダーはありません。
 
 #### 遺伝型を指定
 
