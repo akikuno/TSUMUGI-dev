@@ -43,6 +43,7 @@ def write_binary_phenotypes_txt(records_significants, TEMPDIR: Path, output_file
         if all(True if es in {0, 1} else False for es in effect_sizes):
             binary_phenotypes.add(mp_term_name)
 
+    binary_phenotypes = sorted(binary_phenotypes)
     with open(output_file, "w") as f:
         for bp in binary_phenotypes:
             f.write(f"{bp}\n")
