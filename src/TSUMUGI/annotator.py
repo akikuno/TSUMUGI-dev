@@ -39,7 +39,7 @@ def _annotate_sexual_dimorphism(
     elif male_ko_effect_p_value <= threshold and female_ko_effect_p_value > threshold:
         return "Male"
     else:
-        return ""
+        return "None"
 
 
 def annotate_sexual_dimorphism(records_annotated, threshold: float = 1e-4) -> list[dict]:

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import argparse
-from importlib.metadata import PackageNotFoundError, version as pkg_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as pkg_version
 
 
 def _get_version() -> str:
@@ -243,6 +244,149 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
+    # =========================================================
+    # life-stage (Filter by life stage)
+    # =========================================================
+
+    LIFE_STAGES = ("Embryo", "Early", "Interval", "Late")
+
+    life_stage_parser = subparsers.add_parser(
+        "life-stage",
+        help="Filter gene pairs by life stage of phenotype annotations",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    group_life_stage = life_stage_parser.add_mutually_exclusive_group(required=True)
+    group_life_stage.add_argument(
+        "-k",
+        "--keep",
+        choices=LIFE_STAGES,
+        metavar="LIFE_STAGE",
+        help="Keep ONLY annotations with the specified life stage",
+    )
+    group_life_stage.add_argument(
+        "-d",
+        "--drop",
+        choices=LIFE_STAGES,
+        metavar="LIFE_STAGE",
+        help="Drop annotations with the specified life stage",
+    )
+
+    life_stage_parser.add_argument(
+        "--in",
+        dest="infile",
+        type=str,
+        required=False,
+        help=(
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+        ),
+    )
+
+    life_stage_parser.add_argument(
+        "--out",
+        dest="outfile",
+        type=str,
+        required=False,
+        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
+    )
+
+    # =========================================================
+    # sex (Filter by sexual dimorphism)
+    # =========================================================
+
+    SEXES = ("Male", "Female", "None")
+
+    sex_parser = subparsers.add_parser(
+        "sex",
+        help="Filter gene pairs by sexual dimorphism of phenotype annotations",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    group_sex = sex_parser.add_mutually_exclusive_group(required=True)
+    group_sex.add_argument(
+        "-k",
+        "--keep",
+        choices=SEXES,
+        metavar="SEX",
+        help="Keep ONLY annotations with the specified sexual dimorphism",
+    )
+    group_sex.add_argument(
+        "-d",
+        "--drop",
+        choices=SEXES,
+        metavar="SEX",
+        help="Drop annotations with the specified sexual dimorphism",
+    )
+
+    sex_parser.add_argument(
+        "--in",
+        dest="infile",
+        type=str,
+        required=False,
+        help=(
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+        ),
+    )
+
+    sex_parser.add_argument(
+        "--out",
+        dest="outfile",
+        type=str,
+        required=False,
+        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
+    )
+
+    # =========================================================
+    # zygosity (Filter by zygosity)
+    # =========================================================
+
+    ZYGOSITIES = ("Homo", "Hetero", "Hemi")
+
+    zygosity_parser = subparsers.add_parser(
+        "zygosity",
+        help="Filter gene pairs by zygosity of phenotype annotations",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    group_zygosity = zygosity_parser.add_mutually_exclusive_group(required=True)
+    group_zygosity.add_argument(
+        "-k",
+        "--keep",
+        choices=ZYGOSITIES,
+        metavar="ZYGOSITY",
+        help="Keep ONLY annotations with the specified zygosity",
+    )
+    group_zygosity.add_argument(
+        "-d",
+        "--drop",
+        choices=ZYGOSITIES,
+        metavar="ZYGOSITY",
+        help="Drop annotations with the specified zygosity",
+    )
+
+    zygosity_parser.add_argument(
+        "--in",
+        dest="infile",
+        type=str,
+        required=False,
+        help=(
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+        ),
+    )
+
+    zygosity_parser.add_argument(
+        "--out",
+        dest="outfile",
+        type=str,
+        required=False,
+        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
+    )
+    #######################################################
+    # Return parser
+    #######################################################
     return parser
 
 

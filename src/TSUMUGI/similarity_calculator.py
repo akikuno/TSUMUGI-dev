@@ -419,8 +419,8 @@ def _calculate_weighted_similarity_matrix(
             gene2_zygosity = gene2_record["zygosity"]
             gene1_life_stage = gene1_record["life_stage"]
             gene2_life_stage = gene2_record["life_stage"]
-            gene1_sexual_dimorphism = gene1_record.get("sexual_dimorphism", "")
-            gene2_sexual_dimorphism = gene2_record.get("sexual_dimorphism", "")
+            gene1_sexual_dimorphism = gene1_record.get("sexual_dimorphism", "None")
+            gene2_sexual_dimorphism = gene2_record.get("sexual_dimorphism", "None")
 
             adjusted_similarity = _adjust_similarity_by_metadata(
                 similarity,
@@ -616,7 +616,12 @@ def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | f
     for record in records_significants:
         gene_phenotypes_map[record["marker_symbol"]].add(
             frozenset(
-                [record["mp_term_id"], record["zygosity"], record["life_stage"], record.get("sexual_dimorphism", "")]
+                [
+                    record["mp_term_id"],
+                    record["zygosity"],
+                    record["life_stage"],
+                    record.get("sexual_dimorphism", "None"),
+                ]
             )
         )
     num_shared_phenotypes = {}
@@ -637,7 +642,12 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
     for record in records_significants:
         gene_phenotypes_map[record["marker_symbol"]].add(
             frozenset(
-                [record["mp_term_id"], record["zygosity"], record["life_stage"], record.get("sexual_dimorphism", "")]
+                [
+                    record["mp_term_id"],
+                    record["zygosity"],
+                    record["life_stage"],
+                    record.get("sexual_dimorphism", "None"),
+                ]
             )
         )
 

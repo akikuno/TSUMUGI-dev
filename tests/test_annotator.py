@@ -32,6 +32,6 @@ def test_annotate_life_stage():
 def test_annotate_sexual_dimorphism():
     female_ko_effect_p_values = [1e-5, 1, 1]
     male_ko_effect_p_values = [1, 1e-5, 1]
-    expected_results = ["Female", "Male", ""]
+    expected_results = ["Female", "Male", "None"]
     for f_p, m_p, expected in zip(female_ko_effect_p_values, male_ko_effect_p_values, expected_results):
         assert _annotate_sexual_dimorphism(f_p, m_p) == expected

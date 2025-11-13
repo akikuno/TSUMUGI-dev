@@ -49,7 +49,7 @@ def _compose_records_significants(
     for record in records_significants:
         zygosity = record["zygosity"]
         life_stage = record.get("life_stage", "")
-        sexual_dimorphism = record.get("sexual_dimorphism", "")
+        sexual_dimorphism = record.get("sexual_dimorphism", "None")
 
         annotation_str = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
         phenotype_composed = f"{record['mp_term_name']} ({annotation_str})"
@@ -82,7 +82,7 @@ def _compose_pair_similarity_annotations(
         for mp_term_name, annotation in record["phenotype_shared_annotations"].items():
             zygosity = annotation["zygosity"]
             life_stage = annotation.get("life_stage", "")
-            sexual_dimorphism = annotation.get("sexual_dimorphism", "")
+            sexual_dimorphism = annotation.get("sexual_dimorphism", "None")
 
             annotation_str = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
             pair_annotations_composed.add(f"{mp_term_name} ({annotation_str})")
