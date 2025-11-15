@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import json
-import sys
 from collections import Counter
 from pathlib import Path
 
 from tqdm import tqdm
-
 from TSUMUGI import io_handler
 
 
@@ -29,8 +26,7 @@ def filter_by_number_of_phenotypes_per_gene(
         # check both genes in the pair match the criteria
         if record["gene1_symbol"] in matched_genes and record["gene2_symbol"] in matched_genes:
             # output to stdout as JSON
-            json.dump(record, sys.stdout, ensure_ascii=False)
-            sys.stdout.write("\n")
+            io_handler.safe_jsonl_dump(record)
 
 
 def filter_by_number_of_phenotypes_per_pair(
@@ -47,5 +43,4 @@ def filter_by_number_of_phenotypes_per_pair(
             continue
 
         # output to stdout as JSON
-        json.dump(record, sys.stdout, ensure_ascii=False)
-        sys.stdout.write("\n")
+        io_handler.safe_jsonl_dump(record)
