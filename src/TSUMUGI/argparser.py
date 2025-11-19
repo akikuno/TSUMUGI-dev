@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as pkg_version
+from pathlib import Path
 
 
 def _get_version() -> str:
@@ -159,7 +160,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     mp_parser.add_argument(
         "--in",
-        dest="infile",
+        dest="path_pairwise",
         type=str,
         required=False,
         help=(
@@ -215,7 +216,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     nphenos_parser.add_argument(
         "--in",
-        dest="infile",
+        dest="path_pairwise",
         type=str,
         required=False,
         help=(
@@ -274,7 +275,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     life_stage_parser.add_argument(
         "--in",
-        dest="infile",
+        dest="path_pairwise",
         type=str,
         required=False,
         help=(
@@ -321,7 +322,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sex_parser.add_argument(
         "--in",
-        dest="infile",
+        dest="path_pairwise",
         type=str,
         required=False,
         help=(
@@ -368,7 +369,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     zygosity_parser.add_argument(
         "--in",
-        dest="infile",
+        dest="path_pairwise",
         type=str,
         required=False,
         help=(
@@ -383,6 +384,74 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         required=False,
         help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
+    )
+
+    # =========================================================
+    # build-graphml
+    # =========================================================
+
+    build_graphml_parser = subparsers.add_parser(
+        "build-graphml",
+        help="Build a GraphML file from gene pair similarity annotations",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    build_graphml_parser.add_argument(
+        "--in",
+        dest="path_pairwise",
+        type=str,
+        required=False,
+        help=(
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+        ),
+    )
+
+    build_graphml_parser.add_argument(
+        "-a",
+        "--genewise_annotations",
+        dest="path_genewise",
+        type=str,
+        required=True,
+        help=("Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"),
+    )
+
+    # =========================================================
+    # build-webapp
+    # =========================================================
+
+    build_webapp_parser = subparsers.add_parser(
+        "build-webapp",
+        help="Build a webapp from gene pair similarity annotations",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    build_webapp_parser.add_argument(
+        "--in",
+        dest="path_pairwise",
+        type=str,
+        required=False,
+        help=(
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+        ),
+    )
+
+    build_webapp_parser.add_argument(
+        "-a",
+        "--genewise_annotations",
+        dest="path_genewise",
+        type=str,
+        required=True,
+        help=("Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"),
+    )
+
+    build_webapp_parser.add_argument(
+        "-o",
+        "--out",
+        dest="output_dir",
+        type=str,
+        required=True,
     )
     #######################################################
     # Return parser
@@ -414,6 +483,11 @@ def parse_args(argv=None):
         parser.error(
             "n-phenos: '-a/--genewise_annotations' is required when using '-g/--genewise'.\n"
             "Provide the gene phenotype annotations JSONL(.gz) file to identify genes that were measured."
+        )
+
+    if args.cmd == "build-webapp" and Path(args.output_dir).suffix:
+        parser.error(
+            f"build-webapp: {args.output_dir} looks like a file name (has extension). Please specify a directory."
         )
 
     args.version = _get_version()

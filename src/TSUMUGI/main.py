@@ -4,7 +4,15 @@ import logging
 import sys
 
 from TSUMUGI import argparser, core, validator
-from TSUMUGI.subcommands import life_stage_filterer, mp_filterer, n_phenos_filterer, sex_filterer, zygosity_filterer
+from TSUMUGI.subcommands import (
+    graphml_builder,
+    life_stage_filterer,
+    mp_filterer,
+    n_phenos_filterer,
+    sex_filterer,
+    webapp_builder,
+    zygosity_filterer,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -43,14 +51,14 @@ def main() -> None:
     # Subcommands for filtering pairwise similarity annotations
     # ===========================================================
 
-    # -----------------------------------------------------    
+    # -----------------------------------------------------
     # MP term inclusion/exclusion
-    # ----------------------------------------------------- 
+    # -----------------------------------------------------
     if args.cmd == "mp":
         if args.include:
             logging.info(f"Including gene pairs with phenotypes related to MP term: {args.include}")
             mp_filterer.include_specific_phenotype(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 path_obo=args.obo,
                 mp_term_id=args.include,
                 life_stage=args.life_stage,
@@ -60,7 +68,7 @@ def main() -> None:
         elif args.exclude:
             logging.info(f"Excluding gene pairs with phenotypes related to MP term: {args.exclude}")
             mp_filterer.exclude_specific_phenotype(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 path_genewise_phenotype_annotations=args.path_genewise,
                 path_obo=args.obo,
                 mp_term_id=args.exclude,
@@ -76,14 +84,14 @@ def main() -> None:
         logging.info("Filtering gene pairs based on number of phenotypes per gene")
         if args.genewise:
             n_phenos_filterer.filter_by_number_of_phenotypes_per_gene(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 path_genewise_phenotype_annotations=args.path_genewise,
                 min_phenotypes=args.min,
                 max_phenotypes=args.max,
             )
         elif args.pairwise:
             n_phenos_filterer.filter_by_number_of_phenotypes_per_pair(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 min_phenotypes=args.min,
                 max_phenotypes=args.max,
             )
@@ -96,7 +104,7 @@ def main() -> None:
             logging.info(f"Keeping phenotype annotations matching life stage: {args.keep}")
             keep = True
             life_stage_filterer.filter_annotations_by_life_stage(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 life_stage=args.keep,
                 keep=keep,
             )
@@ -104,7 +112,7 @@ def main() -> None:
             logging.info(f"Dropping phenotype annotations matching life stage: {args.drop}")
             drop = True
             life_stage_filterer.filter_annotations_by_life_stage(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 life_stage=args.drop,
                 drop=drop,
             )
@@ -117,7 +125,7 @@ def main() -> None:
             logging.info(f"Keeping phenotype annotations matching sex: {args.keep}")
             keep = True
             sex_filterer.filter_annotations_by_sex(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 sex=args.keep,
                 keep=keep,
             )
@@ -125,7 +133,7 @@ def main() -> None:
             logging.info(f"Dropping phenotype annotations matching sex: {args.drop}")
             drop = True
             sex_filterer.filter_annotations_by_sex(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 sex=args.drop,
                 drop=drop,
             )
@@ -138,7 +146,7 @@ def main() -> None:
             logging.info(f"Keeping phenotype annotations matching zygosity: {args.keep}")
             keep = True
             zygosity_filterer.filter_annotations_by_zygosity(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 zygosity=args.keep,
                 keep=keep,
             )
@@ -146,10 +154,30 @@ def main() -> None:
             logging.info(f"Dropping phenotype annotations matching zygosity: {args.drop}")
             drop = True
             zygosity_filterer.filter_annotations_by_zygosity(
-                path_pairwise_similarity_annotations=args.infile or sys.stdin,
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 zygosity=args.drop,
                 drop=drop,
             )
+
+    # -----------------------------------------------------
+    # Build GraphML
+    # -----------------------------------------------------
+    if args.cmd == "build-graphml":
+        logging.info("Building GraphML from pairwise similarity annotations")
+
+        graphml_builder.write_graphml_to_stdout(
+            pairwise_path=args.path_pairwise or sys.stdin,
+            genewise_path=args.path_genewise,
+        )
+    # -----------------------------------------------------
+    # Build Webapp
+    # -----------------------------------------------------
+    if args.cmd == "build-webapp":
+        logging.info("Building webapp network from pairwise similarity annotations")
+
+        webapp_builder.build_and_save_webapp_network(
+            genewise_path=args.path_genewise, pairwise_path=args.path_pairwise or sys.stdin, output_dir=args.output_dir
+        )
 
 
 if __name__ == "__main__":
