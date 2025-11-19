@@ -27,6 +27,7 @@ tsumugi = "TSUMUGI.main:main"
 python = ">=3.10"
 numpy = ">=1.21.0"
 tqdm = ">=4.64.0"
+networkx = ">=3.3"
 
 [tool.ruff]
 fix = true
