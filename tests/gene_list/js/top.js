@@ -1,8 +1,8 @@
-// 検索モードの選択用変数 (初期状態を 'phenotype')
+// Variable that tracks the selected search mode (default 'phenotype')
 let searchMode = 'phenotype';
 
 // ====================================================================
-// タブ切り替え + searchMode の更新
+// Tab switching plus updating searchMode
 // ====================================================================
 function setSearchMode(mode) {
     searchMode = mode;
@@ -11,7 +11,7 @@ function setSearchMode(mode) {
     document.getElementById('geneSection').style.display = mode === 'gene' ? 'block' : 'none';
     document.getElementById('geneListSection').style.display = mode === 'geneList' ? 'block' : 'none';
 
-    // タブボタンのスタイル変更
+    // Update tab button styles
     document.querySelectorAll('.Tab').forEach(tabButton => {
         tabButton.classList.remove('active-tab');
     });
@@ -19,7 +19,7 @@ function setSearchMode(mode) {
         tabButton.classList.add('active-tab');
     });
 
-    // 入力欄の初期化
+    // Reset input fields
     document.querySelectorAll('input[type="text"], textarea').forEach(input => {
         input.value = '';
     });
@@ -27,23 +27,23 @@ function setSearchMode(mode) {
         ul.innerHTML = '';
     });
 
-    // Gene List のタブが押されたときにプレースホルダーを設定
+    // Set placeholder content when the Gene List tab is selected
     const geneListTextarea = document.getElementById("geneList");
     if (mode === 'geneList') {
-        geneListTextarea.value = "Asxl1\nRab10\nDdx46";  // プレースホルダーとして例を入力
+        geneListTextarea.value = "Asxl1\nRab10\nDdx46";  // Provide sample text as a placeholder
     } else {
-        geneListTextarea.value = '';  // 他のタブでは空にする
+        geneListTextarea.value = '';  // Clear it for other tabs
     }
 
-    // Submit ボタンの切り替え
+    // Toggle Submit buttons
     document.getElementById('submitBtn').style.display = mode === 'geneList' ? 'none' : 'inline-block';
     document.getElementById('submitBtn_List').style.display = mode === 'geneList' ? 'inline-block' : 'none';
 
-    // Gene List の入力チェックを実行
+    // Run the Gene List input validation
     checkGeneListInput();
 }
 
-// Gene List の入力をチェックし、ボタンの有効・無効を切り替える
+// Validate Gene List input and toggle button enabled state
 function checkGeneListInput() {
     const geneListTextarea = document.getElementById("geneList");
     const submitBtnList = document.getElementById("submitBtn_List");
@@ -55,15 +55,15 @@ function checkGeneListInput() {
     }
 }
 
-// 初期表示
+// Initial display
 setSearchMode('phenotype');
 
-// タブボタンのクリックイベント
+// Tab button click events
 document.querySelectorAll('.Tab').forEach(button => {
     button.addEventListener('click', () => setSearchMode(button.dataset.tab));
 });
 
-// Gene List のテキストエリアが変更されたらボタンを更新
+// Update the button when the Gene List textarea changes
 document.getElementById("geneList").addEventListener("input", checkGeneListInput);
 
 // ====================================================================
@@ -78,7 +78,7 @@ REMOVE_THIS_LINE */
 const URL_MP_TERMS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/1fc723ee0ba29a7162fd56394f2d30751d752e4c/gist_available_mp_terms.json"; // REMOVE_THIS_LINE
 const URL_GENE_SYMBOLS = "https://gist.githubusercontent.com/akikuno/831ec21615501cc7bd1d381c5e56ebd2/raw/63468d6537120107ddf77568e5dabaaf59044902/gist_available_gene_symbols.txt"; // REMOVE_THIS_LINE
 
-// データ取得の完了を管理する Promise
+// Promise that tracks data fetch completion
 let phenotypesLoaded = fetch(URL_MP_TERMS)
     .then(response => response.json())
     .then(data => {
@@ -96,7 +96,7 @@ let geneSymbolsLoaded = fetch(URL_GENE_SYMBOLS)
     })
     .catch(error => console.error('Error fetching gene symbols:', error));
 
-// 両方のデータがロードされたことを確認する関数
+// Function to ensure both data sources are loaded
 async function ensureDataLoaded() {
     await Promise.all([phenotypesLoaded, geneSymbolsLoaded]);
 }
@@ -106,11 +106,11 @@ async function ensureDataLoaded() {
 // ====================================================================
 
 // --------------------------------------------------------------------
-// 入力内容に基づいた検索候補を表示する
+// Show search suggestions based on the input
 // --------------------------------------------------------------------
 
 async function handleInput(event) {
-    await ensureDataLoaded(); // データのロードを保証
+    await ensureDataLoaded(); // Ensure the data has loaded
 
     const userInput = event.target.value.toLowerCase();
     const suggestionList = searchMode === 'phenotype'
@@ -157,7 +157,7 @@ async function handleInput(event) {
 
 
 // --------------------------------------------------------------------
-// 入力の有効性を確認する関数
+// Function to validate the current input
 // --------------------------------------------------------------------
 async function checkValidInput() {
     await ensureDataLoaded();
@@ -180,7 +180,7 @@ async function checkValidInput() {
 
 
 // --------------------------------------------------------------------
-// データ取得後にイベントリスナーを登録
+// Register event listeners after the data loads
 // --------------------------------------------------------------------
 ensureDataLoaded().then(() => {
     document.getElementById('phenotype').addEventListener('input', handleInput);
@@ -190,12 +190,12 @@ ensureDataLoaded().then(() => {
 });
 
 // ====================================================================
-// フォームで選択された表現型に対応する詳細ページを新しいタブで表示する
+// Open a detail page for the selected phenotype in a new tab
 // ====================================================================
 function handleFormSubmit(event) {
     event.preventDefault();
 
-    const mode = searchMode;  // 最新の searchMode を取得
+    const mode = searchMode;  // Grab the latest searchMode
     const userInput = mode === 'phenotype' ? document.getElementById('phenotype') : document.getElementById('gene');
     const submitBtn = document.getElementById('submitBtn');
     const selectedData = mode === 'phenotype' ? phenotypes[userInput.value] : userInput.value;
@@ -210,11 +210,11 @@ function handleFormSubmit(event) {
     }
 }
 
-// フォームの submit イベントを監視
+// Listen for the form submit event
 document.getElementById('searchForm').addEventListener('submit', handleFormSubmit);
 
 // ====================================================================
-// 入力された文字列との類似性スコアを計算
+// Calculate similarity scores with the provided strings
 // ====================================================================
 
 function jaroWinkler(s1, s2) {

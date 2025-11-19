@@ -23,25 +23,25 @@ export function exportGraphAsPNG(cy, file_name) {
 // --------------------------------------------------------
 
 export function exportGraphAsCSV(cy, file_name) {
-    // calculateConnectedComponentsを利用して連結成分を取得
+    // Use calculateConnectedComponents to obtain connected components
     const connected_component = calculateConnectedComponents(cy);
 
-    // CSVのヘッダー行
+    // CSV header row
     let csvContent = "cluster,gene,phenotypes\n";
 
-    // クラスター番号を割り当てて、CSVフォーマットに変換
+    // Assign cluster numbers and convert to CSV format
     connected_component.forEach((component, clusterIndex) => {
         const clusterNumber = clusterIndex + 1;
 
         Object.keys(component).forEach((gene) => {
-            const phenotypes = component[gene].join(";"); // 表現型をセミコロン区切りで結合
+            const phenotypes = component[gene].join(";"); // Join phenotypes separated by semicolons
 
-            // CSVの各行を生成
+            // Generate each CSV row
             csvContent += `${clusterNumber},${gene},"${phenotypes}"\n`;
         });
     });
 
-    // CSVファイルを生成しダウンロード
+    // Create and download the CSV file
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

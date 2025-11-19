@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>データ表示</title>
+    <title>Data Viewer</title>
 </head>
 <body>
-    <h1>取得した JSON データ</h1>
+    <h1>Retrieved JSON Data</h1>
     <pre id="output"></pre>
 
     <script>
-        // localStorage からデータを取得
+        // Retrieve data from localStorage
         const elements = JSON.parse(localStorage.getItem('elements'));
 
         if (elements) {
             document.getElementById('output').textContent = JSON.stringify(elements, null, 2);
             console.log(elements);
         } else {
-            document.getElementById('output').textContent = 'データがありません。';
+            document.getElementById('output').textContent = 'No data available.';
         }
     </script>
 </body>

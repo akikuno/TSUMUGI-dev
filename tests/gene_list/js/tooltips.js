@@ -15,10 +15,10 @@ function createTooltip(event, cy, map_symbol_to_id) {
 
     if (event.target.isNode()) {
         const annotations = Array.isArray(data.annotation)
-            ? data.annotation.map((anno) => "・ " + anno).join("<br>")
-            : "・ " + data.annotation;
+            ? data.annotation.map((anno) => "- " + anno).join("<br>")
+            : "- " + data.annotation;
 
-        const geneID = map_symbol_to_id[data.label] || "UNKNOWN"; // undefined の場合に備える
+        const geneID = map_symbol_to_id[data.label] || "UNKNOWN"; // Guard against undefined values
         const url_impc = `https://www.mousephenotype.org/data/genes/${geneID}`;
         tooltipText =
             `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.label} KO mice</a></b><br>` + annotations;
@@ -28,8 +28,8 @@ function createTooltip(event, cy, map_symbol_to_id) {
         const sourceNode = cy.getElementById(data.source).data("label");
         const targetNode = cy.getElementById(data.target).data("label");
         const annotations = Array.isArray(data.annotation)
-            ? data.annotation.map((anno) => "・ " + anno).join("<br>")
-            : "・ " + data.annotation;
+            ? data.annotation.map((anno) => "- " + anno).join("<br>")
+            : "- " + data.annotation;
 
         tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs</b><br>` + annotations;
 

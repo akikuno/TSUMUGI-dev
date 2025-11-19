@@ -33,7 +33,7 @@ def base_input():
 
 
 def build_expected_list(kept_terms):
-    """単一レコード入力を前提とした期待出力リストを構築"""
+    """Construct the expected output list assuming a single-record input."""
     if not kept_terms:
         return []
     all_terms = {
@@ -75,11 +75,11 @@ def build_expected_list(kept_terms):
         ("Male", False, True, {"abnormal embryo size", "decreased survival"}),
         ("Female", False, True, {"abnormal embryo size", "preweaning lethality"}),
         ("None", False, True, {"preweaning lethality", "decreased survival"}),
-        # --- both flags on → equal (keep) + not-equal (drop) ⇒ 全て残る ---
+        # --- both flags on → equal (keep) + not-equal (drop) ⇒ keep everything ---
         ("Male", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
         ("Female", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
         ("None", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
-        # --- neither flag on → 何も出力しない ---
+        # --- neither flag on → produce no output ---
         ("Male", False, False, set()),
         ("Female", False, False, set()),
         ("None", False, False, set()),

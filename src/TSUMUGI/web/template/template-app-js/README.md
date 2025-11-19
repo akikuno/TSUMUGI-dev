@@ -1,40 +1,38 @@
 ## filterByNodeColorAndEdgeSize_phenotype.js
 
-- バイナリ表現型のとき、`nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat); // REMOVE_THIS_LINE_IF_BINARY_PHENOTYPE`を削除
+- For binary phenotypes, remove `nodeSliderValues = nodeSlider.noUiSlider.get().map(parseFloat); // REMOVE_THIS_LINE_IF_BINARY_PHENOTYPE`
 
 
 ## template_app.js
 
 - XXX_NODE_COLOR_SLIDER
-  - mode="non-binary-phenotype"のとき、`node_color_slider.js`を挿入
-  - それ以外は削除
+  - Insert `node_color_slider.js` when mode="non-binary-phenotype"
+  - Remove it otherwise
 
 - XXX_NODE_MIN_MAX
-  - mode="non-binary-phenotype"のとき、`nodeMinMax.js`を挿入
-  - それ以外は削除
+  - Insert `nodeMinMax.js` when mode="non-binary-phenotype"
+  - Remove it otherwise
 
 - XXX_EDGE_MIN_MAX
-  - 遺伝子シンボルのとき、`edgeMinMax_for_genesymbol.js`を挿入
-  - それ以外は以下に置換：
+  - For gene-symbol mode, insert `edgeMinMax_for_genesymbol.js`
+  - Otherwise replace with:
     `const edgeMin = Math.min(...edgeSizes); const edgeMax = Math.max(...edgeSizes);`
 
 - XXX_FILTER_ELEMENTS
-    - 表現型のとき、`filterByNodeColorAndEdgeSize_phenotype.js`を挿入
-    - 遺伝子シンボルのとき、`filterByNodeColorAndEdgeSize_genesymbol.js`を挿入
-    - 遺伝子リストのとき、`filterByNodeColorAndEdgeSize_genelist.js`を挿入
+    - For phenotypes, insert `filterByNodeColorAndEdgeSize_phenotype.js`
+    - For gene symbols, insert `filterByNodeColorAndEdgeSize_genesymbol.js`
+    - For gene lists, insert `filterByNodeColorAndEdgeSize_genelist.js`
 
 - XXX_ELEMENTS
-    - 表現型のとき、`loadJSONGz("../../data/phenotype/XXX_NAME.json.gz")`で置換
-    - 遺伝子シンボルのとき、`loadJSONGz("../../data/genesymbol/XXX_NAME.json.gz")`で置換
-    - 遺伝子リストのとき、`JSON.parse(localStorage.getItem("elements"))`で置換
+    - For phenotypes, replace with `loadJSONGz("../../data/phenotype/XXX_NAME.json.gz")`
+    - For gene symbols, replace with `loadJSONGz("../../data/genesymbol/XXX_NAME.json.gz")`
+    - For gene lists, replace with `JSON.parse(localStorage.getItem("elements"))`
 
 - XXX_TARGET_PHENOTYPE
-  - 表現型のとき、mp_term_name_spaceで置換
-  - それ以外は空文字
+  - Replace with mp_term_name_space for phenotypes
+  - Use an empty string otherwise
 
 - XXX_NAME
-  - 表現型：mp_term_name_underscoreで置換
-  - 遺伝子名：genesymbolで置換
-  - 遺伝子リスト: "geneList"で置換
-
-
+  - Phenotype: replace with mp_term_name_underscore
+  - Gene: replace with genesymbol
+  - Gene list: replace with "geneList"

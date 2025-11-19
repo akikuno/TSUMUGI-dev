@@ -38,7 +38,7 @@ def base_input():
 
 
 def build_expected_list(kept_terms):
-    """単一レコード入力を前提とした期待出力（yield される dict）のリストを構築。"""
+    """Build the expected (yielded dict) list assuming a single-record input."""
     if not kept_terms:
         return []
     all_terms = {

@@ -1,6 +1,6 @@
-// フィルタリング関数（遺伝型 + 性別）
+// Filtering function (genotype + sex)
 export function filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterElements) {
-    // チェックボックスの状態を取得
+    // Retrieve checkbox states
     const checkedSexs = Array.from(document.querySelectorAll('#sex-filter-form input[type="checkbox"]:checked')).map(
         (input) => input.value,
     );
@@ -10,11 +10,11 @@ export function filterElementsByGenotypeAndSex(elements, target_phenotype, cy, f
 
     let targetElements;
 
-    // "Female" と "Male" の両方が選択された場合、性別フィルターを適用しない
+    // When both "Female" and "Male" are selected, skip the sex filter
     if (checkedSexs.includes("Female") && checkedSexs.includes("Male")) {
         targetElements = elements;
     } else {
-        // 性別フィルター適用
+        // Apply the sex filter
         targetElements = elements
             .map((item) => {
                 if (item.data.annotation) {
@@ -32,7 +32,7 @@ export function filterElementsByGenotypeAndSex(elements, target_phenotype, cy, f
             .filter((item) => item.data.annotation && item.data.annotation.length > 0);
     }
 
-    // 遺伝型フィルター適用
+    // Apply the genotype filter
     let filteredElements = targetElements
         .map((item) => {
             if (item.data.annotation) {
@@ -49,15 +49,15 @@ export function filterElementsByGenotypeAndSex(elements, target_phenotype, cy, f
         })
         .filter((item) => item.data.annotation && item.data.annotation.length > 0);
 
-    // `target_phenotype` が指定されている場合、表現型フィルターを適用
+    // If `target_phenotype` is specified, apply the phenotype filter
     if (target_phenotype) {
         filteredElements = filteredElements
             .filter((item) => item.data.annotation?.some((annotation) => annotation.includes(target_phenotype)))
-            .filter((item) => item.data.annotation.length > 2); // 3つ以上の表現型を持つノードのみを表示
+            .filter((item) => item.data.annotation.length > 2); // Display only nodes with three or more phenotypes
     }
 
-    // Cytoscape のデータを更新
-    cy.elements().remove(); // 既存の要素を削除
-    cy.add(filteredElements); // 新しい要素を追加
-    filterElements(); // 孤立ノードを削除し、可視化更新
+    // Update Cytoscape data
+    cy.elements().remove(); // Remove existing elements
+    cy.add(filteredElements); // Add new elements
+    filterElements(); // Remove isolated nodes and refresh visualization
 }

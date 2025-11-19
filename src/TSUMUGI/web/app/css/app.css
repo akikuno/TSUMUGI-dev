@@ -607,7 +607,7 @@ button.menu-toggle-icon {
         transition: left 0.3s ease;
     }
 
-    /* 右パネルを左パネルの中に移動 */
+    /* Move the right panel inside the left panel */
     .right-control-panel-container {
         position: static;
         width: 100%;
@@ -621,7 +621,7 @@ button.menu-toggle-icon {
         left: 0;
     }
 
-    /* 右パネルを非表示にしない */
+    /* Keep the right panel visible */
     .body-container {
         flex-direction: column;
     }
@@ -629,8 +629,8 @@ button.menu-toggle-icon {
     .cy-container {
         margin: 20px 0;
         width: 90%;
-        height: 400px; /* 固定高さを設定してCytoscapeが初期化できるようにする */
-        min-height: 400px; /* 最小高さも設定 */
+        height: 400px; /* Fixed height so Cytoscape can initialize properly */
+        min-height: 400px; /* Also set the minimum height */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -638,7 +638,7 @@ button.menu-toggle-icon {
 
     .cy {
         width: 100%;
-        height: 350px; /* モバイルでの固定高さ */
+        height: 350px; /* Fixed height for mobile */
         min-height: 350px;
     }
 

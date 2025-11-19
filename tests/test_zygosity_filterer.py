@@ -33,7 +33,7 @@ def base_input():
 
 
 def build_expected_list(kept_terms):
-    """単一レコード入力を前提とした期待出力（yield される dict）のリストを構築。"""
+    """Build the expected (yielded dict) list assuming a single-record input."""
     if not kept_terms:
         return []
     all_terms = {
@@ -71,15 +71,15 @@ def build_expected_list(kept_terms):
         ("Homo", True, False, {"abnormal embryo size"}),
         ("Hetero", True, False, {"preweaning lethality"}),
         ("Hemi", True, False, {"decreased survival"}),
-        # --- drop-only（指定以外を保持）---
+        # --- drop-only (keep entries other than specified) ---
         ("Homo", False, True, {"preweaning lethality", "decreased survival"}),
         ("Hetero", False, True, {"abnormal embryo size", "decreased survival"}),
         ("Hemi", False, True, {"abnormal embryo size", "preweaning lethality"}),
-        # --- both flags on → 等しい（keep）＋ 等しくない（drop） ⇒ 全て保持 ---
+        # --- both flags on → keep matching + drop non-matching ⇒ keep everything ---
         ("Homo", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
         ("Hetero", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
         ("Hemi", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
-        # --- neither → 何も出力しない ---
+        # --- neither flag on → produce no output ---
         ("Homo", False, False, set()),
         ("Hetero", False, False, set()),
         ("Hemi", False, False, set()),

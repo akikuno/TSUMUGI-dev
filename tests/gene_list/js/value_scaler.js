@@ -4,7 +4,7 @@ export function scaleToOriginalRange(value, minValue, maxValue) {
 }
 
 export function scaleValue(value, minValue, maxValue, minScale, maxScale) {
-    // スケールをminScaleとmaxScaleの範囲に変換
+    // Convert the scale to the range between minScale and maxScale
     if (minValue == maxValue) {
         return (maxScale + minScale) / 2;
     }
@@ -12,10 +12,10 @@ export function scaleValue(value, minValue, maxValue, minScale, maxScale) {
 }
 
 export function getColorForValue(value) {
-    // value を1-10の範囲から0-1の範囲に変換
+    // Map value from the 1-10 range to a 0-1 range
     const ratio = (value - 1) / (10 - 1);
 
-    // Light Yellow から Orange へのグラデーション
+    // Gradient from Light Yellow to Orange
     const r1 = 248,
         g1 = 229,
         b1 = 140; // Light Yellow

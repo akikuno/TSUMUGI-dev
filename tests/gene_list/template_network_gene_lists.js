@@ -11,7 +11,7 @@ import { loadJSONGz, loadJSON } from "./js/data_loader.js";
 // ############################################################################
 
 
-// localStorage からデータを取得
+// Retrieve data from localStorage
 const elements = JSON.parse(localStorage.getItem('elements'));
 
 const url_map_symbol_to_id =
@@ -103,7 +103,7 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 });
 
 // =============================================================================
-// スライダーによる初期化とフィルター関数
+// Slider-driven initialization and filter function
 // =============================================================================
 
 // --------------------------------------------------------
@@ -138,10 +138,10 @@ function filterElements() {
         }
     });
 
-    // calculateConnectedComponentsを利用して連結成分を取得
+    // Use calculateConnectedComponents to obtain connected components
     const connected_component = calculateConnectedComponents(cy);
 
-    // node_colorが1のノードを含む連結成分のみを選択
+    // Select only connected components that contain nodes with node_color equal to 1
     const componentsWithNodeColor1 = connected_component.filter((component) => {
         return Object.keys(component).some((nodeLabel) => {
             const node = cy.$(`node[label="${nodeLabel}"]`);
@@ -149,11 +149,11 @@ function filterElements() {
         });
     });
 
-    // すべてのノードとエッジを一旦非表示にする
+    // Temporarily hide all nodes and edges
     cy.nodes().style("display", "none");
     cy.edges().style("display", "none");
 
-    // node_colorが1のノードを含む連結成分のみ表示
+    // Show only connected components that contain nodes with node_color equal to 1
     componentsWithNodeColor1.forEach((component) => {
         Object.keys(component).forEach((nodeLabel) => {
             const node = cy.$(`node[label="${nodeLabel}"]`);
@@ -190,17 +190,17 @@ edgeSlider.noUiSlider.on("update", function (values) {
 });
 
 // ############################################################################
-// 遺伝型・正特異的フィルタリング関数
+// Genotype/sex-specific filtering function
 // ############################################################################
 
 let target_phenotype = "";
 
-// フィルタリング関数のラッパー
+// Wrapper for the filtering function
 function applyFiltering() {
     filterElementsByGenotypeAndSex(elements, target_phenotype, cy, filterElements);
 }
 
-// フォーム変更時にフィルタリング関数を実行
+// Run the filtering function whenever the forms change
 document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
 document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
 
