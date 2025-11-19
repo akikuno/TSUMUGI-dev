@@ -141,10 +141,10 @@ def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
                 yield json.loads(line)
         return
 
+    # file / gzip
     p = Path(path_jsonl)
     open_func = gzip.open if p.suffix == ".gz" else open
 
-    # file / gzip
     with open_func(p, "rt", encoding="utf-8") as f:
         for line in f:
             if line.strip():

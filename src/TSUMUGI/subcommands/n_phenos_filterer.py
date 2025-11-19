@@ -4,6 +4,7 @@ from collections import Counter
 from pathlib import Path
 
 from tqdm import tqdm
+
 from TSUMUGI import io_handler
 
 
