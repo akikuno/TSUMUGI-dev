@@ -107,6 +107,7 @@ def main() -> None:
                 gene_list = set(Path(args.keep).read_text().splitlines())
             else:
                 gene_list = set(args.keep.split(","))
+
             if len(gene_list) == 0:
                 raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
 
