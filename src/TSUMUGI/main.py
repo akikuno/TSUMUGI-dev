@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import logging
 import sys
+from pathlib import Path
 
 from TSUMUGI import argparser, core, validator
 from TSUMUGI.subcommands import (
+    genes_filterer,
     graphml_builder,
     life_stage_filterer,
     mp_filterer,
@@ -97,24 +99,55 @@ def main() -> None:
             )
 
     # -----------------------------------------------------
+    # gene lists filterer
+    # -----------------------------------------------------
+    if args.cmd == "genes":
+        if args.keep:
+            if Path(args.keep).is_file():
+                gene_list = set(Path(args.keep).read_text().splitlines())
+            else:
+                gene_list = set(args.keep.split(","))
+            if len(gene_list) == 0:
+                raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
+
+            logging.info(f"Keeping phenotype annotations matching {len(gene_list)} genes")
+            genes_filterer.filter_annotations_by_genes(
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                gene_list=gene_list,
+                keep=True,
+            )
+        elif args.drop:
+            if Path(args.drop).is_file():
+                gene_list = set(Path(args.drop).read_text().splitlines())
+            else:
+                gene_list = set(args.drop.split(","))
+            if len(gene_list) == 0:
+                raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
+
+            logging.info(f"Dropping phenotype annotations matching {len(gene_list)} genes")
+            genes_filterer.filter_annotations_by_genes(
+                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                gene_list=gene_list,
+                drop=True,
+            )
+
+    # -----------------------------------------------------
     # Life stage filterer
     # -----------------------------------------------------
     if args.cmd == "life-stage":
         if args.keep:
             logging.info(f"Keeping phenotype annotations matching life stage: {args.keep}")
-            keep = True
             life_stage_filterer.filter_annotations_by_life_stage(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 life_stage=args.keep,
-                keep=keep,
+                keep=True,
             )
         elif args.drop:
             logging.info(f"Dropping phenotype annotations matching life stage: {args.drop}")
-            drop = True
             life_stage_filterer.filter_annotations_by_life_stage(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 life_stage=args.drop,
-                drop=drop,
+                drop=True,
             )
 
     # -----------------------------------------------------
@@ -123,19 +156,17 @@ def main() -> None:
     if args.cmd == "sex":
         if args.keep:
             logging.info(f"Keeping phenotype annotations matching sex: {args.keep}")
-            keep = True
             sex_filterer.filter_annotations_by_sex(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 sex=args.keep,
-                keep=keep,
+                keep=True,
             )
         elif args.drop:
             logging.info(f"Dropping phenotype annotations matching sex: {args.drop}")
-            drop = True
             sex_filterer.filter_annotations_by_sex(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 sex=args.drop,
-                drop=drop,
+                drop=True,
             )
 
     # -----------------------------------------------------
@@ -144,19 +175,17 @@ def main() -> None:
     if args.cmd == "zygosity":
         if args.keep:
             logging.info(f"Keeping phenotype annotations matching zygosity: {args.keep}")
-            keep = True
             zygosity_filterer.filter_annotations_by_zygosity(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 zygosity=args.keep,
-                keep=keep,
+                keep=True,
             )
         elif args.drop:
             logging.info(f"Dropping phenotype annotations matching zygosity: {args.drop}")
-            drop = True
             zygosity_filterer.filter_annotations_by_zygosity(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 zygosity=args.drop,
-                drop=drop,
+                drop=True,
             )
 
     # -----------------------------------------------------
