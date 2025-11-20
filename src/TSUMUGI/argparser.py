@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as pkg_version
+from importlib.resources import files
 from pathlib import Path
 
 
@@ -72,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
         "-m",
         "--mp_obo",
         type=str,
-        required=True,
+        required=False,
         help=(
             "Path to Mammalian Phenotype ontology file (mp.obo).\n"
             "Used to map and infer hierarchical relationships among MP terms.\n"
@@ -85,7 +86,7 @@ def build_parser() -> argparse.ArgumentParser:
         "-i",
         "--impc_phenodigm",
         type=str,
-        required=True,
+        required=False,
         help=(
             "Path to IMPC Phenodigm annotation file (impc_phenodigm.csv).\n"
             "This file links mouse phenotypes to human diseases based on Phenodigm similarity.\n"
@@ -243,6 +244,49 @@ def build_parser() -> argparse.ArgumentParser:
             "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
             "Required when using '-g/--genewise' to determine genes that were measured.\n"
         ),
+    )
+
+    # =========================================================
+    # genes (Filter by gene symbols)
+    # =========================================================
+
+    genes_parser = subparsers.add_parser(
+        "genes",
+        help="Filter gene pairs by gene symbols of phenotype annotations",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    group_genes = genes_parser.add_mutually_exclusive_group(required=True)
+    group_genes.add_argument(
+        "-k",
+        "--keep",
+        metavar="GENE_SYMBOL",
+        help="Keep ONLY annotations with the specified gene symbols (comma-separated or path of text file)",
+    )
+    group_genes.add_argument(
+        "-d",
+        "--drop",
+        metavar="GENE_SYMBOL",
+        help="Drop annotations with the specified gene symbols (comma-separated or path of text file)",
+    )
+
+    genes_parser.add_argument(
+        "--in",
+        dest="path_pairwise",
+        type=str,
+        required=False,
+        help=(
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+        ),
+    )
+
+    genes_parser.add_argument(
+        "--out",
+        dest="outfile",
+        type=str,
+        required=False,
+        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
     )
 
     # =========================================================
@@ -459,9 +503,27 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+###############################################################################
+# main
+###############################################################################
+
+
 def parse_args(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.cmd == "run":
+        # ------------------------------------------------------------
+        # If args.mp_obo or args.impc_phenodigm are not provided,
+        # use the built-in files inside the TSUMUGI/data directory.
+        # ------------------------------------------------------------
+        data_dir = files("TSUMUGI") / "data"
+
+        if not args.mp_obo:
+            args.mp_obo = str(data_dir / "mp.obo")
+
+        if not args.impc_phenodigm:
+            args.impc_phenodigm = str(data_dir / "impc_phenodigm.csv")
 
     # When using -e / --exclude with the mp subcommand,
     # the --path_genewise option is required.
