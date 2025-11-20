@@ -76,7 +76,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Path to Mammalian Phenotype ontology file (mp.obo).\n"
             "Used to map and infer hierarchical relationships among MP terms.\n"
-            "If not available, download '/mp.obo' manually from:\n"
+            "If not available, download 'mp.obo' manually from:\n"
             "https://obofoundry.org/ontology/mp.html"
         ),
     )
@@ -138,11 +138,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     mp_parser.add_argument(
-        "-o",
-        "--obo",
+        "-m",
+        "--mp_obo",
         type=str,
-        required=True,
-        help=("Path to ontology file.\nExample: ./data/mp.obo"),
+        required=False,
+        help=(
+            "Path to Mammalian Phenotype ontology file (mp.obo).\n"
+            "Used to map and infer hierarchical relationships among MP terms.\n"
+            "If not available, download 'mp.obo' manually from:\n"
+            "https://obofoundry.org/ontology/mp.html"
+        ),
     )
 
     mp_parser.add_argument(
@@ -516,13 +521,11 @@ def parse_args(argv=None):
         # If args.mp_obo or args.impc_phenodigm are not provided,
         # use the built-in files inside the TSUMUGI/data directory.
         # ------------------------------------------------------------
-        data_dir = files("TSUMUGI") / "data"
-
         if not args.mp_obo:
-            args.mp_obo = str(data_dir / "mp.obo")
+            args.mp_obo = str(files("TSUMUGI") / "data" / "mp.obo")
 
         if not args.impc_phenodigm:
-            args.impc_phenodigm = str(data_dir / "impc_phenodigm.csv")
+            args.impc_phenodigm = str(files("TSUMUGI") / "data" / "impc_phenodigm.csv")
 
     # When using -e / --exclude with the mp subcommand,
     # the --path_genewise option is required.
@@ -530,13 +533,17 @@ def parse_args(argv=None):
         parser.error(
             "mp: '-a/--path_genewise' is required when using '-e/--exclude'.\n"
             "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
-            "and showed no phenotype for the target MP term.\n"
         )
+        # ------------------------------------------------------------
+        # If args.mp_obo is not provided,
+        # use the built-in files inside the TSUMUGI/data directory.
+        # ------------------------------------------------------------
+        if not args.mp_obo:
+            args.mp_obo = str(files("TSUMUGI") / "data" / "mp.obo")
 
     # When using the n-phenos subcommand, at least one of --min or --max must be specified.
-    if args.cmd == "n-phenos":
-        if args.min is None and args.max is None:
-            parser.error("n-phenos: At least one of '--min' or '--max' must be specified.")
+    if args.cmd == "n-phenos" and args.min is None and args.max is None:
+        parser.error("n-phenos: At least one of '--min' or '--max' must be specified.")
 
     # When using -g / --genewise with the n-phenos subcommand,
     # the --genewise_annotations option is required.
