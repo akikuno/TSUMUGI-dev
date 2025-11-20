@@ -184,7 +184,11 @@ def build_webapp_network(genewise_path, pairwise_path):
     nodes = build_nodes(gene_to_records, all_genes)
 
     if len(nodes) > MAX_NODE_COUNT:
-        raise ValueError(f"Number of nodes ({len(nodes)}) exceeds limit ({MAX_NODE_COUNT})")
+        raise ValueError(
+            f"Number of nodes ({len(nodes)}) exceeds the maximum allowed ({MAX_NODE_COUNT}). "
+            "For large networks, please generate a GraphML file using the `tsumugi build-graphml` "
+            "command and visualize it with Cytoscape or another network visualization tool."
+        )
 
     edges = _build_edges(pairwise_similarity_annotations)
 

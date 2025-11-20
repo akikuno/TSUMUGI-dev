@@ -3,6 +3,7 @@ import sys
 from collections import defaultdict
 
 import networkx as nx
+
 from TSUMUGI import io_handler
 
 

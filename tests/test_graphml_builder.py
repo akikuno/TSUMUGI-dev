@@ -7,6 +7,7 @@ from TSUMUGI.subcommands import graphml_builder as gb
 # format_suffix
 ###############################################################################
 
+
 @pytest.mark.parametrize(
     "zygosity, life_stage, sexual_dimorphism, expected",
     [
@@ -24,6 +25,7 @@ def test_format_suffix(zygosity, life_stage, sexual_dimorphism, expected):
 ###############################################################################
 # build_nodes
 ###############################################################################
+
 
 @pytest.mark.parametrize(
     "records, expected",
@@ -81,10 +83,7 @@ def test_format_suffix(zygosity, life_stage, sexual_dimorphism, expected):
                 "GeneX": {
                     "label": "GeneX",
                     "effect_size": 1.0,
-                    "node_annotations": (
-                        "Phenotypes of GeneX KO mice\n"
-                        "- fused joints (Homo, Early)"
-                    ),
+                    "node_annotations": ("Phenotypes of GeneX KO mice\n- fused joints (Homo, Early)"),
                 }
             },
         ),
@@ -98,6 +97,7 @@ def test_build_nodes(records, expected):
 ###############################################################################
 # build_graph
 ###############################################################################
+
 
 @pytest.mark.parametrize(
     "pairwise_records, initial_nodes, expected_new_nodes, expected_edges",
@@ -165,8 +165,7 @@ def test_build_nodes(records, expected):
                     "id": "e0",
                     "weight": 10,
                     "edge_annotations": (
-                        "Shared phenotypes of GeneA and GeneC KOs (Similarity: 10)\n"
-                        "- some phenotype (Hetero, Late)"
+                        "Shared phenotypes of GeneA and GeneC KOs (Similarity: 10)\n- some phenotype (Hetero, Late)"
                     ),
                 }
             },

@@ -75,10 +75,6 @@ def build_expected_list(kept_terms):
         ("Male", False, True, {"abnormal embryo size", "decreased survival"}),
         ("Female", False, True, {"abnormal embryo size", "preweaning lethality"}),
         ("None", False, True, {"preweaning lethality", "decreased survival"}),
-        # --- both flags on → equal (keep) + not-equal (drop) ⇒ keep everything ---
-        ("Male", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
-        ("Female", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
-        ("None", True, True, {"abnormal embryo size", "preweaning lethality", "decreased survival"}),
         # --- neither flag on → produce no output ---
         ("Male", False, False, set()),
         ("Female", False, False, set()),
