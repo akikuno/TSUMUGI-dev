@@ -308,11 +308,13 @@ def run_pipeline(args) -> None:
     targetted_phenotypes = web_deployer.select_targetted_phenotypes(TEMPDIR, is_test=is_test)
     targetted_genes = web_deployer.select_targetted_genes(TEMPDIR, is_test=is_test)
 
-    web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
+    web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir, args.version)
 
-    web_deployer.generate_phenotype_pages(genewise_phenotype_significants, targetted_phenotypes, TEMPDIR, output_dir)
-    web_deployer.generate_gene_pages(genewise_phenotype_significants, targetted_genes, output_dir)
-    web_deployer.generate_genelist_page(output_dir)
+    web_deployer.generate_phenotype_pages(
+        genewise_phenotype_significants, targetted_phenotypes, TEMPDIR, output_dir, args.version
+    )
+    web_deployer.generate_gene_pages(genewise_phenotype_significants, targetted_genes, output_dir, args.version)
+    web_deployer.generate_genelist_page(output_dir, args.version)
 
     # Remove template directory for web app
     shutil.rmtree(output_dir / "template", ignore_errors=True)
