@@ -13,7 +13,7 @@ def exclude_specific_phenotype(
     path_pairwise_similarity_annotations: str | Path,
     path_genewise_phenotype_annotations: str | Path,
     path_obo: str | Path,
-    mp_term_id: set[str],
+    mp_term_id: str,
     life_stage: str | None = None,
     sex: str | None = None,
     zygosity: str | None = None,
@@ -26,7 +26,7 @@ def exclude_specific_phenotype(
     # If a gene exhibits a significant abnormal phenotype annotated to
     # the target mp_term_id or any of its ancestor/descendant terms,
     # the gene is classified as “having a phenotype.”
-    genewise_phenotype_annotations = io_handler.read_jsonl(Path(path_genewise_phenotype_annotations))
+    genewise_phenotype_annotations = list(io_handler.read_jsonl(Path(path_genewise_phenotype_annotations)))
     genes_with_phenotype = set()
     for record in genewise_phenotype_annotations:
         condition1 = record["mp_term_id"] == mp_term_id
@@ -44,7 +44,6 @@ def exclude_specific_phenotype(
     # For genes whose phenotype status remains undetermined in (1),
     # if a non-significant phenotype annotation exists for the target mp_term_id or any of
     # its ancestor/descendant terms, the gene is classified as “confirmed as having no phenotype.”
-    genewise_phenotype_annotations = io_handler.read_jsonl(Path(path_genewise_phenotype_annotations))
     genes_without_phenotype = set()
     for record in genewise_phenotype_annotations:
         if record["marker_symbol"] in genes_with_phenotype:
@@ -81,6 +80,7 @@ def include_specific_phenotype(
     ontology_terms = io_handler.parse_obo_file(path_obo)
     _, child_term_map = ontology_handler.build_term_hierarchy(ontology_terms)
     descendants_of_term_id = ontology_handler.find_all_descendant_terms(mp_term_id, child_term_map)
+    descendants_of_term_id.add(mp_term_id)
     descendants_of_term_name = {
         data["name"] for term_id, data in ontology_terms.items() if term_id in descendants_of_term_id
     }
