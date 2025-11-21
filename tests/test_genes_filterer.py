@@ -50,7 +50,7 @@ def test_filter_annotations_by_genes_parametrized(base_input, genes, keep, drop,
     out = list(
         _filter_annotations_by_genes(
             pairwise_similarity_annotations=base_input,
-            genes=genes,
+            gene_list=genes,
             keep=keep,
             drop=drop,
         )
@@ -62,7 +62,7 @@ def test_empty_input_yields_nothing():
     out = list(
         _filter_annotations_by_genes(
             pairwise_similarity_annotations=[],
-            genes={"GeneA"},
+            gene_list={"GeneA"},
             keep=True,
             drop=False,
         )
