@@ -20,8 +20,40 @@
 
 <!-- ############################################################ # -->
 
-## v0.4.0 (2025-11-12)
+## v0.5.0 (2025-11-22)
 
+## 🌟 New Features
+
+- CLI tooling suite added for offline/pipe-friendly workflows:  
+  - `tsumugi run` (main pipeline)  
+  - `tsumugi mp --include/--exclude`  
+  - `tsumugi n-phenos --pairwise --min --max`  
+  - `tsumugi n-phenos --genewise --min --max`  
+  - `tsumugi genes --keep --drop`  
+  - `tsumugi life-stage --keep --drop`  
+  - `tsumugi sex --keep --drop`  
+  - `tsumugi zygosity --keep --drop`  
+  - `tsumugi build-webapp`  
+  - `tsumugi build-graphml`
+
+## 📝 Documentation
+
+- README updated with CLI option descriptions and multilingual links (Japanese, Korean, Simplified/Traditional Chinese, Hindi, Indonesian, Vietnamese, Spanish, French, German, Portuguese).
+
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+<details>
+<summary> v0.4.0 (2025-11-12) </summary>
 
 ## 💥 Breaking
 
@@ -40,11 +72,9 @@
 
 ## 🌟 New Features
 
-
 + Expanded the phenotype similarity and severity scales from 0–10 to 1–100 so users get Phenodigm-level precision when scoring networks.  
   Issue: [#119](https://github.com/akikuno/TSUMUGI-dev/issues/119)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/91309d636ecaf285aeaaeca9320408b23bb1a3db)]  
-
 
 + Added a JPEG export mode alongside the existing PNG and SVG download options for Cytoscape.js views.  
   Issue: [#117](https://github.com/akikuno/TSUMUGI-dev/issues/117)  
@@ -86,17 +116,7 @@
 + Allow tooltips to be repositioned via touch interactions so tablet users can keep data in view.  
   Issue: [#97](https://github.com/akikuno/TSUMUGI-dev/issues/97)  
 
-
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
 </details>
-============================================================= -->
 
 
 <details>
@@ -165,7 +185,6 @@
 
 
 </details>
-
 
 
 <details>
