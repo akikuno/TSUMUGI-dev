@@ -295,6 +295,7 @@ def _convert_to_nodes_json(
     mp_term_name: str,
     gene_records_map: dict[str, list[dict[str, str | float]]],
     disease_annotations_composed: dict[str, set[str]],
+    hide_severity: bool = False,
 ) -> list[dict[str, dict[str, str | list[str] | int]]]:
     nodes_json = []
     gene_records_map_filtered = {gene: gene_records_map[gene] for gene in related_genes}
@@ -307,17 +308,18 @@ def _convert_to_nodes_json(
         diseases: set[str] = disease_annotations_composed.get(gene, set())
         node_color: int = next((r["effect_size"] for r in records if r["mp_term_name"] == mp_term_name), 1)
 
-        nodes_json.append(
-            {
-                "data": {
-                    "id": gene,
-                    "label": gene,
-                    "phenotype": phenotypes,
-                    "disease": list(diseases) if diseases else "",
-                    "node_color": node_color,
-                }
+        node = {
+            "data": {
+                "id": gene,
+                "label": gene,
+                "phenotype": phenotypes,
+                "disease": list(diseases) if diseases else "",
+                "node_color": node_color,
             }
-        )
+        }
+        if hide_severity:
+            node["data"]["hide_severity"] = True
+        nodes_json.append(node)
 
     return nodes_json
 
@@ -361,6 +363,8 @@ def build_phenotype_network_json(
     pair_similarity_annotations: dict[frozenset[str], dict[str, dict[str, dict[str, str] | int]]],
     disease_annotations_by_gene: dict[str, dict[str, str]],
     output_dir,
+    binary_phenotypes: set[str] | None = None,
+    hide_severity: bool = False,
 ) -> None:
     gene_records_map, pair_similarity_annotations_composed, disease_annotations_composed = _compose_dataset(
         records_significants, pair_similarity_annotations, disease_annotations_by_gene
@@ -386,8 +390,16 @@ def build_phenotype_network_json(
         if len(related_genes) > MAX_GENE_COUNT:
             related_genes = _filter_related_genes(records, related_genes, pair_similarity_annotations_composed)
 
+        is_binary = False
+        if binary_phenotypes:
+            is_binary = mp_term_name in binary_phenotypes
+
         nodes_json = _convert_to_nodes_json(
-            related_genes, mp_term_name, gene_records_map, disease_annotations_composed
+            related_genes,
+            mp_term_name,
+            gene_records_map,
+            disease_annotations_composed,
+            hide_severity=hide_severity or is_binary,
         )
         edges_json = _convert_to_edges_json(related_genes, pair_similarity_annotations_composed)
 
@@ -412,12 +424,13 @@ def _build_node_info(
     gene_records_map: dict[str, list[dict[str, str | float]]],
     disease_annotations_composed: dict[str, set[str]],
     target_gene: str,
+    hide_severity: bool = False,
 ) -> dict[str, dict[str, str | list[str] | float]]:
     phenotypes: list[str] = [r["phenotype"] for r in gene_records_map.get(gene, [])]
     diseases: set[str] = disease_annotations_composed.get(gene, set())
     node_color: int = 100 if target_gene == gene else 1
 
-    return {
+    node = {
         "data": {
             "id": gene,
             "label": gene,
@@ -426,6 +439,9 @@ def _build_node_info(
             "node_color": node_color,
         }
     }
+    if hide_severity:
+        node["data"]["hide_severity"] = True
+    return node
 
 
 def build_gene_network_json(
@@ -433,6 +449,7 @@ def build_gene_network_json(
     pair_similarity_annotations: dict[frozenset[str], dict[str, dict[str, str] | int]],
     disease_annotations_by_gene: dict[str, dict[str, str]],
     output_dir,
+    hide_severity: bool = True,
 ) -> None:
     gene_records_map, pair_similarity_annotations_composed, disease_annotations_composed = _compose_dataset(
         records_significants, pair_similarity_annotations, disease_annotations_by_gene
@@ -481,11 +498,15 @@ def build_gene_network_json(
             gene1, gene2 = pair
             if gene1 not in visited_genes:
                 visited_genes.add(gene1)
-                node_json = _build_node_info(gene1, gene_records_map, disease_annotations_composed, target_gene)
+                node_json = _build_node_info(
+                    gene1, gene_records_map, disease_annotations_composed, target_gene, hide_severity=hide_severity
+                )
                 nodes_json.append(node_json)
             if gene2 not in visited_genes:
                 visited_genes.add(gene2)
-                node_json = _build_node_info(gene2, gene_records_map, disease_annotations_composed, target_gene)
+                node_json = _build_node_info(
+                    gene2, gene_records_map, disease_annotations_composed, target_gene, hide_severity=hide_severity
+                )
                 nodes_json.append(node_json)
 
         pair_similarity_annotations_filtered = {

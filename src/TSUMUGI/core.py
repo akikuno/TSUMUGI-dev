@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import pickle
 import shutil
+from collections import defaultdict
 from collections.abc import Iterator
 from datetime import date
 from pathlib import Path
@@ -226,6 +227,15 @@ def run_pipeline(args) -> None:
 
     logging.info("Building phenotype network JSON files...")
 
+    # Detect binary phenotypes (effect_size in {0,1}); include both spaced and underscored names
+    binary_phenotypes = set()
+    phenotype_effects = defaultdict(set)
+    for rec in genewise_phenotype_significants:
+        phenotype_effects[rec["mp_term_name"]].add(rec.get("effect_size", 0))
+    for mp_term_name, effects in phenotype_effects.items():
+        if effects and all(es in (0, 1) for es in effects):
+            binary_phenotypes.add(mp_term_name)
+
     output_dir = Path(TEMPDIR / "network" / "phenotype")
     output_dir.mkdir(parents=True, exist_ok=True)
     network_constructor.build_phenotype_network_json(
@@ -233,6 +243,7 @@ def run_pipeline(args) -> None:
         pairwise_similarity_annotations_with_shared_phenotype,
         disease_annotations_by_gene,
         output_dir,
+        binary_phenotypes=binary_phenotypes,
     )
 
     logging.info("Building gene network JSON files...")

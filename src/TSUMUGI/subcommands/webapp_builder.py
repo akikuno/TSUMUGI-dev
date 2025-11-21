@@ -43,7 +43,7 @@ def _format_suffix(zygosity: str, life_stage: str, sexual_dimorphism: str) -> st
     return f"({', '.join(parts)})"
 
 
-def build_nodes(gene_to_records, all_genes):
+def build_nodes(gene_to_records, all_genes, hide_severity: bool = False):
     """
     Embed the following formatted text into data.annotation:
         Phenotypes of {GENE} KO mice
@@ -86,17 +86,19 @@ def build_nodes(gene_to_records, all_genes):
             lines.append("Associated Human Diseases")
             lines += [f"- {d}" for d in disease_lines]
 
-        nodes.append(
-            {
-                "data": {
-                    "id": gene,
-                    "label": gene,
-                    "phenotype": phenotype_lines,
-                    "disease": disease_lines if disease_lines else "",
-                    "node_color": 1,
-                }
+        node = {
+            "data": {
+                "id": gene,
+                "label": gene,
+                "phenotype": phenotype_lines,
+                "disease": disease_lines if disease_lines else "",
+                "node_color": 1,
             }
-        )
+        }
+        if hide_severity:
+            node["data"]["hide_severity"] = True
+
+        nodes.append(node)
 
     return nodes
 
@@ -164,7 +166,7 @@ def _build_symbol_to_id_map(gene_to_records: dict[str, list[dict]]) -> dict[str,
     return symbol_to_id
 
 
-def build_webapp_network(genewise_path, pairwise_path):
+def build_webapp_network(genewise_path, pairwise_path, hide_severity: bool = False):
     """Return (nodes, edges)."""
     # Read pairwise annotations and collect all genes
     pairwise_similarity_annotations: list[dict] = list(io_handler.read_jsonl(pairwise_path))
@@ -181,7 +183,7 @@ def build_webapp_network(genewise_path, pairwise_path):
         gene_to_records[rec["marker_symbol"]].append(rec)
     gene_to_records = dict(gene_to_records)
 
-    nodes = build_nodes(gene_to_records, all_genes)
+    nodes = build_nodes(gene_to_records, all_genes, hide_severity=hide_severity)
 
     if len(nodes) > MAX_NODE_COUNT:
         raise ValueError(
@@ -203,7 +205,8 @@ def build_and_save_webapp_network(genewise_path, pairwise_path, output_dir):
     json_path = output_dir / "network.json.gz"
     network_label = "Gene List"
 
-    nodes, edges, symbol_to_id = build_webapp_network(genewise_path, pairwise_path)
+    # For gene/gene list views, we hide severity; caller (TSUMUGI main) can pass False for phenotype mode
+    nodes, edges, symbol_to_id = build_webapp_network(genewise_path, pairwise_path, hide_severity=True)
     elements = nodes + edges
     with gzip.open(json_path, "wt", encoding="utf-8") as f:
         json.dump(elements, f, indent=4)
