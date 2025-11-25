@@ -8,13 +8,13 @@
 [![DOI](https://zenodo.org/badge/441025227.svg)](https://doi.org/10.5281/zenodo.14957711)
 [![お問い合わせ](https://img.shields.io/badge/%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B-923DE2)](https://forms.gle/ME8EJZZHaRNgKZ979)
 
-**TSUMUGI（Trait-driven Surveillance for Mutation-based Gene module Identification）**は、[国際マウス表現型解析コンソーシアム（IMPC）](https://www.mousephenotype.org/)によるノックアウト(KO)マウスの表現型データを活用し、**表現型の類似性に基づいて遺伝子モジュールを抽出・可視化するWebツール**です。
+**TSUMUGI** (Trait-driven Surveillance for Mutation-based Gene module Identification)は、[国際マウス表現型解析コンソーシアム（IMPC）](https://www.mousephenotype.org/)によるノックアウト(KO)マウスの表現型データを活用し、**表現型の類似性に基づいて遺伝子モジュールを抽出・可視化するWebツール**です。
 
 Web上で誰でも利用できる公開ツールとして提供されています👇️  
 
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-**TSUMUGI(紡ぎ)**は「表現型を織りなす遺伝子群を紡ぎ出す」という動機に由来します。  
+TSUMUGI(**紡ぎ**)は「表現型を織りなす遺伝子群を紡ぎ出す」という動機に由来します。  
 
 # 📖[TSUMUGI](https://larc-tsukuba.github.io/tsumugi/)の使い方
 
