@@ -51,13 +51,15 @@ function createTooltip(
     if (event.target.isNode()) {
         const geneID = map_symbol_to_id[data.id] || "UNKNOWN";
         const url_impc = `https://www.mousephenotype.org/data/genes/${geneID}`;
+        const shouldHideSeverity = Boolean(data.hide_severity);
         const rawSeverity = Number.isFinite(data.original_node_color) ? data.original_node_color : data.node_color;
         const nodeColorSet = Array.isArray(allNodeColors) ? new Set(allNodeColors) : new Set();
         const uniqueValues = [...nodeColorSet];
         const isBinary =
             uniqueValues.length === 1 &&
             ["0", "1", "100"].includes(String(Math.round(Number(uniqueValues[0]))));
-        const severityValue = !isBinary && Number.isFinite(rawSeverity) ? Math.round(rawSeverity) : null;
+        const severityValue =
+            !shouldHideSeverity && !isBinary && Number.isFinite(rawSeverity) ? Math.round(rawSeverity) : null;
         const severityText = severityValue !== null ? ` (Severity: ${severityValue})` : "";
         tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b><br>`;
         tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);

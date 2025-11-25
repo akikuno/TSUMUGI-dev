@@ -62,7 +62,7 @@ def _prepare_directories(output_dir: str | Path) -> None:
     Path(output_dir / "app" / "genelist").mkdir(parents=True, exist_ok=True)
 
 
-def _generate_index_html(output_dir: str | Path) -> None:
+def _generate_index_html(output_dir: str | Path, TSUMUGI_VERSION: str) -> None:
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "index.html"
@@ -73,6 +73,7 @@ def _generate_index_html(output_dir: str | Path) -> None:
             for line in src:
                 if "REMOVE_THIS_LINE" in line:
                     continue
+                line = line.replace("TSUMUGI_VERSION", TSUMUGI_VERSION)
                 dst.write(line)
 
 
@@ -154,12 +155,14 @@ def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
         shutil.copy(temp_file, output_dir / file_name)
 
 
-def prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, output_dir: str | Path) -> None:
+def prepare_files(
+    targetted_phenotypes, targetted_genes, TEMPDIR: Path, output_dir: str | Path, TSUMUGI_VERSION: str
+) -> None:
     _prepare_directories(output_dir)
     _copy_directories(output_dir)
     _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
     _copy_webapp_files(TEMPDIR, output_dir)
-    _generate_index_html(output_dir)
+    _generate_index_html(output_dir, TSUMUGI_VERSION)
 
 
 ###########################################################
@@ -201,7 +204,12 @@ def _generate_simple_html(template_path, output_path, replacements):
 
 
 def _generate_phenotype_html(
-    mp_term_name_underscored: str, mp_term_name: str, impc_url_phenotype: str, mode: str, output_dir: str
+    mp_term_name_underscored: str,
+    mp_term_name: str,
+    impc_url_phenotype: str,
+    mode: str,
+    output_dir: str,
+    TSUMUGI_VERSION: str,
 ) -> None:
     for part in ["body-container", "cy-container"]:
         template_path = f"{output_dir}/template/template-app-html/{part}.html"
@@ -232,6 +240,7 @@ def _generate_phenotype_html(
         .replace("XXX_H1", _read_file("/tmp/header.html"))
         .replace("XXX_BODY_CONTAINER", _read_file("/tmp/body-container.html"))
         .replace("XXX_CY_CONTAINER", _read_file("/tmp/cy-container.html"))
+        .replace("TSUMUGI_VERSION", TSUMUGI_VERSION)
     )
     _write_file(f"{output_dir}/app/phenotype/{mp_term_name_underscored}.html", final_html)
 
@@ -274,7 +283,9 @@ def _generate_phenotype_javascript(
     _write_file(f"{output_dir}/app/phenotype/{mp_term_name_underscored}.js", final_js)
 
 
-def generate_phenotype_pages(records_significants, targetted_phenotypes, TEMPDIR: Path, output_dir) -> None:
+def generate_phenotype_pages(
+    records_significants, targetted_phenotypes, TEMPDIR: Path, output_dir, TSUMUGI_VERSION: str
+) -> None:
     map_mp_term_name_to_impc_url_phenotype = {}
     for record in records_significants:
         mp_term_name = record["mp_term_name"]
@@ -296,7 +307,7 @@ def generate_phenotype_pages(records_significants, targetted_phenotypes, TEMPDIR
             else "non-binary-phenotype"
         )
 
-        _generate_phenotype_html(mp_term_name_underscored, mp_term_name, impc_url, mode, output_dir)
+        _generate_phenotype_html(mp_term_name_underscored, mp_term_name, impc_url, mode, output_dir, TSUMUGI_VERSION)
         _generate_phenotype_javascript(mp_term_name_underscored, mp_term_name, mode, output_dir)
 
 
@@ -305,7 +316,7 @@ def generate_phenotype_pages(records_significants, targetted_phenotypes, TEMPDIR
 # ---------------------------------------------------------
 
 
-def _generate_gene_html(gene_symbol, impc_url_gene, output_dir):
+def _generate_gene_html(gene_symbol, impc_url_gene, output_dir, TSUMUGI_VERSION: str) -> None:
     for part in ["body-container", "cy-container"]:
         template_path = f"{output_dir}/template/template-app-html/{part}.html"
         output_path = f"/tmp/{part}.html"
@@ -333,6 +344,7 @@ def _generate_gene_html(gene_symbol, impc_url_gene, output_dir):
         .replace("XXX_H1", _read_file("/tmp/header.html"))
         .replace("XXX_BODY_CONTAINER", _read_file("/tmp/body-container.html"))
         .replace("XXX_CY_CONTAINER", _read_file("/tmp/cy-container.html"))
+        .replace("TSUMUGI_VERSION", TSUMUGI_VERSION)
     )
 
     _write_file(f"{output_dir}/app/genesymbol/{gene_symbol}.html", final_html)
@@ -368,7 +380,7 @@ def _generate_gene_javascript(gene_symbol: str, output_dir: str | Path) -> None:
     _write_file(f"{output_dir}/app/genesymbol/{gene_symbol}.js", final_js)
 
 
-def generate_gene_pages(records_significants, targetted_gene_symbols, output_dir) -> None:
+def generate_gene_pages(records_significants, targetted_gene_symbols, output_dir, TSUMUGI_VERSION: str) -> None:
     map_marker_symbol_to_impc_url_gene = {}
     for record in records_significants:
         marker_symbol = record["marker_symbol"]
@@ -378,7 +390,7 @@ def generate_gene_pages(records_significants, targetted_gene_symbols, output_dir
 
     for gene_symbol in tqdm(targetted_gene_symbols, desc="Processing gene symbols"):
         impc_url_gene = map_marker_symbol_to_impc_url_gene.get(gene_symbol)
-        _generate_gene_html(gene_symbol, impc_url_gene, output_dir)
+        _generate_gene_html(gene_symbol, impc_url_gene, output_dir, TSUMUGI_VERSION)
         _generate_gene_javascript(gene_symbol, output_dir)
 
 
@@ -387,7 +399,7 @@ def generate_gene_pages(records_significants, targetted_gene_symbols, output_dir
 # ---------------------------------------------------------
 
 
-def _generate_genelist_html(output_dir: str | Path) -> None:
+def _generate_genelist_html(output_dir: str | Path, TSUMUGI_VERSION: str) -> None:
     for part in ["body-container", "cy-container"]:
         template_path = f"{output_dir}/template/template-app-html/{part}.html"
         output_path = f"/tmp/{part}.html"
@@ -415,6 +427,7 @@ def _generate_genelist_html(output_dir: str | Path) -> None:
         .replace("XXX_H1", _read_file("/tmp/header.html"))
         .replace("XXX_BODY_CONTAINER", _read_file("/tmp/body-container.html"))
         .replace("XXX_CY_CONTAINER", _read_file("/tmp/cy-container.html"))
+        .replace("TSUMUGI_VERSION", TSUMUGI_VERSION)
     )
 
     _write_file(f"{output_dir}/app/genelist/network_genelist.html", final_html)
@@ -447,6 +460,6 @@ def _generate_genelist_javascript(output_dir: str | Path) -> None:
     _write_file(f"{output_dir}/app/genelist/network_genelist.js", final_js)
 
 
-def generate_genelist_page(output_dir) -> None:
-    _generate_genelist_html(output_dir)
+def generate_genelist_page(output_dir, TSUMUGI_VERSION: str) -> None:
+    _generate_genelist_html(output_dir, TSUMUGI_VERSION)
     _generate_genelist_javascript(output_dir)

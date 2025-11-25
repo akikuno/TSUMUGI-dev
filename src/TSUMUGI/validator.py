@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from matplotlib.pylab import record
-
 from TSUMUGI import io_handler
 
 
@@ -25,7 +23,7 @@ def validate_statistical_results(file_path: str) -> None:
     record_columns = next(records).keys()
     missing_columns = columns - record_columns
     if missing_columns:
-        raise ValueError(f"Invalid file: Missing columns in record {record}: {missing_columns} in {file_path}")
+        raise ValueError(f"Invalid file: Missing columns {missing_columns} in {file_path}")
 
 
 def validate_obo_file(file_path: str) -> None:
@@ -64,4 +62,4 @@ def validate_phenodigm_file(file_path: str) -> None:
     record_columns = next(io_handler.load_csv_as_dicts(file_path)).keys()
     missing_columns = columns - record_columns
     if missing_columns:
-        raise ValueError(f"Invalid file: Missing columns in record {record}: {missing_columns} in {file_path}")
+        raise ValueError(f"Invalid file: Missing {missing_columns} in {file_path}")

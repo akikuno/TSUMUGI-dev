@@ -206,7 +206,9 @@ def main() -> None:
         logging.info("Building webapp network from pairwise similarity annotations")
 
         webapp_builder.build_and_save_webapp_network(
-            genewise_path=args.path_genewise, pairwise_path=args.path_pairwise or sys.stdin, output_dir=args.output_dir
+            genewise_path=args.path_genewise,
+            pairwise_path=args.path_pairwise or sys.stdin,
+            output_dir=args.output_dir,
         )
 
 

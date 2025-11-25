@@ -112,9 +112,33 @@ def test_genewise_phenotype_annotations_content():
             "sexual_dimorphism": "Male",
             "marker_symbol": "GeneD",
         },  # Obsolete term
-        {"mp_term_name": "vertebral transformation", "mp_term_id": "MP:0000002", "significant": False, "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male", "marker_symbol": "GeneD"},
-        {"mp_term_name": "some other phenotype", "mp_term_id": "MP:0000004", "significant": False, "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male", "marker_symbol": "GeneE"},
-        {"mp_term_name": "vertebral transformation", "mp_term_id": "MP:0000002", "significant": False, "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male", "marker_symbol": "GeneE"}, # Added for GeneE to be 'without phenotype'
+        {
+            "mp_term_name": "vertebral transformation",
+            "mp_term_id": "MP:0000002",
+            "significant": False,
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Male",
+            "marker_symbol": "GeneD",
+        },
+        {
+            "mp_term_name": "some other phenotype",
+            "mp_term_id": "MP:0000004",
+            "significant": False,
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Male",
+            "marker_symbol": "GeneE",
+        },
+        {
+            "mp_term_name": "vertebral transformation",
+            "mp_term_id": "MP:0000002",
+            "significant": False,
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Male",
+            "marker_symbol": "GeneE",
+        },  # Added for GeneE to be 'without phenotype'
     ]
 
 
@@ -175,7 +199,7 @@ def test_pairwise_similarity_annotations_content():
                 "random phenotype": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"},
             },
             "phenotype_similarity_score": 80,
-        }, # This pair should be output
+        },  # This pair should be output
         {
             "gene1_symbol": "GeneX",
             "gene2_symbol": "GeneY",

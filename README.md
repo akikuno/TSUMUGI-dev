@@ -1,244 +1,283 @@
 <p align="center">
     <a href="https://larc-tsukuba.github.io/tsumugi/" target="_blank">
-        <img src="image/tsumugi-logo.jpg" alt="Tsumugi Logo" width="80%">
+        <img src="https://raw.githubusercontent.com/akikuno/TSUMUGI-dev/refs/heads/main/image/tsumugi-logo.jpg" alt="Tsumugi Logo" width="80%">
     </a>
 </p>
 
 [![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
-[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi/pytest.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi/actions)
 [![DOI](https://zenodo.org/badge/441025227.svg)](https://doi.org/10.5281/zenodo.14957711)
 [![Contact](https://img.shields.io/badge/Contact-923DE2)](https://forms.gle/ME8EJZZHaRNgKZ979)
 
+Translations: [日本語](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_JP.md) | [한국어](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_KR.md) | [简体中文](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_ZH_CN.md) | [繁體中文](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_ZH_TW.md) | [हिन्दी](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_HI.md) | [Bahasa Indonesia](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_ID.md) | [Tiếng Việt](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_VN.md) | [Español](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_ES.md) | [Français](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_FR.md) | [Deutsch](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_DE.md) | [Português](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_PT.md)
 
-[日本語版 README はこちら](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_JP.md)
+**TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** is a web tool that uses knockout (KO) mouse phenotype data from the [International Mouse Phenotyping Consortium (IMPC)](https://www.mousephenotype.org/) to **extract and visualize gene modules based on phenotypic similarity**.  
 
-**TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** is a web tool that leverages knockout (KO) mouse phenotype data from the [International Mouse Phenotyping Consortium (IMPC)](https://www.mousephenotype.org/) to **extract and visualize gene modules based on phenotypic similarity**.
+**TSUMUGI (紡ぎ)** comes from the idea of “weaving together gene groups that form phenotypes.”
 
-The tool is publicly available online for anyone to use 👇️  
+This web app is available to everyone online👇️  
 
-🔗 https://larc-tsukuba.github.io/tsumugi/
-
-**TSUMUGI** derives from the Japanese concept of "weaving together gene groups that form phenotypes."
-
+🔗https://larc-tsukuba.github.io/tsumugi/
 
 # 📖 How to Use TSUMUGI
 
-## 💬 Top Page
-
-TSUMUGI supports three types of input:
+TSUMUGI supports three kinds of input.
 
 ### 1. Phenotype
+Enter a phenotype of interest to search for **genes whose KO mice have similar overall phenotype profiles**.  
+Phenotype names follow [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology).
 
-When you input a phenotype of interest, TSUMUGI searches for **gene groups with similar overall phenotype profiles** among genes whose KO mice exhibit that phenotype.  
-Phenotype names are based on [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology).
-
-List of currently searchable phenotypes in TSUMUGI:  
-👉 [Phenotype List](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
+👉 [Phenotype list](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
 ### 2. Gene
+Specify one gene to search for **other genes whose KO mice show similar phenotypes**.  
+Gene symbols follow [MGI](http://www.informatics.jax.org/).
 
-When you specify a single gene, TSUMUGI searches for **other gene groups whose KO mice have similar phenotype profiles** to that gene's KO mice.  
-Gene names follow gene symbols registered in [MGI](http://www.informatics.jax.org/).
-
-List of currently searchable gene names in TSUMUGI:  
-👉 [Gene List](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
+👉 [Gene list](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
 ### 3. Gene List
+Paste multiple genes (one per line). This extracts phenotypically similar genes **among the genes in the list**.
 
-Accepts input of multiple genes.  
-Gene lists should be entered separated by line breaks.  
+> [!CAUTION]  
+> If no similar genes are found: `No similar phenotypes were found among the entered genes.`  
+> If more than 200 similar genes are found: `Too many genes submitted. Please limit the number to 200 or fewer.`
 
-> [!NOTE]
-> Gene List differs from single Gene input in that it extracts phenotypically similar genes **among the genes within the list**.
-
-> [!CAUTION]
-> **If no phenotypically similar genes are found**,
-> `No similar phenotypes were found among the entered genes.` alert will be displayed and processing will stop.
->
-> **If phenotypically similar genes exceed 200**,
-> `Too many genes submitted. Please limit the number to 200 or fewer.` alert will be displayed and processing will stop to prevent browser overload.
-
-### 📥 Raw Data Download
-
-TSUMUGI publishes Gzip-compressed JSONL files that capture the curated phenotype knowledge.
+### 📥 Download raw data
+TSUMUGI publishes gzipped JSONL files.
 
 #### `genewise_phenotype_annotations.jsonl.gz`
-
-Gene-wise phenotype annotations. Each JSON line contains:
-
-- Gene symbol and marker accession ID (e.g., `"1110059G10Rik"`, `"MGI:1913452"`)
-- Mammalian Phenotype term name and ID
-- Absolute effect size and significance flag
-- Zygosity (`Homo`, `Hetero`, `Hemi`)
-- Life stage (`Embryo`, `Early`, `Interval`, `Late`)
-- Sexual dimorphism label (`""`, `Male`, `Female`)
-- Disease annotations mapped from the IMPC Phenodigm resource
+- Gene symbol (e.g., "1110059G10Rik")  
+- Marker accession ID (e.g., "MGI:1913452")  
+- Phenotype term name/ID (e.g., "fused joints", "MP:0000137")  
+- Effect size (e.g., 0.0, 1.324)  
+- Significance flag (true/false)  
+- Zygosity ("Homo", "Hetero", "Hemi")  
+- Life stage ("Embryo", "Early", "Interval", "Late")  
+- Sexual dimorphism ("None", "Male", "Female")  
+- Disease annotation (e.g., [] or "Premature Ovarian Failure 18")
 
 Example:
-
 ```
-{"life_stage": "Early", "marker_symbol": "1110059G10Rik", "marker_accession_id": "MGI:1913452", "effect_size": 0.0, "mp_term_name": "fused joints", "disease_annotation": [], "significant": false, "zygosity": "Homo", "sexual_dimorphism": "", "mp_term_id": "MP:0000137"}
+{"life_stage": "Early", "marker_symbol": "1110059G10Rik", "marker_accession_id": "MGI:1913452", "effect_size": 0.0, "mp_term_name": "fused joints", "disease_annotation": [], "significant": false, "zygosity": "Homo", "sexual_dimorphism": "None", "mp_term_id": "MP:0000137"}
 ```
 
 #### `pairwise_similarity_annotations.jsonl.gz`
-
-Phenotypic similarity statistics for every gene pair. Fields:
-
-- `gene1_symbol` / `gene2_symbol`
-- `phenotype_shared_annotations`: phenotype names keyed to metadata (life stage, zygosity, sexual dimorphism)
-- `phenotype_similarity_score`: Resnik-based Phenodigm score on a 0–100 scale
+- Gene pair (`gene1_symbol`, `gene2_symbol`)  
+- `phenotype_shared_annotations` (per-phenotype metadata: life stage, zygosity, sexual dimorphism)  
+- `phenotype_similarity_score` (Resnik-based Phenodigm score, 0–100)
 
 Example:
-
 ```
 {"gene1_symbol": "1110059G10Rik", "gene2_symbol": "Cog6", "phenotype_shared_annotations": {"vertebral transformation": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"}}, "phenotype_similarity_score": 42}
 ```
 
-> [!NOTE]
-> Files are tens of megabytes. When loading them with `pandas`, `polars`, or similar tools, prefer streaming (e.g., iterating line by line) to avoid exhausting memory.
+# 🌐 Network
 
-## 🌐 Network Visualization
+The page transitions and draws the network automatically.
 
-Based on the input, the page transitions and the network is automatically drawn.  
+> [!IMPORTANT]  
+> Gene pairs with **3 or more shared abnormal phenotypes** and **phenotypic similarity > 0.0** are visualized.
 
-> [!IMPORTANT]
-> **Gene pairs with 3 or more shared abnormal phenotypes and phenotypic similarity scores of 0 or higher** are visualized.  
+### Network panel
+**Nodes** represent genes. Click to see the list of abnormal phenotypes observed in that KO mouse; drag to rearrange positions.  
+**Edges** show shared phenotypes; click to view details.
 
-### Network Panel
+### Control panel
+Adjust network display from the left panel.
 
-#### Nodes (Points)
+#### Filter by phenotypic similarity
+`Phenotypes similarity` slider thresholds edges by Resnik→Phenodigm score.  
+> For how we compute similarity, see: 👉 [🔍 How We Calculate Phenotypically Similar Genes](#-how-we-calculate-phenotypically-similar-genes)
 
-Each node represents one gene.  
-Clicking displays a list of abnormal phenotypes observed in that gene's KO mice.  
-You can freely adjust positions by dragging.  
+#### Filter by phenotype severity
+`Phenotype severity` slider filters nodes by effect size (severity in KO mice). Higher values mean stronger impact.  
+> Hidden for binary phenotypes (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binary list [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or single-gene input.
 
-#### Edges (Lines)
+#### Specify genotype
+Choose the genotype in which phenotypes appear:
+- `Homo`: homozygous
+- `Hetero`: heterozygous
+- `Hemi`: hemizygous
 
-Clicking an edge shows details of shared phenotypes.  
+#### Specify sex
+Extract sex-specific phenotypes:
+- `Female`
+- `Male`
 
-### Control Panel
+#### Specify life stage
+Filter by life stage in which phenotypes appear:
+- `Embryo`
+- `Early` (0–16 weeks)
+- `Interval` (17–48 weeks)
+- `Late` (49+ weeks)
 
-The left control panel allows you to adjust network display.  
+### Markup panel
 
-#### Filter by Phenotypic Similarity
+#### Highlight: Human Disease
+Highlight genes linked to human disease (IMPC Disease Models Portal data).
 
-The `Phenotypes similarity` slider allows you to set thresholds for gene pairs displayed in the network based on **edge phenotypic similarity** (Resnik-based Phenodigm score).  
+#### Search: Specific Gene
+Search gene names within the network.
 
-> [!NOTE]
-> For details on phenotypic similarity, please see:  
-> 👉 [🔍 Calculation Method for Phenotypically Similar Gene Groups](https://github.com/akikuno/TSUMUGI-dev#-calculation-method-for-phenotypically-similar-gene-groups)
-
-#### Filter by Phenotype Severity
-
-The `Phenotype severity` slider allows you to adjust node display based on **phenotype severity (effect size) in KO mice**.  
-Higher effect sizes indicate stronger phenotypic impact.  
-
-> [!NOTE]
-> When IMPC phenotype evaluation is binary (present/absent) (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html): list of binary phenotypes available [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or when gene name is input, the `Phenotypes severity` slider is not available.
-
-#### Specify Genotype
-
-You can specify the genotype of KO mice exhibiting phenotypes:
-
-- `Homo`: Phenotypes seen in homozygous mice
-- `Hetero`: Phenotypes seen in heterozygous mice
-- `Hemi`: Phenotypes seen in hemizygous mice
-
-#### Specify Sex
-
-You can extract sex-specific phenotypes:
-
-- `Female`: Female-specific phenotypes
-- `Male`: Male-specific phenotypes
-
-#### Specify Life Stage
-
-You can specify life stages when phenotypes appear:
-
-- `Embryo`: Phenotypes appearing during embryonic stage
-- `Early`: Phenotypes appearing at 0-16 weeks of age
-- `Interval`: Phenotypes appearing at 17-48 weeks of age
-- `Late`: Phenotypes appearing at 49+ weeks of age
-
-### Markup Panel
-
-#### Highlight Human Disease-Related Genes (Highlight: Human Disease)
-
-You can highlight genes related to human diseases.  
-The relationship between KO mice and human diseases uses public data from [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).  
-
-#### Search Gene Names (Search: Specific Gene)
-
-You can search for gene names included in the network.
-
-#### Adjust Network Display Style (Layout & Display)
-
-You can adjust the following elements:
-
-- Network layout (layout)
-- Font size (Font size)
-- Edge thickness (Edge width)
-- Distance between nodes (*Cose layout only) (Node repulsion)
+#### Layout & Display
+Adjust layout, font size, edge width, and node repulsion (Cose layout).
 
 #### Export
+Export the current network as PNG/CSV/GraphML.  
+CSV includes connected-component (module) IDs and phenotype lists per gene; GraphML is Cytoscape-compatible.
 
-You can export current network images and data in PNG, CSV and GraphML formats.  
-CSV includes connected component (module) IDs and lists of phenotypes shown by each gene's KO mice.  
-GraphML is a format compatible with the desktop version of Cytoscape, allowing you to import the network into Cytoscape for further analysis.  
+# 🛠 Command-Line Edition
 
+This release adds a CLI so you can download the latest IMPC updates yourself, rerun TSUMUGI, and apply finer filters and output options.
 
-# 🔍 Calculation Method for Phenotypically Similar Gene Groups
+- Recompute with IMPC `statistical-results-ALL.csv.gz` (optionally `mp.obo`, `impc_phenodigm.csv`).  
+- Filter by presence/absence of MP terms.  
+- Filter by gene list (comma-separated or text file).  
+- Outputs: GraphML (`tsumugi build-graphml`), offline webapp bundle (`tsumugi build-webapp`).
 
-## Data Source
+## Available commands
+- `tsumugi run`: Recompute the network from IMPC data  
+- `tsumugi mp --include/--exclude`: Filter pairs that contain / do not show an MP term  
+- `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: Filter by phenotype counts (pairwise or per gene)  
+- `tsumugi genes --keep/--drop`: Keep/drop by gene list (comma-separated or text file)  
+- `tsumugi life-stage --keep/--drop`: Filter by life stage (Embryo/Early/Interval/Late)  
+- `tsumugi sex --keep/--drop`: Filter by sex (Male/Female/None)  
+- `tsumugi zygosity --keep/--drop`: Filter by zygosity (Homo/Hetero/Hemi)  
+- `tsumugi build-graphml`: Generate GraphML (Cytoscape, etc.)  
+- `tsumugi build-webapp`: Generate TSUMUGI webapp assets (local HTML/CSS/JS)
 
-IMPC dataset uses `statistical-results-ALL.csv.gz` from [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results).  
-Information about columns included in the dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
+## Installation
+
+BioConda:
+```bash
+conda install -c conda-forge -c bioconda tsumugi
+```
+
+PyPI:
+```bash
+pip install tsumugi
+```
+
+You are ready if `tsumugi --version` prints the version.
+
+## Common usage (per command)
+
+### 1. Recompute from IMPC data (`tsumugi run`)
+If `--mp_obo` is omitted, TSUMUGI uses the bundled `data-version: releases/2025-08-27/mp.obo`.  
+If `--impc_phenodigm` is omitted, it uses the file fetched on 2025-10-01 from the [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
+```bash
+tsumugi run \
+  --output_dir ./tsumugi-output \
+  --statistical_results ./statistical-results-ALL.csv.gz \
+  --threads 8
+```
+Outputs: `./tsumugi-output` contains genewise annotations (genewise_phenotype_annotations.jsonl.gz), pairwise similarity data (pairwise_similarity_annotations.jsonl.gz), and visualization assets (`TSUMUGI-webapp`).
+
+> [!IMPORTANT]  
+> The `TSUMUGI-webapp` directory includes OS-specific launch scripts; double-click to open the local web app:  
+> - Windows: `open_webapp_windows.bat`  
+> - macOS: `open_webapp_mac.command`  
+> - Linux: `open_webapp_linux.sh`
+
+### 2. Filter by MP term (`tsumugi mp --include/--exclude`)
+```bash
+# Keep pairs that include MP:0001146
+tsumugi mp --include MP:0001146 \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_filtered.jsonl
+
+# Exclude pairs whose measured genes did not show MP:0001146
+tsumugi mp --exclude MP:0001146 \
+  --genewise genewise_phenotype_annotations.jsonl.gz \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_filtered.jsonl
+```
+
+### 3. Filter by phenotype counts (`tsumugi n-phenos`)
+- Shared phenotypes per pair:
+```bash
+tsumugi n-phenos --pairwise --min 3 --max 20 \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_min3_max20.jsonl
+```
+- Phenotypes per gene (genewise required):
+```bash
+tsumugi n-phenos --genewise --min 5 --max 50 \
+  --genewise genewise_phenotype_annotations.jsonl.gz \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > genewise_min5_max50.jsonl
+```
+`--min` or `--max` alone is fine.
+
+### 4. Filter by gene list (`tsumugi genes --keep/--drop`)
+```bash
+tsumugi genes --keep genes.txt \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_keep_genes.jsonl
+
+tsumugi genes --drop geneA,geneB \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_drop_genes.jsonl
+```
+
+### 5. Filter by life stage (`tsumugi life-stage --keep/--drop`)
+```bash
+tsumugi life-stage --keep Early \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_lifestage_early.jsonl
+```
+
+### 6. Filter by sex (`tsumugi sex --keep/--drop`)
+```bash
+tsumugi sex --drop Male \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_no_male.jsonl
+```
+
+### 7. Filter by zygosity (`tsumugi zygosity --keep/--drop`)
+```bash
+tsumugi zygosity --keep Homo \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_homo.jsonl
+```
+
+### 8. Export GraphML / webapp
+```bash
+tsumugi build-graphml \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  --genewise genewise_phenotype_annotations.jsonl.gz \
+  > network.graphml
+
+tsumugi build-webapp \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  --genewise genewise_phenotype_annotations.jsonl.gz \
+  --output_dir ./webapp_output
+```
+
+CLI supports STDIN/STDOUT, so you can chain commands:  
+`zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+
+# 🔍 How We Calculate Phenotypically Similar Genes
+
+## Data source
+[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
+Columns: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
 
 ## Preprocessing
+Extract gene–phenotype pairs with KO mouse P-value (`p_value`, `female_ko_effect_p_value`, or `male_ko_effect_p_value`) ≤ 0.0001.  
+- Annotate genotype-specific phenotypes: `homo`, `hetero`, `hemi`  
+- Annotate sex-specific phenotypes: `female`, `male`
 
-Extract gene-phenotype pairs where KO mouse phenotype P-values (`p_value`, `female_ko_effect_p_value`, or `male_ko_effect_p_value`) are 0.0001 or below.  
-- Genotype-specific phenotypes are annotated with `homo`, `hetero`, or `hemi`
-- Sex-specific phenotypes are annotated with `female` or `male`
+## Phenotypic similarity
+TSUMUGI computes **Resnik similarity** between MP terms and rescales pairwise gene scores to **Phenodigm (0–100)**.
 
-## Phenotypic Similarity Calculation
-
-TSUMUGI now evaluates phenotypic similarity with **Resnik similarity** between Mammalian Phenotype (MP) terms and converts pairwise gene scores to a **Phenodigm scale (0-100)**.
-
-### 1. Resnik Similarity Between Phenotype Terms
-
-For each MP term, TSUMUGI builds the ontology hierarchy and computes its Information Content (IC) from the proportion of descendants (including the term itself) within the ontology:
-
-```
-IC(term) = -log( (|Descendants(term)| + 1) / |All MP terms| )
-```
-
-Given two MP terms, all common ancestors are identified and the Resnik similarity is defined as the IC of the **most informative common ancestor (MICA)**:
-
-```
-Resnik(term_1, term_2) = max_{c in intersection(Anc(term_1), Anc(term_2))} IC(c)
-```
-
-If the two terms do not share any ancestor, the similarity is 0.
-
-### 2. Phenodigm Scaling for Gene Pairs
-
-1. For every pair of genes, TSUMUGI creates a weighted similarity matrix whose entries are Resnik scores between their significant MP terms. Each cell is further scaled by metadata agreement (zygosity, life stage, sexual dimorphism) with weights of 1.0, 0.75, 0.5, or 0.25 depending on how many attributes match.  
-2. Row-wise and column-wise maxima provide the **actual** maximum and average similarity observed between the two genes.  
-3. Using the IC values of the individual terms, TSUMUGI derives **theoretical** maxima (best possible max and average) for the same pair.  
-4. The Phenodigm score is obtained by normalizing the actual scores with the theoretical ones and averaging the normalized max and mean:
-
-```
-Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )
-```
-
-When the theoretical denominator is zero, the corresponding normalized value is set to zero. The resulting 0-100 score feeds both the downloadable tables and the `Phenotypes similarity` slider in the web UI.
+1. Build the MP ontology and compute Information Content (IC):  
+   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
+2. Resnik(t1, t2) = IC of the most informative common ancestor (MICA); if no common ancestor, similarity = 0.  
+3. For each gene pair, create a matrix of significant MP terms and weight each Resnik score by metadata match (zygosity / life stage / sex) with factors 1.0 / 0.75 / 0.5 / 0.25. Take row/column maxima to obtain the **actual** max and mean similarity observed.  
+4. Derive **theoretical** max and mean from IC values of the terms, then normalize:  
+   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
+   If a theoretical denominator is 0, set that term to 0. The resulting 0–100 score feeds the downloadable tables and the `Phenotypes similarity` slider.
 
 # ✉️ Contact
-
-For questions or requests, please feel free to contact us:
-
-- **Google Form**  
-  👉 [Contact Form](https://forms.gle/ME8EJZZHaRNgKZ979)
-
-- **For GitHub account holders**  
-  👉 [GitHub Issue](https://github.com/akikuno/TSUMUGI-dev/issues/new/choose)
+- Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  
+- GitHub Issues: https://github.com/akikuno/TSUMUGI-dev/issues/new/choose
