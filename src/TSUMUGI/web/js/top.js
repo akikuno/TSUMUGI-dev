@@ -202,10 +202,11 @@ ensureDataLoaded().then(() => {
 function handleFormSubmit(event) {
     event.preventDefault();
 
-    const mode = searchMode;
+    const rawMode = searchMode;
+    const mode = rawMode === "gene" ? "genesymbol" : rawMode === "geneList" ? "genelist" : rawMode;
 
     // Run the Gene List workflow directly
-    if (mode === "geneList") {
+    if (rawMode === "geneList") {
         fetchGeneData(); // Trigger immediately for gene lists
         return;
     }
@@ -214,10 +215,14 @@ function handleFormSubmit(event) {
     const userInput = mode === "phenotype" ? document.getElementById("phenotype") : document.getElementById("gene");
     const submitBtn = document.getElementById("submitBtn");
     const selectedData = mode === "phenotype" ? phenotypes[userInput.value] : userInput.value;
-    const path = mode === "phenotype" ? "phenotype" : "genesymbol";
 
     if (!submitBtn.disabled) {
-        window.open(`app/${path}/${selectedData}.html`, "_blank");
+        const query = new URLSearchParams({
+            mode,
+            name: selectedData,
+            title: userInput.value,
+        });
+        window.open(`app/viewer.html?${query.toString()}`, "_blank");
     }
 }
 

@@ -106,8 +106,16 @@ export async function fetchGeneData() {
 
     localStorage.removeItem("elements");
     localStorage.setItem("elements", JSON.stringify(elements));
-    window.open("./app/genelist/network_genelist.html", "_blank");
+    const query = new URLSearchParams({
+        mode: "genelist",
+        name: "geneList",
+        title: "Gene List",
+    });
+    window.open(`./app/viewer.html?${query.toString()}`, "_blank");
 }
+
+// Expose for form submission handler
+window.fetchGeneData = fetchGeneData;
 
 // Assign event listener to button
 document.addEventListener("DOMContentLoaded", () => {

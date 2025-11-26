@@ -321,13 +321,4 @@ def run_pipeline(args) -> None:
 
     web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir, args.version)
 
-    web_deployer.generate_phenotype_pages(
-        genewise_phenotype_significants, targetted_phenotypes, TEMPDIR, output_dir, args.version
-    )
-    web_deployer.generate_gene_pages(genewise_phenotype_significants, targetted_genes, output_dir, args.version)
-    web_deployer.generate_genelist_page(output_dir, args.version)
-
-    # Remove template directory for web app
-    shutil.rmtree(output_dir / "template", ignore_errors=True)
-
     logging.info(f"Finished!🎊 Results are saved in {Path(ROOT_DIR).resolve()}")

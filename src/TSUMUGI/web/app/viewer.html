@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>TSUMUGI Viewer</title>
+    <link rel="icon" href="../image/tsumugi-favicon.ico" />
+
+    <!-- ============================= -->
+    <!-- JS -->
+    <!-- ============================= -->
+    <!-- noUiSlider -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js" defer></script>
+
+    <!-- pako for reading gzip JSON -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" defer></script>
+
+    <!-- Cytoscape -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js" defer></script>
+
+    <!-- Custom JS -->
+    <script type="module" src="./viewer.js"></script>
+    <script type="module" src="./js/mobile_panel.js"></script>
+    <script type="module" src="./js/dynamic_font_size.js"></script>
+    <script src="./js/info_tooltips.js" defer></script>
+
+    <!-- ============================= -->
+    <!-- CSS -->
+    <!-- ============================= -->
+    <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/app.css" />
+</head>
+
+<body>
+    <header class="header-container">
+        <button id="menu-toggle" class="menu-toggle-icon">
+            <i class="fa-solid fa-sliders"></i>
+        </button>
+        <h1>
+            Phenotype-Similarity Gene Network for <br />
+            <a id="page-title-link" href="#" target="_blank" rel="noreferrer"></a>
+        </h1>
+    </header>
+
+    <div class="body-container">
+        <div class="left-control-panel-container">
+            <button id="close-panel" class="close-button">✕</button>
+
+            <!-- ===================================== -->
+            <!-- Slider for phenotype metrics -->
+            <!-- ===================================== -->
+
+            <!-- Slider for phenotypes similarity -->
+            <div class="panel-section">
+                <div class="panel-title">
+                    <i class="fa-solid fa-sliders"></i>
+                    Phenotypic metrics
+                    <div class="info-tooltip-container">
+                        <div class="info-tooltip-icon">i</div>
+                        <div class="info-tooltip-content">Phenotype severity is not displayed when phenotype evaluation is
+                            binary (presence/absence).</div>
+                    </div>
+                </div>
+
+                <div class="slider-container">
+                    <div class="label-row">
+                        <span class="control-label">
+                            Phenotypes similarity:
+                            <span id="edge-size-value"> 1 - 100 </span>
+                        </span>
+                    </div>
+                    <div class="slider-element" id="filter-edge-slider"></div>
+                </div>
+
+                <div class="slider-container phenotype-only" id="phenotype-severity-controls">
+                    <div class="label-row">
+                        <span class="control-label">
+                            Phenotype severity:
+                            <span id="node-color-value"> 1 - 100 </span>
+                        </span>
+                    </div>
+                    <div class="slider-element" id="filter-node-slider"></div>
+                </div>
+
+            </div>
+
+            <!-- ===================================== -->
+            <!-- Filter of Genotype / Sex / Life-stage -->
+            <!-- ===================================== -->
+            <div class="panel-section">
+                <div class="panel-title">
+                    <i class="fa-solid fa-dna"></i>
+                    Biological annotations
+                </div>
+
+                <div class="boxed-section">
+                    <span>Genotype</span>
+                    <form id="genotype-filter-form">
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="homo" value="Homo" checked />
+                            <label for="homo">Homo</label>
+                        </div>
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="hetero" value="Hetero" checked />
+                            <label for="hetero">Hetero</label>
+                        </div>
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="hemi" value="Hemi" checked />
+                            <label for="hemi">Hemi</label>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="boxed-section">
+                    <span>Sex</span>
+                    <form id="sex-filter-form">
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="female" value="Female" checked />
+                            <label for="female">Female</label>
+                        </div>
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="male" value="Male" checked />
+                            <label for="male">Male</label>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="boxed-section">
+                    <span>Life stage
+                        <div class="info-tooltip-container">
+                            <div class="info-tooltip-icon">i</div>
+                            <div class="info-tooltip-content">Early: -16w, Interval: 17-48w, Late: 49w-</div>
+                        </div>
+                    </span>
+                    <form id="lifestage-filter-form">
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="embryo" value="Embryo" checked />
+                            <label for="embryo">Embryo</label>
+                        </div>
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="early" value="Early" checked />
+                            <label for="early">Early</label>
+                        </div>
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="interval" value="Interval" checked />
+                            <label for="interval">Interval</label>
+                        </div>
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="late" value="Late" checked />
+                            <label for="late">Late</label>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="cy-container">
+            <div class="cy"></div>
+
+            <!-- ===================================== -->
+            <!-- SVG for phenotypes similarity -->
+            <!-- ===================================== -->
+
+            <div class="edge-scale-container">
+                <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
+                    <polygon points="0,15 400,0 400,30" style="fill: gray; stroke: none" />
+                    <text x="0" y="25" font-family="Arial" font-size="12px" fill="#333">Few</text>
+                    <text x="370" y="25" font-family="Arial" font-size="12px" fill="#FFF">Many</text>
+                </svg>
+                <p class="scale-label">Similarity of accessory phenotypes</p>
+            </div>
+
+            <div class="color-scale-container phenotype-only" id="phenotype-color-scale">
+                <svg viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <linearGradient id="colorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color: rgb(248, 229, 140); stop-opacity: 1" />
+                            <stop offset="100%" style="stop-color: rgb(255, 140, 0); stop-opacity: 1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="400" height="30" fill="url(#colorGradient)" />
+                    <text x="0" y="25" font-family="Arial" font-size="12px" fill="#000">Low</text>
+                    <text x="370" y="25" font-family="Arial" font-size="12px" fill="#000">High</text>
+                </svg>
+                <p class="scale-label">Severity of target phenotype</p>
+            </div>
+        </div>
+
+        <div class="right-control-panel-container">
+            <div class="panel-section">
+                <div class="panel-title">
+                    <i class="fa-regular fa-lightbulb"></i>
+                    Highlight
+                </div>
+                <div class="boxed-section align-center">
+                    <span> Markup </span>
+
+                    <!-- Human disease -->
+                    <form id="human-disease-filter-form">
+                        <div class="round-checkbox">
+                            <input type="checkbox" id="disease" value="Disease" />
+                            <label for="disease">Human Disease</label>
+                            <div class="info-tooltip-container">
+                                <div class="info-tooltip-icon">i</div>
+                                <div class="info-tooltip-content">Human Disease annotations use <a
+                                        href="https://diseasemodels.research.its.qmul.ac.uk/" target="_blank">IMPC Disease
+                                        Models</a>. Genes associated with human diseases are
+                                    highlighted with a red border.</div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Phenotype search -->
+                    <div class="search-container">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="phenotype-search" placeholder="Phenotypes" />
+                        <ul id="phenotype-suggestions" class="suggestions" hidden></ul>
+                        <div class="info-tooltip-container">
+                            <div class="info-tooltip-icon">i</div>
+                            <div class="info-tooltip-content">
+                                Search for phenotypes to highlight. Genes with matching phenotypes are highlighted with a
+                                blue border.
+                            </div>
+                        </div>
+                    </div>
+                    <div id="selected-phenotypes" class="selected-phenotypes"></div>
+
+                    <!-- Gene search -->
+                    <div class="search-container">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="gene-search" placeholder="Gene Symbol">
+                        <ul id="suggestions" class="suggestions" hidden></ul>
+                    </div>
+                </div>
+
+                <!-- ===================================== -->
+                <!-- Centrality controls -->
+                <!-- ===================================== -->
+                <div class="boxed-section">
+                    <span>Node size</span>
+
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <label for="centrality-type-dropdown" class="control-label">
+                                Centrality:
+                                <div class="info-tooltip-container">
+                                    <div class="info-tooltip-icon">i</div>
+                                    <div class="info-tooltip-content">
+                                        'Normalized' options divide the centrality score by the number of phenotypes
+                                        observed in KO mice
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <select class="exporter" id="centrality-type-dropdown"
+                                onchange="handleCentralityTypeChange(this.value)">
+                                <option value="none">None</option>
+                                <option value="degree">Degree</option>
+                                <option value="betweenness">Betweenness</option>
+                                <option value="normalized_degree" selected>Normalized Degree</option>
+                                <option value="normalized_betweenness">Normalized Betweenness</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="slider-container hidden" id="centrality-slider-container">
+                        <div class="label-row">
+                            <span class="control-label">Scale:</span>
+                            <span id="centrality-scale-value">0</span>
+                        </div>
+                        <div class="slider-element" id="centrality-scale-slider"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- ===================================== -->
+            <!-- Cytoscape's visualization setting -->
+            <!-- ===================================== -->
+            <div class="panel-section">
+                <div class="panel-title">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    Cytoscape's visualization setting
+                </div>
+                <div class="boxed-section">
+                    <span>Layout</span>
+
+                    <select class="exporter" id="layout-dropdown">
+                        <option value="grid">Grid</option>
+                        <option value="random">Random</option>
+                        <option value="concentric">Concentric</option>
+                        <option value="breadthfirst">Breadthfirst</option>
+                        <option value="cose" selected>Cose</option>
+                    </select>
+                </div>
+
+                <div class="boxed-section">
+                    <span>Node repulsion (Cose only)</span>
+                    <div class="slider-container" id="node-repulsion-container">
+                        <div class="label-row">
+                            <span class="control-label">Node repulsion: <span id="node-repulsion-value">5</span></span>
+                        </div>
+                        <div class="slider-element" id="nodeRepulsion-slider"></div>
+                    </div>
+                </div>
+
+                <div class="boxed-section">
+                    <span>Font & Line width</span>
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <span class="control-label"> Font size: <span id="font-size-value">20</span></span>
+                        </div>
+                        <div class="slider-element" id="font-size-slider"></div>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <span class="control-label">Edge width: <span id="edge-width-value">5</span></span>
+                        </div>
+                        <div class="slider-element" id="edge-width-slider"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Export (Mobile) -->
+    <!-- ===================================== -->
+    <div class="mobile-exporter">
+        <button class="exporter" id="export-png-mobile">
+            <i class="fa-regular fa-image"></i>
+            PNG
+        </button>
+        <button class="exporter" id="export-jpg-mobile">
+            <i class="fa-regular fa-image"></i>
+            JPG
+        </button>
+        <button class="exporter" id="export-csv-mobile">
+            <i class="fa-regular fa-file-lines"></i>
+            CSV
+        </button>
+        <button class="exporter" id="export-graphml-mobile">
+            <i class="fa-solid fa-project-diagram"></i>
+            GraphML
+        </button>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Export (Desktop only) -->
+    <!-- ===================================== -->
+    <div class="panel-section export-desktop">
+        <div class="panel-title">
+            <i class="fa-solid fa-download"></i>
+            Export
+            <div class="info-tooltip-container">
+                <div class="info-tooltip-icon">i</div>
+                <div class="info-tooltip-content">
+                    GraphML can be used for visualization in other network analysis tools.
+                </div>
+            </div>
+        </div>
+        <div class="exporter-group">
+            <button class="exporter" id="export-png">
+                <i class="fa-regular fa-image"></i>
+                PNG
+            </button>
+            <button class="exporter" id="export-jpg">
+                <i class="fa-regular fa-image"></i>
+                JPG
+            </button>
+            <button class="exporter" id="export-csv">
+                <i class="fa-regular fa-file-lines"></i>
+                CSV
+            </button>
+            <button class="exporter" id="export-graphml">
+                <i class="fa-solid fa-project-diagram"></i>
+                GraphML
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ========================================  -->
+    <!-- Footer -->
+    <!-- ========================================  -->
+    <footer>
+
+        <!-- ========================================  -->
+        <!-- Resources Section -->
+        <!-- ========================================  -->
+        <div class="resources-container">
+            <div class="resource-section">
+                <div class="resource-buttons">
+                    <a class="resource-btn" href="https://github.com/akikuno/TSUMUGI-dev/blob/main/README.md"
+                        target="_blank">
+                        <i class="fa-regular fa-file-lines"></i> Documentation
+                    </a>
+                    <a class="resource-btn" href="https://forms.gle/TpLeatthUBLN57PU6" target="_blank">
+                        <i class="fa-regular fa-comment-dots"></i> Contact
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <p>TSUMUGI version <span id="tsumugi-version">-</span></p>
+        <!-- <p><i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> </p>-->
+        <p>
+            &copy; 2024
+            <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/public_E/index.html" target="_blank">Laboratory Animal
+                Resource Center, University of Tsukuba</a>
+        </p>
+    </footer>
+
+</body>
+
+</html>

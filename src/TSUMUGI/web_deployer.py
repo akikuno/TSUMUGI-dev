@@ -4,8 +4,6 @@ import shutil
 from importlib.resources import as_file, files
 from pathlib import Path
 
-from tqdm import tqdm
-
 ###########################################################
 # Select targetted phenotypes and gene symbols
 ###########################################################
@@ -77,6 +75,13 @@ def _generate_index_html(output_dir: str | Path, TSUMUGI_VERSION: str) -> None:
                 dst.write(line)
 
 
+def _write_version_file(output_dir: str | Path, TSUMUGI_VERSION: str) -> None:
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    version_file = output_dir / "version.txt"
+    version_file.write_text(TSUMUGI_VERSION, encoding="utf-8")
+
+
 def _copy_directories(output_dir: str | Path) -> None:
     # Copy css and js directories
     for asset in ["css", "js"]:
@@ -93,17 +98,17 @@ def _copy_directories(output_dir: str | Path) -> None:
         with as_file(temp_file) as src_dir:
             shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
 
+    # Copy shared app entry files
+    for filename in ["viewer.html", "viewer.js"]:
+        dst_file = output_dir / "app" / filename
+        dst_file.parent.mkdir(parents=True, exist_ok=True)
+        temp_file = files("TSUMUGI") / "web" / "app" / filename
+        shutil.copy(temp_file, dst_file)
+
     # Copy the image directory
     dst_dir = output_dir / "image"
     dst_dir.mkdir(parents=True, exist_ok=True)
     temp_file = files("TSUMUGI") / "web" / "image"
-    with as_file(temp_file) as src_dir:
-        shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
-
-    # Copy the template directory
-    dst_dir = output_dir / "template"
-    dst_dir.mkdir(parents=True, exist_ok=True)
-    temp_file = files("TSUMUGI") / "web" / "template"
     with as_file(temp_file) as src_dir:
         shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
 
@@ -163,303 +168,9 @@ def prepare_files(
     _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
     _copy_webapp_files(TEMPDIR, output_dir)
     _generate_index_html(output_dir, TSUMUGI_VERSION)
+    _write_version_file(output_dir, TSUMUGI_VERSION)
 
 
 ###########################################################
 # Generate HTML and JS for web application
 ###########################################################
-
-
-def _read_file(filepath: str | Path) -> str:
-    with open(filepath, encoding="utf-8") as f:
-        return f.read()
-
-
-def _write_file(filepath: str | Path, content: str) -> None:
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write(content)
-
-
-def _replace_placeholder(template, placeholder, insert_text):
-    return template.replace(placeholder, insert_text)
-
-
-def _inject_html(template_path, insert_path, placeholder, output_path):
-    template = _read_file(template_path)
-    insert = _read_file(insert_path)
-    updated = _replace_placeholder(template, placeholder, insert)
-    _write_file(output_path, updated)
-
-
-def _generate_simple_html(template_path, output_path, replacements):
-    content = _read_file(template_path)
-    for key, value in replacements.items():
-        content = content.replace(key, value)
-    _write_file(output_path, content)
-
-
-# ---------------------------------------------------------
-# Phenotype
-# ---------------------------------------------------------
-
-
-def _generate_phenotype_html(
-    mp_term_name_underscored: str,
-    mp_term_name: str,
-    impc_url_phenotype: str,
-    mode: str,
-    output_dir: str,
-    TSUMUGI_VERSION: str,
-) -> None:
-    for part in ["body-container", "cy-container"]:
-        template_path = f"{output_dir}/template/template-app-html/{part}.html"
-        output_path = f"/tmp/{part}.html"
-
-        if mode == "non-binary-phenotype":
-            insert_path = f"{output_dir}/template/template-app-html/{part}-phenotype.html"
-            _inject_html(template_path, insert_path, "XXX_PHENOTYPE_SEVERITY", output_path)
-        else:
-            _generate_simple_html(template_path, output_path, {"XXX_PHENOTYPE_SEVERITY": ""})
-    # head.html
-    _generate_simple_html(
-        f"{output_dir}/template/template-app-html/head.html",
-        "/tmp/head.html",
-        {"XXX_TITLE": mp_term_name, "XXX_JS_FILE_NAME": mp_term_name_underscored},
-    )
-    # header.html
-    header_insert = f"<a href='{impc_url_phenotype}' target='_blank'>{mp_term_name}</a>"
-    _generate_simple_html(
-        f"{output_dir}/template/template-app-html/header.html",
-        "/tmp/header.html",
-        {"XXX_TITLE": header_insert},
-    )
-    # Assemble template_app.html into the final HTML document
-    template = _read_file(f"{output_dir}/template/template-app-html/template_app.html")
-    final_html = (
-        template.replace("XXX_HEAD", _read_file("/tmp/head.html"))
-        .replace("XXX_H1", _read_file("/tmp/header.html"))
-        .replace("XXX_BODY_CONTAINER", _read_file("/tmp/body-container.html"))
-        .replace("XXX_CY_CONTAINER", _read_file("/tmp/cy-container.html"))
-        .replace("TSUMUGI_VERSION", TSUMUGI_VERSION)
-    )
-    _write_file(f"{output_dir}/app/phenotype/{mp_term_name_underscored}.html", final_html)
-
-
-def _generate_phenotype_javascript(
-    mp_term_name_underscored: str, mp_term_name: str, mode: str, output_dir: str
-) -> None:
-    template_app_path = "/tmp/template_app.js"
-
-    shutil.copy(
-        f"{output_dir}/template/template-app-js/filterByNodeColorAndEdgeSize_phenotype.js",
-        "/tmp/filterByNodeColorAndEdgeSize_phenotype.js",
-    )
-    template = _read_file(f"{output_dir}/template/template-app-js/template_app.js")
-    node_min_max = _read_file(f"{output_dir}/template/template-app-js/nodeMinMax.js")
-    init = _read_file(f"{output_dir}/template/template-app-js/node_color_initialization.js")
-    update = _read_file(f"{output_dir}/template/template-app-js/node_color_update.js")
-    template = (
-        template.replace("XXX_NODE_MIN_MAX", node_min_max)
-        .replace("XXX_NODE_COLOR_INITIALIZATION", init)
-        .replace("XXX_NODE_COLOR_UPDATE", update)
-    )
-    _write_file(template_app_path, template)
-
-    main_template = _read_file(template_app_path)
-    insert = _read_file("/tmp/filterByNodeColorAndEdgeSize_phenotype.js")
-
-    final_js = (
-        main_template.replace("XXX_NODE_MIN_MAX", "")
-        .replace("XXX_FILTER_BY_NODE_COLOR_AND_EDGE_SIZE", insert)
-        .replace(
-            "XXX_EDGE_MIN_MAX",
-            "const edgeMin = Math.min(...edgeSizes); const edgeMax = Math.max(...edgeSizes);",
-        )
-        .replace("XXX_ELEMENTS", f"loadJSONGz('../../data/phenotype/{mp_term_name_underscored}.json.gz')")
-        .replace("XXX_PHENOTYPE", mp_term_name)
-        .replace("XXX_NAME", mp_term_name_underscored)
-    )
-
-    _write_file(f"{output_dir}/app/phenotype/{mp_term_name_underscored}.js", final_js)
-
-
-def generate_phenotype_pages(
-    records_significants, targetted_phenotypes, TEMPDIR: Path, output_dir, TSUMUGI_VERSION: str
-) -> None:
-    map_mp_term_name_to_impc_url_phenotype = {}
-    for record in records_significants:
-        mp_term_name = record["mp_term_name"]
-        mp_term_id = record["mp_term_id"]
-        impc_url_phenotype = f"https://www.mousephenotype.org/data/phenotypes/{mp_term_id}"
-        map_mp_term_name_to_impc_url_phenotype[mp_term_name] = impc_url_phenotype
-
-    path_file = Path(TEMPDIR, "webapp", "binary_phenotypes.txt")
-    # Keep both space-separated and underscored names to avoid mismatches when checking binary phenotypes.
-    binary_phenotypes_raw = {line.strip() for line in path_file.read_text().splitlines() if line.strip()}
-    binary_phenotypes = binary_phenotypes_raw | {bp.replace(" ", "_") for bp in binary_phenotypes_raw}
-
-    for mp_term_name in tqdm(targetted_phenotypes, desc="Processing phenotypes"):
-        mp_term_name_underscored = mp_term_name.replace(" ", "_")
-        impc_url = map_mp_term_name_to_impc_url_phenotype.get(mp_term_name, "")
-        mode = (
-            "binary_phenotype"
-            if mp_term_name in binary_phenotypes or mp_term_name_underscored in binary_phenotypes
-            else "non-binary-phenotype"
-        )
-
-        _generate_phenotype_html(mp_term_name_underscored, mp_term_name, impc_url, mode, output_dir, TSUMUGI_VERSION)
-        _generate_phenotype_javascript(mp_term_name_underscored, mp_term_name, mode, output_dir)
-
-
-# ---------------------------------------------------------
-# Gene
-# ---------------------------------------------------------
-
-
-def _generate_gene_html(gene_symbol, impc_url_gene, output_dir, TSUMUGI_VERSION: str) -> None:
-    for part in ["body-container", "cy-container"]:
-        template_path = f"{output_dir}/template/template-app-html/{part}.html"
-        output_path = f"/tmp/{part}.html"
-        _generate_simple_html(template_path, output_path, {"XXX_PHENOTYPE_SEVERITY": ""})
-
-    # head.html
-    _generate_simple_html(
-        f"{output_dir}/template/template-app-html/head.html",
-        "/tmp/head.html",
-        {"XXX_TITLE": gene_symbol, "XXX_JS_FILE_NAME": gene_symbol},
-    )
-
-    # header.html
-    header_insert = f"<a href='{impc_url_gene}' target='_blank'>{gene_symbol}</a>"
-    _generate_simple_html(
-        f"{output_dir}/template/template-app-html/header.html",
-        "/tmp/header.html",
-        {"XXX_TITLE": header_insert},
-    )
-
-    # template_app.html
-    template = _read_file(f"{output_dir}/template/template-app-html/template_app.html")
-    final_html = (
-        template.replace("XXX_HEAD", _read_file("/tmp/head.html"))
-        .replace("XXX_H1", _read_file("/tmp/header.html"))
-        .replace("XXX_BODY_CONTAINER", _read_file("/tmp/body-container.html"))
-        .replace("XXX_CY_CONTAINER", _read_file("/tmp/cy-container.html"))
-        .replace("TSUMUGI_VERSION", TSUMUGI_VERSION)
-    )
-
-    _write_file(f"{output_dir}/app/genesymbol/{gene_symbol}.html", final_html)
-
-
-def _generate_gene_javascript(gene_symbol: str, output_dir: str | Path) -> None:
-    template_lines = _read_file(f"{output_dir}/template/template-app-js/template_app.js").splitlines()
-    filtered_lines = [
-        line
-        for line in template_lines
-        if "XXX_NODE_COLOR_INITIALIZATION" not in line and "XXX_NODE_COLOR_UPDATE" not in line
-    ]
-    _write_file("/tmp/template_app.js", "\n".join(filtered_lines))
-
-    template = _read_file("/tmp/template_app.js")
-    insert_filterByNodeColorAndEdgeSize = _read_file(
-        f"{output_dir}/template/template-app-js/filterByNodeColorAndEdgeSize_genesymbol.js"
-    )
-    insert_edgeMinMax = _read_file(f"{output_dir}/template/template-app-js/edgeMinMax_for_genesymbol.js")
-
-    final_js = (
-        template.replace(
-            "XXX_FILTER_BY_NODE_COLOR_AND_EDGE_SIZE",
-            insert_filterByNodeColorAndEdgeSize,
-        )
-        .replace("XXX_NODE_MIN_MAX", "")
-        .replace("XXX_EDGE_MIN_MAX", insert_edgeMinMax)
-        .replace("XXX_ELEMENTS", "loadJSONGz('../../data/genesymbol/XXX_NAME.json.gz')")
-        .replace("XXX_PHENOTYPE", "")
-        .replace("XXX_NAME", gene_symbol)
-    )
-
-    _write_file(f"{output_dir}/app/genesymbol/{gene_symbol}.js", final_js)
-
-
-def generate_gene_pages(records_significants, targetted_gene_symbols, output_dir, TSUMUGI_VERSION: str) -> None:
-    map_marker_symbol_to_impc_url_gene = {}
-    for record in records_significants:
-        marker_symbol = record["marker_symbol"]
-        marker_accession_id = record["marker_accession_id"]
-        impc_url_gene = f"https://www.mousephenotype.org/data/genes/{marker_accession_id}"
-        map_marker_symbol_to_impc_url_gene[marker_symbol] = impc_url_gene
-
-    for gene_symbol in tqdm(targetted_gene_symbols, desc="Processing gene symbols"):
-        impc_url_gene = map_marker_symbol_to_impc_url_gene.get(gene_symbol)
-        _generate_gene_html(gene_symbol, impc_url_gene, output_dir, TSUMUGI_VERSION)
-        _generate_gene_javascript(gene_symbol, output_dir)
-
-
-# ---------------------------------------------------------
-# Gene List
-# ---------------------------------------------------------
-
-
-def _generate_genelist_html(output_dir: str | Path, TSUMUGI_VERSION: str) -> None:
-    for part in ["body-container", "cy-container"]:
-        template_path = f"{output_dir}/template/template-app-html/{part}.html"
-        output_path = f"/tmp/{part}.html"
-        _generate_simple_html(template_path, output_path, {"XXX_PHENOTYPE_SEVERITY": ""})
-
-    # head.html
-    _generate_simple_html(
-        f"{output_dir}/template/template-app-html/head.html",
-        "/tmp/head.html",
-        {"XXX_TITLE": "Gene List", "XXX_JS_FILE_NAME": "network_genelist"},
-    )
-
-    # header.html
-    header_insert = "gene list"
-    _generate_simple_html(
-        f"{output_dir}/template/template-app-html/header.html",
-        "/tmp/header.html",
-        {"XXX_TITLE": header_insert},
-    )
-
-    # template_app.html
-    template = _read_file(f"{output_dir}/template/template-app-html/template_app.html")
-    final_html = (
-        template.replace("XXX_HEAD", _read_file("/tmp/head.html"))
-        .replace("XXX_H1", _read_file("/tmp/header.html"))
-        .replace("XXX_BODY_CONTAINER", _read_file("/tmp/body-container.html"))
-        .replace("XXX_CY_CONTAINER", _read_file("/tmp/cy-container.html"))
-        .replace("TSUMUGI_VERSION", TSUMUGI_VERSION)
-    )
-
-    _write_file(f"{output_dir}/app/genelist/network_genelist.html", final_html)
-
-
-def _generate_genelist_javascript(output_dir: str | Path) -> None:
-    template_lines = _read_file(f"{output_dir}/template/template-app-js/template_app.js").splitlines()
-    filtered_lines = [
-        line
-        for line in template_lines
-        if "XXX_NODE_COLOR_INITIALIZATION" not in line and "XXX_NODE_COLOR_UPDATE" not in line
-    ]
-    _write_file("/tmp/template_app.js", "\n".join(filtered_lines))
-
-    template = _read_file("/tmp/template_app.js")
-    insert = _read_file(f"{output_dir}/template/template-app-js/filterByNodeColorAndEdgeSize_genelist.js")
-
-    final_js = (
-        template.replace("XXX_FILTER_BY_NODE_COLOR_AND_EDGE_SIZE", insert)
-        .replace("XXX_NODE_MIN_MAX", "")
-        .replace(
-            "XXX_EDGE_MIN_MAX",
-            "const edgeMin = Math.min(...edgeSizes); const edgeMax = Math.max(...edgeSizes);",
-        )
-        .replace("XXX_ELEMENTS", "JSON.parse(localStorage.getItem('elements'))")
-        .replace("XXX_PHENOTYPE", "")
-        .replace("XXX_NAME", "geneList")
-    )
-
-    _write_file(f"{output_dir}/app/genelist/network_genelist.js", final_js)
-
-
-def generate_genelist_page(output_dir, TSUMUGI_VERSION: str) -> None:
-    _generate_genelist_html(output_dir, TSUMUGI_VERSION)
-    _generate_genelist_javascript(output_dir)

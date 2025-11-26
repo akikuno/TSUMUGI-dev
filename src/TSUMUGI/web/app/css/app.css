@@ -451,6 +451,10 @@ ul.suggestions li:hover {
     margin-top: 10px;
 }
 
+.mobile-exporter {
+    display: none;
+}
+
 /* ======================================================== */
 /* Custom styles for noUiSlider */
 /* ======================================================== */
@@ -698,6 +702,15 @@ button.menu-toggle-icon {
 
     .resource-buttons {
         flex-direction: column;
+    }
+
+    .mobile-exporter {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        margin: 12px 0;
+        flex-wrap: wrap;
     }
 }
 
