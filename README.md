@@ -162,7 +162,7 @@ pip install tsumugi
 
 You are ready if `tsumugi --version` prints the version.
 
-## Common usage (per command)
+## Usage
 
 ### 1. Recompute from IMPC data (`tsumugi run`)
 If `--mp_obo` is omitted, TSUMUGI uses the bundled `data-version: releases/2025-08-27/mp.obo`.  
@@ -257,7 +257,7 @@ tsumugi build-webapp \
 ```
 
 CLI supports STDIN/STDOUT, so you can chain commands:  
-`zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
 
 # 🔍 How We Calculate Phenotypically Similar Genes
 
