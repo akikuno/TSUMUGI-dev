@@ -8,8 +8,11 @@
 </p>
 
 [![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
+[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/pytest.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
+[![PyPI](https://img.shields.io/pypi/v/tsumugi.svg?label=PyPI&color=orange)](https://pypi.org/project/tsumugi/)
+[![Bioconda](https://img.shields.io/conda/v/bioconda/tsumugi?label=Bioconda&color=orange)](https://anaconda.org/bioconda/tsumugi)
 [![DOI](https://zenodo.org/badge/441025227.svg)](https://doi.org/10.5281/zenodo.14957711)
-[![Kontakt](https://img.shields.io/badge/Kontakt-923DE2)](https://forms.gle/ME8EJZZHaRNgKZ979)
+[![Contact](https://img.shields.io/badge/Contact-923DE2)](https://forms.gle/ME8EJZZHaRNgKZ979)
 
 **TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** nutzt KO-Maus-Phänotypdaten des [IMPC](https://www.mousephenotype.org/), um **genetische Module basierend auf phänotypischer Ähnlichkeit zu extrahieren und zu visualisieren**.  
 Online für alle nutzbar 👇️  
