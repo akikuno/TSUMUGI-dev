@@ -189,7 +189,7 @@ export function removeTooltips() {
 }
 
 /**
- * 汎用的に使えるカスタムツールチップ生成。位置はCytoscapeコンテナに対するレンダリング座標で指定。
+ * Creates a reusable custom tooltip. Position is given in rendered coordinates relative to the Cytoscape container.
  */
 export function showCustomTooltip({ content, position, containerSelector = ".cy" }) {
     removeTooltips();
@@ -223,7 +223,7 @@ export function showCustomTooltip({ content, position, containerSelector = ".cy"
 }
 
 /**
- * Module（連結成分）用の共通ツールチップ表示
+ * Shared tooltip for modules (connected components)
  */
 export function showSubnetworkTooltip({ component, renderedPos, containerSelector = ".cy" }) {
     if (!component) return;

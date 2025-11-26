@@ -201,7 +201,7 @@ window.addEventListener('orientationchange', () => {
 });
 
 // ############################################################################
-// Module（連結成分）フレーム＆ツールチップ
+// Module (connected component) frames & tooltips
 // ############################################################################
 
 const subnetworkOverlay = createSubnetworkOverlay();
@@ -562,7 +562,7 @@ cy.on("tap", "node, edge", function (event) {
     showTooltip(event, cy, map_symbol_to_id, target_phenotype, nodeColorMin, nodeColorMax, edgeMin, edgeMax, nodeSizes);
 });
 
-// 背景をタップしたときにModuleのツールチップを表示/非表示
+// Toggle module tooltip when tapping the background
 cy.on("tap", function (event) {
     if (event.target !== cy) {
         return;
