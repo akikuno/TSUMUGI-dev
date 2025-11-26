@@ -233,7 +233,17 @@ export function showSubnetworkTooltip({ component, renderedPos, containerSelecto
             ? component.phenotypes.map(([name, count]) => `・ ${name} (${count})`)
             : ["No shared phenotypes on visible edges."];
 
-    const tooltipContent = `<b>Phenotypes shared in Module ${component.id}</b><br>${lines.join("<br>")}`;
+    const infoIcon = `
+        <div class="info-tooltip-container">
+            <div class="info-tooltip-icon" aria-label="Tooltip: shared phenotype counts">i</div>
+            <div class="info-tooltip-content">
+                The number in parentheses indicates the count of shared phenotypes within the module.
+            </div>
+        </div>
+    `;
+
+    const header = `<div style="display: flex; align-items: center; gap: 6px;"><b>Phenotypes shared in Module ${component.id}</b>${infoIcon}</div>`;
+    const tooltipContent = `${header}${lines.join("<br>")}`;
     const anchor =
         renderedPos ||
         {
@@ -242,4 +252,25 @@ export function showSubnetworkTooltip({ component, renderedPos, containerSelecto
         };
 
     showCustomTooltip({ content: tooltipContent, position: anchor, containerSelector });
+
+    // Enable click-to-toggle for dynamically created info icons (for touch devices)
+    const tooltipEl = document.querySelector(".cy-tooltip");
+    if (tooltipEl) {
+        const tooltipIcons = tooltipEl.querySelectorAll(".info-tooltip-icon");
+        tooltipIcons.forEach((icon) => {
+            icon.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const container = this.parentElement;
+                container.classList.toggle("active");
+
+                tooltipEl.querySelectorAll(".info-tooltip-container.active").forEach((el) => {
+                    if (el !== container) {
+                        el.classList.remove("active");
+                    }
+                });
+            });
+        });
+    }
 }
