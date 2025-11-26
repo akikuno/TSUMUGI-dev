@@ -1,7 +1,7 @@
 import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/exporter.js";
 import { scaleToOriginalRange, getColorForValue } from "../js/value_scaler.js";
-import { removeTooltips, showTooltip } from "../js/tooltips.js";
-import { calculateConnectedComponents } from "../js/components.js";
+import { removeTooltips, showCustomTooltip, showTooltip } from "../js/tooltips.js";
+import { getOrderedComponents } from "../js/components.js";
 import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
 import { loadJSONGz, loadJSON } from "../js/data_loader.js";
@@ -200,6 +200,212 @@ window.addEventListener('orientationchange', () => {
     setTimeout(handleMobileResize, 500);
 });
 
+// ############################################################################
+// Module（連結成分）フレーム＆ツールチップ
+// ############################################################################
+
+const subnetworkOverlay = createSubnetworkOverlay();
+let subnetworkMeta = [];
+let isFrameUpdateQueued = false;
+let subnetworkDragState = null;
+
+function createSubnetworkOverlay() {
+    const cyContainer = document.querySelector(".cy");
+    const overlay = document.createElement("div");
+    overlay.classList.add("subnetwork-overlay");
+    cyContainer.appendChild(overlay);
+    return overlay;
+}
+
+function summarizeEdgePhenotypes(component) {
+    const counts = new Map();
+    component
+        .edges()
+        .filter((edge) => edge.visible())
+        .forEach((edge) => {
+            const phenotypes = Array.isArray(edge.data("phenotype"))
+                ? edge.data("phenotype")
+                : edge.data("phenotype")
+                    ? [edge.data("phenotype")]
+                    : [];
+            phenotypes.forEach((name) => {
+                counts.set(name, (counts.get(name) || 0) + 1);
+            });
+        });
+
+    return [...counts.entries()].sort((a, b) => {
+        if (b[1] === a[1]) {
+            return a[0].localeCompare(b[0]);
+        }
+        return b[1] - a[1];
+    });
+}
+
+function updateSubnetworkFrames() {
+    if (!subnetworkOverlay) return;
+    subnetworkOverlay.innerHTML = "";
+    subnetworkMeta = [];
+
+    const visibleComponents = getOrderedComponents(cy);
+    const padding = 16;
+    const containerWidth = cy.width();
+    const containerHeight = cy.height();
+
+    visibleComponents.forEach((component, idx) => {
+        if (component.nodes().length === 0) return;
+        const bbox = component.renderedBoundingBox({ includeOverlays: false, includeLabels: true });
+        if (!bbox || !Number.isFinite(bbox.x1) || !Number.isFinite(bbox.y1)) {
+            return;
+        }
+
+        const left = Math.max(0, bbox.x1 - padding);
+        const top = Math.max(0, bbox.y1 - padding);
+        const width = Math.min(containerWidth - left, bbox.w + padding * 2);
+        const height = Math.min(containerHeight - top, bbox.h + padding * 2);
+
+        if (width <= 0 || height <= 0) return;
+
+        const frame = document.createElement("div");
+        frame.classList.add("subnetwork-frame");
+        frame.dataset.componentId = String(idx + 1);
+        frame.style.left = `${left}px`;
+        frame.style.top = `${top}px`;
+        frame.style.width = `${width}px`;
+        frame.style.height = `${height}px`;
+
+        const label = document.createElement("div");
+        label.classList.add("subnetwork-frame__label");
+        label.textContent = `Module ${idx + 1}`;
+        frame.appendChild(label);
+
+        subnetworkOverlay.appendChild(frame);
+        attachFrameDragHandlers(frame);
+
+        const summary = summarizeEdgePhenotypes(component);
+        subnetworkMeta.push({
+            id: idx + 1,
+            bbox: { x1: left, y1: top, x2: left + width, y2: top + height },
+            phenotypes: summary,
+            nodes: component.nodes(),
+        });
+    });
+}
+
+function scheduleSubnetworkFrameUpdate() {
+    if (isFrameUpdateQueued) return;
+    isFrameUpdateQueued = true;
+    requestAnimationFrame(() => {
+        updateSubnetworkFrames();
+        isFrameUpdateQueued = false;
+    });
+}
+
+function findComponentByPosition(renderedPos) {
+    return subnetworkMeta.find(
+        (component) =>
+            renderedPos.x >= component.bbox.x1 &&
+            renderedPos.x <= component.bbox.x2 &&
+            renderedPos.y >= component.bbox.y1 &&
+            renderedPos.y <= component.bbox.y2,
+    );
+}
+
+function showSubnetworkTooltip(component, renderedPos) {
+    const lines =
+        component.phenotypes.length > 0
+            ? component.phenotypes.map(([name, count]) => `- ${name} (${count})`)
+            : ["No shared phenotypes on visible edges."];
+
+    const tooltipContent = `<b>Phenotypes shared in Module ${component.id}</b><br>${lines.join("<br>")}`;
+    const anchor = renderedPos || {
+        x: (component.bbox.x1 + component.bbox.x2) / 2,
+        y: (component.bbox.y1 + component.bbox.y2) / 2,
+    };
+
+    showCustomTooltip({ content: tooltipContent, position: anchor });
+}
+
+function pointerToRenderedPos(evt) {
+    const containerRect = document.querySelector(".cy").getBoundingClientRect();
+    if (evt.touches && evt.touches.length > 0) {
+        return {
+            x: evt.touches[0].clientX - containerRect.left,
+            y: evt.touches[0].clientY - containerRect.top,
+        };
+    }
+    return {
+        x: evt.clientX - containerRect.left,
+        y: evt.clientY - containerRect.top,
+    };
+}
+
+function startFrameDrag(evt) {
+    const compId = Number(evt.currentTarget.dataset.componentId);
+    const component = subnetworkMeta.find((c) => c.id === compId);
+    if (!component) return;
+
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    const nodes = component.nodes.filter((n) => n.visible());
+    const startRendered = pointerToRenderedPos(evt);
+    subnetworkDragState = {
+        componentId: compId,
+        startRendered,
+        zoom: cy.zoom(),
+        nodes: nodes.map((n) => ({ node: n, pos: { ...n.position() } })),
+    };
+
+    document.addEventListener("mousemove", onFrameDragMove);
+    document.addEventListener("touchmove", onFrameDragMove, { passive: false });
+    document.addEventListener("mouseup", endFrameDrag);
+    document.addEventListener("touchend", endFrameDrag);
+}
+
+function onFrameDragMove(evt) {
+    if (!subnetworkDragState) return;
+    if (evt.cancelable) {
+        evt.preventDefault();
+    }
+
+    const currentRendered = pointerToRenderedPos(evt);
+    const dxRendered = currentRendered.x - subnetworkDragState.startRendered.x;
+    const dyRendered = currentRendered.y - subnetworkDragState.startRendered.y;
+    const zoom = subnetworkDragState.zoom || 1;
+    const dx = dxRendered / zoom;
+    const dy = dyRendered / zoom;
+
+    subnetworkDragState.nodes.forEach(({ node, pos }) => {
+        node.position({ x: pos.x + dx, y: pos.y + dy });
+    });
+
+    scheduleSubnetworkFrameUpdate();
+}
+
+function endFrameDrag() {
+    subnetworkDragState = null;
+    document.removeEventListener("mousemove", onFrameDragMove);
+    document.removeEventListener("touchmove", onFrameDragMove);
+    document.removeEventListener("mouseup", endFrameDrag);
+    document.removeEventListener("touchend", endFrameDrag);
+}
+
+function attachFrameDragHandlers(frame) {
+    frame.addEventListener("mousedown", startFrameDrag);
+    frame.addEventListener("touchstart", startFrameDrag, { passive: false });
+    frame.addEventListener("click", (evt) => {
+        const compId = Number(evt.currentTarget.dataset.componentId);
+        const component = subnetworkMeta.find((c) => c.id === compId);
+        if (!component) return;
+        const renderedPos = pointerToRenderedPos(evt);
+        showSubnetworkTooltip(component, renderedPos);
+    });
+}
+
+cy.on("layoutstop zoom pan", scheduleSubnetworkFrameUpdate);
+window.addEventListener("resize", scheduleSubnetworkFrameUpdate);
+scheduleSubnetworkFrameUpdate();
+
 
 // ############################################################################
 // Control panel handler
@@ -369,9 +575,17 @@ cy.on("tap", "node, edge", function (event) {
     showTooltip(event, cy, map_symbol_to_id, target_phenotype, nodeColorMin, nodeColorMax, edgeMin, edgeMax, nodeSizes);
 });
 
-// Hide tooltip when tapping on background
+// 背景をタップしたときにModuleのツールチップを表示/非表示
 cy.on("tap", function (event) {
-    if (event.target === cy) {
+    if (event.target !== cy) {
+        return;
+    }
+
+    const renderedPos = event.renderedPosition || event.position || { x: 0, y: 0 };
+    const component = findComponentByPosition(renderedPos);
+    if (component) {
+        showSubnetworkTooltip(component, renderedPos);
+    } else {
         removeTooltips();
     }
 });
