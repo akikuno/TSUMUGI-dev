@@ -191,7 +191,7 @@ export function removeTooltips() {
 /**
  * 汎用的に使えるカスタムツールチップ生成。位置はCytoscapeコンテナに対するレンダリング座標で指定。
  */
-export function showCustomTooltip({ content, position }) {
+export function showCustomTooltip({ content, position, containerSelector = ".cy" }) {
     removeTooltips();
 
     const tooltip = document.createElement("div");
@@ -212,6 +212,34 @@ export function showCustomTooltip({ content, position }) {
         maxWidth: "320px",
     });
 
-    document.querySelector(".cy").appendChild(tooltip);
+    const container = document.querySelector(containerSelector);
+    if (!container) {
+        console.warn(`Container "${containerSelector}" not found; tooltip not rendered.`);
+        return;
+    }
+
+    container.appendChild(tooltip);
     enableTooltipDrag(tooltip);
+}
+
+/**
+ * Module（連結成分）用の共通ツールチップ表示
+ */
+export function showSubnetworkTooltip({ component, renderedPos, containerSelector = ".cy" }) {
+    if (!component) return;
+
+    const lines =
+        component.phenotypes && component.phenotypes.length > 0
+            ? component.phenotypes.map(([name, count]) => `・ ${name} (${count})`)
+            : ["No shared phenotypes on visible edges."];
+
+    const tooltipContent = `<b>Phenotypes shared in Module ${component.id}</b><br>${lines.join("<br>")}`;
+    const anchor =
+        renderedPos ||
+        {
+            x: (component.bbox.x1 + component.bbox.x2) / 2,
+            y: (component.bbox.y1 + component.bbox.y2) / 2,
+        };
+
+    showCustomTooltip({ content: tooltipContent, position: anchor, containerSelector });
 }

@@ -1,6 +1,6 @@
 import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/exporter.js";
 import { scaleToOriginalRange, getColorForValue } from "../js/value_scaler.js";
-import { removeTooltips, showCustomTooltip, showTooltip } from "../js/tooltips.js";
+import { removeTooltips, showSubnetworkTooltip, showTooltip } from "../js/tooltips.js";
 import { getOrderedComponents } from "../js/components.js";
 import { createSlider } from "../js/slider.js";
 import { filterElementsByGenotypeAndSex } from "../js/filters.js";
@@ -276,10 +276,11 @@ function updateSubnetworkFrames() {
         const label = document.createElement("div");
         label.classList.add("subnetwork-frame__label");
         label.textContent = `Module ${idx + 1}`;
+        label.dataset.componentId = String(idx + 1);
         frame.appendChild(label);
 
         subnetworkOverlay.appendChild(frame);
-        attachFrameDragHandlers(frame);
+        attachFrameDragHandlers(frame, label);
 
         const summary = summarizeEdgePhenotypes(component);
         subnetworkMeta.push({
@@ -308,21 +309,6 @@ function findComponentByPosition(renderedPos) {
             renderedPos.y >= component.bbox.y1 &&
             renderedPos.y <= component.bbox.y2,
     );
-}
-
-function showSubnetworkTooltip(component, renderedPos) {
-    const lines =
-        component.phenotypes.length > 0
-            ? component.phenotypes.map(([name, count]) => `- ${name} (${count})`)
-            : ["No shared phenotypes on visible edges."];
-
-    const tooltipContent = `<b>Phenotypes shared in Module ${component.id}</b><br>${lines.join("<br>")}`;
-    const anchor = renderedPos || {
-        x: (component.bbox.x1 + component.bbox.x2) / 2,
-        y: (component.bbox.y1 + component.bbox.y2) / 2,
-    };
-
-    showCustomTooltip({ content: tooltipContent, position: anchor });
 }
 
 function pointerToRenderedPos(evt) {
@@ -390,15 +376,16 @@ function endFrameDrag() {
     document.removeEventListener("touchend", endFrameDrag);
 }
 
-function attachFrameDragHandlers(frame) {
-    frame.addEventListener("mousedown", startFrameDrag);
-    frame.addEventListener("touchstart", startFrameDrag, { passive: false });
-    frame.addEventListener("click", (evt) => {
-        const compId = Number(evt.currentTarget.dataset.componentId);
+function attachFrameDragHandlers(frame, handleElement = frame) {
+    const handle = handleElement;
+    handle.addEventListener("mousedown", startFrameDrag);
+    handle.addEventListener("touchstart", startFrameDrag, { passive: false });
+    handle.addEventListener("click", (evt) => {
+        const compId = Number((evt.currentTarget || frame).dataset.componentId);
         const component = subnetworkMeta.find((c) => c.id === compId);
         if (!component) return;
         const renderedPos = pointerToRenderedPos(evt);
-        showSubnetworkTooltip(component, renderedPos);
+        showSubnetworkTooltip({ component, renderedPos });
     });
 }
 
@@ -584,7 +571,7 @@ cy.on("tap", function (event) {
     const renderedPos = event.renderedPosition || event.position || { x: 0, y: 0 };
     const component = findComponentByPosition(renderedPos);
     if (component) {
-        showSubnetworkTooltip(component, renderedPos);
+        showSubnetworkTooltip({ component, renderedPos });
     } else {
         removeTooltips();
     }
