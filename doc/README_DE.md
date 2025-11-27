@@ -170,16 +170,24 @@ Ausgabe: `./tsumugi-output` enthält genewise_phenotype_annotations.jsonl.gz, pa
 > - Linux: `open_webapp_linux.sh`
 
 ### 2. Nach MP-Term filtern (`tsumugi mp --include/--exclude`)
+Extrahiere nur Genpaare mit interessierenden Phänotypen oder Genpaare, bei denen der betreffende Phänotyp gemessen wurde, aber keine signifikante Abweichung zeigte.
+
 ```bash
+# Nur Genpaare extrahieren, die MP:0001146 (abnormal testis morphology) oder untergeordnete Begriffe (z. B. MP:0004849 abnormal testis size) enthalten
 tsumugi mp --include MP:0001146 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 
+# Genpaare extrahieren, bei denen MP:0001146 und untergeordnete Begriffe gemessen wurden und keine signifikante Abnormalität vorlag
 tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 ```
+
+> [!IMPORTANT]
+> **Untergeordnete MP-Begriffe des angegebenen IDs werden ebenfalls berücksichtigt.**  
+> Beispielsweise werden bei `MP:0001146 (abnormal testis morphology)` auch untergeordnete Begriffe wie `MP:0004849 (abnormal testis size)` berücksichtigt.
 
 ### 3. Nach Phänotypanzahl filtern (`tsumugi n-phenos`)
 - Geteilte Phänotypen je Paar:

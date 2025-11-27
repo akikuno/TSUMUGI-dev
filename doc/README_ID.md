@@ -170,16 +170,24 @@ Keluaran: `./tsumugi-output` berisi genewise_phenotype_annotations.jsonl.gz, pai
 > - Linux: `open_webapp_linux.sh`
 
 ### 2. Filter istilah MP (`tsumugi mp --include/--exclude`)
+Ambil hanya pasangan gen yang mengandung fenotipe yang diminati, atau pasangan di mana fenotipe tersebut sudah diukur tetapi tidak menunjukkan kelainan yang signifikan.
+
 ```bash
+# Ambil hanya pasangan yang mencakup MP:0001146 (abnormal testis morphology) atau istilah turunannya (mis. MP:0004849 abnormal testis size)
 tsumugi mp --include MP:0001146 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 
+# Ambil pasangan di mana MP:0001146 dan istilah turunannya diukur namun tidak menunjukkan kelainan signifikan
 tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 ```
+
+> [!IMPORTANT]
+> **Istilah MP turunan dari ID yang ditentukan juga diproses.**  
+> Misalnya, jika Anda menentukan `MP:0001146 (abnormal testis morphology)`, istilah turunan seperti `MP:0004849 (abnormal testis size)` juga akan dihitung.
 
 ### 3. Filter jumlah fenotipe (`tsumugi n-phenos`)
 - Fenotipe bersama per pasangan:

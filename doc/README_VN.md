@@ -170,16 +170,24 @@ tsumugi run \
 > - Linux: `open_webapp_linux.sh`
 
 ### 2. Lọc theo thuật ngữ MP (`tsumugi mp --include/--exclude`)
+Chỉ trích xuất các cặp gen chứa kiểu hình quan tâm, hoặc các cặp đã đo các kiểu hình đó nhưng không có bất thường đáng kể.
+
 ```bash
+# Chỉ lấy các cặp bao gồm MP:0001146 (abnormal testis morphology) hoặc các thuật ngữ hậu duệ (ví dụ: MP:0004849 abnormal testis size)
 tsumugi mp --include MP:0001146 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 
+# Lấy các cặp đã đo MP:0001146 và các thuật ngữ hậu duệ nhưng không ghi nhận bất thường đáng kể
 tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 ```
+
+> [!IMPORTANT]
+> **Các thuật ngữ MP hậu duệ của ID được chỉ định cũng được xử lý.**  
+> Ví dụ, khi chỉ định `MP:0001146 (abnormal testis morphology)`, các thuật ngữ hậu duệ như `MP:0004849 (abnormal testis size)` cũng được tính đến.
 
 ### 3. Lọc theo số kiểu hình (`tsumugi n-phenos`)
 - Kiểu hình chung mỗi cặp:

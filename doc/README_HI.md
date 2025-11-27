@@ -171,16 +171,24 @@ tsumugi run \
 > - Linux: `open_webapp_linux.sh`
 
 ### 2. MP 용어 필터(`tsumugi mp --include/--exclude`)
+관심 있는 표현형을 가진 유전자 페어만 추출하거나, 해당 표현형을 측정했지만 유의한 이상이 없었던 유전자 페어를 추출할 수 있습니다。
+
 ```bash
+# MP:0001146(abnormal testis morphology)와 그 하위 표현형(MP:0004849 (abnormal testis size) 등)을 포함하는 유전자 페어만 추출
 tsumugi mp --include MP:0001146 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 
+# MP:0001146(abnormal testis morphology)와 그 하위 표현형(MP:0004849 (abnormal testis size) 등)을 측정했지만 유의한 이상이 없었던 유전자 페어를 추출
 tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 ```
+
+> [!IMPORTANT]
+> **지정한 MP 용어의 하위 용어도 함께 처리됩니다.**  
+> 예를 들어 `MP:0001146 (abnormal testis morphology)`를 지정하면 `MP:0004849 (abnormal testis size)` 등의 하위 용어도 고려됩니다。
 
 ### 3. 표현형 수 필터(`tsumugi n-phenos`)
 - 페어당 공유 표현형:

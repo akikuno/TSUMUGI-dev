@@ -261,7 +261,7 @@ tsumugi mp --exclude MP:0001146 \
 ```
 
 > [!IMPORTANT]
-> 指定されたMP用語の下層にある用語も含めてフィルターされます。
+> **指定されたMP用語の下層にある用語も対処されます。**
 > 例えば`MP:0001146 (abnormal testis morphology)`を指定した場合、`MP:0004849 (abnormal testis size)`などの下層用語も考慮されます。
 
 ### 3. 表現型数でフィルターする(`tsumugi n-phenos`)

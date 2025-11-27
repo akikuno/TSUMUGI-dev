@@ -171,16 +171,24 @@ tsumugi run \
 > - Linux: `open_webapp_linux.sh`
 
 ### 2. 依 MP 術語過濾 (`tsumugi mp --include/--exclude`)
+僅提取包含目標表型的基因對，或提取已測量該表型但未出現顯著異常的基因對。
+
 ```bash
+# 只提取包含 MP:0001146 (abnormal testis morphology) 或其子術語（例如 MP:0004849 (abnormal testis size)）的基因對
 tsumugi mp --include MP:0001146 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 
+# 提取已測量 MP:0001146 及其子術語但未出現顯著異常的基因對
 tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 ```
+
+> [!IMPORTANT]
+> **也會處理指定 MP 術語的子術語。**  
+> 例如指定 `MP:0001146 (abnormal testis morphology)` 時，也會考慮 `MP:0004849 (abnormal testis size)` 等子術語。
 
 ### 3. 依表現型數量過濾 (`tsumugi n-phenos`)
 - 基因對共享表現型數:
