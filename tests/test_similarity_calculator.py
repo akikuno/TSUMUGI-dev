@@ -1,13 +1,11 @@
-import math
-
 import numpy as np
 import pytest
 from TSUMUGI.ontology_handler import build_term_hierarchy
 from TSUMUGI.similarity_calculator import (
     _apply_phenodigm_scaling,
-    _calculate_information_content,
     _compute_pair_mica_and_resnik,
     _precompute_information_content,
+    _prepare_similarity_maps,
     calculate_jaccard_indices,
     calculate_num_shared_phenotypes,
 )
@@ -44,24 +42,6 @@ def sample_ontology():
 
 
 @pytest.mark.parametrize(
-    "term_id, num_descendants",
-    [
-        ("A", 5),  # B, C, D, E, F
-        ("B", 3),  # D, E, F
-        ("C", 2),  # E, F
-        ("F", 0),  # Leaf node
-    ],
-)
-def test_calculate_information_content(sample_ontology, term_id, num_descendants):
-    total = sample_ontology["total_term_count"]
-    term_count = num_descendants + 1
-    expected_ic = -math.log(term_count / total)
-
-    result = _calculate_information_content(term_id, sample_ontology["child_map"], total)
-    assert result == pytest.approx(expected_ic)
-
-
-@pytest.mark.parametrize(
     "term1, term2, expected_mica",
     [
         ("D", "E", "B"),  # Common ancestors: {B, A} -> B has higher IC
@@ -87,22 +67,30 @@ def test_apply_phenodigm_scaling_identical_phenotypes():
     """
     Case 1: When phenotype sets match exactly, score should be 100.
     """
-    gene1_mp_term_ids = {"MP:A", "MP:B"}
-    gene2_mp_term_ids = {"MP:A", "MP:B"}
 
     term_pair_similarity_map = {
         frozenset(["MP:A"]): {"MP:A": 2.0},
         frozenset(["MP:B"]): {"MP:B": 4.0},
         frozenset(["MP:A", "MP:B"]): {"MP:A": 1.0},
     }
+    _, term_ic_map = _prepare_similarity_maps(term_pair_similarity_map)
+    ic_scores = np.array([term_ic_map["MP:A"], term_ic_map["MP:B"]], dtype=float)
+    gene1_data = {
+        "terms": np.array(["MP:A", "MP:B"], dtype=object),
+        "zygosity": np.array(["hom", "hom"], dtype=object),
+        "life_stage": np.array(["A", "A"], dtype=object),
+        "sexual_dimorphism": np.array(["None", "None"], dtype=object),
+        "ic_scores": ic_scores,
+        "ic_max": float(ic_scores.max()),
+    }
+    gene2_data = gene1_data
 
     weighted_similarity_matrix = np.array([[2.0, 1.0], [1.0, 4.0]])
 
     result = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
-        gene1_mp_term_ids,
-        gene2_mp_term_ids,
-        term_pair_similarity_map,
+        gene1_data,
+        gene2_data,
     )
 
     assert result == 100
@@ -112,8 +100,6 @@ def test_apply_phenodigm_scaling_disjoint_phenotypes():
     """
     Case 2: Completely disjoint phenotype sets should produce score 0.
     """
-    gene1_mp_term_ids = {"MP:A", "MP:B"}
-    gene2_mp_term_ids = {"MP:C", "MP:D"}
 
     term_pair_similarity_map = {
         frozenset(["MP:A"]): {"MP:A": 2.0},
@@ -121,14 +107,32 @@ def test_apply_phenodigm_scaling_disjoint_phenotypes():
         frozenset(["MP:C"]): {"MP:C": 3.0},
         frozenset(["MP:D"]): {"MP:D": 5.0},
     }
+    _, term_ic_map = _prepare_similarity_maps(term_pair_similarity_map)
+    gene1_ic = np.array([term_ic_map["MP:A"], term_ic_map["MP:B"]], dtype=float)
+    gene2_ic = np.array([term_ic_map["MP:C"], term_ic_map["MP:D"]], dtype=float)
+    gene1_data = {
+        "terms": np.array(["MP:A", "MP:B"], dtype=object),
+        "zygosity": np.array(["hom", "hom"], dtype=object),
+        "life_stage": np.array(["A", "A"], dtype=object),
+        "sexual_dimorphism": np.array(["None", "None"], dtype=object),
+        "ic_scores": gene1_ic,
+        "ic_max": float(gene1_ic.max()),
+    }
+    gene2_data = {
+        "terms": np.array(["MP:C", "MP:D"], dtype=object),
+        "zygosity": np.array(["hom", "hom"], dtype=object),
+        "life_stage": np.array(["A", "A"], dtype=object),
+        "sexual_dimorphism": np.array(["None", "None"], dtype=object),
+        "ic_scores": gene2_ic,
+        "ic_max": float(gene2_ic.max()),
+    }
 
     weighted_similarity_matrix = np.array([[0.0, 0.0], [0.0, 0.0]])
 
     result = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
-        gene1_mp_term_ids,
-        gene2_mp_term_ids,
-        term_pair_similarity_map,
+        gene1_data,
+        gene2_data,
     )
 
     assert result == 0
@@ -138,21 +142,38 @@ def test_apply_phenodigm_scaling_average_score_50():
     """
     Case 3: Observed similarity is exactly half of theoretical maximum -> score 50.
     """
-    gene1_mp_term_ids = {"MP:A"}
-    gene2_mp_term_ids = {"MP:B"}
 
     term_pair_similarity_map = {
         frozenset(["MP:A"]): {"MP:A": 4.0},
         frozenset(["MP:B"]): {"MP:B": 4.0},
+    }
+    _, term_ic_map = _prepare_similarity_maps(term_pair_similarity_map)
+
+    gene1_ic = np.array([term_ic_map["MP:A"]], dtype=float)
+    gene2_ic = np.array([term_ic_map["MP:B"]], dtype=float)
+    gene1_data = {
+        "terms": np.array(["MP:A"], dtype=object),
+        "zygosity": np.array(["hom"], dtype=object),
+        "life_stage": np.array(["A"], dtype=object),
+        "sexual_dimorphism": np.array(["None"], dtype=object),
+        "ic_scores": gene1_ic,
+        "ic_max": float(gene1_ic.max()),
+    }
+    gene2_data = {
+        "terms": np.array(["MP:B"], dtype=object),
+        "zygosity": np.array(["hom"], dtype=object),
+        "life_stage": np.array(["A"], dtype=object),
+        "sexual_dimorphism": np.array(["None"], dtype=object),
+        "ic_scores": gene2_ic,
+        "ic_max": float(gene2_ic.max()),
     }
 
     weighted_similarity_matrix = np.array([[2.0]])
 
     result = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
-        gene1_mp_term_ids,
-        gene2_mp_term_ids,
-        term_pair_similarity_map,
+        gene1_data,
+        gene2_data,
     )
 
     assert result == 50

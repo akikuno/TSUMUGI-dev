@@ -160,7 +160,6 @@ def run_pipeline(args) -> None:
             term_pair_similarity_map,
             ontology_terms,
             ic_threshold=5,
-            threads=1,  # Set to 1 because passing large objects to the initializer causes the process to hang; this will be improved in the future.
         )
     )
     # 10 min
@@ -169,7 +168,6 @@ def run_pipeline(args) -> None:
     phenodigm_scores: dict[frozenset[str], int] = similarity_calculator.calculate_phenodigm_score(
         genewise_phenotype_significants,
         term_pair_similarity_map,
-        threads=1,  # Set to 1 because passing large objects to the initializer causes the process to hang; this will be improved in the future.
     )
     # 30 min
 
