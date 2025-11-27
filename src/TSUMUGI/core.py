@@ -65,7 +65,7 @@ def run_pipeline(args) -> None:
     # --------------------------------------------------------
     logging.info("Annotating life stage and sexual dimorphisms...")
 
-    records_annotated = records_formatted.copy()
+    records_annotated = records_formatted
 
     embryo_assays = {
         "E9.5",
@@ -88,7 +88,7 @@ def run_pipeline(args) -> None:
     # --------------------------------------------------------
     # Filter records
     # --------------------------------------------------------
-    records_filtered = records_annotated.copy()
+    records_filtered = records_annotated
 
     # Keep only records with mp_term_id in the ontology file (= not obsolete)
     records_filtered = [record for record in records_filtered if record["mp_term_id"] in ontology_terms]
@@ -118,7 +118,7 @@ def run_pipeline(args) -> None:
     }
     records_filtered = filterer.subset_columns(records_filtered, to_keep_columns)
 
-    genewise_phenotype_annotations = records_filtered.copy()
+    genewise_phenotype_annotations = records_filtered
     genewise_phenotype_significants = [record for record in genewise_phenotype_annotations if record["significant"]]
 
     # --------------------------------------------------------
