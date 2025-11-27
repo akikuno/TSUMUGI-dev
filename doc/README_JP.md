@@ -244,15 +244,16 @@ tsumugi run \
 
 
 ### 2. MP用語でフィルターする(`tsumugi mp --include/--exclude`)
-興味のある表現型を持つ遺伝子ペアのみ抽出、または該当表現型を測定済みだが有意な異常を示さなかった遺伝子ペアを除外できます。
+興味のある表現型を持つ遺伝子ペアのみ抽出、または該当表現型を測定済みだが有意な異常を示さなかった遺伝子ペアを抽出できます。
 
 ```bash
-# MP:0001146(abnormal testis morphology)とその下層の表現型（MP:0004849 (abnormal testis size)など）を含む遺伝子ペアだけ残す
+# MP:0001146(abnormal testis morphology)とその下層の表現型（MP:0004849 (abnormal testis size)など）を含む遺伝子ペアだけを抽出
 tsumugi mp --include MP:0001146 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
 
-# MP:0001146(abnormal testis morphology)とその下層の表現型（MP:0004849 (abnormal testis size)など）を測定しており、かつ有意な示さなかった遺伝子を除外
+# MP:0001146(abnormal testis morphology)とその下層の表現型（MP:0004849 (abnormal testis size)など）を
+# 測定しており、かつ有意な示さなかった遺伝子ペアを抽出
 tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
