@@ -91,7 +91,7 @@ def build_graph(pairwise_similarity_annotations: list[dict], nodes: dict) -> nx.
     """
     G = nx.Graph()
 
-    edge_id = 0  # ← ループの外に出して、複数エッジで連番になるようにする
+    edge_id = 0  # Place outside the loop so multiple edges get sequential IDs
     geneset = set()
     # Add edges
     for record in pairwise_similarity_annotations:

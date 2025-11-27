@@ -181,7 +181,7 @@ setPageTitle(pageConfig, map_symbol_to_id);
 
 const elements = loadElementsForConfig(pageConfig);
 if (!elements || elements.length === 0) {
-    renderEmptyState("データが見つかりません。入力内容を確認してください。");
+    renderEmptyState("No data found. Please check your input.");
     throw new Error("No elements available to render");
 }
 
@@ -594,7 +594,7 @@ if (isPhenotypePage && nodeSlider) {
 // Modify the filter function to handle upper and lower bounds
 // --------------------------------------------------------
 
-let filterByNodeColorAndEdgeSize = () => {};
+let filterByNodeColorAndEdgeSize = () => { };
 
 if (isPhenotypePage) {
     filterByNodeColorAndEdgeSize = function () {
