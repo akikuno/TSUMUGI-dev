@@ -313,21 +313,50 @@ const cy = cytoscape({
 
 window.cy = cy;
 
+const bodyContainer = document.querySelector(".body-container");
+const leftPanelToggleButton = document.getElementById("toggle-left-panel");
+const rightPanelToggleButton = document.getElementById("toggle-right-panel");
+
+function resetPanelStatesForMobile() {
+    if (!bodyContainer) return;
+
+    if (window.innerWidth <= 600) {
+        const hadHiddenPanel =
+            bodyContainer.classList.contains("left-panel-hidden") ||
+            bodyContainer.classList.contains("right-panel-hidden");
+
+        bodyContainer.classList.remove("left-panel-hidden", "right-panel-hidden");
+
+        if (leftPanelToggleButton) {
+            leftPanelToggleButton.classList.remove("collapsed");
+            leftPanelToggleButton.setAttribute("aria-label", "Hide left panel");
+        }
+
+        if (rightPanelToggleButton) {
+            rightPanelToggleButton.classList.remove("collapsed");
+            rightPanelToggleButton.setAttribute("aria-label", "Hide right panel");
+        }
+
+        if (hadHiddenPanel) {
+            refreshCyViewport();
+        }
+    }
+}
+
 function handleMobileResize() {
+    resetPanelStatesForMobile();
+
     if (cy) {
         setTimeout(() => {
-            cy.resize();
-            cy.fit();
-            cy.center();
+            refreshCyViewport();
         }, 300);
     }
 }
 
 setTimeout(() => {
     if (window.innerWidth <= 600) {
-        cy.resize();
-        cy.fit();
-        cy.center();
+        resetPanelStatesForMobile();
+        refreshCyViewport();
     }
 }, 500);
 
@@ -528,6 +557,51 @@ function attachFrameDragHandlers(frame, handleElement = frame) {
 cy.on("layoutstop zoom pan", scheduleSubnetworkFrameUpdate);
 window.addEventListener("resize", scheduleSubnetworkFrameUpdate);
 scheduleSubnetworkFrameUpdate();
+
+// ############################################################################
+// Side panel toggles
+// ############################################################################
+
+function refreshCyViewport() {
+    if (!cy) return;
+    if (bodyContainer) {
+        void bodyContainer.offsetWidth;
+    }
+    requestAnimationFrame(() => {
+        cy.resize();
+        cy.fit();
+        cy.center();
+        scheduleSubnetworkFrameUpdate();
+    });
+}
+
+function toggleSidePanel(side) {
+    if (!bodyContainer) return;
+
+    const className = `${side}-panel-hidden`;
+    const shouldHide = !bodyContainer.classList.contains(className);
+
+    bodyContainer.classList.toggle(className, shouldHide);
+
+    const targetButton = side === "left" ? leftPanelToggleButton : rightPanelToggleButton;
+    if (targetButton) {
+        targetButton.classList.toggle("collapsed", shouldHide);
+        targetButton.setAttribute("aria-label", shouldHide ? `Show ${side} panel` : `Hide ${side} panel`);
+    }
+
+    refreshCyViewport();
+}
+
+function setupSidePanelToggles() {
+    if (!leftPanelToggleButton || !rightPanelToggleButton || !bodyContainer) {
+        return;
+    }
+
+    leftPanelToggleButton.addEventListener("click", () => toggleSidePanel("left"));
+    rightPanelToggleButton.addEventListener("click", () => toggleSidePanel("right"));
+}
+
+setupSidePanelToggles();
 
 // ############################################################################
 // Control panel handler
