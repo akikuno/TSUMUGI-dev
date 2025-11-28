@@ -55,9 +55,6 @@ def select_targetted_genes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
 def _prepare_directories(output_dir: str | Path) -> None:
     Path(output_dir / "data" / "phenotype").mkdir(parents=True, exist_ok=True)
     Path(output_dir / "data" / "genesymbol").mkdir(parents=True, exist_ok=True)
-    Path(output_dir / "app" / "phenotype").mkdir(parents=True, exist_ok=True)
-    Path(output_dir / "app" / "genesymbol").mkdir(parents=True, exist_ok=True)
-    Path(output_dir / "app" / "genelist").mkdir(parents=True, exist_ok=True)
 
 
 def _generate_index_html(output_dir: str | Path, TSUMUGI_VERSION: str) -> None:
