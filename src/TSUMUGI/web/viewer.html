@@ -253,19 +253,19 @@
                 <!-- Centrality controls -->
                 <!-- ===================================== -->
                 <div class="boxed-section">
-                    <span>Centrality</span>
+                    <span>Centrality
+                        <div class="info-tooltip-container">
+                            <div class="info-tooltip-icon">i</div>
+                            <div class="info-tooltip-content">
+                                'Normalized' options divide the centrality score by the number of phenotypes
+                                observed in KO mice
+                            </div>
+                        </div>
+                    </span>
 
                     <div class="slider-container">
                         <div class="label-row">
                             <label for="centrality-type-dropdown" class="control-label">
-                                Centrality:
-                                <div class="info-tooltip-container">
-                                    <div class="info-tooltip-icon">i</div>
-                                    <div class="info-tooltip-content">
-                                        'Normalized' options divide the centrality score by the number of phenotypes
-                                        observed in KO mice
-                                    </div>
-                                </div>
                             </label>
                         </div>
                         <div>
@@ -301,9 +301,6 @@
                     <span>Layout</span>
 
                     <div class="slider-container">
-                        <div class="label-row">
-                            <label for="layout-dropdown" class="control-label">Layout:</label>
-                        </div>
                         <div>
                             <select class="exporter" id="layout-dropdown">
                                 <option value="cose" selected>Cose</option>
@@ -327,7 +324,7 @@
                 </div>
 
                 <div class="boxed-section">
-                    <span>Size & Width</span>
+                    <span>Font & Line</span>
                     <div class="slider-container">
                         <div class="label-row">
                             <span class="control-label"> Font size: <span id="font-size-value">20</span></span>
