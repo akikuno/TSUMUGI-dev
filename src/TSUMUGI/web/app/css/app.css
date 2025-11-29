@@ -53,7 +53,6 @@ a {
     box-sizing: border-box;
     align-items: stretch;
     display: flex;
-    position: relative;
 }
 
 /* ======================================================== */
@@ -79,57 +78,6 @@ a {
     display: flex;
     flex-direction: column;
     background-color: white;
-}
-
-/* Panel toggle buttons */
-.panel-toggle-button {
-    position: absolute;
-    top: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid #aaa;
-    background-color: #fff;
-    color: #333;
-    cursor: pointer;
-    z-index: 1200;
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.panel-toggle-button:hover {
-    background-color: #ffeddc;
-    color: #d65f00;
-}
-
-.panel-toggle-button i {
-    pointer-events: none;
-    transition: transform 0.2s ease;
-}
-
-.panel-toggle-button.collapsed i {
-    transform: rotate(180deg);
-}
-
-.left-panel-toggle {
-    left: 10px;
-}
-
-.right-panel-toggle {
-    right: 10px;
-}
-
-.body-container.left-panel-hidden .left-control-panel-container {
-    display: none;
-}
-
-.body-container.right-panel-hidden .right-control-panel-container {
-    display: none;
 }
 
 .panel-section {
@@ -166,7 +114,6 @@ a {
     justify-content: center;
     border: 2px solid #aaa;
     border-radius: 10px;
-    min-width: 0; /* allow shrinking back after expanding */
 }
 
 .cy {
@@ -765,10 +712,6 @@ button.menu-toggle-icon {
         margin: 12px 0;
         flex-wrap: wrap;
     }
-
-    .panel-toggle-button {
-        display: none;
-    }
 }
 
 /* ======================================================== */
@@ -847,4 +790,12 @@ button.menu-toggle-icon {
 
 .info-tooltip-content a:hover {
     color: #81d4fa;
+}
+
+/* Cytoscape tooltip scroll area */
+.cy-tooltip-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 6px;
+    display: block;
 }

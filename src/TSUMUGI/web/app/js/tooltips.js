@@ -2,12 +2,15 @@
 // Tooltip Handling Functions
 // ############################################################
 
+let restoreCyInteraction = null;
+let wheelBlocker = null;
+
 /*
     Formats phenotypes for tooltips, placing and highlighting the target phenotype at the top.
 */
 function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
     if (!target_phenotype) {
-        return phenotypes.map((anno) => "・ " + anno).join("<br>");
+        return wrapScrollableList(phenotypes.map((anno) => "・ " + anno));
     }
 
     const matching = [];
@@ -23,15 +26,20 @@ function formatPhenotypesWithHighlight(phenotypes, target_phenotype) {
 
     const ordered = [...matching, ...others];
 
-    return ordered
-        .map((phenotype) => {
-            if (phenotype.startsWith(target_phenotype)) {
-                return `▶ ${phenotype}`;
-            } else {
-                return "・ " + phenotype;
-            }
-        })
-        .join("<br>");
+    const lines = ordered.map((phenotype) => {
+        if (phenotype.startsWith(target_phenotype)) {
+            return `▶ ${phenotype}`;
+        } else {
+            return "・ " + phenotype;
+        }
+    });
+
+    return wrapScrollableList(lines);
+}
+
+function wrapScrollableList(lines) {
+    if (!Array.isArray(lines) || lines.length === 0) return "";
+    return `<div class="cy-tooltip-scroll">${lines.join("<br>")}</div>`;
 }
 
 function createTooltip(
@@ -66,7 +74,7 @@ function createTooltip(
         // Append the associated human diseases section when data is available
         if (diseases && diseases.length > 0 && diseases[0] !== "") {
             tooltipText += `<br><br><b>Associated Human Diseases</b><br>`;
-            tooltipText += diseases.map((disease) => "・ " + disease).join("<br>");
+            tooltipText += wrapScrollableList(diseases.map((disease) => "・ " + disease));
         }
         pos = event.target.renderedPosition();
     } else if (event.target.isEdge()) {
@@ -143,6 +151,80 @@ function enableTooltipDrag(tooltip) {
     });
 }
 
+function enableTooltipWheelScroll(tooltip) {
+    if (!tooltip) return;
+
+    const scrollAreas = tooltip.querySelectorAll(".cy-tooltip-scroll");
+    scrollAreas.forEach((area) => {
+        area.addEventListener(
+            "wheel",
+            (e) => {
+                // Prevent Cytoscape zoom/pan; manually scroll the tooltip area
+                e.preventDefault();
+                e.stopPropagation();
+                area.scrollTop += e.deltaY;
+            },
+            { passive: false },
+        );
+    });
+
+    // Safety net: prevent wheel bubbling from tooltip to Cytoscape
+    tooltip.addEventListener(
+        "wheel",
+        (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        },
+        { passive: false },
+    );
+}
+
+function attachWheelBlocker(containerSelector = ".cy") {
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+
+    detachWheelBlocker(containerSelector);
+    wheelBlocker = function (e) {
+        if (e.target && e.target.closest(".cy-tooltip")) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    };
+    container.addEventListener("wheel", wheelBlocker, { capture: true, passive: false });
+}
+
+function detachWheelBlocker(containerSelector = ".cy") {
+    if (!wheelBlocker) return;
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+    container.removeEventListener("wheel", wheelBlocker, { capture: true, passive: false });
+    wheelBlocker = null;
+}
+
+function disableCyInteraction(cyInstance) {
+    if (!cyInstance || restoreCyInteraction) return;
+    const prev = {
+        zoom: cyInstance.zoomingEnabled(),
+        pan: cyInstance.panningEnabled(),
+        box: cyInstance.boxSelectionEnabled(),
+    };
+    cyInstance.zoomingEnabled(false);
+    cyInstance.panningEnabled(false);
+    cyInstance.boxSelectionEnabled(false);
+    restoreCyInteraction = () => {
+        cyInstance.zoomingEnabled(prev.zoom);
+        cyInstance.panningEnabled(prev.pan);
+        cyInstance.boxSelectionEnabled(prev.box);
+        restoreCyInteraction = null;
+    };
+}
+
+function enableCyInteraction() {
+    if (restoreCyInteraction) {
+        restoreCyInteraction();
+    }
+}
+
 /*
     Accepts target_phenotype and passes it to createTooltip
 */
@@ -182,10 +264,18 @@ export function showTooltip(
 
     document.querySelector(".cy").appendChild(tooltip);
     enableTooltipDrag(tooltip);
+    enableTooltipWheelScroll(tooltip);
+    attachWheelBlocker();
+
+    const cyInstance = cy || window.cy;
+    tooltip.addEventListener("pointerenter", () => disableCyInteraction(cyInstance));
+    tooltip.addEventListener("pointerleave", enableCyInteraction);
 }
 
 export function removeTooltips() {
     document.querySelectorAll(".cy-tooltip").forEach((el) => el.remove());
+    detachWheelBlocker();
+    enableCyInteraction();
 }
 
 /**
@@ -220,6 +310,12 @@ export function showCustomTooltip({ content, position, containerSelector = ".cy"
 
     container.appendChild(tooltip);
     enableTooltipDrag(tooltip);
+    enableTooltipWheelScroll(tooltip);
+    attachWheelBlocker(containerSelector);
+
+    const cyInstance = window.cy;
+    tooltip.addEventListener("pointerenter", () => disableCyInteraction(cyInstance));
+    tooltip.addEventListener("pointerleave", enableCyInteraction);
 }
 
 /**
@@ -243,7 +339,7 @@ export function showSubnetworkTooltip({ component, renderedPos, containerSelecto
     `;
 
     const header = `<div style="display: flex; align-items: center; gap: 6px;"><b>Phenotypes shared in Module ${component.id}</b>${infoIcon}</div>`;
-    const tooltipContent = `${header}${lines.join("<br>")}`;
+    const tooltipContent = `${header}${wrapScrollableList(lines)}`;
     const anchor =
         renderedPos ||
         {
