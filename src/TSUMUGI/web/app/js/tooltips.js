@@ -61,13 +61,27 @@ function createTooltip(
         const severityValue =
             !shouldHideSeverity && !isBinary && Number.isFinite(rawSeverity) ? Math.round(rawSeverity) : null;
         const severityText = severityValue !== null ? ` (Severity: ${severityValue})` : "";
-        tooltipText = `<b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b><br>`;
-        tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
-        // Append the associated human diseases section when data is available
+
+        const phenotypesHtml = formatPhenotypesWithHighlight(phenotypes, target_phenotype);
+        const phenotypeSection = `
+            <div class="cy-tooltip__section cy-tooltip__section--phenotypes">
+                <div class="cy-tooltip__section-title"><b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b></div>
+                <div class="cy-tooltip__section-body">${phenotypesHtml}</div>
+            </div>
+        `;
+
+        let diseaseSection = "";
         if (diseases && diseases.length > 0 && diseases[0] !== "") {
-            tooltipText += `<br><br><b>Associated Human Diseases</b><br>`;
-            tooltipText += diseases.map((disease) => "・ " + disease).join("<br>");
+            const diseasesHtml = diseases.map((disease) => "・ " + disease).join("<br>");
+            diseaseSection = `
+                <div class="cy-tooltip__section cy-tooltip__section--diseases">
+                    <div class="cy-tooltip__section-title"><b>Associated Human Diseases</b></div>
+                    <div class="cy-tooltip__section-body">${diseasesHtml}</div>
+                </div>
+            `;
         }
+
+        tooltipText = `${phenotypeSection}${diseaseSection}`;
         pos = event.target.renderedPosition();
     } else if (event.target.isEdge()) {
         const sourceNode = cy.getElementById(data.source).data("label");
@@ -143,6 +157,52 @@ function enableTooltipDrag(tooltip) {
     });
 }
 
+function isolateTooltipScroll(tooltip, cyInstance = null) {
+    let previousZoomEnabled;
+    let previousPanEnabled;
+    const restoreCyInteractions = () => {
+        if (!cyInstance) return;
+        if (typeof previousZoomEnabled === "boolean") {
+            cyInstance.userZoomingEnabled(previousZoomEnabled);
+        }
+        if (typeof previousPanEnabled === "boolean") {
+            cyInstance.userPanningEnabled(previousPanEnabled);
+        }
+    };
+
+    const stopScrollPropagation = (event) => {
+        event.stopPropagation();
+    };
+
+    // Capture-phase listeners ensure Cytoscape does not see wheel/touch events
+    tooltip.addEventListener("wheel", stopScrollPropagation, { passive: true, capture: true });
+    tooltip.addEventListener("mousewheel", stopScrollPropagation, { passive: true, capture: true });
+    tooltip.addEventListener("touchstart", stopScrollPropagation, { passive: true, capture: true });
+    tooltip.addEventListener("touchmove", stopScrollPropagation, { passive: true, capture: true });
+
+    // Temporarily disable Cytoscape zoom/pan while hovering the tooltip
+    tooltip.addEventListener(
+        "mouseenter",
+        () => {
+            if (!cyInstance) return;
+            previousZoomEnabled = cyInstance.userZoomingEnabled();
+            previousPanEnabled = cyInstance.userPanningEnabled();
+            cyInstance.userZoomingEnabled(false);
+            cyInstance.userPanningEnabled(false);
+        },
+        { capture: true },
+    );
+
+    tooltip.addEventListener(
+        "mouseleave",
+        restoreCyInteractions,
+        { capture: true },
+    );
+
+    // Allow cleanup if the tooltip is removed programmatically while hovered
+    tooltip.__restoreCyInteractions = restoreCyInteractions;
+}
+
 /*
     Accepts target_phenotype and passes it to createTooltip
 */
@@ -178,20 +238,32 @@ export function showTooltip(
         zIndex: "1000",
         cursor: "move",
         userSelect: "text",
+        maxHeight: "220px",
+        overflow: "hidden",
+        overscrollBehavior: "contain",
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
     });
 
     document.querySelector(".cy").appendChild(tooltip);
     enableTooltipDrag(tooltip);
+    isolateTooltipScroll(tooltip, cy);
 }
 
 export function removeTooltips() {
-    document.querySelectorAll(".cy-tooltip").forEach((el) => el.remove());
+    document.querySelectorAll(".cy-tooltip").forEach((el) => {
+        if (typeof el.__restoreCyInteractions === "function") {
+            el.__restoreCyInteractions();
+        }
+        el.remove();
+    });
 }
 
 /**
  * Creates a reusable custom tooltip. Position is given in rendered coordinates relative to the Cytoscape container.
  */
-export function showCustomTooltip({ content, position, containerSelector = ".cy" }) {
+export function showCustomTooltip({ content, position, containerSelector = ".cy", cyInstance = null }) {
     removeTooltips();
 
     const tooltip = document.createElement("div");
@@ -210,6 +282,12 @@ export function showCustomTooltip({ content, position, containerSelector = ".cy"
         cursor: "move",
         userSelect: "text",
         maxWidth: "320px",
+        maxHeight: "220px",
+        overflow: "hidden",
+        overscrollBehavior: "contain",
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
     });
 
     const container = document.querySelector(containerSelector);
@@ -220,12 +298,13 @@ export function showCustomTooltip({ content, position, containerSelector = ".cy"
 
     container.appendChild(tooltip);
     enableTooltipDrag(tooltip);
+    isolateTooltipScroll(tooltip, cyInstance);
 }
 
 /**
  * Shared tooltip for modules (connected components)
  */
-export function showSubnetworkTooltip({ component, renderedPos, containerSelector = ".cy" }) {
+export function showSubnetworkTooltip({ component, renderedPos, containerSelector = ".cy", cyInstance = null }) {
     if (!component) return;
 
     const lines =
@@ -243,7 +322,13 @@ export function showSubnetworkTooltip({ component, renderedPos, containerSelecto
     `;
 
     const header = `<div style="display: flex; align-items: center; gap: 6px;"><b>Phenotypes shared in Module ${component.id}</b>${infoIcon}</div>`;
-    const tooltipContent = `${header}${lines.join("<br>")}`;
+    const linesHtml = lines.join("<br>");
+    const bodySection = `
+        <div class="cy-tooltip__section cy-tooltip__section--modules">
+            <div class="cy-tooltip__section-body">${linesHtml}</div>
+        </div>
+    `;
+    const tooltipContent = `${header}${bodySection}`;
     const anchor =
         renderedPos ||
         {
@@ -251,7 +336,7 @@ export function showSubnetworkTooltip({ component, renderedPos, containerSelecto
             y: (component.bbox.y1 + component.bbox.y2) / 2,
         };
 
-    showCustomTooltip({ content: tooltipContent, position: anchor, containerSelector });
+    showCustomTooltip({ content: tooltipContent, position: anchor, containerSelector, cyInstance });
 
     // Enable click-to-toggle for dynamically created info icons (for touch devices)
     const tooltipEl = document.querySelector(".cy-tooltip");

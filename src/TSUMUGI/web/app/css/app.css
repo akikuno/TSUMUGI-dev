@@ -772,6 +772,45 @@ button.menu-toggle-icon {
 }
 
 /* ======================================================== */
+/* Cytoscape Tooltip Styles */
+/* ======================================================== */
+.cy-tooltip {
+    max-height: 220px;
+    overflow: hidden;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cy-tooltip__section {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 6px; /* leave space for scrollbar */
+}
+
+.cy-tooltip__section--phenotypes {
+    max-height: 120px;
+}
+
+.cy-tooltip__section--diseases {
+    max-height: 90px;
+}
+
+.cy-tooltip__section--modules {
+    max-height: 160px;
+}
+
+.cy-tooltip__section-title {
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.cy-tooltip__section-body {
+    line-height: 1.4;
+}
+
+/* ======================================================== */
 /* Info Tooltip Styles for Network Pages */
 /* ======================================================== */
 .info-tooltip-container {

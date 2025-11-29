@@ -550,7 +550,7 @@ function attachFrameDragHandlers(frame, handleElement = frame) {
         const component = subnetworkMeta.find((c) => c.id === compId);
         if (!component) return;
         const renderedPos = pointerToRenderedPos(evt);
-        showSubnetworkTooltip({ component, renderedPos });
+        showSubnetworkTooltip({ component, renderedPos, cyInstance: cy });
     });
 }
 
@@ -1007,7 +1007,7 @@ cy.on("tap", function (event) {
     const renderedPos = event.renderedPosition || event.position || { x: 0, y: 0 };
     const component = findComponentByPosition(renderedPos);
     if (component) {
-        showSubnetworkTooltip({ component, renderedPos });
+        showSubnetworkTooltip({ component, renderedPos, cyInstance: cy });
     } else {
         removeTooltips();
     }
