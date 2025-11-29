@@ -2,6 +2,16 @@
 // Tooltip Handling Functions
 // ############################################################
 
+const DEFAULT_TOOLTIP_HEIGHT = 220;
+const MIN_TOOLTIP_WIDTH = 220;
+const MIN_TOOLTIP_HEIGHT = 140;
+const MIN_SECTION_HEIGHT = 80;
+const DEFAULT_SECTION_HEIGHTS = {
+    phenotypes: 120,
+    diseases: 90,
+    modules: 160,
+};
+
 /*
     Formats phenotypes for tooltips, placing and highlighting the target phenotype at the top.
 */
@@ -64,7 +74,7 @@ function createTooltip(
 
         const phenotypesHtml = formatPhenotypesWithHighlight(phenotypes, target_phenotype);
         const phenotypeSection = `
-            <div class="cy-tooltip__section cy-tooltip__section--phenotypes">
+            <div class="cy-tooltip__section cy-tooltip__section--phenotypes" data-section="phenotypes">
                 <div class="cy-tooltip__section-title"><b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b></div>
                 <div class="cy-tooltip__section-body">${phenotypesHtml}</div>
             </div>
@@ -74,7 +84,7 @@ function createTooltip(
         if (diseases && diseases.length > 0 && diseases[0] !== "") {
             const diseasesHtml = diseases.map((disease) => "・ " + disease).join("<br>");
             diseaseSection = `
-                <div class="cy-tooltip__section cy-tooltip__section--diseases">
+                <div class="cy-tooltip__section cy-tooltip__section--diseases" data-section="diseases">
                     <div class="cy-tooltip__section-title"><b>Associated Human Diseases</b></div>
                     <div class="cy-tooltip__section-body">${diseasesHtml}</div>
                 </div>
@@ -102,12 +112,15 @@ function createTooltip(
     return { tooltipText, pos };
 }
 
-function enableTooltipDrag(tooltip) {
+function enableTooltipDrag(tooltip, containerElement = null) {
     let isDragging = false;
     let offset = { x: 0, y: 0 };
+    const container = containerElement || tooltip.parentElement || document.querySelector(".cy");
+    if (!container) return;
 
     // Mouse events (existing functionality)
     tooltip.addEventListener("mousedown", function (e) {
+        if (e.target.closest(".cy-tooltip__resize-handle")) return;
         e.stopPropagation();
         isDragging = true;
         const rect = tooltip.getBoundingClientRect();
@@ -118,7 +131,7 @@ function enableTooltipDrag(tooltip) {
 
     document.addEventListener("mousemove", function (e) {
         if (isDragging) {
-            const containerRect = document.querySelector(".cy").getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
             tooltip.style.left = `${e.clientX - offset.x - containerRect.left}px`;
             tooltip.style.top = `${e.clientY - offset.y - containerRect.top}px`;
         }
@@ -131,6 +144,7 @@ function enableTooltipDrag(tooltip) {
 
     // Touch events for tablet/mobile support
     tooltip.addEventListener("touchstart", function (e) {
+        if (e.target.closest(".cy-tooltip__resize-handle")) return;
         e.stopPropagation();
         e.preventDefault();
         isDragging = true;
@@ -145,7 +159,7 @@ function enableTooltipDrag(tooltip) {
         if (isDragging) {
             e.preventDefault();
             const touch = e.touches[0];
-            const containerRect = document.querySelector(".cy").getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
             tooltip.style.left = `${touch.clientX - offset.x - containerRect.left}px`;
             tooltip.style.top = `${touch.clientY - offset.y - containerRect.top}px`;
         }
@@ -154,6 +168,122 @@ function enableTooltipDrag(tooltip) {
     document.addEventListener("touchend", function () {
         isDragging = false;
         tooltip.style.cursor = "move";
+    });
+}
+
+function updateTooltipSectionHeights(tooltip, tooltipHeight = DEFAULT_TOOLTIP_HEIGHT) {
+    const safeHeight = Math.max(MIN_TOOLTIP_HEIGHT, tooltipHeight);
+    const sections = Array.from(tooltip.querySelectorAll(".cy-tooltip__section"));
+    if (sections.length === 0) return;
+
+    const styles = window.getComputedStyle(tooltip);
+    const paddingY = parseFloat(styles.paddingTop || "0") + parseFloat(styles.paddingBottom || "0");
+    const gapY = parseFloat(styles.rowGap || styles.gap || "0");
+    const reservedHeight = paddingY + gapY * Math.max(0, sections.length - 1);
+    const availableHeight = Math.max(MIN_SECTION_HEIGHT * sections.length, safeHeight - reservedHeight);
+
+    const weights = sections.map((section) => {
+        const key = section.dataset.section;
+        return DEFAULT_SECTION_HEIGHTS[key] || MIN_SECTION_HEIGHT;
+    });
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0) || 1;
+
+    sections.forEach((section, idx) => {
+        const weight = weights[idx];
+        const target = Math.max(
+            MIN_SECTION_HEIGHT,
+            Math.round((weight / totalWeight) * availableHeight),
+        );
+
+        section.style.maxHeight = `${target}px`;
+
+        const key = section.dataset.section;
+        if (key) {
+            tooltip.style.setProperty(`--cy-tooltip-${key}-max`, `${target}px`);
+        }
+    });
+
+    tooltip.style.setProperty("--cy-tooltip-height", `${Math.round(safeHeight)}px`);
+}
+
+function applyInitialTooltipSize(tooltip) {
+    const rect = tooltip.getBoundingClientRect();
+    const width = Math.max(MIN_TOOLTIP_WIDTH, Math.round(rect.width));
+    const height = Math.max(MIN_TOOLTIP_HEIGHT, Math.round(rect.height || DEFAULT_TOOLTIP_HEIGHT));
+
+    tooltip.style.width = `${width}px`;
+    tooltip.style.height = `${height}px`;
+    updateTooltipSectionHeights(tooltip, height);
+}
+
+function enableTooltipResize(tooltip, containerElement = null) {
+    const container = containerElement || tooltip.parentElement || document.querySelector(".cy");
+    if (!container) return;
+
+    const resizeHandle = document.createElement("div");
+    resizeHandle.classList.add("cy-tooltip__resize-handle");
+    tooltip.appendChild(resizeHandle);
+
+    resizeHandle.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const startRect = tooltip.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const startLeft = tooltip.offsetLeft;
+        const startTop = tooltip.offsetTop;
+        const startX = event.clientX;
+        const startY = event.clientY;
+
+        const handlePointerMove = (moveEvent) => {
+            const deltaX = startX - moveEvent.clientX; // dragging left increases width
+            const deltaY = moveEvent.clientY - startY; // dragging down increases height
+
+            let newWidth = startRect.width + deltaX;
+            let newLeft = startLeft - deltaX;
+            let newHeight = startRect.height + deltaY;
+
+            const containerWidth = containerRect.width;
+            const containerHeight = containerRect.height;
+            const minWidth = Math.min(MIN_TOOLTIP_WIDTH, containerWidth);
+            const minHeight = Math.min(MIN_TOOLTIP_HEIGHT, containerHeight);
+
+            newWidth = Math.max(minWidth, newWidth);
+            newHeight = Math.max(minHeight, newHeight);
+
+            if (newLeft < 0) {
+                newWidth += newLeft;
+                newLeft = 0;
+            }
+
+            const maxLeft = Math.max(0, containerWidth - minWidth);
+            if (newLeft > maxLeft) {
+                newLeft = maxLeft;
+            }
+
+            const maxWidth = containerWidth - newLeft;
+            newWidth = Math.min(maxWidth, newWidth);
+            if (newWidth < minWidth) {
+                newWidth = minWidth;
+                newLeft = Math.max(0, containerWidth - newWidth);
+            }
+
+            const maxHeight = Math.max(minHeight, containerHeight - startTop);
+            newHeight = Math.min(maxHeight, newHeight);
+
+            tooltip.style.width = `${Math.round(newWidth)}px`;
+            tooltip.style.left = `${Math.round(newLeft)}px`;
+            tooltip.style.height = `${Math.round(newHeight)}px`;
+            updateTooltipSectionHeights(tooltip, newHeight);
+        };
+
+        const stopResize = () => {
+            document.removeEventListener("pointermove", handlePointerMove);
+            document.removeEventListener("pointerup", stopResize);
+        };
+
+        document.addEventListener("pointermove", handlePointerMove);
+        document.addEventListener("pointerup", stopResize);
     });
 }
 
@@ -230,7 +360,9 @@ export function showTooltip(
         position: "absolute",
         left: `${pos.x + 10}px`,
         top: `${pos.y + 10}px`,
-        padding: "5px",
+        padding: "10px",
+        paddingBottom: "18px",
+        paddingLeft: "14px",
         background: "white",
         border: "1px solid #ccc",
         borderRadius: "5px",
@@ -238,16 +370,26 @@ export function showTooltip(
         zIndex: "1000",
         cursor: "move",
         userSelect: "text",
-        maxHeight: "220px",
         overflow: "hidden",
         overscrollBehavior: "contain",
         display: "flex",
         flexDirection: "column",
         gap: "8px",
+        minWidth: `${MIN_TOOLTIP_WIDTH}px`,
+        minHeight: `${MIN_TOOLTIP_HEIGHT}px`,
+        boxSizing: "border-box",
     });
 
-    document.querySelector(".cy").appendChild(tooltip);
-    enableTooltipDrag(tooltip);
+    const container = document.querySelector(".cy");
+    if (!container) {
+        console.warn("Cytoscape container not found; tooltip not rendered.");
+        return;
+    }
+
+    container.appendChild(tooltip);
+    applyInitialTooltipSize(tooltip);
+    enableTooltipDrag(tooltip, container);
+    enableTooltipResize(tooltip, container);
     isolateTooltipScroll(tooltip, cy);
 }
 
@@ -273,7 +415,9 @@ export function showCustomTooltip({ content, position, containerSelector = ".cy"
         position: "absolute",
         left: `${position.x + 10}px`,
         top: `${position.y + 10}px`,
-        padding: "5px",
+        padding: "10px",
+        paddingBottom: "18px",
+        paddingLeft: "14px",
         background: "white",
         border: "1px solid #ccc",
         borderRadius: "5px",
@@ -281,13 +425,14 @@ export function showCustomTooltip({ content, position, containerSelector = ".cy"
         zIndex: "1000",
         cursor: "move",
         userSelect: "text",
-        maxWidth: "320px",
-        maxHeight: "220px",
         overflow: "hidden",
         overscrollBehavior: "contain",
         display: "flex",
         flexDirection: "column",
         gap: "8px",
+        minWidth: `${MIN_TOOLTIP_WIDTH}px`,
+        minHeight: `${MIN_TOOLTIP_HEIGHT}px`,
+        boxSizing: "border-box",
     });
 
     const container = document.querySelector(containerSelector);
@@ -297,7 +442,9 @@ export function showCustomTooltip({ content, position, containerSelector = ".cy"
     }
 
     container.appendChild(tooltip);
-    enableTooltipDrag(tooltip);
+    applyInitialTooltipSize(tooltip);
+    enableTooltipDrag(tooltip, container);
+    enableTooltipResize(tooltip, container);
     isolateTooltipScroll(tooltip, cyInstance);
 }
 
@@ -324,7 +471,7 @@ export function showSubnetworkTooltip({ component, renderedPos, containerSelecto
     const header = `<div style="display: flex; align-items: center; gap: 6px;"><b>Phenotypes shared in Module ${component.id}</b>${infoIcon}</div>`;
     const linesHtml = lines.join("<br>");
     const bodySection = `
-        <div class="cy-tooltip__section cy-tooltip__section--modules">
+        <div class="cy-tooltip__section cy-tooltip__section--modules" data-section="modules">
             <div class="cy-tooltip__section-body">${linesHtml}</div>
         </div>
     `;

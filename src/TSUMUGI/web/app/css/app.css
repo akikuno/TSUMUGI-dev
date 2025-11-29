@@ -775,7 +775,14 @@ button.menu-toggle-icon {
 /* Cytoscape Tooltip Styles */
 /* ======================================================== */
 .cy-tooltip {
-    max-height: 220px;
+    position: absolute;
+    --cy-tooltip-phenotypes-max: 120px;
+    --cy-tooltip-diseases-max: 90px;
+    --cy-tooltip-modules-max: 160px;
+    --cy-tooltip-height: 220px;
+    min-width: 220px;
+    min-height: 140px;
+    box-sizing: border-box;
     overflow: hidden;
     overscroll-behavior: contain;
     display: flex;
@@ -790,15 +797,15 @@ button.menu-toggle-icon {
 }
 
 .cy-tooltip__section--phenotypes {
-    max-height: 120px;
+    max-height: var(--cy-tooltip-phenotypes-max);
 }
 
 .cy-tooltip__section--diseases {
-    max-height: 90px;
+    max-height: var(--cy-tooltip-diseases-max);
 }
 
 .cy-tooltip__section--modules {
-    max-height: 160px;
+    max-height: var(--cy-tooltip-modules-max);
 }
 
 .cy-tooltip__section-title {
@@ -808,6 +815,33 @@ button.menu-toggle-icon {
 
 .cy-tooltip__section-body {
     line-height: 1.4;
+}
+
+.cy-tooltip__resize-handle {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    cursor: sw-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    touch-action: none;
+}
+
+.cy-tooltip__resize-handle::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-left: 2px solid #999;
+    border-bottom: 2px solid #999;
+    transform: translate(-1px, 1px);
 }
 
 /* ======================================================== */
