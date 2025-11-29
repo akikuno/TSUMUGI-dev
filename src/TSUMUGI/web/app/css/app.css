@@ -78,6 +78,7 @@ a {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     background-color: white;
 }
 
@@ -137,11 +138,18 @@ a {
     background-color: #fff;
     padding-bottom: 10px;
     border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .panel-section:first-child {
     border-top: none;
     margin-top: 0;
+}
+
+.right-control-panel-container .boxed-section {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .panel-title {
