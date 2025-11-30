@@ -130,7 +130,7 @@ Rilis ini menambah CLI: unduh pembaruan IMPC terbaru, jalankan sendiri, filter l
 
 ## Perintah yang tersedia
 - `tsumugi run`: hitung ulang dari data IMPC  
-- `tsumugi mp --include/--exclude`: sertakan/keluarkan pasangan dengan istilah MP  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: sertakan/keluarkan pasangan atau gen terkait istilah MP  
 - `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: filter jumlah fenotipe (pairwise/genewise)  
 - `tsumugi genes --keep/--drop`: simpan/hapus via daftar gen  
 - `tsumugi life-stage --keep/--drop`: filter tahap hidup  
@@ -172,6 +172,9 @@ Keluaran: `./tsumugi-output` berisi genewise_phenotype_annotations.jsonl.gz, pai
 ### 2. Filter istilah MP (`tsumugi mp --include/--exclude`)
 Ambil hanya pasangan gen yang mengandung fenotipe yang diminati, atau pasangan di mana fenotipe tersebut sudah diukur tetapi tidak menunjukkan kelainan yang signifikan.
 
+- `--pairwise` (default jika tidak ditentukan): keluaran per pasangan gen. Gunakan `--in pairwise_similarity_annotations.jsonl(.gz)`.
+- `--genewise`: keluaran per gen. Gunakan `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (wajib untuk `--exclude`, dianjurkan untuk `--include`).
+
 ```bash
 # Ambil hanya pasangan yang mencakup MP:0001146 (abnormal testis morphology) atau istilah turunannya (mis. MP:0004849 abnormal testis size)
 tsumugi mp --include MP:0001146 \
@@ -183,6 +186,18 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# Ambil anotasi signifikan per gen yang memuat MP:0001146 (termasuk turunan)
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# Ambil gen yang diukur untuk MP:0001146 (termasuk turunan) namun tidak signifikan
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]

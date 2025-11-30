@@ -131,7 +131,7 @@ CSV 含模块ID及每个基因的表型列表；GraphML 与 Cytoscape 兼容。
 
 ## 可用命令
 - `tsumugi run`: 由 IMPC 数据重算网络  
-- `tsumugi mp --include/--exclude`: 按 MP 术语包含/排除基因对  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 按 MP 术语包含/排除基因对或基因  
 - `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: 按表型数过滤（基因对/基因）  
 - `tsumugi genes --keep/--drop`: 基因列表保留/剔除  
 - `tsumugi life-stage --keep/--drop`: 按生命阶段过滤  
@@ -173,6 +173,9 @@ tsumugi run \
 ### 2. 按 MP 术语过滤(`tsumugi mp --include/--exclude`)
 仅提取包含目标表型的基因对，或提取已测量该表型但未出现显著异常的基因对。
 
+- `--pairwise`（默认）: 输出基因对。使用 `--in pairwise_similarity_annotations.jsonl(.gz)`。
+- `--genewise`: 输出单基因记录。使用 `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)`（`--exclude` 必需，`--include` 建议）。
+
 ```bash
 # 仅提取包含 MP:0001146 (abnormal testis morphology) 或其子术语（如 MP:0004849 (abnormal testis size)）的基因对
 tsumugi mp --include MP:0001146 \
@@ -184,6 +187,18 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# 提取含 MP:0001146（含子术语）的显著基因级注释
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# 提取已测量 MP:0001146（含子术语）但未显著异常的基因
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]

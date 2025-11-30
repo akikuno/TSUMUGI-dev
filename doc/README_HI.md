@@ -131,7 +131,7 @@ CSV에는 모듈ID와 각 유전자 표현형 리스트가 포함되고, GraphML
 
 ## 사용 가능한 명령
 - `tsumugi run`: IMPC 데이터로 네트워크 재계산  
-- `tsumugi mp --include/--exclude`: MP 용어 포함/미표시 페어 필터  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: MP 용어 기준으로 페어 또는 유전자 단위 필터  
 - `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: 표현형 수로 필터(페어/유전자)  
 - `tsumugi genes --keep/--drop`: 유전자 리스트로 유지/삭제  
 - `tsumugi life-stage --keep/--drop`: 라이프 스테이지 필터  
@@ -173,6 +173,9 @@ tsumugi run \
 ### 2. MP 용어 필터(`tsumugi mp --include/--exclude`)
 관심 있는 표현형을 가진 유전자 페어만 추출하거나, 해당 표현형을 측정했지만 유의한 이상이 없었던 유전자 페어를 추출할 수 있습니다。
 
+- `--pairwise`(기본값): 유전자 페어 단위 출력. `--in pairwise_similarity_annotations.jsonl(.gz)`를 전달합니다.
+- `--genewise`: 유전자 단위 출력. `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)`를 사용합니다(`--exclude` 필수, `--include` 권장).
+
 ```bash
 # MP:0001146(abnormal testis morphology)와 그 하위 표현형(MP:0004849 (abnormal testis size) 등)을 포함하는 유전자 페어만 추출
 tsumugi mp --include MP:0001146 \
@@ -184,6 +187,18 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# MP:0001146(하위 포함)을 갖는 유의한 유전자 단위 주석만 추출
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# MP:0001146(하위 포함)을 측정했으나 유의하지 않았던 유전자 추출
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]

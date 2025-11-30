@@ -195,7 +195,7 @@ GraphMLは、デスクトップ版Cytoscapeと互換性のある形式で、Cyto
 
 ## 利用可能なコマンド一覧
 - `tsumugi run`: IMPCデータからネットワークを再計算
-- `tsumugi mp --include/--exclude`: 指定MP用語を含む/示さない遺伝子ペアでフィルター
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 指定MP用語を含む/示さない遺伝子ペアまたは遺伝子単位でフィルター
 - `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: 表現型の数でフィルター（遺伝子ペア/遺伝子単位）
 - `tsumugi genes --keep/--drop`: 遺伝子リストで抽出または除外（カンマ区切りorテキストファイル）
 - `tsumugi life-stage --keep/--drop`: ライフステージでフィルター (Embryo/Early/Interval/Late)
@@ -246,6 +246,9 @@ tsumugi run \
 ### 2. MP用語でフィルターする(`tsumugi mp --include/--exclude`)
 興味のある表現型を持つ遺伝子ペアのみ抽出、または該当表現型を測定済みだが有意な異常を示さなかった遺伝子ペアを抽出できます。
 
+- `--pairwise`（デフォルト未指定時はこちら）: 遺伝子ペア単位の操作を行います。`--in`または標準入力から、`pairwise_similarity_annotations.jsonl(.gz)`を渡します。
+- `--genewise`: 遺伝子単位の操作を行います。`--genewise_annotations`で`genewise_phenotype_annotations.jsonl(.gz)`を渡します（`--genewise`と`--exclude`時は必須です）。
+
 ```bash
 # MP:0001146(abnormal testis morphology)とその下層の表現型（MP:0004849 (abnormal testis size)など）を含む遺伝子ペアだけを抽出
 tsumugi mp --include MP:0001146 \
@@ -258,6 +261,18 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# 遺伝子単位でMP:0001146を含む有意な表現型のみを抽出
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# 遺伝子単位でMP:0001146を測定済みかつ有意ではなかった遺伝子を抽出
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]

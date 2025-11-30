@@ -130,7 +130,7 @@ CLI hinzugefügt: mit IMPC-Daten neu berechnen, feiner filtern, GraphML oder Off
 
 ## Verfügbare Befehle
 - `tsumugi run`: Netzwerk aus IMPC-Daten neu berechnen  
-- `tsumugi mp --include/--exclude`: Paare nach MP-Term ein-/ausschließen  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: MP-Term-bezogene Paare oder Gene ein-/ausschließen  
 - `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: nach Phänotypanzahl filtern (Paar/Gen)  
 - `tsumugi genes --keep/--drop`: über Genliste behalten/entfernen  
 - `tsumugi life-stage --keep/--drop`: nach Lebensphase filtern  
@@ -172,6 +172,9 @@ Ausgabe: `./tsumugi-output` enthält genewise_phenotype_annotations.jsonl.gz, pa
 ### 2. Nach MP-Term filtern (`tsumugi mp --include/--exclude`)
 Extrahiere nur Genpaare mit interessierenden Phänotypen oder Genpaare, bei denen der betreffende Phänotyp gemessen wurde, aber keine signifikante Abweichung zeigte.
 
+- `--pairwise` (Standard, wenn nichts gesetzt): gibt Genpaare aus. Nutze `--in pairwise_similarity_annotations.jsonl(.gz)`.
+- `--genewise`: gibt einzelne Gene aus. Nutze `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (für `--exclude` erforderlich, für `--include` empfohlen).
+
 ```bash
 # Nur Genpaare extrahieren, die MP:0001146 (abnormal testis morphology) oder untergeordnete Begriffe (z. B. MP:0004849 abnormal testis size) enthalten
 tsumugi mp --include MP:0001146 \
@@ -183,6 +186,18 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# Signifikante Gen-Annotationen mit MP:0001146 (inkl. Unterbegriffe) extrahieren
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# Gene extrahieren, die für MP:0001146 (inkl. Unterbegriffe) gemessen wurden und keine signifikante Abnormalität zeigten
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]

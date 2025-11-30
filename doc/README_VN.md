@@ -130,7 +130,7 @@ Phát hành này thêm CLI: tự tải dữ liệu IMPC mới, chạy lại TSUM
 
 ## Lệnh khả dụng
 - `tsumugi run`: tính lại mạng từ dữ liệu IMPC  
-- `tsumugi mp --include/--exclude`: lọc cặp gen theo thuật ngữ MP  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: lọc cặp gen hoặc từng gen theo thuật ngữ MP  
 - `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: lọc theo số kiểu hình (cặp/gen)  
 - `tsumugi genes --keep/--drop`: giữ/bỏ theo danh sách gen  
 - `tsumugi life-stage --keep/--drop`: lọc theo giai đoạn sống  
@@ -172,6 +172,9 @@ tsumugi run \
 ### 2. Lọc theo thuật ngữ MP (`tsumugi mp --include/--exclude`)
 Chỉ trích xuất các cặp gen chứa kiểu hình quan tâm, hoặc các cặp đã đo các kiểu hình đó nhưng không có bất thường đáng kể.
 
+- `--pairwise` (mặc định nếu không đặt): xuất theo cặp gen. Dùng `--in pairwise_similarity_annotations.jsonl(.gz)`.
+- `--genewise`: xuất theo từng gen. Dùng `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (bắt buộc với `--exclude`, khuyến nghị với `--include`).
+
 ```bash
 # Chỉ lấy các cặp bao gồm MP:0001146 (abnormal testis morphology) hoặc các thuật ngữ hậu duệ (ví dụ: MP:0004849 abnormal testis size)
 tsumugi mp --include MP:0001146 \
@@ -183,6 +186,18 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# Lấy các chú giải có ý nghĩa ở mức gen chứa MP:0001146 (bao gồm thuật ngữ hậu duệ)
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# Lấy các gen đã đo MP:0001146 (bao gồm thuật ngữ hậu duệ) nhưng không ghi nhận bất thường đáng kể
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]

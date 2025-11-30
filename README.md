@@ -139,7 +139,7 @@ This release adds a CLI so you can download the latest IMPC updates yourself, re
 
 ## Available commands
 - `tsumugi run`: Recompute the network from IMPC data  
-- `tsumugi mp --include/--exclude`: Filter pairs that contain / do not show an MP term  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: Filter gene pairs or genes that contain / do not show an MP term  
 - `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: Filter by phenotype counts (pairwise or per gene)  
 - `tsumugi genes --keep/--drop`: Keep/drop by gene list (comma-separated or text file)  
 - `tsumugi life-stage --keep/--drop`: Filter by life stage (Embryo/Early/Interval/Late)  
@@ -184,6 +184,9 @@ Outputs: `./tsumugi-output` contains genewise annotations (genewise_phenotype_an
 ### 2. Filter by MP term (`tsumugi mp --include/--exclude`)
 Extract only gene pairs that include phenotypes of interest, or pairs whose relevant phenotypes were measured but did not show significant abnormalities.
 
+- `--pairwise` (default if neither is set): outputs gene pairs. Provide `--in pairwise_similarity_annotations.jsonl(.gz)`.
+- `--genewise`: outputs individual genes. Provide `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (required for `--exclude`, recommended for `--include`).
+
 ```bash
 # Extract only gene pairs that include MP:0001146 (abnormal testis morphology) or descendant terms (e.g., MP:0004849 abnormal testis size)
 tsumugi mp --include MP:0001146 \
@@ -195,6 +198,18 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# Extract significant gene-level annotations containing MP:0001146 (descendants included)
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# Extract genes measured for MP:0001146 (descendants included) that did not show a significant abnormality
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
