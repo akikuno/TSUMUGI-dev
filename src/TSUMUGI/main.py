@@ -31,15 +31,15 @@ def main() -> None:
     if getattr(args, "statistical_results", None):
         validator.validate_statistical_results(args.statistical_results)
 
-    if getattr(args, "obo", None):
-        validator.validate_obo_file(args.obo)
+    if getattr(args, "mp_obo", None):
+        validator.validate_obo_file(args.mp_obo)
 
     if getattr(args, "impc_phenodigm", None):
         validator.validate_phenodigm_file(args.impc_phenodigm)
 
-    if getattr(args, "obo", None) and (getattr(args, "exclude", None) or getattr(args, "include", None)):
+    if getattr(args, "mp_obo", None) and (getattr(args, "exclude", None) or getattr(args, "include", None)):
         mp_term_id = args.exclude or args.include
-        validator.validate_mp_term_id(mp_term_id, args.obo)
+        validator.validate_mp_term_id(mp_term_id, args.mp_obo)
 
     ###########################################################
     # Run commands
@@ -58,26 +58,55 @@ def main() -> None:
     # -----------------------------------------------------
     if args.cmd == "mp":
         if args.include:
-            logging.info(f"Including gene pairs with phenotypes related to MP term: {args.include}")
-            mp_filterer.include_specific_phenotype(
-                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
-                path_obo=args.obo,
-                mp_term_id=args.include,
-                life_stage=args.life_stage,
-                sex=args.sex,
-                zygosity=args.zygosity,
-            )
-        elif args.exclude:
-            logging.info(f"Excluding gene pairs with phenotypes related to MP term: {args.exclude}")
-            mp_filterer.exclude_specific_phenotype(
-                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
-                path_genewise_phenotype_annotations=args.path_genewise,
-                path_obo=args.obo,
-                mp_term_id=args.exclude,
-                life_stage=args.life_stage,
-                sex=args.sex,
-                zygosity=args.zygosity,
-            )
+            if args.pairwise:
+                logging.info(f"Including gene pairs with phenotypes related to MP term: {args.include}")
+                mp_filterer.include_specific_phenotype(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    path_genewise_phenotype_annotations=None,
+                    path_obo=args.mp_obo,
+                    mp_term_id=args.include,
+                    life_stage=args.life_stage,
+                    sex=args.sex,
+                    zygosity=args.zygosity,
+                    is_pairwise=True,
+                )
+            else:
+                logging.info(f"Including genes with phenotypes related to MP term: {args.include}")
+                mp_filterer.include_specific_phenotype(
+                    path_pairwise_similarity_annotations=None,
+                    path_genewise_phenotype_annotations=args.path_genewise,
+                    path_obo=args.mp_obo,
+                    mp_term_id=args.include,
+                    life_stage=args.life_stage,
+                    sex=args.sex,
+                    zygosity=args.zygosity,
+                    is_pairwise=False,
+                )
+        if args.exclude:
+            if args.pairwise:
+                logging.info(f"Excluding gene pairs with phenotypes related to MP term: {args.exclude}")
+                mp_filterer.exclude_specific_phenotype(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    path_genewise_phenotype_annotations=args.path_genewise,
+                    path_obo=args.mp_obo,
+                    mp_term_id=args.exclude,
+                    life_stage=args.life_stage,
+                    sex=args.sex,
+                    zygosity=args.zygosity,
+                    is_pairwise=True,
+                )
+            else:
+                logging.info(f"Excluding genes with phenotypes related to MP term: {args.exclude}")
+                mp_filterer.exclude_specific_phenotype(
+                    path_pairwise_similarity_annotations=None,
+                    path_genewise_phenotype_annotations=args.path_genewise,
+                    path_obo=args.mp_obo,
+                    mp_term_id=args.exclude,
+                    life_stage=args.life_stage,
+                    sex=args.sex,
+                    zygosity=args.zygosity,
+                    is_pairwise=False,
+                )
 
     # -----------------------------------------------------
     # Number of phenotypes per gene/pair

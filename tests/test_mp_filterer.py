@@ -320,6 +320,7 @@ def test_include_specific_phenotype_basic(mock_stdout, setup_test_files):
     path_obo, _, path_pairwise = setup_test_files
     include_specific_phenotype(
         path_pairwise_similarity_annotations=path_pairwise,
+        path_genewise_phenotype_annotations=None,
         path_obo=path_obo,
         mp_term_id="MP:0000002",
     )
@@ -343,6 +344,7 @@ def test_include_specific_phenotype_with_conditions(mock_stdout, setup_test_file
     path_obo, _, path_pairwise = setup_test_files
     include_specific_phenotype(
         path_pairwise_similarity_annotations=path_pairwise,
+        path_genewise_phenotype_annotations=None,
         path_obo=path_obo,
         mp_term_id="MP:0000002",
         life_stage="Early",
@@ -356,3 +358,56 @@ def test_include_specific_phenotype_with_conditions(mock_stdout, setup_test_file
     assert len(output) == 1
     assert output[0]["gene1_symbol"] == "GeneA"
     assert output[0]["gene2_symbol"] == "GeneB"
+
+
+@patch("sys.stdout", new_callable=StringIO)
+def test_include_specific_phenotype_genewise_significant_only(mock_stdout, setup_test_files):
+    """Ensure genewise inclusion keeps only significant annotations for descendant terms."""
+    path_obo, path_genewise, _ = setup_test_files
+    include_specific_phenotype(
+        path_pairwise_similarity_annotations=None,
+        path_genewise_phenotype_annotations=path_genewise,
+        path_obo=path_obo,
+        mp_term_id="MP:0000002",
+        is_pairwise=False,
+    )
+    output = [json.loads(line) for line in mock_stdout.getvalue().strip().split("\n") if line.strip()]
+    assert {record["marker_symbol"] for record in output} == {"GeneA", "GeneB"}
+    assert all(record["significant"] is True for record in output)
+
+
+@patch("sys.stdout", new_callable=StringIO)
+def test_include_specific_phenotype_genewise_filters_metadata(mock_stdout, setup_test_files):
+    """
+    Metadata filters should exclude non-significant descendant annotations (only Late entries are non-significant).
+    """
+    path_obo, path_genewise, _ = setup_test_files
+    include_specific_phenotype(
+        path_pairwise_similarity_annotations=None,
+        path_genewise_phenotype_annotations=path_genewise,
+        path_obo=path_obo,
+        mp_term_id="MP:0000002",
+        life_stage="Late",
+        sex="Male",
+        zygosity="Homo",
+        is_pairwise=False,
+    )
+    output = [json.loads(line) for line in mock_stdout.getvalue().strip().split("\n") if line.strip()]
+    assert output == []
+
+
+@patch("sys.stdout", new_callable=StringIO)
+def test_exclude_specific_phenotype_genewise(mock_stdout, setup_test_files):
+    """Genes confirmed without the target phenotype should be emitted with their annotations."""
+    path_obo, path_genewise, _ = setup_test_files
+    exclude_specific_phenotype(
+        path_pairwise_similarity_annotations=None,
+        path_genewise_phenotype_annotations=path_genewise,
+        path_obo=path_obo,
+        mp_term_id="MP:0000002",
+        is_pairwise=False,
+    )
+    output = [json.loads(line) for line in mock_stdout.getvalue().strip().split("\n") if line.strip()]
+    assert len(output) == 4
+    assert {record["marker_symbol"] for record in output} == {"GeneD", "GeneE"}
+    assert all(record["marker_symbol"] not in {"GeneA", "GeneB", "GeneC"} for record in output)

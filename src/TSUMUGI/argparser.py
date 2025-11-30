@@ -117,15 +117,16 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
-    group_mp = mp_parser.add_mutually_exclusive_group(required=True)
-    group_mp.add_argument(
+    # --- Group A: MP include/exclude ---
+    group_mp_filter = mp_parser.add_mutually_exclusive_group(required=True)
+    group_mp_filter.add_argument(
         "-i",
         "--include",
         dest="include",
         metavar="MP_ID",
         help=("Include gene pairs that share the specified MP term (descendants included).\nExample: -i MP:0001146"),
     )
-    group_mp.add_argument(
+    group_mp_filter.add_argument(
         "-e",
         "--exclude",
         dest="exclude",
@@ -135,6 +136,14 @@ def build_parser() -> argparse.ArgumentParser:
             "(descendants included).\n"
             "Example: -e MP:0001146"
         ),
+    )
+    # --- Group B: granularity (genewise / pairwise) ---
+    group_level = mp_parser.add_mutually_exclusive_group(required=False)
+    group_level.add_argument(
+        "-g", "--genewise", action="store_true", help="Filter by number of phenotypes per KO mouse"
+    )
+    group_level.add_argument(
+        "-p", "--pairwise", action="store_true", help="Filter by number of shared phenotypes between KO pairs"
     )
 
     mp_parser.add_argument(
@@ -516,30 +525,40 @@ def parse_args(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    ########################################################################
+    # run
+    ########################################################################
     if args.cmd == "run":
-        # ------------------------------------------------------------
-        # If args.mp_obo or args.impc_phenodigm are not provided,
+        # If args.mp_obo or args.impc_phendigm are not provided,
         # use the built-in files inside the TSUMUGI/data directory.
-        # ------------------------------------------------------------
         if not args.mp_obo:
             args.mp_obo = str(files("TSUMUGI") / "data" / "mp.obo")
 
         if not args.impc_phenodigm:
             args.impc_phenodigm = str(files("TSUMUGI") / "data" / "impc_phenodigm.csv")
 
-    # When using -e / --exclude with the mp subcommand,
-    # the --path_genewise option is required.
-    if args.cmd == "mp" and args.exclude and not args.path_genewise:
-        parser.error(
-            "mp: '-a/--path_genewise' is required when using '-e/--exclude'.\n"
-            "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
-        )
-        # ------------------------------------------------------------
+        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
+        if not args.genewise and not args.pairwise:
+            args.pairwise = True
+
+    ########################################################################
+    # mp
+    ########################################################################
+    if args.cmd == "mp":
         # If args.mp_obo is not provided,
         # use the built-in files inside the TSUMUGI/data directory.
-        # ------------------------------------------------------------
         if not args.mp_obo:
             args.mp_obo = str(files("TSUMUGI") / "data" / "mp.obo")
+
+        if args.exclude and not args.path_genewise:
+            parser.error(
+                "mp: '-a/--path_genewise' is required when using '-e/--exclude'.\n"
+                "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
+            )
+
+    ########################################################################
+    # n-phenos
+    ########################################################################
 
     # When using the n-phenos subcommand, at least one of --min or --max must be specified.
     if args.cmd == "n-phenos" and args.min is None and args.max is None:
@@ -553,6 +572,9 @@ def parse_args(argv=None):
             "Provide the gene phenotype annotations JSONL(.gz) file to identify genes that were measured."
         )
 
+    ########################################################################
+    # build-webapp
+    ########################################################################
     if args.cmd == "build-webapp" and Path(args.output_dir).suffix:
         parser.error(
             f"build-webapp: {args.output_dir} looks like a file name (has extension). Please specify a directory."
