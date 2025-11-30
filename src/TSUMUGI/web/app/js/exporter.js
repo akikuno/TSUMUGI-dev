@@ -1,12 +1,33 @@
 import { calculateConnectedComponents } from "./components.js";
 
+export const DEFAULT_EXPORT_SCALE = 6.25;
+
+function normalizeScale(scale) {
+    const parsed = Number(scale);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+        return DEFAULT_EXPORT_SCALE;
+    }
+    return parsed;
+}
+
+function triggerDownloadFromBlob(blob, fileName) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 // --------------------------------------------------------
 // PNG Exporter
 // --------------------------------------------------------
 
-export function exportGraphAsPNG(cy, file_name) {
+export function exportGraphAsPNG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
     const pngContent = cy.png({
-        scale: 6.25, // Scale to achieve 600 DPI
+        scale: normalizeScale(scale), // Scale to achieve desired DPI
         full: true, // Set to true to include the entire graph, even the offscreen parts
     });
 
@@ -22,9 +43,9 @@ export function exportGraphAsPNG(cy, file_name) {
 // JPG Exporter
 // --------------------------------------------------------
 
-export function exportGraphAsJPG(cy, file_name) {
+export function exportGraphAsJPG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
     const jpgContent = cy.jpg({
-        scale: 6.25,
+        scale: normalizeScale(scale),
         full: true,
         quality: 0.95,
     });
@@ -35,6 +56,25 @@ export function exportGraphAsJPG(cy, file_name) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+}
+
+// --------------------------------------------------------
+// SVG Exporter
+// --------------------------------------------------------
+
+export function exportGraphAsSVG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
+    if (typeof cy.svg !== "function") {
+        console.error("SVG export requires the cytoscape-svg extension.");
+        return;
+    }
+
+    const svgContent = cy.svg({
+        scale: normalizeScale(scale),
+        full: true,
+    });
+
+    const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+    triggerDownloadFromBlob(blob, `${file_name}.svg`);
 }
 
 // --------------------------------------------------------

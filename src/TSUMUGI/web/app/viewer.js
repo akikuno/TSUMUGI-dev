@@ -1,4 +1,11 @@
-import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML } from "./js/exporter.js";
+import {
+    DEFAULT_EXPORT_SCALE,
+    exportGraphAsPNG,
+    exportGraphAsJPG,
+    exportGraphAsCSV,
+    exportGraphAsGraphML,
+    exportGraphAsSVG,
+} from "./js/exporter.js";
 import { scaleToOriginalRange, getColorForValue } from "./js/value_scaler.js";
 import { removeTooltips, showSubnetworkTooltip, showTooltip } from "./js/tooltips.js";
 import { getOrderedComponents, calculateConnectedComponents } from "./js/components.js";
@@ -9,6 +16,10 @@ import { setupGeneSearch } from "./js/gene_searcher.js";
 import { highlightDiseaseAnnotation } from "./js/highlighter.js";
 import { setupPhenotypeSearch } from "./js/phenotype_searcher.js";
 import { initializeCentralitySystem, recalculateCentrality } from "./js/centrality.js";
+
+if (window.cytoscape && window.cytoscapeSvg && typeof window.cytoscape.use === "function") {
+    window.cytoscape.use(window.cytoscapeSvg);
+}
 
 const NODE_SLIDER_MIN = 1;
 const NODE_SLIDER_MAX = 100;
@@ -1019,58 +1030,37 @@ cy.on("tap", function (event) {
 
 const file_name = `TSUMUGI_${pageConfig.name || "network"}`;
 
-const exportPngButton = document.getElementById("export-png");
-if (exportPngButton) {
-    exportPngButton.addEventListener("click", function () {
-        exportGraphAsPNG(cy, file_name);
-    });
+const exportScaleInput = document.getElementById("export-scale-input");
+if (exportScaleInput && !exportScaleInput.value) {
+    exportScaleInput.value = DEFAULT_EXPORT_SCALE;
 }
 
-const exportJpgButton = document.getElementById("export-jpg");
-if (exportJpgButton) {
-    exportJpgButton.addEventListener("click", function () {
-        exportGraphAsJPG(cy, file_name);
-    });
+function getExportScale() {
+    if (!exportScaleInput) {
+        return DEFAULT_EXPORT_SCALE;
+    }
+    const parsed = parseFloat(exportScaleInput.value);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+        exportScaleInput.value = DEFAULT_EXPORT_SCALE;
+        return DEFAULT_EXPORT_SCALE;
+    }
+    return parsed;
 }
 
-const exportCsvButton = document.getElementById("export-csv");
-if (exportCsvButton) {
-    exportCsvButton.addEventListener("click", function () {
-        exportGraphAsCSV(cy, file_name);
-    });
+function attachExportHandler(elementId, handler) {
+    const button = document.getElementById(elementId);
+    if (!button) return;
+    button.addEventListener("click", handler);
 }
 
-const exportGraphmlButton = document.getElementById("export-graphml");
-if (exportGraphmlButton) {
-    exportGraphmlButton.addEventListener("click", function () {
-        exportGraphAsGraphML(cy, file_name);
-    });
-}
+attachExportHandler("export-png", () => exportGraphAsPNG(cy, file_name, getExportScale()));
+attachExportHandler("export-jpg", () => exportGraphAsJPG(cy, file_name, getExportScale()));
+attachExportHandler("export-svg", () => exportGraphAsSVG(cy, file_name, getExportScale()));
+attachExportHandler("export-csv", () => exportGraphAsCSV(cy, file_name));
+attachExportHandler("export-graphml", () => exportGraphAsGraphML(cy, file_name));
 
-const exportPngMobileButton = document.getElementById("export-png-mobile");
-if (exportPngMobileButton) {
-    exportPngMobileButton.addEventListener("click", function () {
-        exportGraphAsPNG(cy, file_name);
-    });
-}
-
-const exportJpgMobileButton = document.getElementById("export-jpg-mobile");
-if (exportJpgMobileButton) {
-    exportJpgMobileButton.addEventListener("click", function () {
-        exportGraphAsJPG(cy, file_name);
-    });
-}
-
-const exportCsvMobileButton = document.getElementById("export-csv-mobile");
-if (exportCsvMobileButton) {
-    exportCsvMobileButton.addEventListener("click", function () {
-        exportGraphAsCSV(cy, file_name);
-    });
-}
-
-const exportGraphmlMobileButton = document.getElementById("export-graphml-mobile");
-if (exportGraphmlMobileButton) {
-    exportGraphmlMobileButton.addEventListener("click", function () {
-        exportGraphAsGraphML(cy, file_name);
-    });
-}
+attachExportHandler("export-png-mobile", () => exportGraphAsPNG(cy, file_name, getExportScale()));
+attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, file_name, getExportScale()));
+attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, file_name, getExportScale()));
+attachExportHandler("export-csv-mobile", () => exportGraphAsCSV(cy, file_name));
+attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, file_name));
