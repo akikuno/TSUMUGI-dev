@@ -182,10 +182,44 @@ Outputs: `./tsumugi-output` contains genewise annotations (genewise_phenotype_an
 > - Linux: `open_webapp_linux.sh`
 
 ### 2. Filter by MP term (`tsumugi mp --include/--exclude`)
-Extract only gene pairs that include phenotypes of interest, or pairs whose relevant phenotypes were measured but did not show significant abnormalities.
+Extract gene pairs (or genes) that include phenotypes of interest, or pairs whose relevant phenotypes were measured but did not show significant abnormalities.
 
-- `--pairwise` (default if neither is set): outputs gene pairs. Provide `--in pairwise_similarity_annotations.jsonl(.gz)`.
-- `--genewise`: outputs individual genes. Provide `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (required for `--exclude`, recommended for `--include`).
+```txt
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m MP_OBO] [-a GENEWISE_ANNOTATIONS] [--in IN] [--out OUT] [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
+```
+
+#### `-i MP_ID`, `--include MP_ID`
+Include genes/gene pairs that have the specified MP term (descendants included).
+
+#### `-e MP_ID`, `--exclude MP_ID`
+Return genes/gene pairs that were measured for the specified MP term (descendants included) and did **not** show a significant phenotype. Requires `-a/--genewise_annotations`.
+
+#### `-g`, `--genewise`
+Filter at gene level. Reads `genewise_phenotype_annotations.jsonl(.gz)`. When using `--genewise`, specify `-a/--genewise_annotations`.
+
+#### `-p`, `--pairwise`
+Filter at gene-pair level. Targets `pairwise_similarity_annotations.jsonl(.gz)`. If `--in` is omitted, reads from STDIN.
+
+#### `-m MP_OBO`, `--mp_obo MP_OBO`
+Path to Mammalian Phenotype ontology (mp.obo). If omitted, uses the bundled `data/mp.obo`.
+
+#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
+Path to the genewise annotation file (JSONL/.gz). Required for `--exclude`; also specify when using `--genewise`.
+
+#### `--in IN`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+#### `--out OUT`
+Path to the output file (JSONL/.gz). If omitted, writes to STDOUT.
+
+#### `--life_stage LIFE_STAGE`
+Additional filter by life stage. Available values: `Embryo`, `Early`, `Interval`, `Late`.
+
+#### `--sex SEX`
+Additional filter by sexual dimorphism. Use the values present in annotations (e.g., `Male`, `Female`, `None`).
+
+#### `--zygosity ZYGOSITY`
+Additional filter by zygosity. Available values: `Homo`, `Hetero`, `Hemi`.
 
 ```bash
 # Extract only gene pairs that include MP:0001146 (abnormal testis morphology) or descendant terms (e.g., MP:0004849 abnormal testis size)
@@ -217,6 +251,28 @@ tsumugi mp --exclude MP:0001146 \
 > For example, if you specify `MP:0001146 (abnormal testis morphology)`, descendant terms such as `MP:0004849 (abnormal testis size)` are considered as well.
 
 ### 3. Filter by phenotype counts (`tsumugi n-phenos`)
+```txt
+tsumugi n-phenos [-h] (-g | -p) [--min MIN] [--max MAX] [--in IN] [--out OUT] [-a GENEWISE_ANNOTATIONS]
+```
+
+#### `-g`, `--genewise`
+Filter by the number of significant phenotypes per gene. Requires `-a/--genewise_annotations` with `genewise_phenotype_annotations.jsonl(.gz)`.
+
+#### `-p`, `--pairwise`
+Filter by the number of shared phenotypes per gene pair. If `--in` is omitted, reads `pairwise_similarity_annotations.jsonl(.gz)` from STDIN.
+
+#### `--min MIN`, `--max MAX`
+Minimum/maximum thresholds (at least one is required). Use either to set only a lower or upper bound.
+
+#### `--in IN`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+#### `--out OUT`
+Path to the output file (JSONL/.gz). If omitted, writes to STDOUT.
+
+#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
+Path to the genewise annotation file (JSONL/.gz). Required with `--genewise`.
+
 - Shared phenotypes per pair:
 ```bash
 tsumugi n-phenos --pairwise --min 3 --max 20 \
@@ -233,6 +289,22 @@ tsumugi n-phenos --genewise --min 5 --max 50 \
 `--min` or `--max` alone is fine.
 
 ### 4. Filter by gene list (`tsumugi genes --keep/--drop`)
+```txt
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [--in IN] [--out OUT]
+```
+
+#### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
+Keep only pairs containing specified genes (comma-separated list or text file).
+
+#### `-d GENE_SYMBOL`, `--drop GENE_SYMBOL`
+Drop pairs containing specified genes (comma-separated list or text file).
+
+#### `--in IN`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+#### `--out OUT`
+Path to the output file (JSONL/.gz). If omitted, writes to STDOUT.
+
 ```bash
 tsumugi genes --keep genes.txt \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -244,6 +316,22 @@ tsumugi genes --drop geneA,geneB \
 ```
 
 ### 5. Filter by life stage (`tsumugi life-stage --keep/--drop`)
+```txt
+tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in IN] [--out OUT]
+```
+
+#### `-k LIFE_STAGE`, `--keep LIFE_STAGE`
+Keep only annotations with the specified life stage (`Embryo`, `Early`, `Interval`, `Late`).
+
+#### `-d LIFE_STAGE`, `--drop LIFE_STAGE`
+Drop annotations with the specified life stage.
+
+#### `--in IN`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+#### `--out OUT`
+Path to the output file (JSONL/.gz). If omitted, writes to STDOUT.
+
 ```bash
 tsumugi life-stage --keep Early \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -251,6 +339,22 @@ tsumugi life-stage --keep Early \
 ```
 
 ### 6. Filter by sex (`tsumugi sex --keep/--drop`)
+```txt
+tsumugi sex [-h] (-k SEX | -d SEX) [--in IN] [--out OUT]
+```
+
+#### `-k SEX`, `--keep SEX`
+Keep only annotations with the specified sexual dimorphism (`Male`, `Female`, `None`).
+
+#### `-d SEX`, `--drop SEX`
+Drop annotations with the specified sexual dimorphism.
+
+#### `--in IN`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+#### `--out OUT`
+Path to the output file (JSONL/.gz). If omitted, writes to STDOUT.
+
 ```bash
 tsumugi sex --drop Male \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -258,6 +362,21 @@ tsumugi sex --drop Male \
 ```
 
 ### 7. Filter by zygosity (`tsumugi zygosity --keep/--drop`)
+```txt
+tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in IN] [--out OUT]
+```
+
+#### `-k ZYGOSITY`, `--keep ZYGOSITY`
+Keep only annotations with the specified zygosity (`Homo`, `Hetero`, `Hemi`).
+
+#### `-d ZYGOSITY`, `--drop ZYGOSITY`
+Drop annotations with the specified zygosity.
+
+#### `--in IN`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+#### `--out OUT`
+Path to the output file (JSONL/.gz). If omitted, writes to STDOUT.
 ```bash
 tsumugi zygosity --keep Homo \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -265,12 +384,37 @@ tsumugi zygosity --keep Homo \
 ```
 
 ### 8. Export GraphML / webapp
+```txt
+tsumugi build-graphml [-h] [--in IN] -a GENEWISE_ANNOTATIONS
+```
+
+#### `--in IN`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
+Path to the genewise annotation file (JSONL/.gz). Required.
+
 ```bash
 tsumugi build-graphml \
   --in pairwise_similarity_annotations.jsonl.gz \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   > network.graphml
+```
 
+```txt
+tsumugi build-webapp [-h] [--in IN] -a GENEWISE_ANNOTATIONS -o OUT
+```
+
+#### `--in IN`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
+Path to the genewise annotation file (JSONL/.gz). Required.
+
+#### `-o OUT`, `--out OUT`
+Output directory for the webapp bundle (HTML/CSS/JS + network data). Do not specify a filename with an extension.
+
+```bash
 tsumugi build-webapp \
   --in pairwise_similarity_annotations.jsonl.gz \
   --genewise genewise_phenotype_annotations.jsonl.gz \

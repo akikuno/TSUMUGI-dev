@@ -276,3 +276,82 @@ Hitung **Resnik** antar istilah MP dan skala ke **Phenodigm (0–100)** untuk pa
 # ✉️ Kontak
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  
 - GitHub Issues: https://github.com/akikuno/TSUMUGI-dev/issues/new/choose
+
+
+## CLI option details (updated)
+
+### 2. Filter by MP term (`tsumugi mp --include/--exclude`)
+```
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m MP_OBO] [-a GENEWISE_ANNOTATIONS] [--in IN] [--out OUT] [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
+```
+- `-i/--include`: include specified MP term (descendants included)
+- `-e/--exclude`: measured for the term but no significant phenotype (descendants included); requires `-a/--genewise_annotations`
+- `-g/--genewise`: gene-level filtering; specify `-a/--genewise_annotations`
+- `-p/--pairwise`: pairwise filtering; if `--in` is omitted, reads from STDIN
+- `-m/--mp_obo`: path to mp.obo; defaults to bundled file if omitted
+- `-a/--genewise_annotations`: path to genewise annotations (JSONL/.gz)
+- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
+- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
+- `--life_stage`: filter by life stage (`Embryo`, `Early`, `Interval`, `Late`)
+- `--sex`: filter by sexual dimorphism (`Male`, `Female`, `None`)
+- `--zygosity`: filter by zygosity (`Homo`, `Hetero`, `Hemi`)
+
+### 3. Filter by phenotype counts (`tsumugi n-phenos`)
+```
+tsumugi n-phenos [-h] (-g | -p) [--min MIN] [--max MAX] [--in IN] [--out OUT] [-a GENEWISE_ANNOTATIONS]
+```
+- `-g/--genewise`: per-gene counts; requires `-a/--genewise_annotations`
+- `-p/--pairwise`: shared phenotype counts per pair; if `--in` omitted, reads from STDIN
+- `--min/--max`: thresholds (at least one required)
+- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
+- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
+- `-a/--genewise_annotations`: path to genewise annotations (JSONL/.gz); required with `--genewise`
+
+### 4. Filter by gene list (`tsumugi genes --keep/--drop`)
+```
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [--in IN] [--out OUT]
+```
+- `-k/--keep`: keep only pairs containing specified genes (comma-separated or text file)
+- `-d/--drop`: drop pairs containing specified genes
+- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
+- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
+
+### 5. Filter by life stage (`tsumugi life-stage --keep/--drop`)
+```
+tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in IN] [--out OUT]
+```
+- `-k/--keep`: keep only the specified life stage (`Embryo`, `Early`, `Interval`, `Late`)
+- `-d/--drop`: drop the specified life stage
+- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
+- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
+
+### 6. Filter by sex (`tsumugi sex --keep/--drop`)
+```
+tsumugi sex [-h] (-k SEX | -d SEX) [--in IN] [--out OUT]
+```
+- `-k/--keep`: keep only the specified sex (`Male`, `Female`, `None`)
+- `-d/--drop`: drop the specified sex
+- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
+- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
+
+### 7. Filter by zygosity (`tsumugi zygosity --keep/--drop`)
+```
+tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in IN] [--out OUT]
+```
+- `-k/--keep`: keep only the specified zygosity (`Homo`, `Hetero`, `Hemi`)
+- `-d/--drop`: drop the specified zygosity
+- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
+- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
+
+### 8. Export GraphML / webapp
+```
+tsumugi build-graphml [-h] [--in IN] -a GENEWISE_ANNOTATIONS
+```
+- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
+- `-a/--genewise_annotations`: path to genewise annotations (JSONL/.gz); required
+```
+tsumugi build-webapp [-h] [--in IN] -a GENEWISE_ANNOTATIONS -o OUT
+```
+- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
+- `-a/--genewise_annotations`: path to genewise annotations (JSONL/.gz); required
+- `-o/--out`: output directory for the webapp bundle (do not pass a filename with extension)
