@@ -82,8 +82,8 @@ def run_pipeline(args) -> None:
     records_annotated = annotator.annotate_sexual_dimorphism(records_annotated, threshold=1e-4)
     # Human Diseases
     records_annotated = annotator.annotate_diseases(records_annotated, disease_annotations_by_gene)
-    # Annotate non-significant terms
-    records_annotated = annotator.annotate_non_significant_terms(records_annotated)
+    # Annotate Significant (True/False)
+    records_annotated = annotator.annotate_significant(records_annotated)
 
     # --------------------------------------------------------
     # Filter records

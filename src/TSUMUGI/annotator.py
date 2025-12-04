@@ -87,7 +87,7 @@ def annotate_diseases(records_annotated, disease_annotations_by_gene: dict) -> l
     return records_annotated
 
 
-def annotate_non_significant_terms(records_annotated: list[dict]) -> list[dict]:
+def annotate_significant(records_annotated: list[dict]) -> list[dict]:
     for record in records_annotated:
         if record["mp_term_id"]:
             record["significant"] = True
