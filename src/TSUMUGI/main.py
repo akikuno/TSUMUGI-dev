@@ -10,7 +10,8 @@ from TSUMUGI.subcommands import (
     graphml_builder,
     life_stage_filterer,
     mp_filterer,
-    n_phenos_filterer,
+    count_filterer,
+    score_filterer,
     sex_filterer,
     webapp_builder,
     zygosity_filterer,
@@ -111,21 +112,32 @@ def main() -> None:
     # -----------------------------------------------------
     # Number of phenotypes per gene/pair
     # -----------------------------------------------------
-    if args.cmd == "n-phenos":
+    if args.cmd == "count":
         logging.info("Filtering gene pairs based on number of phenotypes per gene")
         if args.genewise:
-            n_phenos_filterer.filter_by_number_of_phenotypes_per_gene(
+            count_filterer.filter_by_number_of_phenotypes_per_gene(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 path_genewise_phenotype_annotations=args.path_genewise,
                 min_phenotypes=args.min,
                 max_phenotypes=args.max,
             )
         elif args.pairwise:
-            n_phenos_filterer.filter_by_number_of_phenotypes_per_pair(
+            count_filterer.filter_by_number_of_phenotypes_per_pair(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 min_phenotypes=args.min,
                 max_phenotypes=args.max,
             )
+
+    # -----------------------------------------------------
+    # Score of phenotype similarity per gene/pair
+    # -----------------------------------------------------
+    if args.cmd == "score":
+        logging.info("Filtering gene pairs based on the score of phenotype similarity per gene")
+        score_filterer.filter_by_score_of_phenotypes_per_pair(
+            path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+            min_phenotypes=args.min,
+            max_phenotypes=args.max,
+        )
 
     # -----------------------------------------------------
     # gene lists filterer

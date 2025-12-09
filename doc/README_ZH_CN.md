@@ -24,17 +24,17 @@
 
 TSUMUGI 支持三种输入。
 
-### 1. 表型（Phenotype）
+### 表型（Phenotype）
 输入关注的表型，在该表型的 KO 小鼠基因中寻找**整体表型也相似的基因群**。  
 表型名称基于 [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology)。  
 👉 [表型列表](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
-### 2. 基因名（Gene）
+### 基因名（Gene）
 指定一个基因，寻找**KO 小鼠表型相似的其他基因群**。  
 基因符号遵循 [MGI](http://www.informatics.jax.org/)。  
 👉 [基因列表](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
-### 3. 基因列表（Gene List）
+### 基因列表（Gene List）
 支持多个基因（每行一个），在列表内部提取**表型相似的基因**。  
 > [!CAUTION]  
 > 若找不到相似基因：`No similar phenotypes were found among the entered genes.`  
@@ -132,7 +132,8 @@ CSV 含模块ID及每个基因的表型列表；GraphML 与 Cytoscape 兼容。
 ## 可用命令
 - `tsumugi run`: 由 IMPC 数据重算网络  
 - `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 按 MP 术语包含/排除基因对或基因  
-- `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: 按表型数过滤（基因对/基因）  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: 按表型数过滤（基因对/基因）  
+- `tsumugi score (--min/--max)`: 按表型相似性得分筛选（基因对）
 - `tsumugi genes --keep/--drop`: 基因列表保留/剔除  
 - `tsumugi life-stage --keep/--drop`: 按生命阶段过滤  
 - `tsumugi sex --keep/--drop`: 按性别过滤  
@@ -153,12 +154,11 @@ pip install tsumugi
 
 ## 常用示例（按命令）
 
-### 1. 用 IMPC 数据重算(`tsumugi run`)
+### 用 IMPC 数据重算(`tsumugi run`)
 若省略 `--mp_obo`，使用内置 `data-version: releases/2025-08-27/mp.obo`。  
 若省略 `--impc_phenodigm`，使用 2025-10-01 从 [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/) 获取的文件。
 ```bash
 tsumugi run \
-  --output_dir ./tsumugi-output \
   --statistical_results ./statistical-results-ALL.csv.gz \
   --threads 8
 ```
@@ -170,7 +170,7 @@ tsumugi run \
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
-### 2. 按 MP 术语过滤(`tsumugi mp --include/--exclude`)
+### 按 MP 术语过滤(`tsumugi mp --include/--exclude`)
 仅提取包含目标表型的基因对，或提取已测量该表型但未出现显著异常的基因对。
 
 - `--pairwise`（默认）: 输出基因对。使用 `--in pairwise_similarity_annotations.jsonl(.gz)`。
@@ -205,23 +205,46 @@ tsumugi mp --exclude MP:0001146 \
 > **会同时处理指定 MP 术语的子术语。**  
 > 例如指定 `MP:0001146 (abnormal testis morphology)` 时，也会考虑 `MP:0004849 (abnormal testis size)` 等子术语。
 
-### 3. 按表型数量过滤(`tsumugi n-phenos`)
+### 按表型数量过滤(`tsumugi count`)
+At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
 - 每对共享表型数:
 ```bash
-tsumugi n-phenos --pairwise --min 3 --max 20 \
+tsumugi count --pairwise --min 3 --max 20 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_min3_max20.jsonl
 ```
 - 每基因表型数（需 genewise）:
 ```bash
-tsumugi n-phenos --genewise --min 5 --max 50 \
+tsumugi count --genewise --min 5 --max 50 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > genewise_min5_max50.jsonl
 ```
 `--min` 或 `--max` 可单独指定。
 
-### 4. 基因列表过滤(`tsumugi genes --keep/--drop`)
+
+### 按相似性得分筛选 (`tsumugi score`)
+```txt
+tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+```
+
+按 `phenotype_similarity_score`（0–100）过滤基因对。`--min` 和 `--max` 至少要提供一个。
+
+#### `--min MIN`, `--max MAX`
+相似性得分的下/上限。可单独使用其中一个进行单向过滤。
+
+#### `--in IN`
+成对注释文件路径（JSONL/.gz）；省略则从 STDIN 读取。
+
+```bash
+tsumugi score --min 50 --max 80 \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_score50_80.jsonl
+```
+
+`--min` 或 `--max` 单独使用也可以。
+
+### 基因列表过滤(`tsumugi genes --keep/--drop`)
 ```bash
 tsumugi genes --keep genes.txt \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -232,28 +255,28 @@ tsumugi genes --drop geneA,geneB \
   > pairwise_drop_genes.jsonl
 ```
 
-### 5. 按生命阶段过滤(`tsumugi life-stage --keep/--drop`)
+### 按生命阶段过滤(`tsumugi life-stage --keep/--drop`)
 ```bash
 tsumugi life-stage --keep Early \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_lifestage_early.jsonl
 ```
 
-### 6. 按性别过滤(`tsumugi sex --keep/--drop`)
+### 按性别过滤(`tsumugi sex --keep/--drop`)
 ```bash
 tsumugi sex --drop Male \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_no_male.jsonl
 ```
 
-### 7. 按接合型过滤(`tsumugi zygosity --keep/--drop`)
+### 按接合型过滤(`tsumugi zygosity --keep/--drop`)
 ```bash
 tsumugi zygosity --keep Homo \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_homo.jsonl
 ```
 
-### 8. 导出 GraphML / Web 应用
+### 导出 GraphML / Web 应用
 ```bash
 tsumugi build-graphml \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -263,7 +286,6 @@ tsumugi build-graphml \
 tsumugi build-webapp \
   --in pairwise_similarity_annotations.jsonl.gz \
   --genewise genewise_phenotype_annotations.jsonl.gz \
-  --output_dir ./webapp_output
 ```
 
 CLI 支持标准输入/输出，可串联：`zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
@@ -293,82 +315,3 @@ CLI 支持标准输入/输出，可串联：`zcat ... | tsumugi mp ... | tsumugi
 # ✉️ 联系
 - Google 表单: https://forms.gle/ME8EJZZHaRNgKZ979  
 - GitHub Issues: https://github.com/akikuno/TSUMUGI-dev/issues/new/choose
-
-
-## CLI option details (updated)
-
-### 2. Filter by MP term (`tsumugi mp --include/--exclude`)
-```
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m MP_OBO] [-a GENEWISE_ANNOTATIONS] [--in IN] [--out OUT] [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
-```
-- `-i/--include`: include specified MP term (descendants included)
-- `-e/--exclude`: measured for the term but no significant phenotype (descendants included); requires `-a/--genewise_annotations`
-- `-g/--genewise`: gene-level filtering; specify `-a/--genewise_annotations`
-- `-p/--pairwise`: pairwise filtering; if `--in` is omitted, reads from STDIN
-- `-m/--mp_obo`: path to mp.obo; defaults to bundled file if omitted
-- `-a/--genewise_annotations`: path to genewise annotations (JSONL/.gz)
-- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
-- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
-- `--life_stage`: filter by life stage (`Embryo`, `Early`, `Interval`, `Late`)
-- `--sex`: filter by sexual dimorphism (`Male`, `Female`, `None`)
-- `--zygosity`: filter by zygosity (`Homo`, `Hetero`, `Hemi`)
-
-### 3. Filter by phenotype counts (`tsumugi n-phenos`)
-```
-tsumugi n-phenos [-h] (-g | -p) [--min MIN] [--max MAX] [--in IN] [--out OUT] [-a GENEWISE_ANNOTATIONS]
-```
-- `-g/--genewise`: per-gene counts; requires `-a/--genewise_annotations`
-- `-p/--pairwise`: shared phenotype counts per pair; if `--in` omitted, reads from STDIN
-- `--min/--max`: thresholds (at least one required)
-- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
-- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
-- `-a/--genewise_annotations`: path to genewise annotations (JSONL/.gz); required with `--genewise`
-
-### 4. Filter by gene list (`tsumugi genes --keep/--drop`)
-```
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [--in IN] [--out OUT]
-```
-- `-k/--keep`: keep only pairs containing specified genes (comma-separated or text file)
-- `-d/--drop`: drop pairs containing specified genes
-- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
-- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
-
-### 5. Filter by life stage (`tsumugi life-stage --keep/--drop`)
-```
-tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in IN] [--out OUT]
-```
-- `-k/--keep`: keep only the specified life stage (`Embryo`, `Early`, `Interval`, `Late`)
-- `-d/--drop`: drop the specified life stage
-- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
-- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
-
-### 6. Filter by sex (`tsumugi sex --keep/--drop`)
-```
-tsumugi sex [-h] (-k SEX | -d SEX) [--in IN] [--out OUT]
-```
-- `-k/--keep`: keep only the specified sex (`Male`, `Female`, `None`)
-- `-d/--drop`: drop the specified sex
-- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
-- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
-
-### 7. Filter by zygosity (`tsumugi zygosity --keep/--drop`)
-```
-tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in IN] [--out OUT]
-```
-- `-k/--keep`: keep only the specified zygosity (`Homo`, `Hetero`, `Hemi`)
-- `-d/--drop`: drop the specified zygosity
-- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
-- `--out`: path to output file (JSONL/.gz); if omitted, writes to STDOUT
-
-### 8. Export GraphML / webapp
-```
-tsumugi build-graphml [-h] [--in IN] -a GENEWISE_ANNOTATIONS
-```
-- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
-- `-a/--genewise_annotations`: path to genewise annotations (JSONL/.gz); required
-```
-tsumugi build-webapp [-h] [--in IN] -a GENEWISE_ANNOTATIONS -o OUT
-```
-- `--in`: path to pairwise annotations (JSONL/.gz); if omitted, reads from STDIN
-- `-a/--genewise_annotations`: path to genewise annotations (JSONL/.gz); required
-- `-o/--out`: output directory for the webapp bundle (do not pass a filename with extension)
