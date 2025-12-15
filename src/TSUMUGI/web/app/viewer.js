@@ -1,11 +1,4 @@
-import {
-    DEFAULT_EXPORT_SCALE,
-    exportGraphAsPNG,
-    exportGraphAsJPG,
-    exportGraphAsCSV,
-    exportGraphAsGraphML,
-    exportGraphAsSVG,
-} from "./js/exporter.js";
+import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML, exportGraphAsSVG } from "./js/exporter.js";
 import { scaleToOriginalRange, getColorForValue } from "./js/value_scaler.js";
 import { removeTooltips, showSubnetworkTooltip, showTooltip } from "./js/tooltips.js";
 import { getOrderedComponents, calculateConnectedComponents } from "./js/components.js";
@@ -73,18 +66,52 @@ function setPageTitle(config, mapSymbolToId) {
     document.title = `${pageTitle} | TSUMUGI`;
 }
 
-function setVersionLabel() {
+async function fetchText(path) {
+    let text = "";
+    try {
+        const response = await fetch(path, { cache: "no-cache" });
+        if (response.ok || response.status === 0) {
+            text = (await response.text()).trim();
+            if (text) {
+                return text;
+            }
+        }
+    } catch (error) {
+        // fall through to the XHR fallback
+    }
+
+    return new Promise((resolve) => {
+        try {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", path, true);
+            xhr.onload = () => {
+                if (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 300)) {
+                    resolve(xhr.responseText.trim());
+                } else {
+                    resolve("");
+                }
+            };
+            xhr.onerror = () => resolve("");
+            xhr.send();
+        } catch (e) {
+            resolve("");
+        }
+    });
+}
+
+async function setVersionLabel() {
     const versionLabel = document.getElementById("tsumugi-version");
     if (!versionLabel) return;
 
-    fetch("../version.txt")
-        .then((res) => (res.ok ? res.text() : ""))
-        .then((text) => {
-            versionLabel.textContent = text.trim() || "-";
-        })
-        .catch(() => {
-            versionLabel.textContent = "-";
-        });
+    const candidates = ["../version.txt", "./version.txt"];
+    let versionText = "";
+
+    for (const path of candidates) {
+        versionText = await fetchText(path);
+        if (versionText) break;
+    }
+
+    versionLabel.textContent = versionText || "-";
 }
 
 function loadElementsForConfig(config) {
@@ -1030,37 +1057,20 @@ cy.on("tap", function (event) {
 
 const file_name = `TSUMUGI_${pageConfig.name || "network"}`;
 
-const exportScaleInput = document.getElementById("export-scale-input");
-if (exportScaleInput && !exportScaleInput.value) {
-    exportScaleInput.value = DEFAULT_EXPORT_SCALE;
-}
-
-function getExportScale() {
-    if (!exportScaleInput) {
-        return DEFAULT_EXPORT_SCALE;
-    }
-    const parsed = parseFloat(exportScaleInput.value);
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-        exportScaleInput.value = DEFAULT_EXPORT_SCALE;
-        return DEFAULT_EXPORT_SCALE;
-    }
-    return parsed;
-}
-
 function attachExportHandler(elementId, handler) {
     const button = document.getElementById(elementId);
     if (!button) return;
     button.addEventListener("click", handler);
 }
 
-attachExportHandler("export-png", () => exportGraphAsPNG(cy, file_name, getExportScale()));
-attachExportHandler("export-jpg", () => exportGraphAsJPG(cy, file_name, getExportScale()));
-attachExportHandler("export-svg", () => exportGraphAsSVG(cy, file_name, getExportScale()));
+attachExportHandler("export-png", () => exportGraphAsPNG(cy, file_name));
+attachExportHandler("export-jpg", () => exportGraphAsJPG(cy, file_name));
+attachExportHandler("export-svg", () => exportGraphAsSVG(cy, file_name));
 attachExportHandler("export-csv", () => exportGraphAsCSV(cy, file_name));
 attachExportHandler("export-graphml", () => exportGraphAsGraphML(cy, file_name));
 
-attachExportHandler("export-png-mobile", () => exportGraphAsPNG(cy, file_name, getExportScale()));
-attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, file_name, getExportScale()));
-attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, file_name, getExportScale()));
+attachExportHandler("export-png-mobile", () => exportGraphAsPNG(cy, file_name));
+attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, file_name));
+attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, file_name));
 attachExportHandler("export-csv-mobile", () => exportGraphAsCSV(cy, file_name));
 attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, file_name));
