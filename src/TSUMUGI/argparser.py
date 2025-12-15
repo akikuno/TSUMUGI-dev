@@ -208,7 +208,7 @@ def build_parser() -> argparse.ArgumentParser:
         "count",
         help="Filter genes or gene pairs by the number of phenotypes",
         description="Filter genes based on the number of detected phenotypes per KO or shared between KO pairs.",
-        )
+    )
 
     group_count = count_parser.add_mutually_exclusive_group(required=True)
     group_count.add_argument(
@@ -252,7 +252,7 @@ def build_parser() -> argparse.ArgumentParser:
         "score",
         help="Filter genes or gene pairs by the similarity score",
         description="Filter genes based on the similarity score per KO or shared between KO pairs.",
-        )
+    )
 
     score_parser.add_argument("--min", type=int, help="Minimum number threshold")
     score_parser.add_argument("--max", type=int, help="Maximum number threshold")
@@ -269,12 +269,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     # =========================================================
-    # genes (Filter by gene symbols)
+    # genes (Filter by gene symbols or gene pairs)
     # =========================================================
 
     genes_parser = subparsers.add_parser(
         "genes",
-        help="Filter gene pairs by gene symbols of phenotype annotations",
+        help="Filter gene pairs by gene symbols or gene pairs of phenotype annotations",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
@@ -292,6 +292,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Drop annotations with the specified gene symbols (comma-separated or path of text file)",
     )
 
+    group_level = genes_parser.add_mutually_exclusive_group(required=False)
+    group_level.add_argument("-g", "--genewise", action="store_true", help="Filter by user-provided gene symbols")
+    group_level.add_argument("-p", "--pairwise", action="store_true", help="Filter by user-provided  gene pairs")
+
     genes_parser.add_argument(
         "--in",
         dest="path_pairwise",
@@ -302,7 +306,6 @@ def build_parser() -> argparse.ArgumentParser:
             "If omitted, data are read from STDIN.\n"
         ),
     )
-
 
     # =========================================================
     # life-stage (Filter by life stage)
@@ -421,7 +424,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-
     # =========================================================
     # build-graphml
     # =========================================================
@@ -516,10 +518,6 @@ def parse_args(argv=None):
         if not args.impc_phenodigm:
             args.impc_phenodigm = str(files("TSUMUGI") / "data" / "impc_phenodigm.csv")
 
-        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
-        if not args.genewise and not args.pairwise:
-            args.pairwise = True
-
     ########################################################################
     # mp
     ########################################################################
@@ -534,6 +532,12 @@ def parse_args(argv=None):
                 "mp: '-a/--path_genewise' is required when using '-e/--exclude'.\n"
                 "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
             )
+
+        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
+        if not args.genewise and not args.pairwise:
+            args.pairwise = True
+        else:
+            args.pairwise = False
 
     ########################################################################
     # count / score
@@ -552,6 +556,26 @@ def parse_args(argv=None):
             "count: '-a/--genewise_annotations' is required when using '-g/--genewise'.\n"
             "Provide the gene phenotype annotations JSONL(.gz) file to identify genes that were measured."
         )
+
+    ########################################################################
+    # genes
+    ########################################################################
+    if args.cmd == "genes":
+        path_arg = args.keep or args.drop
+
+        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
+        if not args.genewise and not args.pairwise:
+            args.pairwise = True
+        elif args.genewise:
+            args.pairwise = False
+        else:
+            args.genewise = False
+
+        # In pairwise mode, the gene list must be provided as a text file.
+        if args.pairwise and not Path(path_arg).is_file():
+            parser.error(
+                "genes --pairwise: Please provide a valid path to a text file containing gene symbols or gene pairs."
+            )
 
     ########################################################################
     # build-webapp

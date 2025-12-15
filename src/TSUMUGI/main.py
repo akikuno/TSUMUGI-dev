@@ -6,11 +6,11 @@ from pathlib import Path
 
 from TSUMUGI import argparser, core, validator
 from TSUMUGI.subcommands import (
+    count_filterer,
     genes_filterer,
     graphml_builder,
     life_stage_filterer,
     mp_filterer,
-    count_filterer,
     score_filterer,
     sex_filterer,
     webapp_builder,
@@ -143,35 +143,77 @@ def main() -> None:
     # gene lists filterer
     # -----------------------------------------------------
     if args.cmd == "genes":
-        if args.keep:
-            if Path(args.keep).is_file():
-                gene_list = set(Path(args.keep).read_text().splitlines())
-            else:
-                gene_list = set(args.keep.split(","))
+        if args.genewise:
+            if args.keep:
+                if Path(args.keep).is_file():
+                    gene_list = set(Path(args.keep).read_text().splitlines())
+                else:
+                    gene_list = set(args.keep.split(","))
 
-            if len(gene_list) == 0:
-                raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
+                if len(gene_list) == 0:
+                    raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
 
-            logging.info(f"Keeping phenotype annotations matching {len(gene_list)} genes")
-            genes_filterer.filter_annotations_by_genes(
-                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
-                gene_list=gene_list,
-                keep=True,
-            )
-        elif args.drop:
-            if Path(args.drop).is_file():
-                gene_list = set(Path(args.drop).read_text().splitlines())
-            else:
-                gene_list = set(args.drop.split(","))
-            if len(gene_list) == 0:
-                raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
+                logging.info(f"Keeping phenotype annotations matching {len(gene_list)} genes")
+                genes_filterer.filter_annotations_by_genes(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    gene_list=gene_list,
+                    keep=True,
+                )
+            elif args.drop:
+                if Path(args.drop).is_file():
+                    gene_list = set(Path(args.drop).read_text().splitlines())
+                else:
+                    gene_list = set(args.drop.split(","))
+                if len(gene_list) == 0:
+                    raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
 
-            logging.info(f"Dropping phenotype annotations matching {len(gene_list)} genes")
-            genes_filterer.filter_annotations_by_genes(
-                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
-                gene_list=gene_list,
-                drop=True,
-            )
+                logging.info(f"Dropping phenotype annotations matching {len(gene_list)} genes")
+                genes_filterer.filter_annotations_by_genes(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    gene_list=gene_list,
+                    drop=True,
+                )
+        else:
+            if args.keep:
+                gene_pairs = set()
+                for record in Path(args.keep).read_text().splitlines():
+                    # TSV
+                    if "\t" in record:
+                        gene1, gene2 = record.split("\t")
+                    # CSV
+                    elif "," in record:
+                        gene1, gene2 = record.split(",")
+                    gene_pairs.add(frozenset([gene1, gene2]))
+
+                if len(gene_pairs) == 0:
+                    raise ValueError(f"Gene list is empty. Please provide at least one gene pair in {args.keep}.")
+
+                logging.info(f"Keeping phenotype annotations matching {len(gene_pairs)} gene pairs")
+                genes_filterer.filter_annotations_by_gene_pairs(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    gene_pairs=gene_pairs,
+                    keep=True,
+                )
+            elif args.drop:
+                gene_pairs = set()
+                for record in Path(args.drop).read_text().splitlines():
+                    # TSV
+                    if "\t" in record:
+                        gene1, gene2 = record.split("\t")
+                    # CSV
+                    elif "," in record:
+                        gene1, gene2 = record.split(",")
+                    gene_pairs.add(frozenset([gene1, gene2]))
+
+                if len(gene_pairs) == 0:
+                    raise ValueError(f"Gene list is empty. Please provide at least one gene pair in {args.drop}.")
+
+                logging.info(f"Dropping phenotype annotations matching {len(gene_pairs)} gene pairs")
+                genes_filterer.filter_annotations_by_gene_pairs(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    gene_pairs=gene_pairs,
+                    drop=True,
+                )
 
     # -----------------------------------------------------
     # Life stage filterer

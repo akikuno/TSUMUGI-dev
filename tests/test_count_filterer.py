@@ -25,7 +25,6 @@ def test_parse_args_accepts_count_genewise():
     assert args.max == 5
 
 
-
 def test_filter_by_number_of_phenotypes_per_gene(monkeypatch):
     genewise_annotations = [
         {"marker_symbol": "GeneA", "significant": True},
