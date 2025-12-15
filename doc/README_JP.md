@@ -11,13 +11,14 @@
 [![DOI](https://zenodo.org/badge/441025227.svg)](https://doi.org/10.5281/zenodo.14957711)
 [![Contact](https://img.shields.io/badge/Contact-923DE2)](https://forms.gle/ME8EJZZHaRNgKZ979)
 
-**TSUMUGI** (Trait-driven Surveillance for Mutation-based Gene module Identification)は、[国際マウス表現型解析コンソーシアム（IMPC）](https://www.mousephenotype.org/)のノックアウト(KO)マウス表現型データを用いて、**表現型類似性から遺伝子モジュールを抽出・可視化するWebツール**です。
+**TSUMUGI** (Trait-driven Surveillance for Mutation-based Gene module Identification)は、[国際マウス表現型解析コンソーシアム（IMPC）](https://www.mousephenotype.org/)のノックアウト(KO)マウス表現型データを用いて、**KOマウスの表現型類似性を指標とした遺伝子ネットワークを抽出・可視化するWebツール**です。
 
-ブラウザだけで誰でも利用できます👇️  
+ブラウザまたはコマンドラインからご利用いただけます👇️  
 
-🔗https://larc-tsukuba.github.io/tsumugi/
+ブラウザはこちら： 🔗https://larc-tsukuba.github.io/tsumugi/  
+コマンドラインの詳細はページ下部 (🛠 コマンドライン版) にございます。  
 
-TSUMUGI(**紡ぎ**)には「表現型を織りなす遺伝子群を紡ぎ出す」という思いを込めています。  
+TSUMUGI(**紡ぎ**)には「表現型を織りなす遺伝子群を紡ぎ出す」という開発動機に即しています。  
 
 # 📖[TSUMUGI](https://larc-tsukuba.github.io/tsumugi/)の使い方
 
@@ -27,7 +28,7 @@ TSUMUGIは、次の3種類の入力に対応しています。
 
 ### 表現型（Phenotype）
 
-関心のある表現型を入力すると、それを示すKOマウスをもつ遺伝子の中から、**他の表現型も類似している遺伝子群**を探索します。  
+特定の表現型を1つ指定すると、KOマウスがその表現型を示す遺伝子の中から、**他の表現型も類似している遺伝子群**を探索します。  
 表現型名は[Mammalian Phenotype Ontology（MPO）](https://www.informatics.jax.org/vocab/mp_ontology)に基づいています。
 
 TSUMUGIで現在検索可能な表現型の一覧はこちら：  
@@ -35,7 +36,7 @@ TSUMUGIで現在検索可能な表現型の一覧はこちら：
 
 ### 遺伝子名（Gene）
 
-特定の遺伝子を1つ指定すると、**そのKOマウスと類似した表現型をもつ他の遺伝子群**を探索します。  
+特定の遺伝子を1つ指定すると、**そのKOマウスと類似する表現型をもつ他の遺伝子群**を探索します。  
 遺伝子名は[MGI](http://www.informatics.jax.org/)に登録された遺伝子シンボルに準拠しています。
 
 TSUMUGIで現在検索可能な遺伝子名の一覧はこちら：  
@@ -78,7 +79,7 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 - 性差情報（Sexual dimorphism；："None", "Male", "Female"）  
 - 疾患注釈（Disease annotation；例：[]または "Premature Ovarian Failure 18" など）  
 
-```
+```json
 {"life_stage": "Early", "marker_symbol": "1110059G10Rik", "marker_accession_id": "MGI:1913452", "effect_size": 0.0, "mp_term_name": "fused joints", "disease_annotation": [], "significant": false, "zygosity": "Homo", "sexual_dimorphism": "None", "mp_term_id": "MP:0000137"}
 ```
 
@@ -87,11 +88,11 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 遺伝子ペア間の表現型類似度をまとめたファイルです。  
 各レコードの内容は以下のとおりです。  
 
-- 遺伝子ペアの名称（Gene1_symbol, Gene2_symbol）  
+- 遺伝子ペアの名称（gene1_symbol, gene2_symbol）  
 - 共通する表現型の注釈情報（Phenotype shared annotations；各表現型ごとに発達段階、接合型、性差情報などを保持）  
 - ペア間の表現型類似度（Phenotype similarity score；Resnik類似度に基づくPhenodigmスコア；0–100スケール）  
 
-```
+```json
 {"gene1_symbol": "1110059G10Rik", "gene2_symbol": "Cog6", "phenotype_shared_annotations": {"vertebral transformation": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"}}, "phenotype_similarity_score": 42}
 ```
 
@@ -100,7 +101,7 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 入力内容に基づいてページが遷移し、ネットワークが自動的に描画されます。  
 
 > [!IMPORTANT]
-> **共通する異常表現型が3つ以上 かつ 表現型類似度が0.0よりも大きい**遺伝子ペアが、可視化の対象となります。  
+> **共通する異常表現型が3つ以上かつ表現型類似度が0.0よりも大きい**遺伝子ペアが、可視化の対象となります。  
 
 ### ネットワークパネル
 
@@ -113,6 +114,12 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 #### エッジ（線）
 
 エッジをクリックすると、共通表現型の詳細が確認できます。  
+
+#### モジュール（囲み）
+
+遺伝子群のサブネットワークは、ポリゴンで囲まれた「モジュール」として表示されます。  
+モジュールをクリックすると、そのモジュールに含まれる遺伝子が関与する表現型がリストアップされます。  
+モジュールはドラッグで移動でき、他のモジュールと重ならないように配置を調整できます。  
 
 ### コントロールパネル
 
@@ -160,16 +167,16 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 
 ### マークアップパネル
 
-#### ヒト疾患関連遺伝子のハイライト(Highlight: Human Disease)
+#### ヒト疾患関連遺伝子のハイライト
 
 ヒト疾患に関連する遺伝子をハイライト表示できます。  
 KOマウスとヒト疾患の関連は、[IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)の公開データを使用しています。  
 
-#### 遺伝子名の検索(Search: Specific Gene)
+#### 遺伝子名の検索
 
 ネットワークに含まれる遺伝子名を検索できます。
 
-#### ネットワーク図の表示スタイル調整 （Layout ＆Display）
+#### ネットワーク図の表示スタイル調整
 
 以下の要素を調整できます：
 
@@ -178,22 +185,21 @@ KOマウスとヒト疾患の関連は、[IMPC Disease Models Portal](https://di
 - エッジ（線）の太さ(Edge width)
 - ノード（点）間の距離（＊Coseレイアウト限定） (Node repulsion)
 
-#### エクスポート(Export)
+#### エクスポート
 
-現在のネットワークの画像およびデータを、PNG、CSVおよびGraphML形式でエクスポートできます。  
+現在のネットワークの画像およびデータを、PNG、JPEG、CSVおよびGraphML形式でエクスポートできます。  
 CSVには、連結成分（モジュール）のIDと、各遺伝子のKOマウスが示す表現型の一覧が含まれます。  
 GraphMLは、デスクトップ版Cytoscapeと互換性のある形式で、Cytoscapeにネットワークをインポートして分析することができます。  
 
 # 🛠 コマンドライン版
 
 TSUMUGIにはコマンドラインインターフェース（CLI）も付属しています。  
-IMPCの更新に合わせて最新データをダウンロードし、手元でパイプラインを再実行できます。  
-Web版より柔軟にフィルターや出力形式を変えられます。  
+以下のように、Web版より柔軟なデータ操作が可能です。  
 
 - 自前データで最新版を再計算: IMPC `statistical-results-ALL.csv.gz`（必要に応じて`mp.obo`と`impc_phenodigm.csv`も）を渡してネットワークを一括生成できます。
 - MP用語の有無でフィルター: `tsumugi mp --include MP:xxxx`で含める、`--exclude MP:xxxx`で除外するなど、Web版より細かい指定が可能です。
-- 遺伝子リストでの絞り込み・除外: カンマ区切りやテキストファイルなど、自由な入力形式を受け付けます。
-- 出力の拡張: GraphMLを直接生成(`tsumugi build-graphml`)したり、TSUMUGI用Webアプリ一式をオフライン向けに出力(`tsumugi build-webapp`)できます。
+- 遺伝子リストや生物学的アノテーションでの絞り込み・除外: 興味のある遺伝子リストやアノテーションに絞ってフィルターできます。
+- 出力の拡張: Web版に比べてより大規模なネットワークに対して、GraphMLを直接生成(`tsumugi build-graphml`)したり、TSUMUGI用Webアプリ一式をオフライン向けに出力(`tsumugi build-webapp`)できます。
 
 ## 利用可能なコマンド一覧
 - `tsumugi run`: IMPCデータからネットワークを再計算
@@ -320,7 +326,7 @@ tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m MP_OBO] [-a GENEWISE_ANNOTAT
 
 #### `-p`, `--pairwise`
 
-**遺伝子ペア単位でフィルター**  
+**遺伝子ペア単位でフィルター (デフォルト)**  
 `pairwise_similarity_annotations.jsonl(.gz)`を対象にします。`--in`未指定なら標準入力を読み込みます。
 
 #### `-m MP_OBO`, `--mp_obo MP_OBO`
@@ -337,8 +343,6 @@ tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m MP_OBO] [-a GENEWISE_ANNOTAT
 **pairwise注釈ファイルのパス（JSONL/.gz）**  
 未指定時は標準入力を読み込みます。
 
-未指定時は標準出力にJSONL形式で書き出します。
-
 #### `--life_stage LIFE_STAGE`
 **ライフステージで追加フィルター（オプション）**  
 `Embryo`, `Early`, `Interval`, `Late`を指定可能。
@@ -350,6 +354,8 @@ tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m MP_OBO] [-a GENEWISE_ANNOTAT
 #### `--zygosity ZYGOSITY`
 **接合型で追加フィルター（オプション）**  
 `Homo`, `Hetero`, `Hemi`を指定可能。
+
+#### 実行例
 
 ```bash
 # MP:0001146(abnormal testis morphology)とその下層の表現型（MP:0004849 (abnormal testis size)など）を含む遺伝子ペアだけを抽出
@@ -404,11 +410,12 @@ tsumugi count [-h] (-g | -p) [--min MIN] [--max MAX] [--in IN]  [-a GENEWISE_ANN
 **pairwise注釈ファイルのパス（JSONL/.gz）**  
 未指定時は標準入力を読み込みます。
 
-未指定時は標準出力にJSONL形式で書き出します。
-
 #### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
 **遺伝子注釈ファイルのパス（JSONL/.gz）**  
 `--genewise`指定時は必須。
+
+#### 実行例
+
 
 - 遺伝子ペア内で共有する表現型の数でフィルター:  
 ```bash
@@ -439,6 +446,8 @@ tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
 #### `--in IN`
 pairwise注釈ファイル（JSONL/.gz）のパス。未指定時は標準入力を読み込みます。
 
+#### 実行例
+
 ```bash
 tsumugi score --min 50 --max 80 \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -450,31 +459,51 @@ tsumugi score --min 50 --max 80 \
 ### 遺伝子リストで絞り込み・除外する(`tsumugi genes --keep/--drop`)
 
 ```txt
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [--in IN] 
+tsumugi genes [-h] [-p | -g] (-k GENE_SYMBOLS | -d GENE_SYMBOLS) [--in IN] 
 ```
 
-#### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
-**指定遺伝子を含むペアのみ残す（必須オプションの一つ）**  
-カンマ区切り（`GeneA,GeneB`）または1行1遺伝子のテキストファイルを指定可能。
+#### `-p`, `--pairwise`
+**遺伝子ペア単位でフィルター (デフォルト)**  
+`pairwise_similarity_annotations.jsonl(.gz)`を対象にします。`-p/--pairwise`を指定しない場合もこのモードになります。  
+`-k/-d` に渡すのは遺伝子ペアを1行1レコードで書いたテキストファイル（CSV/TSV）です。
+```text
+Gene1,Gene2
+Gene2,Gene3
+```
 
-#### `-d GENE_SYMBOL`, `--drop GENE_SYMBOL`
-**指定遺伝子を含むペアを除外（必須オプションの一つ）**  
-カンマ区切りまたはテキストファイルを指定可能。
+#### `-g`, `--genewise`
+**遺伝子単位でフィルター**  
+`pairwise_similarity_annotations.jsonl(.gz)`を読み込み、指定した遺伝子リストを含む/含まないペアだけを残します。  
+`-k/-d` はカンマ区切り（`GeneA,GeneB`）または1行1遺伝子のテキストファイルを指定できます。
+
+
+#### `-k GENE_SYMBOLS`, `--keep GENE_SYMBOLS`
+**指定条件に一致するものだけ残す（必須オプションの一つ）**  
+pairwiseモードでは遺伝子ペアを並べたテキストファイルを指定します。  
+genewiseモードではカンマ区切りまたは1行1遺伝子のテキストファイルを指定します。
+
+
+#### `-d GENE_SYMBOLS`, `--drop GENE_SYMBOLS`
+**指定条件に一致するものを除外（必須オプションの一つ）**  
+pairwiseモードでは遺伝子ペアを並べたテキストファイルを指定します。  
+genewiseモードではカンマ区切りまたは1行1遺伝子のテキストファイルを指定します。
+
 
 #### `--in IN`
 **pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます。
+未指定時は標準入力を読み込みます（genewiseモードでも入力はpairwise JSONLです）。
 
-未指定時は標準出力にJSONL形式で書き出します。
+
+#### 実行例
 
 ```bash
-# keep: リストに含まれる遺伝子が絡むペアのみ残す
-tsumugi genes --keep genes.txt \
+# pairwiseモード: リストに含まれる遺伝子ペアのみ残す
+tsumugi genes --keep gene_pairs.txt \
   --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_keep_genes.jsonl
+  > pairwise_keep_gene_pairs.jsonl
 
-# drop: リストに含まれる遺伝子が絡むペアを除外
-tsumugi genes --drop geneA,geneB \
+# genewiseモード: 指定遺伝子を含むペアを除外
+tsumugi genes --genewise --drop GeneA,GeneB \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_drop_genes.jsonl
 ```
@@ -496,7 +525,7 @@ tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in IN]
 **pairwise注釈ファイルのパス（JSONL/.gz）**  
 未指定時は標準入力を読み込みます。
 
-未指定時は標準出力にJSONL形式で書き出します。
+#### 実行例
 
 ```bash
 tsumugi life-stage --keep Early \
@@ -521,7 +550,7 @@ tsumugi sex [-h] (-k SEX | -d SEX) [--in IN]
 **pairwise注釈ファイルのパス（JSONL/.gz）**  
 未指定時は標準入力を読み込みます。
 
-未指定時は標準出力にJSONL形式で書き出します。
+#### 実行例
 
 ```bash
 tsumugi sex --drop Male \
@@ -546,7 +575,8 @@ tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in IN]
 **pairwise注釈ファイルのパス（JSONL/.gz）**  
 未指定時は標準入力を読み込みます。
 
-未指定時は標準出力にJSONL形式で書き出します。
+#### 実行例
+
 
 ```bash
 tsumugi zygosity --keep Homo \
@@ -567,6 +597,8 @@ tsumugi build-graphml [-h] [--in IN] -a GENEWISE_ANNOTATIONS
 #### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
 **遺伝子注釈ファイルのパス（JSONL/.gz）**  
 必須です。
+
+#### 実行例
 
 ```bash
 # GraphMLを生成（Cytoscape等で利用可能）
@@ -589,7 +621,9 @@ tsumugi build-webapp [-h] [--in IN] -a GENEWISE_ANNOTATIONS -o OUT
 必須です。
 
 **出力ディレクトリの指定（必須）**  
-指定先にWebアプリ用のHTML/CSS/JSとネットワークデータを生成します。拡張子付きのファイル名は指定しないでください。
+指定先にWebアプリ用のHTML/CSS/JSとネットワークデータを生成します。
+
+#### 実行例
 
 ```bash
 # TSUMUGIのWebアプリ素材を生成（ローカルで開けるHTML/CSS/JS一式）
@@ -627,14 +661,14 @@ TSUMUGIではMammalian Phenotype (MP)用語間の**Resnik類似度**を算出し
 
 MPオントロジーの階層構造を構築し、各用語の子孫（自身を含む）との割合から情報量（Information Content; IC）を計算します：
 
-```
-IC(term) = -log((|Descendants(term)| + 1) / |MP用語総数|)
+```math
+IC(term) = -log((子termの数 + 1) / MP用語総数)
 ```
 
-任意の2用語に対して共通祖先を列挙し、そのうち**最も情報量が大きい共通祖先（MICA）**のICをResnik類似度とします：
+任意の2用語に対して共通祖先を列挙し、そのうち**最も情報量が大きい共通祖先**(MICA)のICをResnik類似度とします：
 
-```
-Resnik(term_1, term_2) = max_{c∈Anc(term_1) ∩Anc(term_2)} IC(c)
+```math
+Resnik(term_1, term_2)=IC(MICA(term_1, term_2))
 ```
 
 共通祖先が存在しない場合、類似度は0になります。
@@ -646,8 +680,11 @@ Resnik(term_1, term_2) = max_{c∈Anc(term_1) ∩Anc(term_2)} IC(c)
 3. 個々のMP用語のICから、理論上達成しうる最大値・平均値を算出します。  
 4. 実測値を理論値で正規化し、最大値と平均値の2つを平均してPhenodigmスコアを得ます：
 
-```
-Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )
+```math
+\mathrm{Phenodigm} = 100 \times \frac{1}{2} \left( 
+\frac{\mathrm{actual_{max}}}{\mathrm{theoretical_{max}}} + 
+\frac{\mathrm{actual_{mean}}}{\mathrm{theoretical_{mean}}}
+\right)
 ```
 
 この正規化によって得られる0〜100のスコアを生データおよびWeb UIの`Phenotypes similarity`スライダーで用いています。

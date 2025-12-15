@@ -78,7 +78,8 @@ Trang chuyển và vẽ mạng tự động theo đầu vào.
 
 ### Bảng mạng
 **Nút**: gen. Nhấp để xem danh sách kiểu hình bất thường; kéo để sắp xếp.  
-**Cạnh**: nhấp để xem chi tiết kiểu hình chung.
+**Cạnh**: nhấp để xem chi tiết kiểu hình chung.  
+**Module** bao quanh các mạng con gen. Nhấp để liệt kê kiểu hình của các gen trong module; kéo module để di chuyển và tránh chồng lấp.
 
 ### Bảng điều khiển
 Điều chỉnh hiển thị mạng ở bảng trái.

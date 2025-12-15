@@ -79,6 +79,7 @@ Die Seite wechselt und zeichnet das Netzwerk automatisch basierend auf der Einga
 ### Netzwerk-Panel
 **Knoten** repräsentieren Gene. Klick: Liste der anomalen Phänotypen; Drag: Position ändern.  
 **Kanten**: Klick für Details der geteilten Phänotypen.
+**Module** umrahmen Gen-Subnetzwerke. Klick: Phänotypen der Modul-Gene anzeigen; Drag: Module verschieben und Überlappungen vermeiden.
 
 ### Kontroll-Panel
 Anzeige im linken Panel anpassen.

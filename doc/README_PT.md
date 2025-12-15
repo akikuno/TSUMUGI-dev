@@ -78,7 +78,8 @@ Página muda e desenha a rede automaticamente.
 
 ### Painel da rede
 **Nós** representam genes. Clique para ver fenótipos anormais; arraste para reposicionar.  
-**Arestas**: clique para ver detalhes de fenótipos compartilhados.
+**Arestas**: clique para ver detalhes de fenótipos compartilhados.  
+**Módulos** contornam sub-redes gênicas. Clique para listar fenótipos dos genes do módulo; arraste os módulos para reposicionar e evitar sobreposição.
 
 ### Painel de controle
 Ajuste de exibição no painel esquerdo.

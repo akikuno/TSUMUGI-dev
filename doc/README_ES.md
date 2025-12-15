@@ -78,7 +78,8 @@ La red se dibuja automáticamente según la entrada.
 
 ### Panel de red
 **Nodos**: genes. Clic para ver fenotipos anómalos; arrastra para reubicar.  
-**Aristas**: clic para ver fenotipos compartidos.
+**Aristas**: clic para ver fenotipos compartidos.  
+**Módulos** delinean subredes génicas. Clic para listar fenotipos de los genes del módulo; arrastra para moverlos y evitar solaparse.
 
 ### Panel de control
 Ajusta la visualización desde el panel izquierdo.

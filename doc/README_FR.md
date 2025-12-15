@@ -78,7 +78,8 @@ La page se met à jour et dessine automatiquement le réseau selon l’entrée.
 
 ### Panneau réseau
 **Nœuds** : gènes. Clic pour voir la liste des phénotypes anormaux observés; glisser pour repositionner.  
-**Arêtes** : clic pour voir les phénotypes partagés.
+**Arêtes** : clic pour voir les phénotypes partagés.  
+**Modules** encadrent des sous-réseaux de gènes. Clic pour lister les phénotypes des gènes du module; glisser pour repositionner et éviter les chevauchements.
 
 ### Panneau de contrôle
 Réglez l’affichage réseau dans le panneau de gauche.

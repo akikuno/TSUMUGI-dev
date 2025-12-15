@@ -78,7 +78,8 @@ Halaman berpindah dan menggambar jaringan secara otomatis sesuai input.
 
 ### Panel jaringan
 **Node** mewakili gen. Klik untuk melihat daftar fenotipe abnormal; seret untuk memindahkan.  
-**Edge** klik untuk melihat detail fenotipe bersama.
+**Edge** klik untuk melihat detail fenotipe bersama.  
+**Module** menggambarkan sub-jaringan gen. Klik modul untuk melihat fenotipe gen di dalamnya; seret modul agar tidak saling tumpang tindih.
 
 ### Panel kontrol
 Menyesuaikan tampilan jaringan di panel kiri.

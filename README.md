@@ -83,6 +83,7 @@ The page transitions and draws the network automatically.
 ### Network panel
 **Nodes** represent genes. Click to see the list of abnormal phenotypes observed in that KO mouse; drag to rearrange positions.  
 **Edges** show shared phenotypes; click to view details.
+**Modules** outline subnetworks of genes. Click a module to list phenotypes involving its member genes; drag modules to reposition them and avoid overlap.
 
 ### Control panel
 Adjust network display from the left panel.
