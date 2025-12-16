@@ -63,7 +63,7 @@ a {
 .left-control-panel-container {
     flex: 1;
     min-width: 120px;
-    padding: 10px;
+    padding: 30px 10px 10px 10px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -74,7 +74,7 @@ a {
 .right-control-panel-container {
     flex: 1;
     min-width: 120px;
-    padding: 10px;
+    padding: 30px 10px 10px 10px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -85,7 +85,7 @@ a {
 /* Panel toggle buttons */
 .panel-toggle-button {
     position: absolute;
-    top: 6px;
+    top: -8px;
     display: flex;
     align-items: center;
     justify-content: center;
