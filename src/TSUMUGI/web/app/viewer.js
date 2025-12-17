@@ -325,6 +325,18 @@ const cy = cytoscape({
             },
         },
         {
+            selector: "node.dim-node",
+            style: {
+                opacity: 0.2,
+            },
+        },
+        {
+            selector: "edge.dim-edge",
+            style: {
+                opacity: 0.15,
+            },
+        },
+        {
             selector: ".disease-highlight",
             style: {
                 "border-width": 5,
@@ -1033,6 +1045,49 @@ window.recalculateCentrality = recalculateCentrality;
 // Tooltip handling
 // ############################################################################
 
+const DIM_NODE_CLASS = "dim-node";
+const DIM_EDGE_CLASS = "dim-edge";
+
+function clearNeighborHighlights() {
+    cy.nodes().removeClass(DIM_NODE_CLASS);
+    cy.edges().removeClass(DIM_EDGE_CLASS);
+}
+
+function highlightNeighbors(node) {
+    if (!node || typeof node.closedNeighborhood !== "function") {
+        return;
+    }
+    const visibleElements = cy.elements(":visible");
+    const components = visibleElements.components();
+    const component = components.find((comp) => comp.has(node));
+    if (!component || component.length === 0) {
+        clearNeighborHighlights();
+        return;
+    }
+
+    const neighborhood = node.closedNeighborhood().filter(":visible");
+    if (!neighborhood || neighborhood.length === 0) {
+        clearNeighborHighlights();
+        return;
+    }
+    clearNeighborHighlights();
+
+    const neighborNodes = neighborhood.nodes().filter(":visible");
+    const neighborEdges = neighborhood.edges().filter(":visible");
+
+    const componentNodes = component.nodes().filter(":visible");
+    const componentEdges = component.edges().filter(":visible");
+
+    componentNodes.not(neighborNodes).addClass(DIM_NODE_CLASS);
+    componentEdges.not(neighborEdges).addClass(DIM_EDGE_CLASS);
+    cy.nodes(":visible").not(componentNodes).addClass(DIM_NODE_CLASS);
+    cy.edges(":visible").not(componentEdges).addClass(DIM_EDGE_CLASS);
+}
+
+cy.on("tap", "node", function (event) {
+    highlightNeighbors(event.target);
+});
+
 cy.on("tap", "node, edge", function (event) {
     showTooltip(event, cy, map_symbol_to_id, target_phenotype, nodeColorMin, nodeColorMax, edgeMin, edgeMax, nodeSizes);
 });
@@ -1048,6 +1103,7 @@ cy.on("tap", function (event) {
         showSubnetworkTooltip({ component, renderedPos, cyInstance: cy });
     } else {
         removeTooltips();
+        clearNeighborHighlights();
     }
 });
 
