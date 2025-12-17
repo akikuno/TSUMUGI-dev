@@ -1186,16 +1186,11 @@ function highlightNeighbors(node) {
 
     clearNeighborHighlights();
 
-    const neighborhood = node.closedNeighborhood().filter(":visible");
-    if (!neighborhood || neighborhood.length === 0) {
-        return;
-    }
-
     const visibleNodes = cy.nodes(":visible");
     const visibleEdges = cy.edges(":visible");
 
-    const neighborNodes = neighborhood.nodes();
-    const neighborEdges = neighborhood.edges();
+    const neighborEdges = node.connectedEdges().filter(":visible");
+    const neighborNodes = node.union(neighborEdges.connectedNodes()).filter(":visible");
 
     // Dim all nodes/edges that are NOT in the neighborhood
     visibleNodes.not(neighborNodes).addClass(DIM_NODE_CLASS);
