@@ -171,6 +171,10 @@
 
         <div class="cy-container">
             <div class="cy"></div>
+            <button id="recenter-button" class="recenter-button" aria-label="Recenter network">
+                <i class="fa-solid fa-crosshairs"></i>
+            </button>
+            <div id="no-nodes-message" class="no-nodes-message" style="display: none;">No Gene Network found</div>
         </div>
 
         <div class="right-control-panel-container">
@@ -320,7 +324,7 @@
     </div>
 
     <!-- ===================================== -->
-    <!-- SVG for phenotypes similarity and severity -->
+    <!-- SVG for phenotypes similarity -->
     <!-- ===================================== -->
     <div class="phenotype-scale-container">
         <div class="phenotype-scale-wrapper">
@@ -349,7 +353,6 @@
             </div>
         </div>
     </div>
-
     <!-- ===================================== -->
     <!-- Export (Mobile) -->
     <!-- ===================================== -->
@@ -442,7 +445,8 @@
         <!-- <p><i class="fa-regular fa-newspaper"></i><a href="https://example.com" target="_blank">Article</a> </p>-->
         <p>
             &copy; 2024
-            <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/public_E/index.html" target="_blank">Laboratory Animal
+            <a href="https://www.md.tsukuba.ac.jp/LabAnimalResCNT/public_E/index.html" target="_blank">Laboratory
+                Animal
                 Resource Center, University of Tsukuba</a>
         </p>
     </footer>

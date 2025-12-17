@@ -351,13 +351,13 @@ const cy = cytoscape({
         {
             selector: "node.dim-node",
             style: {
-                opacity: 0.2,
+                opacity: 0.05,
             },
         },
         {
             selector: "edge.dim-edge",
             style: {
-                opacity: 0.15,
+                opacity: 0.05,
             },
         },
         {
@@ -447,6 +447,9 @@ const subnetworkOverlay = createSubnetworkOverlay();
 let subnetworkMeta = [];
 let isFrameUpdateQueued = false;
 let subnetworkDragState = null;
+const COMPONENT_PADDING = 60;
+const COMPONENT_MAX_ITER = 12;
+const COMPONENT_FIT_PADDING = 80;
 
 function createSubnetworkOverlay() {
     const cyContainer = document.querySelector(".cy");
@@ -497,18 +500,26 @@ function updateSubnetworkFrames() {
             return;
         }
 
-        const left = Math.max(0, bbox.x1 - padding);
-        const top = Math.max(0, bbox.y1 - padding);
-        const width = Math.min(containerWidth - left, bbox.w + padding * 2);
-        const height = Math.min(containerHeight - top, bbox.h + padding * 2);
+        const rawLeft = bbox.x1 - padding;
+        const rawTop = bbox.y1 - padding;
+        const rawRight = bbox.x1 + bbox.w + padding;
+        const rawBottom = bbox.y1 + bbox.h + padding;
+
+        const visibleLeft = Math.max(0, rawLeft);
+        const visibleTop = Math.max(0, rawTop);
+        const visibleRight = Math.min(containerWidth, rawRight);
+        const visibleBottom = Math.min(containerHeight, rawBottom);
+
+        const width = visibleRight - visibleLeft;
+        const height = visibleBottom - visibleTop;
 
         if (width <= 0 || height <= 0) return;
 
         const frame = document.createElement("div");
         frame.classList.add("subnetwork-frame");
         frame.dataset.componentId = String(idx + 1);
-        frame.style.left = `${left}px`;
-        frame.style.top = `${top}px`;
+        frame.style.left = `${visibleLeft}px`;
+        frame.style.top = `${visibleTop}px`;
         frame.style.width = `${width}px`;
         frame.style.height = `${height}px`;
 
@@ -518,26 +529,112 @@ function updateSubnetworkFrames() {
         label.dataset.componentId = String(idx + 1);
         frame.appendChild(label);
 
+        const borders = ["top", "bottom", "left", "right"];
+        borders.forEach((side) => {
+            const border = document.createElement("div");
+            border.classList.add("subnetwork-frame__border", `subnetwork-frame__border--${side}`);
+            border.dataset.componentId = String(idx + 1);
+            frame.appendChild(border);
+            attachFrameDragHandlers(border, border);
+        });
+
         subnetworkOverlay.appendChild(frame);
         attachFrameDragHandlers(frame, label);
 
         const summary = summarizeEdgePhenotypes(component);
         subnetworkMeta.push({
             id: idx + 1,
-            bbox: { x1: left, y1: top, x2: left + width, y2: top + height },
+            bbox: { x1: visibleLeft, y1: visibleTop, x2: visibleLeft + width, y2: visibleTop + height },
             phenotypes: summary,
             nodes: component.nodes(),
         });
     });
 }
 
-function scheduleSubnetworkFrameUpdate() {
+function scheduleSubnetworkFrameUpdate(options = {}) {
+    const { resolve = false, autoFit = false } = options;
     if (isFrameUpdateQueued) return;
     isFrameUpdateQueued = true;
     requestAnimationFrame(() => {
+        if (resolve) {
+            resolveComponentOverlaps();
+        }
         updateSubnetworkFrames();
+        if (autoFit) {
+            fitVisibleComponents();
+        }
         isFrameUpdateQueued = false;
     });
+}
+
+function translateComponent(comp, dx, dy) {
+    comp.nodes().positions((node) => {
+        const pos = node.position();
+        return { x: pos.x + dx, y: pos.y + dy };
+    });
+}
+
+function resolveComponentOverlaps() {
+    const components = cy.elements(":visible").components().filter((comp) => comp.nodes().length > 0);
+    if (components.length <= 1) return;
+
+    const zoom = cy.zoom() || 1;
+
+    for (let iter = 0; iter < COMPONENT_MAX_ITER; iter++) {
+        let moved = false;
+        for (let i = 0; i < components.length; i++) {
+            const bboxA = components[i].renderedBoundingBox({ includeLabels: true, includeOverlays: false });
+            for (let j = i + 1; j < components.length; j++) {
+                const bboxB = components[j].renderedBoundingBox({ includeLabels: true, includeOverlays: false });
+
+                const ax1 = bboxA.x1 - COMPONENT_PADDING;
+                const ax2 = bboxA.x2 + COMPONENT_PADDING;
+                const ay1 = bboxA.y1 - COMPONENT_PADDING;
+                const ay2 = bboxA.y2 + COMPONENT_PADDING;
+                const bx1 = bboxB.x1 - COMPONENT_PADDING;
+                const bx2 = bboxB.x2 + COMPONENT_PADDING;
+                const by1 = bboxB.y1 - COMPONENT_PADDING;
+                const by2 = bboxB.y2 + COMPONENT_PADDING;
+
+                const overlapX = Math.min(ax2, bx2) - Math.max(ax1, bx1);
+                const overlapY = Math.min(ay2, by2) - Math.max(ay1, by1);
+
+                if (overlapX <= 0 || overlapY <= 0) {
+                    continue;
+                }
+
+                const centerA = { x: (bboxA.x1 + bboxA.x2) / 2, y: (bboxA.y1 + bboxA.y2) / 2 };
+                const centerB = { x: (bboxB.x1 + bboxB.x2) / 2, y: (bboxB.y1 + bboxB.y2) / 2 };
+                let dx = centerB.x - centerA.x;
+                let dy = centerB.y - centerA.y;
+                if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+                    dx = 1;
+                    dy = 0;
+                }
+
+                let shiftX = 0;
+                let shiftY = 0;
+                if (overlapX < overlapY) {
+                    shiftX = Math.sign(dx) * (overlapX + COMPONENT_PADDING);
+                } else {
+                    shiftY = Math.sign(dy) * (overlapY + COMPONENT_PADDING);
+                }
+
+                translateComponent(components[j], shiftX / zoom, shiftY / zoom);
+                moved = true;
+            }
+        }
+        if (!moved) {
+            break;
+        }
+    }
+}
+
+function fitVisibleComponents() {
+    const visibles = cy.elements(":visible");
+    if (visibles && visibles.length > 0) {
+        cy.fit(visibles, COMPONENT_FIT_PADDING);
+    }
 }
 
 function findComponentByPosition(renderedPos) {
@@ -628,9 +725,11 @@ function attachFrameDragHandlers(frame, handleElement = frame) {
     });
 }
 
-cy.on("layoutstop zoom pan", scheduleSubnetworkFrameUpdate);
-window.addEventListener("resize", scheduleSubnetworkFrameUpdate);
-scheduleSubnetworkFrameUpdate();
+cy.on("layoutstop", () => scheduleSubnetworkFrameUpdate({ resolve: true, autoFit: true }));
+cy.on("zoom pan", () => scheduleSubnetworkFrameUpdate());
+cy.on("position", "node", () => scheduleSubnetworkFrameUpdate());
+window.addEventListener("resize", () => scheduleSubnetworkFrameUpdate());
+scheduleSubnetworkFrameUpdate({ resolve: true, autoFit: true });
 
 // ############################################################################
 // Side panel toggles
@@ -816,6 +915,7 @@ if (isPhenotypePage) {
         });
 
         cy.layout(getLayoutOptions()).run();
+        checkEmptyState();
 
         if (window.refreshPhenotypeList) {
             window.refreshPhenotypeList();
@@ -900,6 +1000,7 @@ if (isPhenotypePage) {
         });
 
         cy.layout(getLayoutOptions()).run();
+        checkEmptyState();
 
         if (window.refreshPhenotypeList) {
             window.refreshPhenotypeList();
@@ -961,6 +1062,7 @@ if (isPhenotypePage) {
         });
 
         cy.layout(getLayoutOptions()).run();
+        checkEmptyState();
 
         if (window.refreshPhenotypeList) {
             window.refreshPhenotypeList();
@@ -1081,31 +1183,23 @@ function highlightNeighbors(node) {
     if (!node || typeof node.closedNeighborhood !== "function") {
         return;
     }
-    const visibleElements = cy.elements(":visible");
-    const components = visibleElements.components();
-    const component = components.find((comp) => comp.has(node));
-    if (!component || component.length === 0) {
-        clearNeighborHighlights();
-        return;
-    }
+
+    clearNeighborHighlights();
 
     const neighborhood = node.closedNeighborhood().filter(":visible");
     if (!neighborhood || neighborhood.length === 0) {
-        clearNeighborHighlights();
         return;
     }
-    clearNeighborHighlights();
 
-    const neighborNodes = neighborhood.nodes().filter(":visible");
-    const neighborEdges = neighborhood.edges().filter(":visible");
+    const visibleNodes = cy.nodes(":visible");
+    const visibleEdges = cy.edges(":visible");
 
-    const componentNodes = component.nodes().filter(":visible");
-    const componentEdges = component.edges().filter(":visible");
+    const neighborNodes = neighborhood.nodes();
+    const neighborEdges = neighborhood.edges();
 
-    componentNodes.not(neighborNodes).addClass(DIM_NODE_CLASS);
-    componentEdges.not(neighborEdges).addClass(DIM_EDGE_CLASS);
-    cy.nodes(":visible").not(componentNodes).addClass(DIM_NODE_CLASS);
-    cy.edges(":visible").not(componentEdges).addClass(DIM_EDGE_CLASS);
+    // Dim all nodes/edges that are NOT in the neighborhood
+    visibleNodes.not(neighborNodes).addClass(DIM_NODE_CLASS);
+    visibleEdges.not(neighborEdges).addClass(DIM_EDGE_CLASS);
 }
 
 cy.on("tap", "node", function (event) {
@@ -1154,3 +1248,26 @@ attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, file_name));
 attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, file_name));
 attachExportHandler("export-csv-mobile", () => exportGraphAsCSV(cy, file_name));
 attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, file_name));
+
+// ############################################################################
+// UI Helpers
+// ############################################################################
+
+function checkEmptyState() {
+    const visibleNodes = cy.nodes(":visible").length;
+    const messageEl = document.getElementById("no-nodes-message");
+    if (messageEl) {
+        messageEl.style.display = visibleNodes === 0 ? "block" : "none";
+    }
+}
+
+const recenterBtn = document.getElementById("recenter-button");
+if (recenterBtn) {
+    recenterBtn.addEventListener("click", () => {
+        if (cy) {
+            cy.fit();
+            cy.center();
+            scheduleSubnetworkFrameUpdate();
+        }
+    });
+}

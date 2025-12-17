@@ -63,7 +63,7 @@ a {
 .left-control-panel-container {
     flex: 1;
     min-width: 120px;
-    padding: 30px 10px 10px 10px;
+    padding: 10px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -74,7 +74,7 @@ a {
 .right-control-panel-container {
     flex: 1;
     min-width: 120px;
-    padding: 30px 10px 10px 10px;
+    padding: 10px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -85,7 +85,7 @@ a {
 /* Panel toggle buttons */
 .panel-toggle-button {
     position: absolute;
-    top: -8px;
+    top: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -174,7 +174,9 @@ a {
     justify-content: center;
     border: 2px solid #aaa;
     border-radius: 10px;
-    min-width: 0; /* allow shrinking back after expanding */
+    min-width: 0;
+    /* allow shrinking back after expanding */
+    position: relative;
 }
 
 .cy {
@@ -444,7 +446,7 @@ ul.suggestions li:hover {
 }
 
 /* Title-style label overlay */
-.boxed-section > span {
+.boxed-section>span {
     position: absolute;
     top: 0;
     left: 50%;
@@ -482,7 +484,7 @@ ul.suggestions li:hover {
     display: none;
 }
 
-.round-checkbox input[type="checkbox"] + label {
+.round-checkbox input[type="checkbox"]+label {
     position: relative;
     padding-left: 35px;
     line-height: 24px;
@@ -490,7 +492,7 @@ ul.suggestions li:hover {
     user-select: none;
 }
 
-.round-checkbox input[type="checkbox"] + label:before {
+.round-checkbox input[type="checkbox"]+label:before {
     display: block;
     position: absolute;
     left: 0;
@@ -505,11 +507,11 @@ ul.suggestions li:hover {
 }
 
 /* Highlight in yellow only when checked */
-.round-checkbox input[type="checkbox"]:checked + label:before {
+.round-checkbox input[type="checkbox"]:checked+label:before {
     background-color: #ff8c00;
 }
 
-.round-checkbox input[type="checkbox"]:checked + label:after {
+.round-checkbox input[type="checkbox"]:checked+label:after {
     display: block;
     position: absolute;
     content: "";
@@ -761,8 +763,10 @@ button.menu-toggle-icon {
     .cy-container {
         margin: 20px 0;
         width: 90%;
-        height: 400px; /* Fixed height so Cytoscape can initialize properly */
-        min-height: 400px; /* Also set the minimum height */
+        height: 400px;
+        /* Fixed height so Cytoscape can initialize properly */
+        min-height: 400px;
+        /* Also set the minimum height */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -775,23 +779,15 @@ button.menu-toggle-icon {
         justify-content: center;
     }
 
-    .cy {
-        width: 100%;
-        flex: 1;
-        min-height: 0;
-    }
-
     .phenotype-scale-wrapper {
         width: 90%;
         gap: 12px;
     }
 
-    .color-scale-container,
-    .edge-scale-container {
-        width: 80%;
-        height: auto;
-        text-align: center;
-        margin: 10px auto 0;
+    .cy {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
     }
 
     .resources-container {
@@ -844,7 +840,8 @@ button.menu-toggle-icon {
 .cy-tooltip__section {
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 6px; /* leave space for scrollbar */
+    padding-right: 6px;
+    /* leave space for scrollbar */
 }
 
 .cy-tooltip__section--phenotypes {
@@ -972,3 +969,62 @@ button.menu-toggle-icon {
 .info-tooltip-content a:hover {
     color: #81d4fa;
 }
+/* ======================================================== */
+/* Recenter Button */
+/* ======================================================== */
+.recenter-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #aaa;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.recenter-button:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+}
+
+/* ======================================================== */
+/* No Nodes Message */
+/* ======================================================== */
+.no-nodes-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px 40px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 18px;
+    color: #555;
+    z-index: 50;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    pointer-events: none;
+}
+/* ======================================================== */
+/* Subnetwork Frame Borders (Drag Handles) */
+/* ======================================================== */
+.subnetwork-frame__border {
+    position: absolute;
+    pointer-events: auto;
+    cursor: move;
+    z-index: 11; /* Above frame content if any */
+}
+.subnetwork-frame__border--top { top: -5px; left: -5px; right: -5px; height: 10px; }
+.subnetwork-frame__border--bottom { bottom: -5px; left: -5px; right: -5px; height: 10px; }
+.subnetwork-frame__border--left { top: -5px; bottom: -5px; left: -5px; width: 10px; }
+.subnetwork-frame__border--right { top: -5px; bottom: -5px; right: -5px; width: 10px; }
