@@ -40,6 +40,28 @@ function hidePhenotypeOnlySections(isPhenotypePage) {
     });
 }
 
+function isBinaryPhenotypeElements(elements) {
+    const nodeElements = elements.filter((ele) => ele.data && ele.data.node_color !== undefined);
+    if (!nodeElements.length) {
+        return false;
+    }
+
+    const hideSeverityFlags = nodeElements
+        .map((ele) => ele.data.hide_severity)
+        .filter((value) => value !== undefined);
+    if (hideSeverityFlags.length && hideSeverityFlags.every(Boolean)) {
+        return true;
+    }
+
+    const uniqueColors = [...new Set(nodeElements.map((ele) => ele.data.node_color).filter((v) => v !== undefined))];
+    if (uniqueColors.length === 1) {
+        const normalized = String(Math.round(Number(uniqueColors[0])));
+        return ["0", "1", "100"].includes(normalized);
+    }
+
+    return false;
+}
+
 function setPageTitle(config, mapSymbolToId) {
     const pageTitleLink = document.getElementById("page-title-link");
     const pageTitle = config.displayName || config.name || "TSUMUGI";
@@ -211,7 +233,6 @@ const pageConfig = getPageConfig();
 const isPhenotypePage = pageConfig.mode === "phenotype";
 const isGeneSymbolPage = pageConfig.mode === "genesymbol";
 
-hidePhenotypeOnlySections(isPhenotypePage);
 setVersionLabel();
 
 const map_symbol_to_id = loadJSON("../data/marker_symbol_accession_id.json") || {};
@@ -222,6 +243,9 @@ if (!elements || elements.length === 0) {
     renderEmptyState("No data found. Please check your input.");
     throw new Error("No elements available to render");
 }
+
+const isBinaryPhenotype = isPhenotypePage && isBinaryPhenotypeElements(elements);
+hidePhenotypeOnlySections(isPhenotypePage && !isBinaryPhenotype);
 
 // ############################################################################
 // Input handler
@@ -705,7 +729,7 @@ if (edgeSlider) {
 // --------------------------------------------------------
 
 const nodeSlider = document.getElementById("filter-node-slider");
-if (isPhenotypePage && nodeSlider) {
+if (isPhenotypePage && nodeSlider && !isBinaryPhenotype) {
     noUiSlider.create(nodeSlider, {
         start: [NODE_SLIDER_MIN, NODE_SLIDER_MAX],
         connect: true,
