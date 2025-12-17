@@ -85,7 +85,7 @@ a {
 /* Panel toggle buttons */
 .panel-toggle-button {
     position: absolute;
-    top: 6px;
+    top: -28px;
     display: flex;
     align-items: center;
     justify-content: center;
