@@ -260,15 +260,19 @@ a {
 /* SVG */
 .phenotype-scale-container {
     width: 100%;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
 }
 
 .phenotype-scale-wrapper {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    width: 33.333%;
+    justify-content: center;
+    gap: 20px;
+    grid-column: 2;
+    width: 90%;
+    margin: 0 auto;
 }
 
 .color-scale-container,
@@ -281,7 +285,8 @@ a {
 
 .phenotype-scale-wrapper .color-scale-container,
 .phenotype-scale-wrapper .edge-scale-container {
-    width: 100%;
+    width: 50%;
+    margin: 10px 0 0;
 }
 
 .color-scale-container svg,
@@ -763,6 +768,13 @@ button.menu-toggle-icon {
         justify-content: center;
     }
 
+    .phenotype-scale-container {
+        width: 90%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+    }
+
     .cy {
         width: 100%;
         flex: 1;
@@ -770,7 +782,8 @@ button.menu-toggle-icon {
     }
 
     .phenotype-scale-wrapper {
-        width: 53.333%;
+        width: 90%;
+        gap: 12px;
     }
 
     .color-scale-container,
