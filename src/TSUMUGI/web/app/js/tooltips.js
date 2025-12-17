@@ -73,22 +73,12 @@ function createTooltip(
         const severityText = severityValue !== null ? ` (Severity: ${severityValue})` : "";
 
         const phenotypesHtml = formatPhenotypesWithHighlight(phenotypes, target_phenotype);
-        const phenotypeSection = `
-            <div class="cy-tooltip__section cy-tooltip__section--phenotypes" data-section="phenotypes">
-                <div class="cy-tooltip__section-title"><b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b></div>
-                <div class="cy-tooltip__section-body">${phenotypesHtml}</div>
-            </div>
-        `;
+        const phenotypeSection = `<div class="cy-tooltip__section cy-tooltip__section--phenotypes" data-section="phenotypes"><div class="cy-tooltip__section-title"><b>Phenotypes of <a href="${url_impc}" target="_blank">${data.id} KO mice</a>${severityText}</b></div><div class="cy-tooltip__section-body">${phenotypesHtml}</div></div>`;
 
         let diseaseSection = "";
         if (diseases && diseases.length > 0 && diseases[0] !== "") {
             const diseasesHtml = diseases.map((disease) => "・ " + disease).join("<br>");
-            diseaseSection = `
-                <div class="cy-tooltip__section cy-tooltip__section--diseases" data-section="diseases">
-                    <div class="cy-tooltip__section-title"><b>Associated Human Diseases</b></div>
-                    <div class="cy-tooltip__section-body">${diseasesHtml}</div>
-                </div>
-            `;
+            diseaseSection = `<div class="cy-tooltip__section cy-tooltip__section--diseases" data-section="diseases"><div class="cy-tooltip__section-title"><b>Associated Human Diseases</b></div><div class="cy-tooltip__section-body">${diseasesHtml}</div></div>`;
         }
 
         tooltipText = `${phenotypeSection}${diseaseSection}`;
@@ -98,8 +88,9 @@ function createTooltip(
         const targetNode = cy.getElementById(data.target).data("label");
         const hasSimilarityValue = Number.isFinite(data.edge_size);
         const similarityText = hasSimilarityValue ? ` (Similarity: ${Math.round(data.edge_size)})` : "";
-        tooltipText = `<b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs${similarityText}</b><br>`;
+        tooltipText = `<div><b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs${similarityText}</b><br>`;
         tooltipText += formatPhenotypesWithHighlight(phenotypes, target_phenotype);
+        tooltipText += "</div>";
 
         const sourcePos = cy.getElementById(data.source).renderedPosition();
         const targetPos = cy.getElementById(data.target).renderedPosition();
@@ -333,6 +324,63 @@ function isolateTooltipScroll(tooltip, cyInstance = null) {
     tooltip.__restoreCyInteractions = restoreCyInteractions;
 }
 
+function addCopyButtonToTooltip(tooltip) {
+    const copyBtnWrapper = document.createElement("div");
+    Object.assign(copyBtnWrapper.style, {
+        position: "absolute",
+        right: "6px", // Align with padding/resize handle
+        bottom: "6px", // Align with padding/resize handle
+        zIndex: "1001", // Ensure it's above other tooltip content
+    });
+
+    copyBtnWrapper.innerHTML =
+        '<button class="cy-tooltip__copy-btn" title="Copy to clipboard" style="background:none; border:none; cursor:pointer; color:#888; padding: 2px 5px;"><i class="fa-regular fa-copy"></i></button>';
+    tooltip.appendChild(copyBtnWrapper);
+
+    const btn = copyBtnWrapper.querySelector("button");
+    btn.addEventListener("mousedown", (e) => e.stopPropagation());
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const clone = tooltip.cloneNode(true);
+        const btnInClone = clone.querySelector(".cy-tooltip__copy-btn");
+        if (btnInClone && btnInClone.parentElement) {
+            btnInClone.parentElement.remove();
+        }
+
+        let extractedHtml = clone.innerHTML;
+
+        // <br>タグを改行文字に置換
+        extractedHtml = extractedHtml.replace(/<br\s*\/?>/gi, '\n');
+        
+        // divの閉じタグの後に改行を追加してブロック要素間の改行を確保
+        extractedHtml = extractedHtml.replace(/<\/div>/gi, '</div>\n');
+
+        // 一時的なDOM要素を作成し、innerHTMLを設定してtextContentを取得する
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = extractedHtml;
+        let text = tempElement.textContent || tempElement.innerText || "";
+        
+        // 連続する改行を1つにまとめる
+        text = text.replace(/\n\s*\n/g, '\n').trim();
+
+
+        if (navigator.clipboard) {
+            navigator.clipboard
+                .writeText(text)
+                .then(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    setTimeout(() => (btn.innerHTML = '<i class="fa-regular fa-copy"></i>'), 2000);
+                })
+                .catch((err) => {
+                    console.error("Failed to copy:", err);
+                    alert("Failed to copy to clipboard");
+                });
+        } else {
+            alert("Clipboard API not available");
+        }
+    });
+}
+
 /*
     Accepts target_phenotype and passes it to createTooltip
 */
@@ -388,6 +436,7 @@ export function showTooltip(
 
     container.appendChild(tooltip);
     applyInitialTooltipSize(tooltip);
+    addCopyButtonToTooltip(tooltip);
     enableTooltipDrag(tooltip, container);
     enableTooltipResize(tooltip, container);
     isolateTooltipScroll(tooltip, cy);
@@ -443,6 +492,7 @@ export function showCustomTooltip({ content, position, containerSelector = ".cy"
 
     container.appendChild(tooltip);
     applyInitialTooltipSize(tooltip);
+    addCopyButtonToTooltip(tooltip);
     enableTooltipDrag(tooltip, container);
     enableTooltipResize(tooltip, container);
     isolateTooltipScroll(tooltip, cyInstance);
@@ -459,22 +509,11 @@ export function showSubnetworkTooltip({ component, renderedPos, containerSelecto
             ? component.phenotypes.map(([name, count]) => `・ ${name} (${count})`)
             : ["No shared phenotypes on visible edges."];
 
-    const infoIcon = `
-        <div class="info-tooltip-container">
-            <div class="info-tooltip-icon" aria-label="Tooltip: shared phenotype counts">i</div>
-            <div class="info-tooltip-content">
-                The number in parentheses indicates the count of shared phenotypes within the module.
-            </div>
-        </div>
-    `;
+    const infoIcon = `<div class="info-tooltip-container"><div class="info-tooltip-icon" aria-label="Tooltip: shared phenotype counts">i</div><div class="info-tooltip-content">The number in parentheses indicates the count of shared phenotypes within the module.</div></div>`;
 
     const header = `<div style="display: flex; align-items: center; gap: 6px;"><b>Phenotypes shared in Module ${component.id}</b>${infoIcon}</div>`;
     const linesHtml = lines.join("<br>");
-    const bodySection = `
-        <div class="cy-tooltip__section cy-tooltip__section--modules" data-section="modules">
-            <div class="cy-tooltip__section-body">${linesHtml}</div>
-        </div>
-    `;
+    const bodySection = `<div class="cy-tooltip__section cy-tooltip__section--modules" data-section="modules"><div class="cy-tooltip__section-body">${linesHtml}</div></div>`;
     const tooltipContent = `${header}${bodySection}`;
     const anchor =
         renderedPos ||
