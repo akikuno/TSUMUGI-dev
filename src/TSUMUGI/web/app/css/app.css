@@ -902,7 +902,8 @@ button.menu-toggle-icon {
 .info-tooltip-container {
     position: relative;
     display: inline-block;
-    margin-left: 8px;
+    margin-left: 4px;
+    z-index: 1;
 }
 
 .info-tooltip-icon {
@@ -940,7 +941,7 @@ button.menu-toggle-icon {
     font-weight: normal;
     line-height: 1.4;
     white-space: nowrap;
-    z-index: 1000;
+    z-index: 12000;
     transition:
         opacity 0.3s ease,
         visibility 0.3s ease;
@@ -974,12 +975,28 @@ button.menu-toggle-icon {
     color: #81d4fa;
 }
 /* ======================================================== */
-/* Recenter Button */
+/* Cy controls (recenter / arrange) */
 /* ======================================================== */
-.recenter-button {
+.cy-controls {
     position: absolute;
+    right: 16px;
     bottom: 20px;
-    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1200;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.recenter-button {
+    position: static;
+    bottom: auto;
+    right: auto;
     width: 40px;
     height: 40px;
     border-radius: 50%;

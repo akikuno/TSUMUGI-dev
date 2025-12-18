@@ -447,9 +447,9 @@ const subnetworkOverlay = createSubnetworkOverlay();
 let subnetworkMeta = [];
 let isFrameUpdateQueued = false;
 let subnetworkDragState = null;
-const COMPONENT_PADDING = 60;
-const COMPONENT_MAX_ITER = 12;
-const COMPONENT_FIT_PADDING = 80;
+const COMPONENT_PADDING = 16;
+const COMPONENT_MAX_ITER = 30;
+const COMPONENT_FIT_PADDING = 40;
 
 function createSubnetworkOverlay() {
     const cyContainer = document.querySelector(".cy");
@@ -576,9 +576,10 @@ function translateComponent(comp, dx, dy) {
 
 function resolveComponentOverlaps() {
     const components = cy.elements(":visible").components().filter((comp) => comp.nodes().length > 0);
-    if (components.length <= 1) return;
+    if (components.length <= 1) return false;
 
     const zoom = cy.zoom() || 1;
+    let movedAny = false;
 
     for (let iter = 0; iter < COMPONENT_MAX_ITER; iter++) {
         let moved = false;
@@ -622,12 +623,47 @@ function resolveComponentOverlaps() {
 
                 translateComponent(components[j], shiftX / zoom, shiftY / zoom);
                 moved = true;
+                movedAny = true;
             }
         }
         if (!moved) {
             break;
         }
     }
+
+    return movedAny;
+}
+
+function tileComponents() {
+    const components = cy.elements(":visible").components().filter((comp) => comp.nodes().length > 0);
+    if (components.length === 0) return false;
+
+    const bboxes = components.map((comp) => comp.boundingBox({ includeLabels: true, includeOverlays: false }));
+    const maxW = Math.max(...bboxes.map((b) => b.w));
+    const maxH = Math.max(...bboxes.map((b) => b.h));
+    const tilePadding = COMPONENT_PADDING;
+    const tileW = maxW + tilePadding * 2;
+    const tileH = maxH + tilePadding * 2;
+    const cols = Math.max(1, Math.ceil(Math.sqrt(components.length)));
+
+    components.forEach((comp, idx) => {
+        const col = idx % cols;
+        const row = Math.floor(idx / cols);
+        const targetCenter = {
+            x: col * tileW + tileW / 2,
+            y: row * tileH + tileH / 2,
+        };
+
+        const bbox = bboxes[idx];
+        const compCenter = {
+            x: (bbox.x1 + bbox.x2) / 2,
+            y: (bbox.y1 + bbox.y2) / 2,
+        };
+
+        translateComponent(comp, targetCenter.x - compCenter.x, targetCenter.y - compCenter.y);
+    });
+
+    return true;
 }
 
 function fitVisibleComponents() {
@@ -1279,4 +1315,19 @@ if (recenterBtn) {
             scheduleSubnetworkFrameUpdate();
         }
     });
+}
+
+function autoArrangeModules() {
+    if (!cy) return;
+    cy.startBatch();
+    tileComponents();
+    resolveComponentOverlaps();
+    cy.endBatch();
+    fitVisibleComponents();
+    scheduleSubnetworkFrameUpdate();
+}
+
+const arrangeModulesButton = document.getElementById("arrange-modules-button");
+if (arrangeModulesButton) {
+    arrangeModulesButton.addEventListener("click", autoArrangeModules);
 }

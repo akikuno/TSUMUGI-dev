@@ -171,9 +171,27 @@
 
         <div class="cy-container">
             <div class="cy"></div>
-            <button id="recenter-button" class="recenter-button" aria-label="Recenter network">
-                <i class="fa-solid fa-crosshairs"></i>
-            </button>
+            <div class="cy-controls">
+                <div class="control-group">
+                    <button id="recenter-button" class="recenter-button" aria-label="Recenter network">
+                        <i class="fa-solid fa-crosshairs"></i>
+                    </button>
+                    <div class="info-tooltip-container">
+                        <div class="info-tooltip-icon" aria-label="Tooltip: recenter network">i</div>
+                        <div class="info-tooltip-content">Recenter and fit the current network in view.</div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <button id="arrange-modules-button" class="recenter-button arrange-modules-button"
+                        aria-label="Arrange modules to avoid overlap">
+                        <i class="fa-solid fa-object-group"></i>
+                    </button>
+                    <div class="info-tooltip-container">
+                        <div class="info-tooltip-icon" aria-label="Tooltip: arrange modules">i</div>
+                        <div class="info-tooltip-content">Arrange modules into a grid to avoid overlap and fit on screen.</div>
+                    </div>
+                </div>
+            </div>
             <div id="no-nodes-message" class="no-nodes-message" style="display: none;">No Gene Network found</div>
         </div>
 
