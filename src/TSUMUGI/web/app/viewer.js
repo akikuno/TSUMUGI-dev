@@ -1196,20 +1196,10 @@ function highlightNeighbors(target) {
         return;
     }
 
-    // Get all visible connected components
-    const visibleElements = cy.elements(":visible");
-    const components = visibleElements.components();
-
-    // Find the component that contains the clicked target
-    const component = components.find((comp) => comp.contains(target));
-
-    if (component) {
-        // Elements to dim are those in the component but not in the highlight set
-        const elementsToDim = component.not(highlightElements);
-
-        elementsToDim.nodes().addClass(DIM_NODE_CLASS);
-        elementsToDim.edges().addClass(DIM_EDGE_CLASS);
-    }
+    // Dim every other visible element (including other modules)
+    const elementsToDim = cy.elements(":visible").not(highlightElements);
+    elementsToDim.nodes().addClass(DIM_NODE_CLASS);
+    elementsToDim.edges().addClass(DIM_EDGE_CLASS);
 }
 
 cy.on("tap", "node, edge", function (event) {
