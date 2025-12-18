@@ -243,6 +243,13 @@ a {
     width: 80%;
 }
 
+.slider-container select.exporter {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+}
+
 .slider-value {
     display: inline-block;
     width: 25px;
