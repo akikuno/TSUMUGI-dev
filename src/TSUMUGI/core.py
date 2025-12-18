@@ -305,7 +305,7 @@ def run_pipeline(args) -> None:
     # Deploy to web application
     ###########################################################
 
-    logging.info("Building gene network JSON files...")
+    logging.info("Building web application...")
     is_test = args.is_test
 
     output_dir = Path(ROOT_DIR, "TSUMUGI-testwebapp") if is_test else Path(ROOT_DIR, "TSUMUGI-webapp")
