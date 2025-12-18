@@ -1144,10 +1144,19 @@ createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
 
 const layoutDropdown = document.getElementById("layout-dropdown");
 const nodeRepulsionContainer = document.getElementById("node-repulsion-container");
+const nodeRepulsionBox = document.getElementById("node-repulsion-box");
 
 function updateNodeRepulsionVisibility() {
     const selectedLayout = layoutDropdown.value;
-    nodeRepulsionContainer.style.display = selectedLayout === "cose" ? "block" : "none";
+    const displayValue = selectedLayout === "cose" ? "block" : "none";
+
+    if (nodeRepulsionContainer) {
+        nodeRepulsionContainer.style.display = displayValue;
+    }
+
+    if (nodeRepulsionBox) {
+        nodeRepulsionBox.style.display = displayValue;
+    }
 }
 
 updateNodeRepulsionVisibility();
