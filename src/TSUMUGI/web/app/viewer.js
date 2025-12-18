@@ -1179,25 +1179,40 @@ function clearNeighborHighlights() {
     cy.edges().removeClass(DIM_EDGE_CLASS);
 }
 
-function highlightNeighbors(node) {
-    if (!node || typeof node.closedNeighborhood !== "function") {
+function highlightNeighbors(target) {
+    if (!target) {
         return;
     }
 
     clearNeighborHighlights();
 
-    const visibleNodes = cy.nodes(":visible");
-    const visibleEdges = cy.edges(":visible");
+    let highlightElements;
 
-    const neighborEdges = node.connectedEdges().filter(":visible");
-    const neighborNodes = node.union(neighborEdges.connectedNodes()).filter(":visible");
+    if (target.isNode()) {
+        highlightElements = target.closedNeighborhood().filter(":visible");
+    } else if (target.isEdge()) {
+        highlightElements = target.union(target.connectedNodes()).filter(":visible");
+    } else {
+        return;
+    }
 
-    // Dim all nodes/edges that are NOT in the neighborhood
-    visibleNodes.not(neighborNodes).addClass(DIM_NODE_CLASS);
-    visibleEdges.not(neighborEdges).addClass(DIM_EDGE_CLASS);
+    // Get all visible connected components
+    const visibleElements = cy.elements(":visible");
+    const components = visibleElements.components();
+
+    // Find the component that contains the clicked target
+    const component = components.find((comp) => comp.contains(target));
+
+    if (component) {
+        // Elements to dim are those in the component but not in the highlight set
+        const elementsToDim = component.not(highlightElements);
+
+        elementsToDim.nodes().addClass(DIM_NODE_CLASS);
+        elementsToDim.edges().addClass(DIM_EDGE_CLASS);
+    }
 }
 
-cy.on("tap", "node", function (event) {
+cy.on("tap", "node, edge", function (event) {
     highlightNeighbors(event.target);
 });
 
