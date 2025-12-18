@@ -361,6 +361,18 @@ const cy = cytoscape({
             },
         },
         {
+            selector: "node.focus-node",
+            style: {
+                opacity: 1,
+            },
+        },
+        {
+            selector: "edge.focus-edge",
+            style: {
+                opacity: 1,
+            },
+        },
+        {
             selector: ".disease-highlight",
             style: {
                 "border-width": 5,
@@ -1218,10 +1230,14 @@ window.recalculateCentrality = recalculateCentrality;
 
 const DIM_NODE_CLASS = "dim-node";
 const DIM_EDGE_CLASS = "dim-edge";
+const FOCUS_NODE_CLASS = "focus-node";
+const FOCUS_EDGE_CLASS = "focus-edge";
 
 function clearNeighborHighlights() {
     cy.nodes().removeClass(DIM_NODE_CLASS);
     cy.edges().removeClass(DIM_EDGE_CLASS);
+    cy.nodes().removeClass(FOCUS_NODE_CLASS);
+    cy.edges().removeClass(FOCUS_EDGE_CLASS);
 }
 
 function highlightNeighbors(target) {
@@ -1234,17 +1250,43 @@ function highlightNeighbors(target) {
     let highlightElements;
 
     if (target.isNode()) {
-        highlightElements = target.closedNeighborhood().filter(":visible");
+        const nodeId = target.id();
+        const neighborIds = new Set([nodeId]);
+
+        target.connectedEdges().forEach((edge) => {
+            if (!edge.visible()) return;
+            const srcId = edge.source().id();
+            const tgtId = edge.target().id();
+            if (srcId === nodeId) {
+                neighborIds.add(tgtId);
+            }
+            if (tgtId === nodeId) {
+                neighborIds.add(srcId);
+            }
+        });
+
+        const highlightNodes = cy.nodes().filter((n) => n.visible() && neighborIds.has(n.id()));
+        const highlightEdges = cy
+            .edges()
+            .filter((e) => e.visible() && (e.source().id() === nodeId || e.target().id() === nodeId));
+
+        highlightElements = highlightNodes.union(highlightEdges);
     } else if (target.isEdge()) {
-        highlightElements = target.union(target.connectedNodes()).filter(":visible");
+        highlightElements = target.union(target.connectedNodes()).filter((ele) => ele.visible());
     } else {
         return;
     }
 
-    // Dim every other visible element (including other modules)
-    const elementsToDim = cy.elements(":visible").not(highlightElements);
-    elementsToDim.nodes().addClass(DIM_NODE_CLASS);
-    elementsToDim.edges().addClass(DIM_EDGE_CLASS);
+    // Dim all visible elements first, then un-dim the highlight set to ensure neighbors stay emphasized
+    const visibleElements = cy.elements().filter((ele) => ele.visible());
+    visibleElements.nodes().addClass(DIM_NODE_CLASS);
+    visibleElements.edges().addClass(DIM_EDGE_CLASS);
+
+    // Remove dimming from the intended highlight set
+    highlightElements.nodes().removeClass(DIM_NODE_CLASS);
+    highlightElements.edges().removeClass(DIM_EDGE_CLASS);
+    highlightElements.nodes().addClass(FOCUS_NODE_CLASS);
+    highlightElements.edges().addClass(FOCUS_EDGE_CLASS);
 }
 
 cy.on("tap", "node, edge", function (event) {
