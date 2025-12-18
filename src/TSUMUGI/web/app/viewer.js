@@ -395,6 +395,9 @@ const cy = cytoscape({
         },
     ],
     layout: getLayoutOptions(),
+    userZoomingEnabled: true,
+    zoomingEnabled: true,
+    wheelSensitivity: 0.2,
 });
 
 window.cy = cy;
@@ -402,6 +405,28 @@ window.cy = cy;
 const bodyContainer = document.querySelector(".body-container");
 const leftPanelToggleButton = document.getElementById("toggle-left-panel");
 const rightPanelToggleButton = document.getElementById("toggle-right-panel");
+
+// Smooth wheel zoom on the Cytoscape canvas
+const cyContainer = cy.container();
+if (cyContainer) {
+    cyContainer.addEventListener(
+        "wheel",
+        (event) => {
+            event.preventDefault();
+            const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+            const rect = cyContainer.getBoundingClientRect();
+            const renderedPosition = {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top,
+            };
+            const targetZoom = cy.zoom() * zoomFactor;
+            const clampedZoom = Math.min(cy.maxZoom(), Math.max(cy.minZoom(), targetZoom));
+            cy.zoom({ level: clampedZoom, renderedPosition });
+            scheduleSubnetworkFrameUpdate();
+        },
+        { passive: false },
+    );
+}
 
 function resetPanelStatesForMobile() {
     if (!bodyContainer) return;
