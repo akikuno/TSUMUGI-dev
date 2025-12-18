@@ -171,9 +171,6 @@ def run_pipeline(args) -> None:
     )
     # 30 min
 
-    num_shared_phenotypes = similarity_calculator.calculate_num_shared_phenotypes(genewise_phenotype_significants)
-    jaccard_indices = similarity_calculator.calculate_jaccard_indices(genewise_phenotype_significants)
-
     # ----------------------------------------
     # Summarize the phenotype similarity results
     # ----------------------------------------
@@ -200,17 +197,9 @@ def run_pipeline(args) -> None:
     with open(output_dir / "phenodigm_scores.pkl", "wb") as f:
         pickle.dump(phenodigm_scores, f)
 
-    with open(output_dir / "num_shared_phenotypes.pkl", "wb") as f:
-        pickle.dump(num_shared_phenotypes, f)
-
-    with open(output_dir / "jaccard_indices.pkl", "wb") as f:
-        pickle.dump(jaccard_indices, f)
-
     del term_pair_similarity_map
     del phenotype_ancestors
     del phenodigm_scores
-    del num_shared_phenotypes
-    del jaccard_indices
 
     ###########################################################
     # Generate network
