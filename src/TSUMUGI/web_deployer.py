@@ -165,7 +165,7 @@ def prepare_files(
     _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
     _copy_webapp_files(TEMPDIR, output_dir)
     _generate_index_html(output_dir, TSUMUGI_VERSION)
-    _write_version_file(output_dir, TSUMUGI_VERSION)
+    _write_version_file(Path(output_dir, "app"), TSUMUGI_VERSION)
 
 
 ###########################################################
