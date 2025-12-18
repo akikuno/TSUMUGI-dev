@@ -204,6 +204,8 @@ def run_pipeline(args) -> None:
     ###########################################################
     # Generate network
     ###########################################################
+    logging.info("Generating phenotype and gene networks...")
+
     MIN_NUM_PHENOTYPES = 3
 
     pairwise_similarity_annotations_with_shared_phenotype = {
@@ -295,17 +297,19 @@ def run_pipeline(args) -> None:
     ###########################################################
 
     logging.info("Building web application...")
-    is_test = args.is_test
 
-    output_dir = Path(ROOT_DIR, "TSUMUGI-testwebapp") if is_test else Path(ROOT_DIR, "TSUMUGI-webapp")
+    output_dir = Path(ROOT_DIR, "TSUMUGI-testwebapp") if args.is_test else Path(ROOT_DIR, "TSUMUGI-webapp")
 
     if output_dir.exists():
         shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    targetted_phenotypes = web_deployer.select_targetted_phenotypes(TEMPDIR, is_test=is_test)
-    targetted_genes = web_deployer.select_targetted_genes(TEMPDIR, is_test=is_test)
+    targetted_phenotypes = web_deployer.select_targetted_phenotypes(TEMPDIR, is_test=args.is_test)
+    targetted_genes = web_deployer.select_targetted_genes(TEMPDIR, is_test=args.is_test)
 
     web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir, args.version)
+
+    if not args.is_test:
+        shutil.rmtree(TEMPDIR, ignore_errors=True)
 
     logging.info(f"Finished!🎊 Results are saved in {Path(ROOT_DIR).resolve()}")
