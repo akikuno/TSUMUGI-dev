@@ -108,40 +108,48 @@
 
                 <div class="boxed-section">
                     <span>Genotype</span>
-                    <form id="genotype-filter-form">
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="genotype-all" value="All" checked />
-                            <label for="genotype-all">All</label>
+                    <form id="genotype-filter-form" class="two-column-options">
+                        <div class="option-column">
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="genotype-all" value="All" checked />
+                                <label for="genotype-all">All</label>
+                            </div>
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="homo" value="Homo" />
+                                <label for="homo">Homo</label>
+                            </div>
                         </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="homo" value="Homo" />
-                            <label for="homo">Homo</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="hetero" value="Hetero" />
-                            <label for="hetero">Hetero</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="hemi" value="Hemi" />
-                            <label for="hemi">Hemi</label>
+                        <div class="option-column">
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="hetero" value="Hetero" />
+                                <label for="hetero">Hetero</label>
+                            </div>
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="hemi" value="Hemi" />
+                                <label for="hemi">Hemi</label>
+                            </div>
                         </div>
                     </form>
                 </div>
 
                 <div class="boxed-section">
                     <span>Sex</span>
-                    <form id="sex-filter-form">
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="sex-all" value="All" checked />
-                            <label for="sex-all">All</label>
+                    <form id="sex-filter-form" class="two-column-options">
+                        <div class="option-column">
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="sex-all" value="All" checked />
+                                <label for="sex-all">All</label>
+                            </div>
                         </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="female" value="Female" />
-                            <label for="female">Female</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="male" value="Male" />
-                            <label for="male">Male</label>
+                        <div class="option-column">
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="female" value="Female" />
+                                <label for="female">Female</label>
+                            </div>
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="male" value="Male" />
+                                <label for="male">Male</label>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -153,26 +161,30 @@
                             <div class="info-tooltip-content">Early: -16w, Interval: 17-48w, Late: 49w-</div>
                         </div>
                     </span>
-                    <form id="lifestage-filter-form">
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="lifestage-all" value="All" checked />
-                            <label for="lifestage-all">All</label>
+                    <form id="lifestage-filter-form" class="two-column-options">
+                        <div class="option-column">
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="lifestage-all" value="All" checked />
+                                <label for="lifestage-all">All</label>
+                            </div>
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="embryo" value="Embryo" />
+                                <label for="embryo">Embryo</label>
+                            </div>
                         </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="embryo" value="Embryo" />
-                            <label for="embryo">Embryo</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="early" value="Early" />
-                            <label for="early">Early</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="interval" value="Interval" />
-                            <label for="interval">Interval</label>
-                        </div>
-                        <div class="round-checkbox">
-                            <input type="checkbox" id="late" value="Late" />
-                            <label for="late">Late</label>
+                        <div class="option-column">
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="early" value="Early" />
+                                <label for="early">Early</label>
+                            </div>
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="interval" value="Interval" />
+                                <label for="interval">Interval</label>
+                            </div>
+                            <div class="round-checkbox">
+                                <input type="checkbox" id="late" value="Late" />
+                                <label for="late">Late</label>
+                            </div>
                         </div>
                     </form>
                 </div>

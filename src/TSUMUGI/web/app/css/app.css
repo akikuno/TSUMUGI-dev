@@ -473,6 +473,22 @@ ul.suggestions li:hover {
     flex-wrap: wrap;
 }
 
+.boxed-section form.two-column-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 8px;
+    align-items: start;
+    padding-left: 8px;
+}
+
+.boxed-section form.two-column-options .option-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+
 .boxed-section.align-center {
     /* Keep the content left-aligned */
     margin: 0 auto;
