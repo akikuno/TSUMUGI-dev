@@ -25,6 +25,32 @@ def write_available_mp_terms_json(TEMPDIR: Path, output_file: Path) -> None:
         json.dump(mp_term_name_json, f, ensure_ascii=False, indent=2)
 
 
+def write_mp_term_id_lookup(records_significants, available_mp_terms_file: Path, output_file: Path) -> None:
+    """
+    Build a mapping from phenotype slug to MP term ID using the most frequent ID for each name.
+    """
+    with open(available_mp_terms_file) as f:
+        available_mp_terms = json.load(f)
+
+    term_id_counts = defaultdict(lambda: defaultdict(int))
+    for record in records_significants:
+        name = record.get("mp_term_name")
+        mp_id = record.get("mp_term_id")
+        if not name or not mp_id:
+            continue
+        term_id_counts[name][mp_id] += 1
+
+    slug_to_mp_id = {}
+    for display_name, slug in available_mp_terms.items():
+        counts = term_id_counts.get(display_name)
+        if not counts:
+            continue
+        slug_to_mp_id[slug] = max(counts.items(), key=lambda item: item[1])[0]
+
+    with open(output_file, "w") as f:
+        json.dump(slug_to_mp_id, f, ensure_ascii=False, indent=2)
+
+
 # binary phenotypes
 def write_binary_phenotypes_txt(records_significants, TEMPDIR: Path, output_file: Path) -> None:
     paths_available_mp_terms = Path(TEMPDIR, "network", "phenotype").glob("*.json.gz")

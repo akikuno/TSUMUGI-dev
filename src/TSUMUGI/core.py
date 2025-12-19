@@ -272,12 +272,16 @@ def run_pipeline(args) -> None:
     # Output data for web application
     ###########################################################
 
-    output_dir = Path(TEMPDIR, "webapp")  # data for webapp
+    output_dir = Path(TEMPDIR, "webapp")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # available mp terms
     report_generator.write_available_mp_terms_txt(TEMPDIR, Path(output_dir / "available_mp_terms.txt"))
-    report_generator.write_available_mp_terms_json(TEMPDIR, Path(output_dir / "available_mp_terms.json"))
+    available_mp_terms_json = Path(output_dir / "available_mp_terms.json")
+    report_generator.write_available_mp_terms_json(TEMPDIR, available_mp_terms_json)
+    report_generator.write_mp_term_id_lookup(
+        genewise_phenotype_significants, available_mp_terms_json, Path(output_dir / "mp_term_id_lookup.json")
+    )
 
     # binary phenotypes
     report_generator.write_binary_phenotypes_txt(

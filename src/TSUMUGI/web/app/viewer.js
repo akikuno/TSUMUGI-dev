@@ -62,12 +62,17 @@ function isBinaryPhenotypeElements(elements) {
     return false;
 }
 
-function setPageTitle(config, mapSymbolToId) {
+function setPageTitle(config, mapSymbolToId, mapPhenotypeToId) {
     const pageTitleLink = document.getElementById("page-title-link");
     const pageTitle = config.displayName || config.name || "TSUMUGI";
     let targetUrl = "";
 
-    if (config.mode === "genesymbol" && mapSymbolToId) {
+    if (config.mode === "phenotype" && mapPhenotypeToId) {
+        const phenotypeId = mapPhenotypeToId[config.name];
+        if (phenotypeId) {
+            targetUrl = `https://www.mousephenotype.org/data/phenotypes/${phenotypeId}`;
+        }
+    } else if (config.mode === "genesymbol" && mapSymbolToId) {
         const accession = mapSymbolToId[config.name];
         if (accession) {
             targetUrl = `https://www.mousephenotype.org/data/genes/${accession}`;
@@ -78,6 +83,8 @@ function setPageTitle(config, mapSymbolToId) {
         pageTitleLink.href = targetUrl;
         pageTitleLink.target = "_blank";
         pageTitleLink.rel = "noreferrer";
+        pageTitleLink.style.pointerEvents = "";
+        pageTitleLink.style.cursor = "";
     } else {
         pageTitleLink.removeAttribute("href");
         pageTitleLink.style.pointerEvents = "none";
@@ -236,7 +243,8 @@ const isGeneSymbolPage = pageConfig.mode === "genesymbol";
 setVersionLabel();
 
 const map_symbol_to_id = loadJSON("../data/marker_symbol_accession_id.json") || {};
-setPageTitle(pageConfig, map_symbol_to_id);
+const map_phenotype_to_id = loadJSON("../data/mp_term_id_lookup.json") || {};
+setPageTitle(pageConfig, map_symbol_to_id, map_phenotype_to_id);
 
 const elements = loadElementsForConfig(pageConfig);
 if (!elements || elements.length === 0) {
