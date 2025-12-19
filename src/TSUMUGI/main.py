@@ -48,6 +48,7 @@ def main() -> None:
 
     if args.cmd == "run":
         logging.info("Running TSUMUGI pipeline")
+        Path(args.output_dir).mkdir(parents=True, exist_ok=True)
         core.run_pipeline(args)
 
     # ===========================================================

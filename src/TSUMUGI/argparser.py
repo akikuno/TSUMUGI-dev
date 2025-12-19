@@ -102,8 +102,16 @@ def build_parser() -> argparse.ArgumentParser:
         help=("Number of threads to use for TSUMUGI pipeline.\nIf not specified, defaults to 1.\n"),
     )
 
+    # Debug options (hidden) to retain temporary files
     run.add_argument(
-        "--is_test",
+        "--debug",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    # Web specific debug options (hidden) to
+    # skip preprocessing and retain temporary files
+    run.add_argument(
+        "--debug_web",
         action="store_true",
         help=argparse.SUPPRESS,
     )

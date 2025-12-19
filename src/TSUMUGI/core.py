@@ -32,227 +32,236 @@ def run_pipeline(args) -> None:
         Path(args.impc_phenodigm)
     )
 
-    ###########################################################
-    # Preprocess data
-    ###########################################################
-    logging.info("Preprocessing statistical results...")
+    if not args.debug_web:
+        ###########################################################
+        # Preprocess data
+        ###########################################################
+        logging.info("Preprocessing statistical results...")
 
-    # --------------------------------------------------------
-    # Select columns, maintained mp term, and significant genes
-    # --------------------------------------------------------
+        # --------------------------------------------------------
+        # Select columns, maintained mp term, and significant genes
+        # --------------------------------------------------------
 
-    # Floatinize columns
-    float_columns = [
-        "p_value",
-        "effect_size",
-        "female_ko_effect_p_value",  # sex differences
-        "female_ko_parameter_estimate",  # sex differences
-        "male_ko_effect_p_value",  # sex differences
-        "male_ko_parameter_estimate",  # sex differences
-    ]
-    records_formatted = [formatter.floatinize_columns(record, float_columns) for record in records]
+        # Floatinize columns
+        float_columns = [
+            "p_value",
+            "effect_size",
+            "female_ko_effect_p_value",  # sex differences
+            "female_ko_parameter_estimate",  # sex differences
+            "male_ko_effect_p_value",  # sex differences
+            "male_ko_parameter_estimate",  # sex differences
+        ]
+        records_formatted = [formatter.floatinize_columns(record, float_columns) for record in records]
 
-    # Format zygosity
-    zygosity_converter = {"heterozygote": "Hetero", "homozygote": "Homo", "hemizygote": "Hemi"}
-    records_formatted = formatter.format_zygosity(records_formatted, zygosity_converter)
+        # Format zygosity
+        zygosity_converter = {"heterozygote": "Hetero", "homozygote": "Homo", "hemizygote": "Hemi"}
+        records_formatted = formatter.format_zygosity(records_formatted, zygosity_converter)
 
-    # Take absolute value of effect size
-    effect_size_columns = ["effect_size", "female_ko_parameter_estimate", "male_ko_parameter_estimate"]
-    records_formatted = [formatter.abs_effect_size(record, effect_size_columns) for record in records_formatted]
+        # Take absolute value of effect size
+        effect_size_columns = ["effect_size", "female_ko_parameter_estimate", "male_ko_parameter_estimate"]
+        records_formatted = [formatter.abs_effect_size(record, effect_size_columns) for record in records_formatted]
 
-    # --------------------------------------------------------
-    # Annotate life stage and sexual dimorphisms
-    # --------------------------------------------------------
-    logging.info("Annotating life stage and sexual dimorphisms...")
+        # --------------------------------------------------------
+        # Annotate life stage and sexual dimorphisms
+        # --------------------------------------------------------
+        logging.info("Annotating life stage and sexual dimorphisms...")
 
-    records_annotated = records_formatted
+        records_annotated = records_formatted
 
-    embryo_assays = {
-        "E9.5",
-        "E10.5",
-        "E12.5",
-        "Embryo LacZ",  # E12.5
-        "E14.5",
-        "E14.5-E15.5",
-        "E18.5",
-    }
-    # Life stage
-    records_annotated = annotator.annotate_life_stage(records_annotated, embryo_assays)
-    # Sexual dimorphism
-    records_annotated = annotator.annotate_sexual_dimorphism(records_annotated, threshold=1e-4)
-    # Human Diseases
-    records_annotated = annotator.annotate_diseases(records_annotated, disease_annotations_by_gene)
-    # Annotate Significant (True/False)
-    records_annotated = annotator.annotate_significant(records_annotated)
+        embryo_assays = {
+            "E9.5",
+            "E10.5",
+            "E12.5",
+            "Embryo LacZ",  # E12.5
+            "E14.5",
+            "E14.5-E15.5",
+            "E18.5",
+        }
+        # Life stage
+        records_annotated = annotator.annotate_life_stage(records_annotated, embryo_assays)
+        # Sexual dimorphism
+        records_annotated = annotator.annotate_sexual_dimorphism(records_annotated, threshold=1e-4)
+        # Human Diseases
+        records_annotated = annotator.annotate_diseases(records_annotated, disease_annotations_by_gene)
+        # Annotate Significant (True/False)
+        records_annotated = annotator.annotate_significant(records_annotated)
 
-    # --------------------------------------------------------
-    # Filter records
-    # --------------------------------------------------------
-    records_filtered = records_annotated
+        # --------------------------------------------------------
+        # Filter records
+        # --------------------------------------------------------
+        records_filtered = records_annotated
 
-    # Keep only records with mp_term_id in the ontology file (= not obsolete)
-    records_filtered = [record for record in records_filtered if record["mp_term_id"] in ontology_terms]
+        # Keep only records with mp_term_id in the ontology file (= not obsolete)
+        records_filtered = [record for record in records_filtered if record["mp_term_id"] in ontology_terms]
 
-    # Distinct records with max effect size
-    unique_keys = [
-        "marker_symbol",
-        "mp_term_id",
-        "zygosity",
-        "life_stage",
-        "sexual_dimorphism",
-    ]
-    records_filtered = filterer.distinct_records_with_max_effect(records_filtered, unique_keys)
+        # Distinct records with max effect size
+        unique_keys = [
+            "marker_symbol",
+            "mp_term_id",
+            "zygosity",
+            "life_stage",
+            "sexual_dimorphism",
+        ]
+        records_filtered = filterer.distinct_records_with_max_effect(records_filtered, unique_keys)
 
-    # Subset columns
-    to_keep_columns = {
-        "marker_symbol",
-        "marker_accession_id",
-        "mp_term_id",
-        "mp_term_name",
-        "zygosity",
-        "life_stage",
-        "sexual_dimorphism",
-        "effect_size",
-        "significant",
-        "disease_annotation",
-    }
-    records_filtered = filterer.subset_columns(records_filtered, to_keep_columns)
+        # Subset columns
+        to_keep_columns = {
+            "marker_symbol",
+            "marker_accession_id",
+            "mp_term_id",
+            "mp_term_name",
+            "zygosity",
+            "life_stage",
+            "sexual_dimorphism",
+            "effect_size",
+            "significant",
+            "disease_annotation",
+        }
+        records_filtered = filterer.subset_columns(records_filtered, to_keep_columns)
 
-    genewise_phenotype_annotations = records_filtered
-    genewise_phenotype_significants = [record for record in genewise_phenotype_annotations if record["significant"]]
+        genewise_phenotype_annotations = records_filtered
+        genewise_phenotype_significants = [record for record in genewise_phenotype_annotations if record["significant"]]
 
-    # --------------------------------------------------------
-    # Cache results
-    # --------------------------------------------------------
-    output_dir = Path(TEMPDIR / "preprocessed")
-    output_dir.mkdir(parents=True, exist_ok=True)
+        # --------------------------------------------------------
+        # Cache results
+        # --------------------------------------------------------
+        output_dir = Path(TEMPDIR / "preprocessed")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(output_dir / "genewise_phenotype_annotations.pkl", "wb") as f:
-        pickle.dump(genewise_phenotype_annotations, f)
-    with open(output_dir / "genewise_phenotype_significants.pkl", "wb") as f:
-        pickle.dump(genewise_phenotype_significants, f)
+        with open(output_dir / "genewise_phenotype_annotations.pkl", "wb") as f:
+            pickle.dump(genewise_phenotype_annotations, f)
+        with open(output_dir / "genewise_phenotype_significants.pkl", "wb") as f:
+            pickle.dump(genewise_phenotype_significants, f)
 
-    del records_formatted
-    del records_annotated
-    del records_filtered
+        del records_formatted
+        del records_annotated
+        del records_filtered
 
-    ###########################################################
-    # Calculate phenotype similarity
-    ###########################################################
+        ###########################################################
+        # Calculate phenotype similarity
+        ###########################################################
 
-    all_term_ids = {r["mp_term_id"] for r in genewise_phenotype_significants}
+        all_term_ids = {r["mp_term_id"] for r in genewise_phenotype_significants}
 
-    logging.info(f"Calculating pairwise similarity for {len(all_term_ids)} terms...")
+        logging.info(f"Calculating pairwise similarity for {len(all_term_ids)} terms...")
 
-    term_pair_similarity_map: dict[frozenset[str], dict[str, float]] = (
-        similarity_calculator.calculate_all_pairwise_similarities(ontology_terms, all_term_ids, threads=args.threads)
-    )
-    # 30 min
+        term_pair_similarity_map: dict[frozenset[str], dict[str, float]] = (
+            similarity_calculator.calculate_all_pairwise_similarities(
+                ontology_terms, all_term_ids, threads=args.threads
+            )
+        )
+        # 30 min
 
-    # ----------------------------------------
-    # Calculate phenotype similarity for genes
-    # ----------------------------------------
+        # ----------------------------------------
+        # Calculate phenotype similarity for genes
+        # ----------------------------------------
 
-    logging.info(f"Annotate phenotype ancestors for {len(genewise_phenotype_significants)} records...")
-    phenotype_ancestors: dict[frozenset[str], dict[str, dict[str, str]]] = (
-        similarity_calculator.annotate_phenotype_ancestors(
+        logging.info(f"Annotate phenotype ancestors for {len(genewise_phenotype_significants)} records...")
+        phenotype_ancestors: dict[frozenset[str], dict[str, dict[str, str]]] = (
+            similarity_calculator.annotate_phenotype_ancestors(
+                genewise_phenotype_significants,
+                term_pair_similarity_map,
+                ontology_terms,
+                ic_threshold=5,
+            )
+        )
+        # 10 min
+
+        logging.info(f"Calculating phenodigm similarity for {len(genewise_phenotype_significants)} records...")
+        phenodigm_scores: dict[frozenset[str], int] = similarity_calculator.calculate_phenodigm_score(
             genewise_phenotype_significants,
             term_pair_similarity_map,
-            ontology_terms,
-            ic_threshold=5,
         )
-    )
-    # 10 min
+        # 30 min
 
-    logging.info(f"Calculating phenodigm similarity for {len(genewise_phenotype_significants)} records...")
-    phenodigm_scores: dict[frozenset[str], int] = similarity_calculator.calculate_phenodigm_score(
-        genewise_phenotype_significants,
-        term_pair_similarity_map,
-    )
-    # 30 min
+        # ----------------------------------------
+        # Summarize the phenotype similarity results
+        # ----------------------------------------
 
-    # ----------------------------------------
-    # Summarize the phenotype similarity results
-    # ----------------------------------------
+        pairwise_similarity_annotations: dict[frozenset[str], dict[str, dict[str, str] | int]] = (
+            similarity_calculator.summarize_similarity_annotations(
+                ontology_terms, phenotype_ancestors, phenodigm_scores
+            )
+        )
 
-    pairwise_similarity_annotations: dict[frozenset[str], dict[str, dict[str, str] | int]] = (
-        similarity_calculator.summarize_similarity_annotations(ontology_terms, phenotype_ancestors, phenodigm_scores)
-    )
+        # --------------------------------------------------------
+        # Cache results
+        # --------------------------------------------------------
+        output_dir = Path(TEMPDIR / "phenotype_similarity")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-    # --------------------------------------------------------
-    # Cache results
-    # --------------------------------------------------------
-    output_dir = Path(TEMPDIR / "phenotype_similarity")
-    output_dir.mkdir(parents=True, exist_ok=True)
+        with open(output_dir / "term_pair_similarity_map.pkl", "wb") as f:
+            pickle.dump(term_pair_similarity_map, f)
 
-    with open(output_dir / "term_pair_similarity_map.pkl", "wb") as f:
-        pickle.dump(term_pair_similarity_map, f)
+        with open(output_dir / "pairwise_similarity_annotations.pkl", "wb") as f:
+            pickle.dump(pairwise_similarity_annotations, f)
 
-    with open(output_dir / "pairwise_similarity_annotations.pkl", "wb") as f:
-        pickle.dump(pairwise_similarity_annotations, f)
+        with open(output_dir / "phenotype_ancestors.pkl", "wb") as f:
+            pickle.dump(phenotype_ancestors, f)
 
-    with open(output_dir / "phenotype_ancestors.pkl", "wb") as f:
-        pickle.dump(phenotype_ancestors, f)
+        with open(output_dir / "phenodigm_scores.pkl", "wb") as f:
+            pickle.dump(phenodigm_scores, f)
 
-    with open(output_dir / "phenodigm_scores.pkl", "wb") as f:
-        pickle.dump(phenodigm_scores, f)
+        del term_pair_similarity_map
+        del phenotype_ancestors
+        del phenodigm_scores
 
-    del term_pair_similarity_map
-    del phenotype_ancestors
-    del phenodigm_scores
+        ###########################################################
+        # Generate network
+        ###########################################################
+        logging.info("Generating phenotype and gene networks...")
 
-    ###########################################################
-    # Generate network
-    ###########################################################
-    logging.info("Generating phenotype and gene networks...")
+        MIN_NUM_PHENOTYPES = 3
 
-    MIN_NUM_PHENOTYPES = 3
+        pairwise_similarity_annotations_with_shared_phenotype = {
+            k: v
+            for k, v in pairwise_similarity_annotations.items()
+            if len(v["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
+        }
 
-    pairwise_similarity_annotations_with_shared_phenotype = {
-        k: v
-        for k, v in pairwise_similarity_annotations.items()
-        if len(v["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
-    }
+        logging.info("Building phenotype network JSON files...")
 
-    logging.info("Building phenotype network JSON files...")
+        # Detect binary phenotypes (effect_size in {0,1}); include both spaced and underscored names
+        binary_phenotypes = set()
+        phenotype_effects = defaultdict(set)
+        for rec in genewise_phenotype_significants:
+            phenotype_effects[rec["mp_term_name"]].add(rec.get("effect_size", 0))
+        for mp_term_name, effects in phenotype_effects.items():
+            if effects and all(es in (0, 1) for es in effects):
+                binary_phenotypes.add(mp_term_name)
 
-    # Detect binary phenotypes (effect_size in {0,1}); include both spaced and underscored names
-    binary_phenotypes = set()
-    phenotype_effects = defaultdict(set)
-    for rec in genewise_phenotype_significants:
-        phenotype_effects[rec["mp_term_name"]].add(rec.get("effect_size", 0))
-    for mp_term_name, effects in phenotype_effects.items():
-        if effects and all(es in (0, 1) for es in effects):
-            binary_phenotypes.add(mp_term_name)
+        output_dir = Path(TEMPDIR / "network" / "phenotype")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        network_constructor.build_phenotype_network_json(
+            genewise_phenotype_significants,
+            pairwise_similarity_annotations_with_shared_phenotype,
+            disease_annotations_by_gene,
+            output_dir,
+            binary_phenotypes=binary_phenotypes,
+        )
 
-    output_dir = Path(TEMPDIR / "network" / "phenotype")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    network_constructor.build_phenotype_network_json(
-        genewise_phenotype_significants,
-        pairwise_similarity_annotations_with_shared_phenotype,
-        disease_annotations_by_gene,
-        output_dir,
-        binary_phenotypes=binary_phenotypes,
-    )
+        logging.info("Building gene network JSON files...")
+        output_dir = Path(TEMPDIR / "network" / "genesymbol")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-    logging.info("Building gene network JSON files...")
-    output_dir = Path(TEMPDIR / "network" / "genesymbol")
-    output_dir.mkdir(parents=True, exist_ok=True)
+        network_constructor.build_gene_network_json(
+            genewise_phenotype_significants,
+            pairwise_similarity_annotations_with_shared_phenotype,
+            disease_annotations_by_gene,
+            output_dir,
+        )
 
-    network_constructor.build_gene_network_json(
-        genewise_phenotype_significants,
-        pairwise_similarity_annotations_with_shared_phenotype,
-        disease_annotations_by_gene,
-        output_dir,
-    )
-
-    del pairwise_similarity_annotations_with_shared_phenotype
-    del disease_annotations_by_gene
+        del pairwise_similarity_annotations_with_shared_phenotype
+        del disease_annotations_by_gene
 
     ###########################################################
     # Output reports to public directory
     ###########################################################
     logging.info("Generating reports...")
+
+    if args.debug_web and not Path(ROOT_DIR / "genewise_phenotype_annotations.jsonl.gz").is_file():
+        raise FileNotFoundError(f"genewise_phenotype_annotations.jsonl.gz not found in {ROOT_DIR}")
+
     Path(ROOT_DIR / "README.md").write_text(
         f"TSUMUGI version: {args.version}\n Running Date: {date.today().isoformat()}"
     )
@@ -313,7 +322,7 @@ def run_pipeline(args) -> None:
 
     web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir, args.version)
 
-    if not args.is_test:
+    if args.debug is False and args.debug_web is False:
         shutil.rmtree(TEMPDIR, ignore_errors=True)
 
     logging.info(f"Finished!🎊 Results are saved in {Path(ROOT_DIR).resolve()}")
