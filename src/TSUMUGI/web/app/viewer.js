@@ -1187,9 +1187,55 @@ function applyFiltering() {
     }
 }
 
-document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
-document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
-document.getElementById("lifestage-filter-form").addEventListener("change", applyFiltering);
+function setupAllToggle(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    const checkboxes = Array.from(form.querySelectorAll('input[type="checkbox"]'));
+    const allCheckbox = checkboxes.find((checkbox) => checkbox.value === "All");
+    const optionCheckboxes = checkboxes.filter((checkbox) => checkbox !== allCheckbox);
+
+    const ensureAllSelected = () => {
+        if (allCheckbox) {
+            allCheckbox.checked = true;
+            optionCheckboxes.forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+        }
+    };
+
+    if (allCheckbox) {
+        allCheckbox.addEventListener("change", () => {
+            if (allCheckbox.checked) {
+                optionCheckboxes.forEach((checkbox) => {
+                    checkbox.checked = false;
+                });
+            } else if (!optionCheckboxes.some((checkbox) => checkbox.checked)) {
+                ensureAllSelected();
+            }
+            applyFiltering();
+        });
+    }
+
+    optionCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+                if (allCheckbox) {
+                    allCheckbox.checked = false;
+                }
+            } else if (!optionCheckboxes.some((option) => option.checked)) {
+                ensureAllSelected();
+            }
+            applyFiltering();
+        });
+    });
+
+    if (!optionCheckboxes.some((checkbox) => checkbox.checked)) {
+        ensureAllSelected();
+    }
+}
+
+["genotype-filter-form", "sex-filter-form", "lifestage-filter-form"].forEach((formId) => setupAllToggle(formId));
 
 // =============================================================================
 // Highlight human disease annotations

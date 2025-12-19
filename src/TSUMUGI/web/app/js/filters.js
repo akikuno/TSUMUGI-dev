@@ -34,22 +34,28 @@ function restoreHighlightStates(cy) {
     }
 }
 
+function getActiveFilterValues(formSelector, allValues) {
+    const checkedInputs = Array.from(document.querySelectorAll(`${formSelector} input[type="checkbox"]:checked`));
+    if (checkedInputs.length === 0) {
+        return allValues;
+    }
+
+    const checkedValues = checkedInputs.map((input) => input.value);
+    if (checkedValues.includes("All")) {
+        return allValues;
+    }
+
+    return checkedValues;
+}
+
 export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterElements) {
-    const checkedSexs = Array.from(document.querySelectorAll('#sex-filter-form input[type="checkbox"]:checked')).map(
-        (input) => input.value,
-    );
-
-    const checkedGenotypes = Array.from(
-        document.querySelectorAll('#genotype-filter-form input[type="checkbox"]:checked'),
-    ).map((input) => input.value);
-
-    const checkedLifestages = Array.from(
-        document.querySelectorAll('#lifestage-filter-form input[type="checkbox"]:checked'),
-    ).map((input) => input.value);
-
     const allSexs = ["Female", "Male"];
     const allGenotypes = ["Homo", "Hetero", "Hemi"];
     const allLifestages = ["Embryo", "Early", "Interval", "Late"];
+
+    const checkedSexs = getActiveFilterValues("#sex-filter-form", allSexs);
+    const checkedGenotypes = getActiveFilterValues("#genotype-filter-form", allGenotypes);
+    const checkedLifestages = getActiveFilterValues("#lifestage-filter-form", allLifestages);
 
     let filteredElements = elements.map((item) => ({
         ...item,
