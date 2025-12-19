@@ -1223,8 +1223,15 @@ function setupAllToggle(formId) {
                 if (allCheckbox) {
                     allCheckbox.checked = false;
                 }
+                if (optionCheckboxes.every((option) => option.checked)) {
+                    ensureAllSelected();
+                    applyFiltering();
+                    return;
+                }
             } else if (!optionCheckboxes.some((option) => option.checked)) {
                 ensureAllSelected();
+                applyFiltering();
+                return;
             }
             applyFiltering();
         });
