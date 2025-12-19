@@ -5,7 +5,7 @@ import gzip
 import json
 import pickle
 import sys
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 from TSUMUGI import formatter
@@ -151,7 +151,30 @@ def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
                 yield json.loads(line)
 
 
-def safe_jsonl_dump(record: dict) -> None:
+def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None) -> None:
+    """
+    Write an iterable of records as JSONL (.jsonl or .jsonl.gz).
+    If path_jsonl is None or "-", write to stdout.
+    Each record is dumped as one line of JSON.
+    """
+    # stdout
+    if path_jsonl is None or str(path_jsonl) == "-" or path_jsonl == sys.stdout:
+        for record in records:
+            json.dump(record, sys.stdout, ensure_ascii=False)
+            sys.stdout.write("\n")
+        return
+
+    # file / gzip
+    p = Path(path_jsonl)
+    open_func = gzip.open if p.suffix == ".gz" else open
+
+    with open_func(p, "wt", encoding="utf-8") as f:
+        for record in records:
+            json.dump(record, f, ensure_ascii=False)
+            f.write("\n")
+
+
+def write_jsonl_to_stdout(record: dict) -> None:
     """Write record as JSONL and suppress BrokenPipeError cleanly."""
     try:
         json.dump(record, sys.stdout, ensure_ascii=False)

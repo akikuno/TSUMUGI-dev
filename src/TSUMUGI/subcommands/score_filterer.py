@@ -19,4 +19,4 @@ def filter_by_score_of_phenotypes_per_pair(
             continue
 
         # output to stdout as JSON
-        io_handler.safe_jsonl_dump(record)
+        io_handler.write_jsonl_to_stdout(record)

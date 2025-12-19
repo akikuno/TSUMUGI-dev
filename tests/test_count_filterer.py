@@ -46,7 +46,7 @@ def test_filter_by_number_of_phenotypes_per_gene(monkeypatch):
         return pairwise_annotations
 
     monkeypatch.setattr(count_filterer.io_handler, "read_jsonl", fake_read_jsonl)
-    monkeypatch.setattr(count_filterer.io_handler, "safe_jsonl_dump", lambda record: dumped.append(record))
+    monkeypatch.setattr(count_filterer.io_handler, "write_jsonl_to_stdout", lambda record: dumped.append(record))
     monkeypatch.setattr(count_filterer, "tqdm", lambda iterable, desc=None: iterable)
 
     count_filterer.filter_by_number_of_phenotypes_per_gene(
@@ -72,7 +72,7 @@ def test_filter_by_number_of_phenotypes_per_pair(monkeypatch):
     dumped = []
 
     monkeypatch.setattr(count_filterer.io_handler, "read_jsonl", lambda path: pairwise_annotations)
-    monkeypatch.setattr(count_filterer.io_handler, "safe_jsonl_dump", lambda record: dumped.append(record))
+    monkeypatch.setattr(count_filterer.io_handler, "write_jsonl_to_stdout", lambda record: dumped.append(record))
 
     count_filterer.filter_by_number_of_phenotypes_per_pair(
         path_pairwise_similarity_annotations="pairwise-path",

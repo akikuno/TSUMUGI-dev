@@ -100,7 +100,7 @@ def test_filter_annotations_by_gene_pairs_reads_and_writes(monkeypatch, base_inp
     dumped = []
 
     monkeypatch.setattr(genes_filterer.io_handler, "read_jsonl", lambda path: base_input)
-    monkeypatch.setattr(genes_filterer.io_handler, "safe_jsonl_dump", lambda record: dumped.append(record))
+    monkeypatch.setattr(genes_filterer.io_handler, "write_jsonl_to_stdout", lambda record: dumped.append(record))
 
     filter_annotations_by_gene_pairs(
         path_pairwise_similarity_annotations="pairwise-path",

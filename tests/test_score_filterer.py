@@ -28,7 +28,7 @@ def test_filter_by_score_with_min_and_max(monkeypatch):
     dumped = []
 
     monkeypatch.setattr(score_filterer.io_handler, "read_jsonl", lambda path: pairwise_annotations)
-    monkeypatch.setattr(score_filterer.io_handler, "safe_jsonl_dump", lambda record: dumped.append(record))
+    monkeypatch.setattr(score_filterer.io_handler, "write_jsonl_to_stdout", lambda record: dumped.append(record))
 
     score_filterer.filter_by_score_of_phenotypes_per_pair(
         path_pairwise_similarity_annotations="pairwise-path",
@@ -48,7 +48,7 @@ def test_filter_by_score_with_only_min(monkeypatch):
     dumped = []
 
     monkeypatch.setattr(score_filterer.io_handler, "read_jsonl", lambda path: pairwise_annotations)
-    monkeypatch.setattr(score_filterer.io_handler, "safe_jsonl_dump", lambda record: dumped.append(record))
+    monkeypatch.setattr(score_filterer.io_handler, "write_jsonl_to_stdout", lambda record: dumped.append(record))
 
     score_filterer.filter_by_score_of_phenotypes_per_pair(
         path_pairwise_similarity_annotations="pairwise-path",

@@ -52,7 +52,7 @@ def include_specific_phenotype(
 
             if has_phenotype:
                 # output to stdout as JSONL
-                io_handler.safe_jsonl_dump(record)
+                io_handler.write_jsonl_to_stdout(record)
     else:
         genewise_phenotype_annotations = io_handler.read_jsonl(path_genewise_phenotype_annotations)
         for record in genewise_phenotype_annotations:
@@ -67,7 +67,7 @@ def include_specific_phenotype(
             if zygosity is not None and record["zygosity"] != zygosity:
                 continue
             # output to stdout as JSONL
-            io_handler.safe_jsonl_dump(record)
+            io_handler.write_jsonl_to_stdout(record)
 
 
 ###########################################################
@@ -134,9 +134,9 @@ def exclude_specific_phenotype(
         for record in pairwise_similarity_annotations:
             if record["gene1_symbol"] in genes_without_phenotype and record["gene2_symbol"] in genes_without_phenotype:
                 # output to stdout as JSONL
-                io_handler.safe_jsonl_dump(record)
+                io_handler.write_jsonl_to_stdout(record)
     else:
         for record in genewise_phenotype_annotations:
             if record["marker_symbol"] in genes_without_phenotype:
                 # output to stdout as JSONL
-                io_handler.safe_jsonl_dump(record)
+                io_handler.write_jsonl_to_stdout(record)

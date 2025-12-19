@@ -27,7 +27,7 @@ def filter_by_number_of_phenotypes_per_gene(
         # check both genes in the pair match the criteria
         if record["gene1_symbol"] in matched_genes and record["gene2_symbol"] in matched_genes:
             # output to stdout as JSON
-            io_handler.safe_jsonl_dump(record)
+            io_handler.write_jsonl_to_stdout(record)
 
 
 def filter_by_number_of_phenotypes_per_pair(
@@ -44,4 +44,4 @@ def filter_by_number_of_phenotypes_per_pair(
             continue
 
         # output to stdout as JSON
-        io_handler.safe_jsonl_dump(record)
+        io_handler.write_jsonl_to_stdout(record)
