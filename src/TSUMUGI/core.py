@@ -68,7 +68,7 @@ def run_pipeline(args) -> None:
         # Calculate phenotype similarity
         ###########################################################
 
-        pairwise_similarity_annotations, term_pair_similarity_map, phenotype_ancestors, phenodigm_scores = (
+        pairwise_similarity_annotations, terms_resnik_map, phenotype_ancestors, phenodigm_scores = (
             pairwise_similarity_builder.build_pairwise_similarity(
                 genewise_phenotype_significants, ontology_terms, threads=args.threads, debug=args.debug
             )
@@ -84,8 +84,8 @@ def run_pipeline(args) -> None:
             output_dir = Path(TEMPDIR / "preprocessed")
             output_dir.mkdir(parents=True, exist_ok=True)
 
-            with open(output_dir / "term_pair_similarity_map.pkl", "wb") as f:
-                pickle.dump(term_pair_similarity_map, f)
+            with open(output_dir / "terms_resnik_map.pkl", "wb") as f:
+                pickle.dump(terms_resnik_map, f)
 
             with open(output_dir / "phenotype_ancestors.pkl", "wb") as f:
                 pickle.dump(phenotype_ancestors, f)
@@ -93,7 +93,7 @@ def run_pipeline(args) -> None:
             with open(output_dir / "phenodigm_scores.pkl", "wb") as f:
                 pickle.dump(phenodigm_scores, f)
 
-        del term_pair_similarity_map
+        del terms_resnik_map
         del phenotype_ancestors
         del phenodigm_scores
 

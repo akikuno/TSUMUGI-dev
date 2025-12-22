@@ -17,7 +17,7 @@ def build_pairwise_similarity(
 
     logging.info(f"Calculating pairwise similarity for {len(mp_term_ids)} terms...")
 
-    term_pair_similarity_map, term_ic_map = similarity_calculator.calculate_all_pairwise_similarities(
+    terms_resnik_map, term_ic_map = similarity_calculator.calculate_all_pairwise_similarities(
         ontology_terms, mp_term_ids, threads=threads
     )
 
@@ -29,7 +29,7 @@ def build_pairwise_similarity(
     phenotype_ancestors: dict[tuple[str], dict[str, dict[str, str]]] = (
         similarity_calculator.annotate_phenotype_ancestors(
             genewise_phenotype_significants,
-            term_pair_similarity_map,
+            terms_resnik_map,
             ontology_terms,
             ic_threshold=5,
         )
@@ -37,7 +37,7 @@ def build_pairwise_similarity(
 
     logging.info(f"Calculating phenodigm similarity for {len(genewise_phenotype_significants)} records...")
     phenodigm_scores: dict[tuple[str], int] = similarity_calculator.calculate_phenodigm_score(
-        genewise_phenotype_significants, term_pair_similarity_map, term_ic_map
+        genewise_phenotype_significants, terms_resnik_map, term_ic_map
     )
 
     # ----------------------------------------
@@ -51,4 +51,4 @@ def build_pairwise_similarity(
         similarity_calculator.summarize_similarity_annotations(ontology_terms, phenotype_ancestors, phenodigm_scores)
     )
 
-    return pairwise_similarity_annotations, term_pair_similarity_map, phenotype_ancestors, phenodigm_scores
+    return pairwise_similarity_annotations, terms_resnik_map, phenotype_ancestors, phenodigm_scores

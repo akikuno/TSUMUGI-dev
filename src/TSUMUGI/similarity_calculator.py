@@ -109,13 +109,13 @@ def calculate_all_pairwise_similarities(
     term_list = sorted(all_term_ids)
     total_pairs = len(term_list) * (len(term_list) + 1) // 2
 
-    term_pair_similarity_map: dict[tuple[str], dict[str | None, float]] = {}
+    terms_resnik_map: dict[tuple[str], dict[str | None, float]] = {}
 
     if threads == 1:
         for term1_id, term2_id in tqdm(combinations_with_replacement(term_list, 2), total=total_pairs):
             term_pairs, ancester_ic = _compute_pair_singleprocess(term1_id, term2_id, parent_term_map, term_ic_map)
-            term_pair_similarity_map[term_pairs] = ancester_ic
-        return term_pair_similarity_map
+            terms_resnik_map[term_pairs] = ancester_ic
+        return terms_resnik_map
 
     with ProcessPoolExecutor(
         max_workers=threads,
@@ -125,9 +125,9 @@ def calculate_all_pairwise_similarities(
         for term_pairs, ancester_ic in tqdm(
             executor.map(_compute_pair_worker, combinations_with_replacement(term_list, 2)), total=total_pairs
         ):
-            term_pair_similarity_map[term_pairs] = ancester_ic
+            terms_resnik_map[term_pairs] = ancester_ic
 
-    return term_pair_similarity_map, term_ic_map
+    return terms_resnik_map, term_ic_map
 
 
 ###########################################################
@@ -204,7 +204,7 @@ def _annotate_ancestors(
     gene2_symbol: str,
     gene_metadata_map: dict[str, dict[tuple[str, str, str], list[str]]],
     meta_dict_cache: dict[tuple[str, str, str], dict[str, str]],
-    term_pair_similarity_map: dict[tuple[str, str], dict[str | None, float]],
+    terms_resnik_map: dict[tuple[str, str], dict[str | None, float]],
     child_term_map: dict[str, set[str]],
     terms_with_low_ic: set[str],
 ) -> tuple[tuple[str], dict[str, dict[str, str]]]:
@@ -225,7 +225,7 @@ def _annotate_ancestors(
         for gene1_mp_term_id in gene1_terms:
             for gene2_mp_term_id in gene2_terms:
                 pair_key = tuple(sorted([gene1_mp_term_id, gene2_mp_term_id]))
-                mapping = term_pair_similarity_map.get(pair_key)
+                mapping = terms_resnik_map.get(pair_key)
                 if not mapping:
                     continue
 
@@ -278,7 +278,7 @@ def _build_gene_metadata_maps(
 
 def annotate_phenotype_ancestors(
     records_significants: list[dict[str, str | float]],
-    term_pair_similarity_map: dict[tuple[str], dict[str, float]],
+    terms_resnik_map: dict[tuple[str], dict[str, float]],
     ontology_terms: dict[str, dict[str, str]],
     ic_threshold,
 ) -> dict[tuple[str], dict[str, dict[str, str]]]:
@@ -311,7 +311,7 @@ def annotate_phenotype_ancestors(
             gene2_symbol=gene2_symbol,
             gene_metadata_map=gene_metadata_map,
             meta_dict_cache=meta_dict_cache,
-            term_pair_similarity_map=term_pair_similarity_map,
+            terms_resnik_map=terms_resnik_map,
             child_term_map=child_term_map,
             terms_with_low_ic=terms_with_low_ic,
         )
@@ -328,7 +328,7 @@ def annotate_phenotype_ancestors(
 def _calculate_weighted_similarity_matrix(
     gene1_data: dict[str, np.ndarray],
     gene2_data: dict[str, np.ndarray],
-    term_pair_similarity_map: dict[tuple[str, str], dict[str | None, float]],
+    terms_resnik_map: dict[tuple[str, str], dict[str | None, float]],
 ) -> np.ndarray:
     """Calculate weighted similarity matrix between two genes based on their phenotype records."""
     gene1_terms = gene1_data["terms"]
@@ -339,7 +339,7 @@ def _calculate_weighted_similarity_matrix(
         row = similarity_matrix[i]
         for j, term2 in enumerate(gene2_terms):
             _, similarity = next(
-                iter(term_pair_similarity_map.get(tuple(sorted([term1, term2])), {None: 0.0}).items())
+                iter(terms_resnik_map.get(tuple(sorted([term1, term2])), {None: 0.0}).items())
             )
             row[j] = similarity
 
@@ -395,7 +395,7 @@ def _calculate_phenodigm(
     gene1_symbol: str,
     gene2_symbol: str,
     gene_data_map: dict[str, dict[str, np.ndarray]],
-    term_pair_similarity_map: dict[tuple[str, str], dict[str | None, float]],
+    terms_resnik_map: dict[tuple[str, str], dict[str | None, float]],
 ) -> tuple[tuple[str], int]:
     gene1_data = gene_data_map[gene1_symbol]
     gene2_data = gene_data_map[gene2_symbol]
@@ -403,7 +403,7 @@ def _calculate_phenodigm(
     weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
         gene1_data,
         gene2_data,
-        term_pair_similarity_map,
+        terms_resnik_map,
     )
 
     score = _apply_phenodigm_scaling(
@@ -443,7 +443,7 @@ def _build_gene_data_map(
 
 def calculate_phenodigm_score(
     records_significants: list[dict[str, str | float]],
-    term_pair_similarity_map: dict[tuple[str], dict[str, float]],
+    terms_resnik_map: dict[tuple[str], dict[str, float]],
     term_ic_map: dict[str, float],
 ) -> dict[tuple[str], int]:
     """
@@ -469,7 +469,7 @@ def calculate_phenodigm_score(
             gene1_symbol=gene1_symbol,
             gene2_symbol=gene2_symbol,
             gene_data_map=gene_data_map,
-            term_pair_similarity_map=term_pair_similarity_map,
+            terms_resnik_map=terms_resnik_map,
         )
         phenodigm_scores[gene_pair] = score
 
