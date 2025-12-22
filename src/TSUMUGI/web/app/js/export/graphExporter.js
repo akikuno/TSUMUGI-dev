@@ -1,4 +1,4 @@
-import { calculateConnectedComponents } from "./components.js";
+import { calculateConnectedComponents } from "../graph/components.js";
 
 export const DEFAULT_EXPORT_SCALE = 6.25;
 
@@ -25,7 +25,7 @@ function triggerDownloadFromBlob(blob, fileName) {
 // PNG Exporter
 // --------------------------------------------------------
 
-export function exportGraphAsPNG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
+export function exportGraphAsPNG(cy, fileName, scale = DEFAULT_EXPORT_SCALE) {
     const pngContent = cy.png({
         scale: normalizeScale(scale), // Scale to achieve desired DPI
         full: true, // Set to true to include the entire graph, even the offscreen parts
@@ -33,7 +33,7 @@ export function exportGraphAsPNG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
 
     const a = document.createElement("a");
     a.href = pngContent;
-    a.download = `${file_name}.png`;
+    a.download = `${fileName}.png`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -43,7 +43,7 @@ export function exportGraphAsPNG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
 // JPG Exporter
 // --------------------------------------------------------
 
-export function exportGraphAsJPG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
+export function exportGraphAsJPG(cy, fileName, scale = DEFAULT_EXPORT_SCALE) {
     const jpgContent = cy.jpg({
         scale: normalizeScale(scale),
         full: true,
@@ -52,7 +52,7 @@ export function exportGraphAsJPG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
 
     const a = document.createElement("a");
     a.href = jpgContent;
-    a.download = `${file_name}.jpg`;
+    a.download = `${fileName}.jpg`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -62,7 +62,7 @@ export function exportGraphAsJPG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
 // SVG Exporter
 // --------------------------------------------------------
 
-export function exportGraphAsSVG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
+export function exportGraphAsSVG(cy, fileName, scale = DEFAULT_EXPORT_SCALE) {
     if (typeof cy.svg !== "function") {
         console.error("SVG export requires the cytoscape-svg extension.");
         return;
@@ -74,22 +74,22 @@ export function exportGraphAsSVG(cy, file_name, scale = DEFAULT_EXPORT_SCALE) {
     });
 
     const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
-    triggerDownloadFromBlob(blob, `${file_name}.svg`);
+    triggerDownloadFromBlob(blob, `${fileName}.svg`);
 }
 
 // --------------------------------------------------------
 // CSV Exporter
 // --------------------------------------------------------
 
-export function exportGraphAsCSV(cy, file_name) {
+export function exportGraphAsCSV(cy, fileName) {
     // Use calculateConnectedComponents to gather connected components
-    const connected_component = calculateConnectedComponents(cy);
+    const connectedComponents = calculateConnectedComponents(cy);
 
     // CSV header row
     let csvContent = "module,gene,phenotypes\n";
 
     // Assign module numbers and format the data as CSV rows
-    connected_component.forEach((component, moduleIndex) => {
+    connectedComponents.forEach((component, moduleIndex) => {
         const moduleNumber = moduleIndex + 1;
 
         Object.keys(component).forEach((gene) => {
@@ -105,7 +105,7 @@ export function exportGraphAsCSV(cy, file_name) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${file_name}.csv`;
+    a.download = `${fileName}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -115,7 +115,7 @@ export function exportGraphAsCSV(cy, file_name) {
 // GraphML Exporter for Desktop Cytoscape Compatibility
 // --------------------------------------------------------
 
-export function exportGraphAsGraphML(cy, file_name) {
+export function exportGraphAsGraphML(cy, fileName) {
     const nodes = cy.nodes();
     const edges = cy.edges();
 
@@ -185,7 +185,7 @@ export function exportGraphAsGraphML(cy, file_name) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${file_name}.graphml`;
+    a.download = `${fileName}.graphml`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

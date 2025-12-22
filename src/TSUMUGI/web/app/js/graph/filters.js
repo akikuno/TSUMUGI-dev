@@ -1,4 +1,4 @@
-import { highlightDiseaseNodes } from "../js/highlighter.js";
+import { highlightDiseaseNodes } from "./highlighter.js";
 
 // ========================================
 // Helpers for restoring highlight states
@@ -48,30 +48,41 @@ function getActiveFilterValues(formSelector, allValues) {
     return checkedValues;
 }
 
-export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterElements) {
-    const allSexs = ["Female", "Male"];
+/**
+ * Apply genotype/sex/life-stage filters while preserving phenotype highlights.
+ */
+export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, filterElements) {
+    const allSexes = ["Female", "Male"];
     const allGenotypes = ["Homo", "Hetero", "Hemi"];
-    const allLifestages = ["Embryo", "Early", "Interval", "Late"];
+    const allLifeStages = ["Embryo", "Early", "Interval", "Late"];
 
-    const checkedSexs = getActiveFilterValues("#sex-filter-form", allSexs);
+    const checkedSexes = getActiveFilterValues("#sex-filter-form", allSexes);
     const checkedGenotypes = getActiveFilterValues("#genotype-filter-form", allGenotypes);
-    const checkedLifestages = getActiveFilterValues("#lifestage-filter-form", allLifestages);
+    const checkedLifeStages = getActiveFilterValues("#lifestage-filter-form", allLifeStages);
 
-    let filteredElements = elements.map((item) => ({
-        ...item,
-        data: {
-            ...item.data,
-            _originalPhenotypes: item.data.phenotype || [], // Preserve the original phenotype list
-            phenotype: item.data.phenotype || [],
-        },
-    }));
+    let filteredElements = elements.map((item) => {
+        const phenotypeList = Array.isArray(item.data.phenotype)
+            ? item.data.phenotype
+            : item.data.phenotype
+                ? [item.data.phenotype]
+                : [];
+
+        return {
+            ...item,
+            data: {
+                ...item.data,
+                originalPhenotypes: phenotypeList, // Preserve the original phenotype list
+                phenotype: phenotypeList,
+            },
+        };
+    });
 
     // Apply sex filters
-    if (checkedSexs.length !== allSexs.length) {
+    if (checkedSexes.length !== allSexes.length) {
         filteredElements = filteredElements
             .map((item) => {
                 const filtered = item.data.phenotype.filter((phenotype) =>
-                    checkedSexs.some((sex) => phenotype.includes(sex)),
+                    checkedSexes.some((sex) => phenotype.includes(sex)),
                 );
                 return {
                     ...item,
@@ -85,7 +96,7 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
     if (checkedGenotypes.length !== allGenotypes.length) {
         filteredElements = filteredElements
             .map((item) => {
-                const original = item.data._originalPhenotypes;
+                const original = item.data.originalPhenotypes;
                 const filtered = item.data.phenotype.filter((phenotype) =>
                     checkedGenotypes.some((gt) => phenotype.includes(gt)),
                 );
@@ -98,11 +109,11 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
     }
 
     // Apply life-stage filters
-    if (checkedLifestages.length !== allLifestages.length) {
+    if (checkedLifeStages.length !== allLifeStages.length) {
         filteredElements = filteredElements
             .map((item) => {
                 const filtered = item.data.phenotype.filter((phenotype) =>
-                    checkedLifestages.some((stage) => phenotype.includes(stage)),
+                    checkedLifeStages.some((stage) => phenotype.includes(stage)),
                 );
                 return {
                     ...item,
@@ -116,10 +127,10 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
     filteredElements = filteredElements.filter((item) => item.data.phenotype && item.data.phenotype.length > 1);
 
     // Restore any phenotypes that match the target phenotype
-    if (target_phenotype) {
+    if (targetPhenotype) {
         filteredElements = filteredElements.map((item) => {
-            const original = item.data._originalPhenotypes;
-            const restored = original.filter((phenotype) => phenotype.includes(target_phenotype));
+            const original = item.data.originalPhenotypes;
+            const restored = original.filter((phenotype) => phenotype.includes(targetPhenotype));
 
             const merged = [...item.data.phenotype, ...restored];
             const unique = Array.from(new Set(merged));
@@ -135,9 +146,9 @@ export function filterElementsByGenotypeAndSex(elements, cy, target_phenotype, f
     }
 
     // Remove elements that do not contain the target phenotype
-    if (target_phenotype) {
+    if (targetPhenotype) {
         filteredElements = filteredElements.filter((item) =>
-            item.data.phenotype.some((anno) => anno.includes(target_phenotype)),
+            item.data.phenotype.some((anno) => anno.includes(targetPhenotype)),
         );
     }
 

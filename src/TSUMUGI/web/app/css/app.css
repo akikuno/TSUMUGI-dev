@@ -4,7 +4,6 @@
 
 html,
 body {
-    margin: 0 auto;
     padding: 0;
     height: 100%;
     width: 100%;
@@ -854,6 +853,7 @@ button.menu-toggle-icon {
     --cy-tooltip-diseases-max: 90px;
     --cy-tooltip-modules-max: 160px;
     --cy-tooltip-height: 220px;
+    padding: 10px 10px 18px 14px;
     min-width: 220px;
     min-height: 140px;
     box-sizing: border-box;
@@ -862,6 +862,13 @@ button.menu-toggle-icon {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    cursor: move;
+    user-select: text;
 }
 
 .cy-tooltip__section {
@@ -890,6 +897,27 @@ button.menu-toggle-icon {
 
 .cy-tooltip__section-body {
     line-height: 1.4;
+}
+
+.cy-tooltip__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cy-tooltip__copy {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    z-index: 1001;
+}
+
+.cy-tooltip__copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    padding: 2px 5px;
 }
 
 .cy-tooltip__resize-handle {
@@ -963,7 +991,6 @@ button.menu-toggle-icon {
     font-size: 14px;
     font-weight: normal;
     line-height: 1.4;
-    white-space: nowrap;
     z-index: 12000;
     transition:
         opacity 0.3s ease,

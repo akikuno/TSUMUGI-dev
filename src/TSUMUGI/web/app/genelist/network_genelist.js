@@ -1,13 +1,20 @@
-import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/exporter.js";
-import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/value_scaler.js";
-import { removeTooltips, showTooltip } from "../js/tooltips.js";
-import { calculateConnectedComponents } from "../js/components.js";
-import { createSlider } from "../js/slider.js";
-import { filterElementsByGenotypeAndSex } from "../js/filters.js";
-import { loadJSONGz, loadJSON } from "../js/data_loader.js";
-import { setupGeneSearch } from "../js/gene_searcher.js";
-import { highlightDiseaseAnnotation } from "../js/highlighter.js";
-import { setupPhenotypeSearch } from "../js/phenotype_searcher.js";
+import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML } from "../js/export/graphExporter.js";
+import { scaleToOriginalRange, scaleValue, getColorForValue } from "../js/graph/valueScaler.js";
+import { initInfoTooltips, removeTooltips, showTooltip } from "../js/ui/tooltips.js";
+import { calculateConnectedComponents } from "../js/graph/components.js";
+import { createSlider } from "../js/ui/slider.js";
+import { filterElementsByGenotypeAndSex } from "../js/graph/filters.js";
+import { loadJSON } from "../js/data/dataLoader.js";
+import { setupGeneSearch } from "../js/search/geneSearcher.js";
+import { highlightDiseaseAnnotation } from "../js/graph/highlighter.js";
+import { setupPhenotypeSearch } from "../js/search/phenotypeSearcher.js";
+import { initDynamicFontSize } from "../js/ui/dynamicFontSize.js";
+import { initMobilePanel } from "../js/ui/mobilePanel.js";
+
+// Initialize DOM-dependent UI helpers.
+initInfoTooltips();
+initDynamicFontSize();
+initMobilePanel();
 
 // ############################################################################
 // Input handler
@@ -24,20 +31,22 @@ import { setupPhenotypeSearch } from "../js/phenotype_searcher.js";
 //     { data: { source: 'Sox2', target: 'Pou5f1', phenotype: 'FooBar', edge_size: 10 } },
 // ];
 
-// const map_symbol_to_id = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
+// const mapSymbolToId = { 'Nanog': 'MGI:97281', 'Pou5f1': 'MGI:1352748', 'Sox2': 'MGI:96217' };
 
 // REMOVE_TO_THIS_LINE
 
 const elements = JSON.parse(localStorage.getItem("elements"));
-const map_symbol_to_id = loadJSON("../../data/marker_symbol_accession_id.json");
+const mapSymbolToId = loadJSON("../../data/marker_symbol_accession_id.json");
 
 // ############################################################################
 // Cytoscape Elements handler
 // ############################################################################
 
-let nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
-let nodeColorMin = Math.min(...nodeSizes); // Range used for color styling
-let nodeColorMax = Math.max(...nodeSizes); // Range used for color styling
+const nodeColorValues = elements
+    .filter((ele) => ele.data.node_color !== undefined)
+    .map((ele) => ele.data.node_color);
+const nodeColorMin = Math.min(...nodeColorValues); // Range used for color styling
+const nodeColorMax = Math.max(...nodeColorValues); // Range used for color styling
 
 // Copy the original range so filtering can adjust independently
 let nodeMin = nodeColorMin;
@@ -270,11 +279,11 @@ function filterByNodeColorAndEdgeSize() {
 // Genotype, sex, and life-stage specific filtering
 // =============================================================================
 
-let target_phenotype = "";
+let targetPhenotype = "";
 
 // Wrapper function that applies the filters
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterByNodeColorAndEdgeSize);
+    filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, filterByNodeColorAndEdgeSize);
 }
 
 // Reapply filters whenever the form values change
@@ -356,7 +365,7 @@ createSlider("nodeRepulsion-slider", 5, 1, 10, 1, (intValues) => {
 
 // Show tooltip on tap
 cy.on("tap", "node, edge", function (event) {
-    showTooltip(event, cy, map_symbol_to_id, target_phenotype, nodeColorMin, nodeColorMax, edgeMin, edgeMax, nodeSizes);
+    showTooltip(event, cy, mapSymbolToId, targetPhenotype, { nodeColorValues });
 });
 
 // Hide tooltip when tapping on background
@@ -370,7 +379,7 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = "TSUMUGI_geneList";
+const fileName = "TSUMUGI_geneList";
 
 // --------------------------------------------------------
 // PNG Exporter
@@ -379,14 +388,14 @@ const file_name = "TSUMUGI_geneList";
 const exportPngButton = document.getElementById("export-png");
 if (exportPngButton) {
     exportPngButton.addEventListener("click", function () {
-        exportGraphAsPNG(cy, file_name);
+        exportGraphAsPNG(cy, fileName);
     });
 }
 
 const exportJpgButton = document.getElementById("export-jpg");
 if (exportJpgButton) {
     exportJpgButton.addEventListener("click", function () {
-        exportGraphAsJPG(cy, file_name);
+        exportGraphAsJPG(cy, fileName);
     });
 }
 
@@ -397,7 +406,7 @@ if (exportJpgButton) {
 const exportCsvButton = document.getElementById("export-csv");
 if (exportCsvButton) {
     exportCsvButton.addEventListener("click", function () {
-        exportGraphAsCSV(cy, file_name);
+        exportGraphAsCSV(cy, fileName);
     });
 }
 
@@ -408,6 +417,6 @@ if (exportCsvButton) {
 const exportGraphmlButton = document.getElementById("export-graphml");
 if (exportGraphmlButton) {
     exportGraphmlButton.addEventListener("click", function () {
-        exportGraphAsGraphML(cy, file_name);
+        exportGraphAsGraphML(cy, fileName);
     });
 }

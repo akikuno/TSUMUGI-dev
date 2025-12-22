@@ -1,14 +1,16 @@
-import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML, exportGraphAsSVG } from "./js/exporter.js";
-import { scaleToOriginalRange, getColorForValue } from "./js/value_scaler.js";
-import { removeTooltips, showSubnetworkTooltip, showTooltip } from "./js/tooltips.js";
-import { getOrderedComponents, calculateConnectedComponents } from "./js/components.js";
-import { createSlider } from "./js/slider.js";
-import { filterElementsByGenotypeAndSex } from "./js/filters.js";
-import { loadJSONGz, loadJSON } from "./js/data_loader.js";
-import { setupGeneSearch } from "./js/gene_searcher.js";
-import { highlightDiseaseAnnotation } from "./js/highlighter.js";
-import { setupPhenotypeSearch } from "./js/phenotype_searcher.js";
-import { initializeCentralitySystem, recalculateCentrality } from "./js/centrality.js";
+import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML, exportGraphAsSVG } from "./js/export/graphExporter.js";
+import { scaleToOriginalRange, getColorForValue } from "./js/graph/valueScaler.js";
+import { initInfoTooltips, removeTooltips, showSubnetworkTooltip, showTooltip } from "./js/ui/tooltips.js";
+import { getOrderedComponents, calculateConnectedComponents } from "./js/graph/components.js";
+import { createSlider } from "./js/ui/slider.js";
+import { filterElementsByGenotypeAndSex } from "./js/graph/filters.js";
+import { loadJSONGz, loadJSON } from "./js/data/dataLoader.js";
+import { setupGeneSearch } from "./js/search/geneSearcher.js";
+import { highlightDiseaseAnnotation } from "./js/graph/highlighter.js";
+import { setupPhenotypeSearch } from "./js/search/phenotypeSearcher.js";
+import { initializeCentralitySystem, recalculateCentrality } from "./js/graph/centrality.js";
+import { initDynamicFontSize } from "./js/ui/dynamicFontSize.js";
+import { initMobilePanel } from "./js/ui/mobilePanel.js";
 
 if (window.cytoscape && window.cytoscapeSvg && typeof window.cytoscape.use === "function") {
     window.cytoscape.use(window.cytoscapeSvg);
@@ -18,6 +20,11 @@ const NODE_SLIDER_MIN = 1;
 const NODE_SLIDER_MAX = 100;
 const EDGE_SLIDER_MIN = 1;
 const EDGE_SLIDER_MAX = 100;
+
+// Initialize UI helpers that only depend on DOM availability.
+initInfoTooltips();
+initDynamicFontSize();
+initMobilePanel();
 
 function getPageConfig() {
     const params = new URLSearchParams(window.location.search);
@@ -242,9 +249,9 @@ const isGeneSymbolPage = pageConfig.mode === "genesymbol";
 
 setVersionLabel();
 
-const map_symbol_to_id = loadJSON("../data/marker_symbol_accession_id.json") || {};
-const map_phenotype_to_id = loadJSON("../data/mp_term_id_lookup.json") || {};
-setPageTitle(pageConfig, map_symbol_to_id, map_phenotype_to_id);
+const mapSymbolToId = loadJSON("../data/marker_symbol_accession_id.json") || {};
+const mapPhenotypeToId = loadJSON("../data/mp_term_id_lookup.json") || {};
+setPageTitle(pageConfig, mapSymbolToId, mapPhenotypeToId);
 
 const elements = loadElementsForConfig(pageConfig);
 if (!elements || elements.length === 0) {
@@ -259,9 +266,11 @@ hidePhenotypeOnlySections(isPhenotypePage && !isBinaryPhenotype);
 // Input handler
 // ############################################################################
 
-const nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
-const nodeColorMin = nodeSizes.length ? Math.min(...nodeSizes) : 0;
-const nodeColorMax = nodeSizes.length ? Math.max(...nodeSizes) : 1;
+const nodeColorValues = elements
+    .filter((ele) => ele.data.node_color !== undefined)
+    .map((ele) => ele.data.node_color);
+const nodeColorMin = nodeColorValues.length ? Math.min(...nodeColorValues) : 0;
+const nodeColorMax = nodeColorValues.length ? Math.max(...nodeColorValues) : 1;
 
 let nodeMin = nodeColorMin;
 let nodeMax = nodeColorMax;
@@ -1178,10 +1187,10 @@ if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
 // Genotype, sex, and life-stage specific filtering
 // =============================================================================
 
-let target_phenotype = isPhenotypePage ? pageConfig.displayName : "";
+let targetPhenotype = isPhenotypePage ? pageConfig.displayName : "";
 
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterByNodeColorAndEdgeSize);
+    filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, filterByNodeColorAndEdgeSize);
     if (typeof window.recalculateCentrality === "function") {
         window.recalculateCentrality();
     }
@@ -1380,7 +1389,7 @@ cy.on("tap", "node, edge", function (event) {
 });
 
 cy.on("tap", "node, edge", function (event) {
-    showTooltip(event, cy, map_symbol_to_id, target_phenotype, nodeColorMin, nodeColorMax, edgeMin, edgeMax, nodeSizes);
+    showTooltip(event, cy, mapSymbolToId, targetPhenotype, { nodeColorValues });
 });
 
 cy.on("tap", function (event) {
@@ -1402,7 +1411,7 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = `TSUMUGI_${pageConfig.name || "network"}`;
+const fileName = `TSUMUGI_${pageConfig.name || "network"}`;
 
 function attachExportHandler(elementId, handler) {
     const button = document.getElementById(elementId);
@@ -1410,17 +1419,17 @@ function attachExportHandler(elementId, handler) {
     button.addEventListener("click", handler);
 }
 
-attachExportHandler("export-png", () => exportGraphAsPNG(cy, file_name));
-attachExportHandler("export-jpg", () => exportGraphAsJPG(cy, file_name));
-attachExportHandler("export-svg", () => exportGraphAsSVG(cy, file_name));
-attachExportHandler("export-csv", () => exportGraphAsCSV(cy, file_name));
-attachExportHandler("export-graphml", () => exportGraphAsGraphML(cy, file_name));
+attachExportHandler("export-png", () => exportGraphAsPNG(cy, fileName));
+attachExportHandler("export-jpg", () => exportGraphAsJPG(cy, fileName));
+attachExportHandler("export-svg", () => exportGraphAsSVG(cy, fileName));
+attachExportHandler("export-csv", () => exportGraphAsCSV(cy, fileName));
+attachExportHandler("export-graphml", () => exportGraphAsGraphML(cy, fileName));
 
-attachExportHandler("export-png-mobile", () => exportGraphAsPNG(cy, file_name));
-attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, file_name));
-attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, file_name));
-attachExportHandler("export-csv-mobile", () => exportGraphAsCSV(cy, file_name));
-attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, file_name));
+attachExportHandler("export-png-mobile", () => exportGraphAsPNG(cy, fileName));
+attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, fileName));
+attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, fileName));
+attachExportHandler("export-csv-mobile", () => exportGraphAsCSV(cy, fileName));
+attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, fileName));
 
 // ############################################################################
 // UI Helpers
