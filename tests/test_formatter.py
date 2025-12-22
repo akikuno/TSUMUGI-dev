@@ -17,7 +17,7 @@ def test_floatinize_columns():
         "effect_size": "0.4",
     }
     columns = ["p_value", "female_ko_effect_p_value", "male_ko_effect_p_value", "effect_size"]
-    result = floatinize_columns(record, columns)
+    result = list(floatinize_columns([record], columns))[0]
     assert result["p_value"] == 0.001
     assert result["female_ko_effect_p_value"] == 0.002
     assert result["male_ko_effect_p_value"] == 0.003
@@ -28,5 +28,5 @@ def test_abs_effect_size():
     record_plus = {"effect_size": 1}
     record_minus = {"effect_size": -1}
     columns = ["effect_size"]
-    assert abs_effect_size(record_plus, columns) == {"effect_size": 1}
-    assert abs_effect_size(record_minus, columns) == {"effect_size": 1}
+    assert list(abs_effect_size([record_plus], columns))[0] == {"effect_size": 1}
+    assert list(abs_effect_size([record_minus], columns))[0] == {"effect_size": 1}

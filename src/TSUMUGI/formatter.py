@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Generator, Iterable
 
 ###########################################################
 # String to Float
@@ -14,20 +14,24 @@ def _to_float(x: str | None) -> float:
     return float(x) if x not in (None, "") else float("nan")
 
 
-def floatinize_columns(record: dict[str, str], columns: list[str]) -> dict[str, str | float]:
+def floatinize_columns(records: Iterable[dict[str, str]], columns: list[str]) -> Generator[dict[str, str | float]]:
     """Return a record with numeric fields coerced to float/NaN."""
-    for col in columns:
-        record[col] = _to_float(record.get(col))
-    return record
+    for record in records:
+        for col in columns:
+            record[col] = _to_float(record.get(col))
+        yield record
 
 
-def abs_effect_size(record: dict[str, str | float], effect_size_columns: list[str]) -> dict[str, str | float]:
+def abs_effect_size(
+    records: Iterable[dict[str, str | float]], effect_size_columns: list[str]
+) -> Generator[dict[str, str | float]]:
     """Return a record with the absolute effect size and NaN replaced with 0."""
-    for col in effect_size_columns:
-        if math.isnan(record[col]):
-            record[col] = 0.0
-        record[col] = abs(record[col])
-    return record
+    for record in records:
+        for col in effect_size_columns:
+            if math.isnan(record[col]):
+                record[col] = 0.0
+            record[col] = abs(record[col])
+        yield record
 
 
 ###########################################################
@@ -35,11 +39,13 @@ def abs_effect_size(record: dict[str, str | float], effect_size_columns: list[st
 ###########################################################
 
 
-def format_zygosity(records: Iterable[dict], zygosity_converter: dict[str, str]) -> Iterable[dict]:
+def format_zygosity(
+    records: Iterable[dict[str, str | float]], zygosity_converter: dict[str, str]
+) -> Generator[dict[str, str | float]]:
     """Format zygosity values to a consistent style."""
     for record in records:
         record["zygosity"] = zygosity_converter.get(record["zygosity"], record["zygosity"])
-    return records
+        yield record
 
 
 ###########################################################

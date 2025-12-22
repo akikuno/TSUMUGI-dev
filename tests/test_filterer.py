@@ -79,4 +79,5 @@ def test_distinct_records_with_max_effect(records, unique_keys, expected):
     """
     Verify that distinct_records_with_max_effect behaves correctly across a range of inputs.
     """
-    assert distinct_records_with_max_effect(records, unique_keys) == expected
+    result = list(distinct_records_with_max_effect(records, unique_keys))
+    assert result == expected

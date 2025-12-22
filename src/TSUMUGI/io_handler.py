@@ -8,6 +8,8 @@ import sys
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 
+from tqdm import tqdm
+
 from TSUMUGI import formatter
 
 
@@ -159,8 +161,9 @@ def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None) -> None:
     p = Path(path_jsonl)
     open_func = gzip.open if p.suffix == ".gz" else open
 
+    message = f"Writing JSONL to {path_jsonl}"
     with open_func(p, "wt", encoding="utf-8") as f:
-        for record in records:
+        for record in tqdm(records, desc=message):
             json.dump(record, f, ensure_ascii=False)
             f.write("\n")
 

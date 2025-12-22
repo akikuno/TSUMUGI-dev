@@ -9,40 +9,16 @@ from pathlib import Path
 ###########################################################
 
 
-def select_targetted_phenotypes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
-    if is_test:
-        targetted_phenotypes = [
-            "edema",
-            "male infertility",
-            "increased fasting circulating glucose level",
-            "preweaning lethality, complete penetrance",
-            "increased blood urea nitrogen level",
-            "increased circulating glycerol level",
-            "convulsive seizures",
-        ]
-    else:
-        mp_terms_file = Path(TEMPDIR, "webapp", "available_mp_terms.txt")
-        targetted_phenotypes = mp_terms_file.read_text().splitlines() if mp_terms_file.exists() else []
+def select_targetted_phenotypes(TEMPDIR: Path) -> set[str]:
+    mp_terms_file = Path(TEMPDIR, "webapp", "available_mp_terms.txt")
+    targetted_phenotypes = mp_terms_file.read_text().splitlines() if mp_terms_file.exists() else []
 
     return set(targetted_phenotypes)
 
 
-def select_targetted_genes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
-    if is_test:
-        targetted_genes = [
-            "Rab10",
-            "Ints8",
-            "Trappc11",
-            "Zfp39",
-            "Kcnma1",
-            "Plekha8",
-            "Dstn",
-            "Vrk1",
-            "Sox4",
-        ]
-    else:
-        gene_symbols_file = Path(TEMPDIR, "webapp", "available_gene_symbols.txt")
-        targetted_genes = gene_symbols_file.read_text().splitlines() if gene_symbols_file.exists() else []
+def select_targetted_genes(TEMPDIR: Path) -> set[str]:
+    gene_symbols_file = Path(TEMPDIR, "webapp", "available_gene_symbols.txt")
+    targetted_genes = gene_symbols_file.read_text().splitlines() if gene_symbols_file.exists() else []
 
     return set(targetted_genes)
 
