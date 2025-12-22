@@ -408,6 +408,10 @@ def build_phenotype_network_json(
         if not edges_json:
             continue
 
+        # Sort nodes for stability
+        nodes_json = sorted(nodes_json, key=lambda n: n["data"]["id"])
+        edges_json = sorted(edges_json, key=lambda e: (e["data"]["source"], e["data"]["target"]))
+
         network_json = nodes_json + edges_json
 
         mp_term_name_underscore = mp_term_name.replace(" ", "_").replace("/", "_")
@@ -542,6 +546,11 @@ def build_gene_network_json(
                     }
                 }
             )
+
+        # Sort nodes for stability
+        nodes_json = sorted(nodes_json, key=lambda n: n["data"]["id"])
+        edges_json = sorted(edges_json, key=lambda e: (e["data"]["source"], e["data"]["target"]))
+
         network_json = nodes_json + edges_json
 
         output_json = Path(output_dir / f"{target_gene}.json.gz")

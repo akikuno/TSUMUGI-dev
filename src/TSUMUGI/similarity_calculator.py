@@ -8,7 +8,6 @@ from itertools import combinations, combinations_with_replacement
 
 import numpy as np
 from tqdm import tqdm
-
 from TSUMUGI.ontology_handler import (
     build_term_hierarchy,
     find_all_descendant_terms,
@@ -168,9 +167,11 @@ def _delete_parent_terms_from_ancestors(
 def _get_terms_with_low_ic(
     ontology_terms: dict[str, dict[str, str]],
     child_term_map: dict[str, set[str]],
-    ic_threshold,
+    ic_threshold: int = 5,
 ) -> set[str]:
-    """Return terms whose IC is below the given percentile threshold."""
+    """
+    Return terms whose IC is below the given percentile threshold. default is 5th percentile.
+    """
     total_term_count = len(ontology_terms)
     map_term_to_ic: dict[str, float] = {}
     descendant_cache: dict[str, set[str]] = {}
@@ -194,23 +195,44 @@ def _get_terms_with_low_ic(
     return {term for term, ic in map_term_to_ic.items() if ic < ic_min_values}
 
 
-# =========================================================
-# Single-process implementation (core per-pair logic)
-# =========================================================
+# ---------------------------------------------------------
+# Helper functions for building gene metadata maps
+# ---------------------------------------------------------
+
+
+def _build_gene_metadata_maps(
+    gene_records_map: dict[str, list[dict[str, str | float]]],
+    annotations: set[str],
+) -> tuple[dict[str, dict[tuple[str, str, str], list[str]]], dict[tuple[str, str, str], dict[str, str]]]:
+    """Group gene records by metadata signature for faster matching."""
+    gene_metadata_map: dict[str, dict[tuple[str, str, str], list[str]]] = {}
+    meta_dict_cache: dict[tuple[str, str, str], dict[str, str]] = {}
+
+    for gene_symbol, records in gene_records_map.items():
+        per_gene_map: dict[tuple[str, str, str], list[str]] = defaultdict(list)
+        for record in records:
+            meta_signature = (
+                record["zygosity"],
+                record["life_stage"],
+                record.get("sexual_dimorphism", "None"),
+            )
+            per_gene_map[meta_signature].append(record["mp_term_id"])
+            if meta_signature not in meta_dict_cache:
+                meta_dict_cache[meta_signature] = {k: v for k, v in record.items() if k in annotations}
+        gene_metadata_map[gene_symbol] = dict(per_gene_map)
+
+    return gene_metadata_map, meta_dict_cache
 
 
 def _annotate_ancestors(
-    gene1_symbol: str,
-    gene2_symbol: str,
-    gene_metadata_map: dict[str, dict[tuple[str, str, str], list[str]]],
+    gene1_meta_map: dict,
+    gene2_meta_map: dict,
     meta_dict_cache: dict[tuple[str, str, str], dict[str, str]],
     terms_resnik_map: dict[tuple[str, str], dict[str | None, float]],
     child_term_map: dict[str, set[str]],
     terms_with_low_ic: set[str],
 ) -> tuple[tuple[str], dict[str, dict[str, str]]]:
-    """Annotate phenotype ancestors for a single gene pair (single-process version)."""
-    gene1_meta_map = gene_metadata_map[gene1_symbol]
-    gene2_meta_map = gene_metadata_map[gene2_symbol]
+    """Annotate phenotype ancestors for a single gene pair."""
 
     candidate_ancestors: dict[str, dict[str, str]] = {}
     added_keys: set[tuple[str, tuple[str, str, str]]] = set()
@@ -248,40 +270,15 @@ def _annotate_ancestors(
     # Remove parent terms from candidate ancestors
     candidate_ancestors = _delete_parent_terms_from_ancestors(candidate_ancestors, child_term_map)
 
-    gene_pair = tuple(sorted([gene1_symbol, gene2_symbol]))
-    return gene_pair, (dict(candidate_ancestors) if candidate_ancestors else {})
-
-
-def _build_gene_metadata_maps(
-    gene_records_map: dict[str, list[dict[str, str | float]]],
-    annotations: set[str],
-) -> tuple[dict[str, dict[tuple[str, str, str], list[str]]], dict[tuple[str, str, str], dict[str, str]]]:
-    """Group gene records by metadata signature for faster matching."""
-    gene_metadata_map: dict[str, dict[tuple[str, str, str], list[str]]] = {}
-    meta_dict_cache: dict[tuple[str, str, str], dict[str, str]] = {}
-
-    for gene_symbol, records in gene_records_map.items():
-        per_gene_map: dict[tuple[str, str, str], list[str]] = defaultdict(list)
-        for record in records:
-            meta_signature = (
-                record["zygosity"],
-                record["life_stage"],
-                record.get("sexual_dimorphism", "None"),
-            )
-            per_gene_map[meta_signature].append(record["mp_term_id"])
-            if meta_signature not in meta_dict_cache:
-                meta_dict_cache[meta_signature] = {k: v for k, v in record.items() if k in annotations}
-        gene_metadata_map[gene_symbol] = dict(per_gene_map)
-
-    return gene_metadata_map, meta_dict_cache
+    return dict(candidate_ancestors) if candidate_ancestors else {}
 
 
 def annotate_phenotype_ancestors(
     genewise_phenotype_significants: list[dict[str, str | float]],
     terms_resnik_map: dict[tuple[str], dict[str, float]],
     ontology_terms: dict[str, dict[str, str]],
-    ic_threshold,
-) -> dict[tuple[str], dict[str, dict[str, str]]]:
+    ic_threshold: int = 5,
+) -> Iterator[dict[str, dict[str, str] | list[dict[str, str]]]]:
     """
     Annotate phenotype ancestors for each gene pair.
     """
@@ -290,34 +287,28 @@ def annotate_phenotype_ancestors(
     for record in genewise_phenotype_significants:
         gene_records_map[record["marker_symbol"]].append(record)
 
-    all_gene_symbols = list(gene_records_map.keys())
-
     # Build hierarchy and IC-based filters
     _, child_term_map = build_term_hierarchy(ontology_terms)
     annotations: set[str] = {"zygosity", "life_stage", "sexual_dimorphism"}
     terms_with_low_ic: set[str] = _get_terms_with_low_ic(ontology_terms, child_term_map, ic_threshold=ic_threshold)
     gene_metadata_map, meta_dict_cache = _build_gene_metadata_maps(gene_records_map, annotations)
 
+    all_gene_symbols = list(gene_records_map.keys())
     total_pairs = len(all_gene_symbols) * (len(all_gene_symbols) - 1) // 2
 
-    phenotype_ancestors: dict[tuple[str], dict[str, dict[str, str]]] = {}
-
-    for gene1_symbol, gene2_symbol in tqdm(
-        combinations(all_gene_symbols, 2),
+    for (gene1_symbol, gene1_meta_map), (gene2_symbol, gene2_meta_map) in tqdm(
+        combinations(gene_metadata_map.items(), 2),
         total=total_pairs,
     ):
-        key, ancestors = _annotate_ancestors(
-            gene1_symbol=gene1_symbol,
-            gene2_symbol=gene2_symbol,
-            gene_metadata_map=gene_metadata_map,
+        ancestors = _annotate_ancestors(
+            gene1_meta_map=gene1_meta_map,
+            gene2_meta_map=gene2_meta_map,
             meta_dict_cache=meta_dict_cache,
             terms_resnik_map=terms_resnik_map,
             child_term_map=child_term_map,
             terms_with_low_ic=terms_with_low_ic,
         )
-        phenotype_ancestors[key] = ancestors
-
-    return phenotype_ancestors
+        yield {"gene1_symbol": gene1_symbol, "gene2_symbol": gene2_symbol, "phenotype_shared_annotations": ancestors}
 
 
 ###########################################################
@@ -390,28 +381,23 @@ def _apply_phenodigm_scaling(
 
 
 def _calculate_phenodigm(
-    gene1_symbol: str,
-    gene2_symbol: str,
-    gene_data_map: dict[str, dict[str, np.ndarray]],
+    gene1_record: dict[str, np.ndarray],
+    gene2_record: dict[str, np.ndarray],
     terms_resnik_map: dict[tuple[str, str], dict[str | None, float]],
-) -> tuple[tuple[str], int]:
-    gene1_data = gene_data_map[gene1_symbol]
-    gene2_data = gene_data_map[gene2_symbol]
-
+) -> int:
     weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
-        gene1_data,
-        gene2_data,
+        gene1_record,
+        gene2_record,
         terms_resnik_map,
     )
 
     score = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
-        gene1_data,
-        gene2_data,
+        gene1_record,
+        gene2_record,
     )
 
-    gene_pair = tuple(sorted([gene1_symbol, gene2_symbol]))
-    return gene_pair, score
+    return score
 
 
 def _build_gene_data_map(
@@ -443,7 +429,7 @@ def calculate_phenodigm_score(
     genewise_phenotype_significants: list[dict[str, str | float]],
     terms_resnik_map: dict[tuple[str], dict[str, float]],
     term_ic_map: dict[str, float],
-) -> dict[tuple[str], int]:
+) -> Iterator[dict[str, dict[str, str] | int]]:
     """
     Calculate Phenodigm score between gene pairs.
     """
@@ -457,21 +443,16 @@ def calculate_phenodigm_score(
     all_gene_symbols = list(gene_records_map.keys())
     total_pairs = len(all_gene_symbols) * (len(all_gene_symbols) - 1) // 2
 
-    phenodigm_scores: dict[tuple[str], int] = {}
-
-    for gene1_symbol, gene2_symbol in tqdm(
-        combinations(all_gene_symbols, 2),
+    for (gene1_symbol, gene1_record), (gene2_symbol, gene2_record) in tqdm(
+        combinations(gene_data_map.items(), 2),
         total=total_pairs,
     ):
-        gene_pair, score = _calculate_phenodigm(
-            gene1_symbol=gene1_symbol,
-            gene2_symbol=gene2_symbol,
-            gene_data_map=gene_data_map,
+        score = _calculate_phenodigm(
+            gene1_record=gene1_record,
+            gene2_record=gene2_record,
             terms_resnik_map=terms_resnik_map,
         )
-        phenodigm_scores[gene_pair] = score
-
-    return phenodigm_scores
+        yield {"gene1_symbol": gene1_symbol, "gene2_symbol": gene2_symbol, "phenotype_similarity_score": score}
 
 
 # -----------------------------------------------------------
@@ -496,9 +477,7 @@ def calculate_num_shared_phenotypes(
             )
         )
     num_shared_phenotypes = {}
-    for gene1, gene2 in tqdm(
-        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
-    ):
+    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
@@ -522,9 +501,7 @@ def calculate_jaccard_indices(genewise_phenotype_significants: list[dict[str, st
         )
 
     jaccard_indices = {}
-    for gene1, gene2 in tqdm(
-        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
-    ):
+    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
         phenotypes_gene1 = gene_phenotypes_map[gene1]
         phenotypes_gene2 = gene_phenotypes_map[gene2]
 
@@ -543,22 +520,25 @@ def calculate_jaccard_indices(genewise_phenotype_significants: list[dict[str, st
 
 def summarize_similarity_annotations(
     ontology_terms: dict[str, dict[str, str]],
-    phenotype_ancestors: dict[tuple[str], dict[str, dict[str, str]]],
-    phenodigm_scores: dict[tuple[str], int],
+    phenotype_ancestors: Iterator[dict[str, dict[str, str]]],
+    phenodigm_scores: Iterator[dict[str, int]],
+    total_pairs: int,
 ) -> Iterator[dict[str, dict[str, str] | int]]:
     """Summarize similarity annotations including common ancestors and Phenodigm scores."""
 
     id_name_map = {v["id"]: v["name"] for v in ontology_terms.values()}
 
-    for gene1_symbol, gene2_symbol in tqdm(phenotype_ancestors.keys(), total=len(phenotype_ancestors)):
-        gene_pair = tuple(sorted([gene1_symbol, gene2_symbol]))
-        phenotype_ancestor = phenotype_ancestors[gene_pair]
+    for phenotype_ancestor, phenodigm_score in tqdm(zip(phenotype_ancestors, phenodigm_scores), total=total_pairs):
+        gene1_symbol = phenotype_ancestor["gene1_symbol"]
+        gene2_symbol = phenotype_ancestor["gene2_symbol"]
+
+        phenotype_ancestor = phenotype_ancestor["phenotype_shared_annotations"]
         phenotype_ancestor_name = {id_name_map[k]: v for k, v in phenotype_ancestor.items()}
-        phenodigm_score = phenodigm_scores[gene_pair]
+        phenodigm_score = phenodigm_score["phenotype_similarity_score"]
 
         annotations = {
-            "gene1_symbol": gene_pair[0],
-            "gene2_symbol": gene_pair[1],
+            "gene1_symbol": gene1_symbol,
+            "gene2_symbol": gene2_symbol,
             "phenotype_shared_annotations": phenotype_ancestor_name,
             "phenotype_similarity_score": phenodigm_score if phenotype_ancestor_name else 0,
         }

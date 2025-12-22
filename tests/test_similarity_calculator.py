@@ -240,14 +240,19 @@ def test_annotate_phenotype_ancestors_basic(sample_ontology):
         },
     ]
 
-    ancestors = annotate_phenotype_ancestors(
-        records_significants=records,
-        term_pair_similarity_map=term_pair_map,
-        ontology_terms=ontology_terms,
-        ic_threshold=0,
+    ancestors = list(
+        annotate_phenotype_ancestors(
+            genewise_phenotype_significants=records,
+            terms_resnik_map=term_pair_map,
+            ontology_terms=ontology_terms,
+            ic_threshold=0,
+        )
     )
 
-    assert ancestors[("Gene1", "Gene2")] == {
+    assert len(ancestors) == 1
+    assert ancestors[0]["gene1_symbol"] == "Gene1"
+    assert ancestors[0]["gene2_symbol"] == "Gene2"
+    assert ancestors[0]["phenotype_shared_annotations"] == {
         "B": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
     }
 
@@ -272,9 +277,9 @@ def test_calculate_phenodigm_score_identical_gene_sets():
     term_pair_similarity_map = {("MP:1", "MP:1"): {"MP:1": 2.0}}
     term_ic_map = {"MP:1": 2.0}
 
-    scores = calculate_phenodigm_score(records, term_pair_similarity_map, term_ic_map)
+    scores = list(calculate_phenodigm_score(records, term_pair_similarity_map, term_ic_map))
 
-    assert scores[("Gene1", "Gene2")] == 100
+    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 100}]
 
 
 def test_summarize_similarity_annotations_translates_names():
@@ -282,13 +287,24 @@ def test_summarize_similarity_annotations_translates_names():
         "MP:1": {"id": "MP:1", "name": "Term One"},
         "MP:2": {"id": "MP:2", "name": "Term Two"},
     }
-    phenotype_ancestors = {
-        ("GeneA", "GeneB"): {"MP:1": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}},
-        ("GeneA", "GeneC"): {},
-    }
-    phenodigm_scores = {("GeneA", "GeneB"): 80, ("GeneA", "GeneC"): 50}
+    phenotype_ancestors = [
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": {
+                "MP:1": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            },
+        },
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneC", "phenotype_shared_annotations": {}},
+    ]
+    phenodigm_scores = [
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_similarity_score": 80},
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneC", "phenotype_similarity_score": 50},
+    ]
 
-    summary = list(summarize_similarity_annotations(ontology_terms, phenotype_ancestors, phenodigm_scores))
+    summary = list(
+        summarize_similarity_annotations(ontology_terms, phenotype_ancestors, phenodigm_scores, total_pairs=2)
+    )
 
     assert summary[0] == {
         "gene1_symbol": "GeneA",
