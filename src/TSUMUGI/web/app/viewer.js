@@ -4,7 +4,18 @@ import { initInfoTooltips, removeTooltips, showSubnetworkTooltip, showTooltip } 
 import { getOrderedComponents, calculateConnectedComponents } from "./js/graph/components.js";
 import { createSlider } from "./js/ui/slider.js";
 import { filterElementsByGenotypeAndSex } from "./js/graph/filters.js";
-import { loadJSONGz, loadJSON } from "./js/data/dataLoader.js";
+import { loadJSON } from "./js/data/dataLoader.js";
+import {
+    applyNodeMinMax,
+    getPageConfig,
+    hidePhenotypeOnlySections,
+    isBinaryPhenotypeElements,
+    loadElementsForConfig,
+    renderEmptyState,
+    setPageTitle,
+    setVersionLabel,
+} from "./js/viewer/pageSetup.js";
+import { createLayoutController } from "./js/graph/layoutController.js";
 import { setupGeneSearch } from "./js/search/geneSearcher.js";
 import { highlightDiseaseAnnotation } from "./js/graph/highlighter.js";
 import { setupPhenotypeSearch } from "./js/search/phenotypeSearcher.js";
@@ -25,222 +36,6 @@ const EDGE_SLIDER_MAX = 100;
 initInfoTooltips();
 initDynamicFontSize();
 initMobilePanel();
-
-function getPageConfig() {
-    const params = new URLSearchParams(window.location.search);
-    const modeParam = params.get("mode");
-    const mode = ["phenotype", "genesymbol", "genelist"].includes(modeParam || "") ? modeParam : "phenotype";
-    const providedName = params.get("name") || "";
-    const name = mode === "genelist" && !providedName ? "geneList" : providedName;
-    const title = params.get("title") || name;
-
-    return {
-        mode,
-        name,
-        displayName: title || name || "TSUMUGI",
-    };
-}
-
-function hidePhenotypeOnlySections(isPhenotypePage) {
-    document.querySelectorAll(".phenotype-only").forEach((el) => {
-        el.style.display = isPhenotypePage ? "" : "none";
-    });
-}
-
-function isBinaryPhenotypeElements(elements) {
-    const nodeElements = elements.filter((ele) => ele.data && ele.data.node_color !== undefined);
-    if (!nodeElements.length) {
-        return false;
-    }
-
-    const hideSeverityFlags = nodeElements
-        .map((ele) => ele.data.hide_severity)
-        .filter((value) => value !== undefined);
-    if (hideSeverityFlags.length && hideSeverityFlags.every(Boolean)) {
-        return true;
-    }
-
-    const uniqueColors = [...new Set(nodeElements.map((ele) => ele.data.node_color).filter((v) => v !== undefined))];
-    if (uniqueColors.length === 1) {
-        const normalized = String(Math.round(Number(uniqueColors[0])));
-        return ["0", "1", "100"].includes(normalized);
-    }
-
-    return false;
-}
-
-function setPageTitle(config, mapSymbolToId, mapPhenotypeToId) {
-    const pageTitleLink = document.getElementById("page-title-link");
-    const pageTitle = config.displayName || config.name || "TSUMUGI";
-    let targetUrl = "";
-
-    if (config.mode === "phenotype" && mapPhenotypeToId) {
-        const phenotypeId = mapPhenotypeToId[config.name];
-        if (phenotypeId) {
-            targetUrl = `https://www.mousephenotype.org/data/phenotypes/${phenotypeId}`;
-        }
-    } else if (config.mode === "genesymbol" && mapSymbolToId) {
-        const accession = mapSymbolToId[config.name];
-        if (accession) {
-            targetUrl = `https://www.mousephenotype.org/data/genes/${accession}`;
-        }
-    }
-
-    if (targetUrl) {
-        pageTitleLink.href = targetUrl;
-        pageTitleLink.target = "_blank";
-        pageTitleLink.rel = "noreferrer";
-        pageTitleLink.style.pointerEvents = "";
-        pageTitleLink.style.cursor = "";
-    } else {
-        pageTitleLink.removeAttribute("href");
-        pageTitleLink.style.pointerEvents = "none";
-        pageTitleLink.style.cursor = "default";
-    }
-
-    pageTitleLink.textContent = pageTitle;
-    document.title = `${pageTitle} | TSUMUGI`;
-}
-
-async function fetchText(path) {
-    let text = "";
-    try {
-        const response = await fetch(path, { cache: "no-cache" });
-        if (response.ok || response.status === 0) {
-            text = (await response.text()).trim();
-            if (text) {
-                return text;
-            }
-        }
-    } catch (error) {
-        // fall through to the XHR fallback
-    }
-
-    return new Promise((resolve) => {
-        try {
-            const xhr = new XMLHttpRequest();
-            xhr.open("GET", path, true);
-            xhr.onload = () => {
-                if (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 300)) {
-                    resolve(xhr.responseText.trim());
-                } else {
-                    resolve("");
-                }
-            };
-            xhr.onerror = () => resolve("");
-            xhr.send();
-        } catch (e) {
-            resolve("");
-        }
-    });
-}
-
-async function setVersionLabel() {
-    const versionLabel = document.getElementById("tsumugi-version");
-    if (!versionLabel) return;
-
-    const candidates = ["../version.txt", "./version.txt"];
-    let versionText = "";
-
-    for (const path of candidates) {
-        versionText = await fetchText(path);
-        if (versionText) break;
-    }
-
-    versionLabel.textContent = versionText || "-";
-}
-
-function loadElementsForConfig(config) {
-    if (config.mode === "phenotype") {
-        return loadJSONGz(`../data/phenotype/${config.name}.json.gz`) || [];
-    }
-
-    if (config.mode === "genesymbol") {
-        return loadJSONGz(`../data/genesymbol/${config.name}.json.gz`) || [];
-    }
-
-    // Gene list page pulls data from localStorage
-    try {
-        const stored = localStorage.getItem("elements");
-        return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-        console.error("Failed to parse stored elements for gene list:", error);
-        return [];
-    }
-}
-
-function renderEmptyState(message) {
-    const container = document.querySelector(".cy");
-    if (!container) return;
-
-    container.innerHTML = `<div style="padding: 24px; font-size: 16px;">${message}</div>`;
-}
-
-function applyNodeMinMax(elements, nodeColorMin, nodeColorMax) {
-    // Ensure at least one gene pair remains visible even at slider extremes. Issue #72
-    const nodeColorMap = new Map();
-    elements.forEach((ele) => {
-        if (ele.data.node_color !== undefined && ele.data.id !== undefined) {
-            nodeColorMap.set(ele.data.id, ele.data.node_color);
-        }
-    });
-
-    const sortedNodeColors = [...new Set([...nodeColorMap.values()])].sort((a, b) => a - b);
-    if (sortedNodeColors.length === 0) {
-        return { nodeMin: nodeColorMin, nodeMax: nodeColorMax };
-    }
-
-    const nodeColorToRank = new Map();
-    sortedNodeColors.forEach((val, idx) => {
-        nodeColorToRank.set(val, idx + 1);
-    });
-
-    const edgeRankPairs = [];
-    elements.forEach((ele) => {
-        if (ele.data.source && ele.data.target) {
-            const sourceVal = nodeColorMap.get(ele.data.source);
-            const targetVal = nodeColorMap.get(ele.data.target);
-
-            if (sourceVal !== undefined && targetVal !== undefined) {
-                const sourceRank = nodeColorToRank.get(sourceVal);
-                const targetRank = nodeColorToRank.get(targetVal);
-                const rankSum = sourceRank + targetRank;
-
-                edgeRankPairs.push({
-                    rankSum: rankSum,
-                    minVal: Math.min(sourceVal, targetVal),
-                    maxVal: Math.max(sourceVal, targetVal),
-                });
-            }
-        }
-    });
-
-    if (edgeRankPairs.length === 0) {
-        return { nodeMin: nodeColorMin, nodeMax: nodeColorMax };
-    }
-
-    const minRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum < b.rankSum ? a : b));
-    const maxRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum > b.rankSum ? a : b));
-
-    const nodeMin = minRankEdge.maxVal;
-    const nodeMax = maxRankEdge.minVal;
-
-    elements.forEach((ele) => {
-        if (ele.data.node_color !== undefined) {
-            ele.data.original_node_color = ele.data.node_color;
-
-            if (ele.data.node_color <= nodeMin) {
-                ele.data.node_color_for_filter = nodeMin;
-            } else if (ele.data.node_color >= nodeMax) {
-                ele.data.node_color_for_filter = nodeMax;
-            } else {
-                ele.data.node_color_for_filter = ele.data.node_color;
-            }
-        }
-    });
-
-    return { nodeMin, nodeMax };
-}
 
 // Track which search mode is active in this viewer
 const pageConfig = getPageConfig();
@@ -297,88 +92,11 @@ function mapEdgeSizeToWidth(edgeSize) {
 // Initialize Cytoscape
 // ############################################################################
 
-let currentLayout = "cose";
-
-const nodeRepulsionMin = 1;
-const nodeRepulsionMax = 10000;
-const componentSpacingMin = 1;
-const componentSpacingMax = 200;
-
 const defaultNodeRepulsion = isGeneSymbolPage ? 8 : 5;
-
-let nodeRepulsionScale = defaultNodeRepulsion;
-let nodeRepulsionValue = scaleToOriginalRange(defaultNodeRepulsion, nodeRepulsionMin, nodeRepulsionMax);
-let componentSpacingValue = scaleToOriginalRange(defaultNodeRepulsion, componentSpacingMin, componentSpacingMax);
-
-function getEffectiveRepulsionScale() {
-    return currentLayout === "cose" ? nodeRepulsionScale : nodeRepulsionScale * 0.2;
-}
-
-function getLayoutOptions() {
-    const effectiveScale = getEffectiveRepulsionScale();
-    const spacingFactor = scaleToOriginalRange(effectiveScale, 0.65, 1.45);
-    const overlapPadding = scaleToOriginalRange(effectiveScale, 2, 18);
-    const minNodeSpacing = scaleToOriginalRange(effectiveScale, 10, 45);
-    const coseIdealEdgeLength = scaleToOriginalRange(effectiveScale, 70, 140);
-    const coseNodeOverlap = scaleToOriginalRange(effectiveScale, 10, 30);
-
-    if (currentLayout === "cose") {
-        const baseOptions = {
-            name: currentLayout,
-            nodeRepulsion: nodeRepulsionValue,
-            componentSpacing: componentSpacingValue,
-            idealEdgeLength: coseIdealEdgeLength,
-            nodeOverlap: coseNodeOverlap,
-            padding: 30,
-        };
-
-        if (isGeneSymbolPage) {
-            return {
-                ...baseOptions,
-                animate: true,
-                animationDuration: 500,
-                gravity: -1.2,
-                numIter: 1500,
-                initialTemp: 200,
-                coolingFactor: 0.95,
-                minTemp: 1.0,
-                edgeElasticity: 100,
-            };
-        }
-
-        return baseOptions;
-    }
-
-    if (currentLayout === "grid") {
-        return {
-            name: currentLayout,
-            avoidOverlap: true,
-            avoidOverlapPadding: overlapPadding,
-            spacingFactor: spacingFactor,
-        };
-    }
-
-    if (currentLayout === "concentric") {
-        return {
-            name: currentLayout,
-            minNodeSpacing: minNodeSpacing,
-            avoidOverlap: true,
-            spacingFactor: spacingFactor,
-            padding: 30,
-        };
-    }
-
-    if (currentLayout === "breadthfirst") {
-        return {
-            name: currentLayout,
-            spacingFactor: spacingFactor,
-            avoidOverlap: true,
-            padding: 30,
-        };
-    }
-
-    return { name: currentLayout };
-}
+const layoutController = createLayoutController({
+    isGeneSymbolPage,
+    defaultNodeRepulsion,
+});
 
 const cy = cytoscape({
     container: document.querySelector(".cy"),
@@ -455,323 +173,15 @@ const cy = cytoscape({
             },
         },
     ],
-    layout: getLayoutOptions(),
+    layout: layoutController.getLayoutOptions(),
     userZoomingEnabled: true,
     zoomingEnabled: true,
     wheelSensitivity: 0.2,
 });
 
 window.cy = cy;
-
-const REPULSION_SPACING_MIN = 20;
-const REPULSION_SPACING_FACTOR_MIN = 0.75;
-const REPULSION_SPACING_FACTOR_MAX = 2.6;
-const REPULSION_STRENGTH_MIN = 0.25;
-const REPULSION_STRENGTH_MAX = 1.1;
-const REPULSION_RADIAL_MIN = 0.02;
-const REPULSION_RADIAL_MAX = 0.12;
-
-let repulsionRunId = 0;
-let repulsionAnimationId = null;
-let layoutRunToken = 0;
-let layoutRefreshTimeout = null;
-
-function getVisibleComponentsForRepulsion() {
-    const visibleElements = cy.elements().filter((ele) => ele.style("display") === "element");
-    return visibleElements.components().filter((comp) => comp.nodes().length > 1);
-}
-
-function getGlobalRepulsionSpacingBase() {
-    const visibleNodes = cy.nodes().filter((node) => node.style("display") === "element");
-    const totalNodes = Math.max(1, visibleNodes.length);
-    const zoom = cy.zoom() || 1;
-    const width = Math.max(1, cy.width() / zoom);
-    const height = Math.max(1, cy.height() / zoom);
-    const area = Math.max(1, width * height);
-    const baseSpacing = Math.sqrt(area / totalNodes);
-    return {
-        baseSpacing: Math.max(REPULSION_SPACING_MIN, baseSpacing),
-        totalNodes,
-    };
-}
-
-function buildRepulsionState(nodes, baseSpacing, repulsionScale) {
-    if (!nodes || nodes.length < 2) return null;
-
-    const nodeArray = nodes.toArray();
-    const nodeCount = nodeArray.length;
-    const positions = new Array(nodeCount);
-    const movable = new Array(nodeCount);
-    const degreesById = new Map();
-    const nodeIdSet = new Set();
-
-    nodeArray.forEach((node, idx) => {
-        const nodeId = node.id();
-        degreesById.set(nodeId, 0);
-        nodeIdSet.add(nodeId);
-        const pos = node.position();
-        positions[idx] = { x: pos.x, y: pos.y };
-        const grabbed = typeof node.grabbed === "function" && node.grabbed();
-        movable[idx] = !node.locked() && !grabbed;
-    });
-
-    nodes.connectedEdges().forEach((edge) => {
-        if (edge.style("display") !== "element") {
-            return;
-        }
-        const source = edge.data("source");
-        const target = edge.data("target");
-        if (!nodeIdSet.has(source) || !nodeIdSet.has(target)) return;
-        degreesById.set(source, (degreesById.get(source) || 0) + 1);
-        degreesById.set(target, (degreesById.get(target) || 0) + 1);
-    });
-
-    const degrees = new Float32Array(nodeCount);
-    let minDegree = Infinity;
-    let maxDegree = -Infinity;
-
-    nodeArray.forEach((node, idx) => {
-        const degree = degreesById.get(node.id()) || 0;
-        degrees[idx] = degree;
-        minDegree = Math.min(minDegree, degree);
-        maxDegree = Math.max(maxDegree, degree);
-    });
-
-    if (!Number.isFinite(minDegree) || !Number.isFinite(maxDegree)) {
-        minDegree = 0;
-        maxDegree = 0;
-    }
-
-    const bbox = nodes.boundingBox({ includeLabels: false, includeOverlays: false });
-    let centerX = (bbox.x1 + bbox.x2) / 2;
-    let centerY = (bbox.y1 + bbox.y2) / 2;
-
-    if (!Number.isFinite(centerX) || !Number.isFinite(centerY)) {
-        const sum = positions.reduce(
-            (acc, pos) => {
-                acc.x += pos.x;
-                acc.y += pos.y;
-                return acc;
-            },
-            { x: 0, y: 0 },
-        );
-        centerX = sum.x / positions.length;
-        centerY = sum.y / positions.length;
-    }
-
-    const spacingFactor = scaleToOriginalRange(
-        repulsionScale,
-        REPULSION_SPACING_FACTOR_MIN,
-        REPULSION_SPACING_FACTOR_MAX,
-    );
-    const spacing = baseSpacing * spacingFactor;
-    const strength = scaleToOriginalRange(repulsionScale, REPULSION_STRENGTH_MIN, REPULSION_STRENGTH_MAX);
-    const radialStrength = scaleToOriginalRange(repulsionScale, REPULSION_RADIAL_MIN, REPULSION_RADIAL_MAX);
-
-    const radialBase = Math.max(1, spacing * Math.sqrt(nodeCount));
-    const minRadius = Math.max(spacing * 0.8, radialBase * 0.35);
-    const maxRadius = Math.max(minRadius + spacing * 2, radialBase * 0.95 + spacing * 2);
-    // Low-degree nodes drift toward the periphery while hubs stay closer to center.
-    const targetRadii = new Float32Array(nodeCount);
-
-    nodeArray.forEach((node, idx) => {
-        const degree = degrees[idx];
-        const normalized = maxDegree === minDegree ? 0.5 : (degree - minDegree) / (maxDegree - minDegree);
-        targetRadii[idx] = minRadius + (1 - normalized) * (maxRadius - minRadius);
-    });
-
-    let iterations = 4;
-    if (nodeCount > 2000) {
-        iterations = 1;
-    } else if (nodeCount > 1200) {
-        iterations = 2;
-    } else if (nodeCount > 800) {
-        iterations = 3;
-    }
-
-    const step = nodeCount > 1200 ? 0.55 : 0.65;
-    const maxShift = spacing * 0.4;
-
-    return {
-        nodes: nodeArray,
-        positions,
-        movable,
-        targetRadii,
-        center: { x: centerX, y: centerY },
-        config: {
-            spacing,
-            strength,
-            radialStrength,
-            step,
-            iterations,
-            maxShift,
-        },
-    };
-}
-
-function applyRepulsionIteration(state) {
-    const { nodes, positions, movable, targetRadii, center, config } = state;
-    const count = nodes.length;
-    const spacing = config.spacing;
-    const spacingSq = spacing * spacing;
-    const cellSize = Math.max(1, spacing);
-    // Spatial hashing keeps neighbor checks fast for large graphs.
-    const grid = new Map();
-    const cellX = new Int32Array(count);
-    const cellY = new Int32Array(count);
-    const dispX = new Float32Array(count);
-    const dispY = new Float32Array(count);
-
-    for (let i = 0; i < count; i += 1) {
-        const pos = positions[i];
-        const cx = Math.floor(pos.x / cellSize);
-        const cy = Math.floor(pos.y / cellSize);
-        cellX[i] = cx;
-        cellY[i] = cy;
-        const key = `${cx},${cy}`;
-        if (!grid.has(key)) {
-            grid.set(key, []);
-        }
-        grid.get(key).push(i);
-    }
-
-    for (let i = 0; i < count; i += 1) {
-        const cx = cellX[i];
-        const cy = cellY[i];
-        for (let gx = -1; gx <= 1; gx += 1) {
-            for (let gy = -1; gy <= 1; gy += 1) {
-                const key = `${cx + gx},${cy + gy}`;
-                const bucket = grid.get(key);
-                if (!bucket) continue;
-                for (let b = 0; b < bucket.length; b += 1) {
-                    const j = bucket[b];
-                    if (j <= i) continue;
-                    let dx = positions[i].x - positions[j].x;
-                    let dy = positions[i].y - positions[j].y;
-                    let distSq = dx * dx + dy * dy;
-                    if (distSq < 0.01) {
-                        dx = (i % 2 === 0 ? 1 : -1) * 0.01;
-                        dy = (j % 2 === 0 ? 1 : -1) * 0.01;
-                        distSq = dx * dx + dy * dy;
-                    }
-                    if (distSq >= spacingSq) continue;
-                    const dist = Math.sqrt(distSq);
-                    const force = ((spacing - dist) / spacing) * config.strength;
-                    const ux = dx / dist;
-                    const uy = dy / dist;
-                    const fx = ux * force;
-                    const fy = uy * force;
-                    dispX[i] += fx;
-                    dispY[i] += fy;
-                    dispX[j] -= fx;
-                    dispY[j] -= fy;
-                }
-            }
-        }
-    }
-
-    if (config.radialStrength > 0) {
-        for (let i = 0; i < count; i += 1) {
-            if (!movable[i]) continue;
-            let dx = positions[i].x - center.x;
-            let dy = positions[i].y - center.y;
-            let dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 0.01) {
-                const angle = (i / count) * Math.PI * 2;
-                dx = Math.cos(angle);
-                dy = Math.sin(angle);
-                dist = 1;
-            }
-            const delta = (targetRadii[i] - dist) * config.radialStrength;
-            dispX[i] += (dx / dist) * delta;
-            dispY[i] += (dy / dist) * delta;
-        }
-    }
-
-    let moved = false;
-    cy.batch(() => {
-        for (let i = 0; i < count; i += 1) {
-            if (!movable[i]) continue;
-            let dx = dispX[i] * config.step;
-            let dy = dispY[i] * config.step;
-            const shift = Math.hypot(dx, dy);
-            if (shift > config.maxShift) {
-                const scale = config.maxShift / shift;
-                dx *= scale;
-                dy *= scale;
-            }
-            if (Math.abs(dx) > 0.001 || Math.abs(dy) > 0.001) {
-                moved = true;
-            }
-            positions[i].x += dx;
-            positions[i].y += dy;
-            nodes[i].position({ x: positions[i].x, y: positions[i].y });
-        }
-    });
-
-    return moved;
-}
-
-function scheduleNodeRepulsion() {
-    if (repulsionAnimationId) {
-        cancelAnimationFrame(repulsionAnimationId);
-    }
-    const components = getVisibleComponentsForRepulsion();
-    if (!components.length) return;
-    const { baseSpacing } = getGlobalRepulsionSpacingBase();
-    const effectiveScale = getEffectiveRepulsionScale();
-    const states = components
-        .map((comp) => buildRepulsionState(comp.nodes(), baseSpacing, effectiveScale))
-        .filter(Boolean);
-    if (!states.length) return;
-    const runId = ++repulsionRunId;
-    const stateIterations = states.map(() => 0);
-
-    const tick = () => {
-        if (runId !== repulsionRunId) return;
-        let anyActive = false;
-
-        states.forEach((state, idx) => {
-            if (stateIterations[idx] >= state.config.iterations) {
-                return;
-            }
-            const moved = applyRepulsionIteration(state);
-            stateIterations[idx] += 1;
-            if (!moved) {
-                stateIterations[idx] = state.config.iterations;
-                return;
-            }
-            if (stateIterations[idx] < state.config.iterations) {
-                anyActive = true;
-            }
-        });
-
-        if (anyActive) {
-            repulsionAnimationId = requestAnimationFrame(tick);
-        } else {
-            repulsionAnimationId = null;
-        }
-    };
-
-    repulsionAnimationId = requestAnimationFrame(tick);
-}
-
-function runLayoutWithRepulsion() {
-    if (repulsionAnimationId) {
-        cancelAnimationFrame(repulsionAnimationId);
-        repulsionAnimationId = null;
-    }
-    repulsionRunId += 1;
-    const layout = cy.layout(getLayoutOptions());
-    const token = ++layoutRunToken;
-    cy.one("layoutstop", () => {
-        if (token !== layoutRunToken) return;
-        scheduleNodeRepulsion();
-    });
-    layout.run();
-}
-
-cy.one("layoutstop", scheduleNodeRepulsion);
+layoutController.attachCy(cy);
+layoutController.registerInitialLayoutStop();
 
 const bodyContainer = document.querySelector(".body-container");
 const leftPanelToggleButton = document.getElementById("toggle-left-panel");
@@ -1228,12 +638,9 @@ setupSidePanelToggles();
 // Network layout dropdown
 // --------------------------------------------------------
 document.getElementById("layout-dropdown").addEventListener("change", function () {
-    currentLayout = this.value;
-    if (layoutRefreshTimeout) {
-        clearTimeout(layoutRefreshTimeout);
-        layoutRefreshTimeout = null;
-    }
-    runLayoutWithRepulsion();
+    layoutController.setLayout(this.value);
+    layoutController.clearLayoutRefresh();
+    layoutController.runLayoutWithRepulsion();
 });
 
 // =============================================================================
@@ -1362,7 +769,7 @@ if (isPhenotypePage) {
             }
         });
 
-        runLayoutWithRepulsion();
+        layoutController.runLayoutWithRepulsion();
         checkEmptyState();
 
         if (window.refreshPhenotypeList) {
@@ -1447,7 +854,7 @@ if (isPhenotypePage) {
             }
         });
 
-        runLayoutWithRepulsion();
+        layoutController.runLayoutWithRepulsion();
         checkEmptyState();
 
         if (window.refreshPhenotypeList) {
@@ -1509,7 +916,7 @@ if (isPhenotypePage) {
             }
         });
 
-        runLayoutWithRepulsion();
+        layoutController.runLayoutWithRepulsion();
         checkEmptyState();
 
         if (window.refreshPhenotypeList) {
@@ -1663,19 +1070,11 @@ updateNodeRepulsionVisibility();
 layoutDropdown.addEventListener("change", updateNodeRepulsionVisibility);
 
 createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues) => {
-    nodeRepulsionScale = intValues;
-    nodeRepulsionValue = scaleToOriginalRange(intValues, nodeRepulsionMin, nodeRepulsionMax);
-    componentSpacingValue = scaleToOriginalRange(intValues, componentSpacingMin, componentSpacingMax);
     document.getElementById("node-repulsion-value").textContent = intValues;
-    scheduleNodeRepulsion();
-    if (currentLayout !== "random") {
-        if (layoutRefreshTimeout) {
-            clearTimeout(layoutRefreshTimeout);
-        }
-        layoutRefreshTimeout = setTimeout(() => {
-            runLayoutWithRepulsion();
-            layoutRefreshTimeout = null;
-        }, 150);
+    layoutController.updateRepulsionScale(intValues);
+    layoutController.scheduleNodeRepulsion();
+    if (layoutController.getLayout() !== "random") {
+        layoutController.queueLayoutRefresh(150);
     }
 });
 
