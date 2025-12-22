@@ -9,7 +9,6 @@ from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 from tqdm import tqdm
-
 from TSUMUGI import formatter
 
 
@@ -156,10 +155,18 @@ def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
 def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None) -> None:
     """
     Write an iterable of records as JSONL (.jsonl or .jsonl.gz).
-    """
 
+    If the filename ends with .gz, use gzip compression (level=9).
+    """
     p = Path(path_jsonl)
-    open_func = gzip.open if p.suffix == ".gz" else open
+
+    def open_text_file(path: Path, mode: str, encoding: str):
+        return open(path, mode, encoding=encoding)
+
+    def open_gzip_file(path: Path, mode: str, encoding: str):
+        return gzip.open(path, mode, encoding=encoding, compresslevel=9)
+
+    open_func = open_gzip_file if p.suffix == ".gz" else open_text_file
 
     message = f"Writing JSONL to {path_jsonl}"
     with open_func(p, "wt", encoding="utf-8") as f:
