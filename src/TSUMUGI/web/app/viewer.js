@@ -31,6 +31,11 @@ const NODE_SLIDER_MIN = 1;
 const NODE_SLIDER_MAX = 100;
 const EDGE_SLIDER_MIN = 1;
 const EDGE_SLIDER_MAX = 100;
+const AUTO_ARRANGE_DELAY_MS = 150;
+const AUTO_ARRANGE_LAYOUT_TIMEOUT_MS = 4000;
+const AUTO_ARRANGE_REPULSION_TIMEOUT_MS = 2000;
+const INITIAL_AUTO_ARRANGE_TIMEOUT_MS = 15000;
+const REPULSION_FINISH_EVENT = "tsumugi:repulsion:finish";
 
 // Initialize UI helpers that only depend on DOM availability.
 initInfoTooltips();
@@ -182,6 +187,7 @@ const cy = cytoscape({
 window.cy = cy;
 layoutController.attachCy(cy);
 layoutController.registerInitialLayoutStop();
+setupInitialAutoArrange();
 
 const bodyContainer = document.querySelector(".body-container");
 const leftPanelToggleButton = document.getElementById("toggle-left-panel");
@@ -640,6 +646,7 @@ setupSidePanelToggles();
 document.getElementById("layout-dropdown").addEventListener("change", function () {
     layoutController.setLayout(this.value);
     layoutController.clearLayoutRefresh();
+    queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
     layoutController.runLayoutWithRepulsion();
 });
 
@@ -935,6 +942,9 @@ if (edgeSlider && edgeSlider.noUiSlider) {
         document.getElementById("edge-size-value").textContent = formattedValues.join(" - ");
         filterByNodeColorAndEdgeSize();
     });
+    edgeSlider.noUiSlider.on("set", function () {
+        queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
+    });
 }
 
 if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
@@ -946,6 +956,9 @@ if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
         }
         filterByNodeColorAndEdgeSize();
     });
+    nodeSlider.noUiSlider.on("set", function () {
+        queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
+    });
 }
 
 // =============================================================================
@@ -955,6 +968,7 @@ if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
 let targetPhenotype = isPhenotypePage ? pageConfig.displayName : "";
 
 function applyFiltering() {
+    queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
     filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, filterByNodeColorAndEdgeSize);
     if (typeof window.recalculateCentrality === "function") {
         window.recalculateCentrality();
@@ -1077,6 +1091,13 @@ createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues)
         layoutController.queueLayoutRefresh(150);
     }
 });
+const nodeRepulsionSlider = document.getElementById("nodeRepulsion-slider");
+if (nodeRepulsionSlider && nodeRepulsionSlider.noUiSlider) {
+    nodeRepulsionSlider.noUiSlider.on("set", () => {
+        const needsLayoutStop = layoutController.getLayout() !== "random";
+        queueAutoArrange({ afterLayout: needsLayoutStop, delayMs: AUTO_ARRANGE_DELAY_MS });
+    });
+}
 
 // ############################################################################
 // Initialize centrality system
@@ -1228,6 +1249,68 @@ function autoArrangeModules() {
     cy.endBatch();
     fitVisibleComponents();
     scheduleSubnetworkFrameUpdate();
+}
+
+function setupInitialAutoArrange() {
+    let handled = false;
+    const triggerInitialArrange = (reason) => {
+        if (handled) return;
+        handled = true;
+        queueAutoArrange({ afterLayout: false, delayMs: AUTO_ARRANGE_DELAY_MS });
+    };
+
+    const timeoutId = setTimeout(() => {
+        triggerInitialArrange("timeout");
+    }, INITIAL_AUTO_ARRANGE_TIMEOUT_MS);
+
+    window.addEventListener(
+        REPULSION_FINISH_EVENT,
+        (event) => {
+            clearTimeout(timeoutId);
+            triggerInitialArrange("repulsion");
+        },
+        { once: true },
+    );
+}
+
+function queueAutoArrange({ afterLayout = false, delayMs = AUTO_ARRANGE_DELAY_MS } = {}) {
+    if (!cy) return;
+    let arranged = false;
+    const runAutoArrange = () => {
+        if (arranged) return;
+        arranged = true;
+        autoArrangeModules();
+    };
+    const scheduleRun = () => {
+        setTimeout(runAutoArrange, delayMs);
+    };
+    if (!afterLayout) {
+        scheduleRun();
+        return;
+    }
+    let repulsionFallbackId = null;
+    const onRepulsionFinish = (event) => {
+        if (repulsionFallbackId) {
+            clearTimeout(repulsionFallbackId);
+            repulsionFallbackId = null;
+        }
+        scheduleRun();
+    };
+    const scheduleAfterRepulsion = () => {
+        window.addEventListener(REPULSION_FINISH_EVENT, onRepulsionFinish, { once: true });
+        repulsionFallbackId = setTimeout(() => {
+            window.removeEventListener(REPULSION_FINISH_EVENT, onRepulsionFinish);
+            scheduleRun();
+        }, AUTO_ARRANGE_REPULSION_TIMEOUT_MS);
+    };
+    const layoutFallbackId = setTimeout(() => {
+        scheduleRun();
+    }, AUTO_ARRANGE_LAYOUT_TIMEOUT_MS);
+    cy.one("layoutstop", () => {
+        if (arranged) return;
+        clearTimeout(layoutFallbackId);
+        scheduleAfterRepulsion();
+    });
 }
 
 const arrangeModulesButton = document.getElementById("arrange-modules-button");

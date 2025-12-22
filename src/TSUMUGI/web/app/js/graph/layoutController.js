@@ -345,6 +345,9 @@ export function createLayoutController({ isGeneSymbolPage, defaultNodeRepulsion 
             .filter(Boolean);
         if (!states.length) return;
         const runId = ++repulsionRunId;
+        if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("tsumugi:repulsion:start", { detail: { runId } }));
+        }
         const stateIterations = states.map(() => 0);
 
         const tick = () => {
@@ -370,6 +373,9 @@ export function createLayoutController({ isGeneSymbolPage, defaultNodeRepulsion 
                 repulsionAnimationId = requestAnimationFrame(tick);
             } else {
                 repulsionAnimationId = null;
+                if (typeof window !== "undefined") {
+                    window.dispatchEvent(new CustomEvent("tsumugi:repulsion:finish", { detail: { runId } }));
+                }
             }
         };
 
