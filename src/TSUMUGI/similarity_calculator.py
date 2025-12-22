@@ -455,64 +455,6 @@ def calculate_phenodigm_score(
         yield {"gene1_symbol": gene1_symbol, "gene2_symbol": gene2_symbol, "phenotype_similarity_score": score}
 
 
-# -----------------------------------------------------------
-# Additional similarity evaluation metrics
-# -----------------------------------------------------------
-
-
-def calculate_num_shared_phenotypes(
-    genewise_phenotype_significants: list[dict[str, str | float]],
-) -> dict[frozenset, int]:
-    """Calculate the number of shared phenotypes between two genes."""
-    gene_phenotypes_map = defaultdict(set)
-    for record in genewise_phenotype_significants:
-        gene_phenotypes_map[record["marker_symbol"]].add(
-            frozenset(
-                [
-                    record["mp_term_id"],
-                    record["zygosity"],
-                    record["life_stage"],
-                    record.get("sexual_dimorphism", "None"),
-                ]
-            )
-        )
-    num_shared_phenotypes = {}
-    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
-        phenotypes_gene1 = gene_phenotypes_map[gene1]
-        phenotypes_gene2 = gene_phenotypes_map[gene2]
-
-        num_shared_phenotypes[tuple(sorted([gene1, gene2]))] = len(phenotypes_gene1.intersection(phenotypes_gene2))
-    return num_shared_phenotypes
-
-
-def calculate_jaccard_indices(genewise_phenotype_significants: list[dict[str, str | float]]) -> dict[tuple[str], int]:
-    """Calculate the number of shared phenotypes between two genes."""
-    gene_phenotypes_map = defaultdict(set)
-    for record in genewise_phenotype_significants:
-        gene_phenotypes_map[record["marker_symbol"]].add(
-            frozenset(
-                [
-                    record["mp_term_id"],
-                    record["zygosity"],
-                    record["life_stage"],
-                    record.get("sexual_dimorphism", "None"),
-                ]
-            )
-        )
-
-    jaccard_indices = {}
-    for gene1, gene2 in tqdm(combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)):
-        phenotypes_gene1 = gene_phenotypes_map[gene1]
-        phenotypes_gene2 = gene_phenotypes_map[gene2]
-
-        intersection = phenotypes_gene1.intersection(phenotypes_gene2)
-        union = phenotypes_gene1.union(phenotypes_gene2)
-        # 0-100 scale
-        jaccard_indices[tuple(sorted([gene1, gene2]))] = int(len(intersection) / len(union) * 100 if union else 0)
-
-    return jaccard_indices
-
-
 ###########################################################
 # Summarize the phenotype similarity results
 ###########################################################
