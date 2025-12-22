@@ -277,7 +277,7 @@ def _build_gene_metadata_maps(
 
 
 def annotate_phenotype_ancestors(
-    records_significants: list[dict[str, str | float]],
+    genewise_phenotype_significants: list[dict[str, str | float]],
     terms_resnik_map: dict[tuple[str], dict[str, float]],
     ontology_terms: dict[str, dict[str, str]],
     ic_threshold,
@@ -287,7 +287,7 @@ def annotate_phenotype_ancestors(
     """
     # Build gene -> records map
     gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
-    for record in records_significants:
+    for record in genewise_phenotype_significants:
         gene_records_map[record["marker_symbol"]].append(record)
 
     all_gene_symbols = list(gene_records_map.keys())
@@ -338,9 +338,7 @@ def _calculate_weighted_similarity_matrix(
     for i, term1 in enumerate(gene1_terms):
         row = similarity_matrix[i]
         for j, term2 in enumerate(gene2_terms):
-            _, similarity = next(
-                iter(terms_resnik_map.get(tuple(sorted([term1, term2])), {None: 0.0}).items())
-            )
+            _, similarity = next(iter(terms_resnik_map.get(tuple(sorted([term1, term2])), {None: 0.0}).items()))
             row[j] = similarity
 
     z_match = gene1_data["zygosity"][:, None] == gene2_data["zygosity"][None, :]
@@ -442,7 +440,7 @@ def _build_gene_data_map(
 
 
 def calculate_phenodigm_score(
-    records_significants: list[dict[str, str | float]],
+    genewise_phenotype_significants: list[dict[str, str | float]],
     terms_resnik_map: dict[tuple[str], dict[str, float]],
     term_ic_map: dict[str, float],
 ) -> dict[tuple[str], int]:
@@ -451,7 +449,7 @@ def calculate_phenodigm_score(
     """
     # Build gene -> records map
     gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
-    for record in records_significants:
+    for record in genewise_phenotype_significants:
         gene_records_map[record["marker_symbol"]].append(record)
 
     gene_data_map = _build_gene_data_map(gene_records_map, term_ic_map)
@@ -481,10 +479,12 @@ def calculate_phenodigm_score(
 # -----------------------------------------------------------
 
 
-def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | float]]) -> dict[frozenset, int]:
+def calculate_num_shared_phenotypes(
+    genewise_phenotype_significants: list[dict[str, str | float]],
+) -> dict[frozenset, int]:
     """Calculate the number of shared phenotypes between two genes."""
     gene_phenotypes_map = defaultdict(set)
-    for record in records_significants:
+    for record in genewise_phenotype_significants:
         gene_phenotypes_map[record["marker_symbol"]].add(
             frozenset(
                 [
@@ -506,10 +506,10 @@ def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | f
     return num_shared_phenotypes
 
 
-def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]) -> dict[tuple[str], int]:
+def calculate_jaccard_indices(genewise_phenotype_significants: list[dict[str, str | float]]) -> dict[tuple[str], int]:
     """Calculate the number of shared phenotypes between two genes."""
     gene_phenotypes_map = defaultdict(set)
-    for record in records_significants:
+    for record in genewise_phenotype_significants:
         gene_phenotypes_map[record["marker_symbol"]].add(
             frozenset(
                 [

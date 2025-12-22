@@ -9,10 +9,6 @@ from TSUMUGI import similarity_calculator
 def build_pairwise_similarity(
     genewise_phenotype_significants: list[dict], ontology_terms: set, threads: int, debug: bool = False
 ) -> dict[tuple[str], dict[str, dict[str, str] | int]]:
-    ###########################################################
-    # Calculate phenotype similarity
-    ###########################################################
-
     mp_term_ids = {r["mp_term_id"] for r in genewise_phenotype_significants}
 
     logging.info(f"Calculating pairwise similarity for {len(mp_term_ids)} terms...")
@@ -22,10 +18,13 @@ def build_pairwise_similarity(
     )
 
     # ----------------------------------------
-    # Calculate phenotype similarity for genes
+    # Calculate phenotype similarity
     # ----------------------------------------
 
-    logging.info(f"Annotate phenotype ancestors for {len(genewise_phenotype_significants)} records...")
+    total_sorted_gene_symbols = sorted({r["marker_symbol"] for r in genewise_phenotype_significants})
+    total_pairs = len(total_sorted_gene_symbols) * (len(total_sorted_gene_symbols) - 1) // 2
+
+    logging.info(f"Annotate phenotype ancestors for {total_pairs} pairs...")
     phenotype_ancestors: dict[tuple[str], dict[str, dict[str, str]]] = (
         similarity_calculator.annotate_phenotype_ancestors(
             genewise_phenotype_significants,
@@ -35,7 +34,7 @@ def build_pairwise_similarity(
         )
     )
 
-    logging.info(f"Calculating phenodigm similarity for {len(genewise_phenotype_significants)} records...")
+    logging.info(f"Calculating phenodigm similarity for {len(total_pairs)} pairs...")
     phenodigm_scores: dict[tuple[str], int] = similarity_calculator.calculate_phenodigm_score(
         genewise_phenotype_significants, terms_resnik_map, term_ic_map
     )
