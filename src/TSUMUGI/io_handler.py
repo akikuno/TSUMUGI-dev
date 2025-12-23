@@ -9,6 +9,7 @@ from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 from tqdm import tqdm
+
 from TSUMUGI import formatter
 
 

@@ -319,5 +319,3 @@ def test_summarize_similarity_annotations_translates_names():
         "phenotype_shared_annotations": {},
         "phenotype_similarity_score": 0,
     }
-
-
