@@ -3,9 +3,9 @@ import pytest
 from TSUMUGI.ontology_handler import build_term_hierarchy
 from TSUMUGI.similarity_calculator import (
     _apply_phenodigm_scaling,
+    _calculate_pair_mica_and_resnik,
+    _calculate_term_ic_map,
     _calculate_weighted_similarity_matrix,
-    _compute_pair_mica_and_resnik,
-    _precompute_term_ic_map,
     annotate_phenotype_ancestors,
     calculate_all_pairwise_similarities,
     calculate_phenodigm_score,
@@ -52,14 +52,14 @@ def sample_ontology():
         ("F", "F", "F"),  # Same term
     ],
 )
-def test_compute_pair_mica_and_resnik(sample_ontology, term1, term2, expected_mica):
+def test_calculate_pair_mica_and_resnik(sample_ontology, term1, term2, expected_mica):
     ontology_terms = sample_ontology["ontology_terms"]
     parent_map = sample_ontology["parent_map"]
     child_map = sample_ontology["child_map"]
 
-    ic_map = _precompute_term_ic_map(ontology_terms, child_map)
+    ic_map = _calculate_term_ic_map(ontology_terms, child_map)
 
-    mica, sim = _compute_pair_mica_and_resnik(term1, term2, parent_map, ic_map)
+    mica, sim = _calculate_pair_mica_and_resnik(term1, term2, parent_map, ic_map)
 
     assert mica == expected_mica
     assert sim == pytest.approx(ic_map[expected_mica])
@@ -207,7 +207,7 @@ def test_calculate_all_pairwise_similarities_single_thread(sample_ontology):
         pair_map, ic_map = result
     else:
         pair_map = result
-        ic_map = _precompute_term_ic_map(ontology_terms, child_map)
+        ic_map = _calculate_term_ic_map(ontology_terms, child_map)
 
     assert ("B", "E") in pair_map
     assert pair_map[("D", "E")]  # similarity map exists for each pair
@@ -241,9 +241,8 @@ def test_annotate_phenotype_ancestors_basic(sample_ontology):
     ancestors = list(
         annotate_phenotype_ancestors(
             genewise_phenotype_significants=records,
-            terms_resnik_map=term_pair_map,
+            terms_similarity_map=term_pair_map,
             ontology_terms=ontology_terms,
-            ic_threshold=0,
         )
     )
 

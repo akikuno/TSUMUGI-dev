@@ -61,10 +61,13 @@ export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, fi
     const checkedLifeStages = getActiveFilterValues("#lifestage-filter-form", allLifeStages);
 
     let filteredElements = elements.map((item) => {
-        const phenotypeList = Array.isArray(item.data.phenotype)
-            ? item.data.phenotype
-            : item.data.phenotype
-                ? [item.data.phenotype]
+        const basePhenotypes = Array.isArray(item.data.originalPhenotypes)
+            ? item.data.originalPhenotypes
+            : item.data.phenotype;
+        const phenotypeList = Array.isArray(basePhenotypes)
+            ? [...basePhenotypes]
+            : basePhenotypes
+                ? [basePhenotypes]
                 : [];
 
         return {
@@ -123,8 +126,8 @@ export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, fi
             .filter((item) => item.data.phenotype.length > 0);
     }
 
-    // Keep only elements with at least two phenotypes
-    filteredElements = filteredElements.filter((item) => item.data.phenotype && item.data.phenotype.length > 1);
+    // Keep elements with at least one phenotype to avoid dropping valid single-annotation nodes
+    filteredElements = filteredElements.filter((item) => item.data.phenotype && item.data.phenotype.length > 0);
 
     // Restore any phenotypes that match the target phenotype
     if (targetPhenotype) {
@@ -145,12 +148,26 @@ export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, fi
         });
     }
 
-    // Remove elements that do not contain the target phenotype
+    // Remove nodes that do not contain the target phenotype (edges are filtered later)
     if (targetPhenotype) {
-        filteredElements = filteredElements.filter((item) =>
-            item.data.phenotype.some((anno) => anno.includes(targetPhenotype)),
-        );
+        filteredElements = filteredElements.filter((item) => {
+            if (item.data && item.data.source) {
+                return true;
+            }
+            return item.data.phenotype.some((anno) => anno.includes(targetPhenotype));
+        });
     }
+
+    // Remove edges that are disconnected from the remaining nodes
+    const nodeIds = new Set(
+        filteredElements.filter((item) => item.data && item.data.id).map((item) => item.data.id),
+    );
+    filteredElements = filteredElements.filter((item) => {
+        if (!item.data || !item.data.source) {
+            return true;
+        }
+        return nodeIds.has(item.data.source) && nodeIds.has(item.data.target);
+    });
 
     // Replace the Cytoscape elements and apply the filter-specific adjustments
     cy.elements().remove();

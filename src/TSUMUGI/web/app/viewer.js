@@ -85,6 +85,8 @@ const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map
 const edgeMin = edgeSizes.length ? Math.min(...edgeSizes) : 0;
 const edgeMax = edgeSizes.length ? Math.max(...edgeSizes) : 1;
 
+const baseElements = JSON.parse(JSON.stringify(elements));
+
 function mapEdgeSizeToWidth(edgeSize) {
     if (edgeMax === edgeMin) {
         return 1.5;
@@ -967,9 +969,15 @@ if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
 
 let targetPhenotype = isPhenotypePage ? pageConfig.displayName : "";
 
+function isGenotypeAllSelected() {
+    const allCheckbox = document.querySelector('#genotype-filter-form input[value="All"]');
+    return allCheckbox ? allCheckbox.checked : true;
+}
+
 function applyFiltering() {
     queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
-    filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, filterByNodeColorAndEdgeSize);
+    const sourceElements = isGenotypeAllSelected() ? baseElements : elements;
+    filterElementsByGenotypeAndSex(sourceElements, cy, targetPhenotype, filterByNodeColorAndEdgeSize);
     if (typeof window.recalculateCentrality === "function") {
         window.recalculateCentrality();
     }
