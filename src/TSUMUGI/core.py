@@ -178,7 +178,7 @@ def run_pipeline(args) -> None:
     web_deployer.prepare_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir, args.version)
 
     if args.debug is True or args.debug_web is True:
-        logging.info(f"DEBUG: retain temporary directory: {Path(TEMPDIR).resolve()}")
+        logging.debug(f"DEBUG: retain temporary directory: {Path(TEMPDIR).resolve()}")
     else:
         shutil.rmtree(TEMPDIR, ignore_errors=True)
 

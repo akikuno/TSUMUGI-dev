@@ -8,6 +8,7 @@ from itertools import combinations, combinations_with_replacement
 
 import numpy as np
 from tqdm import tqdm
+
 from TSUMUGI.ontology_handler import (
     build_term_hierarchy,
     find_all_descendant_terms,
