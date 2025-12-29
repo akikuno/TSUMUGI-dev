@@ -315,8 +315,8 @@ def _convert_to_nodes_json(
             "data": {
                 "id": gene,
                 "label": gene,
-                "phenotype": phenotypes,
-                "disease": list(diseases) if diseases else "",
+                "phenotype": sorted(phenotypes),
+                "disease": sorted(diseases) if diseases else "",
                 "node_color": node_color,
             }
         }
@@ -352,7 +352,7 @@ def _convert_to_edges_json(
                 "data": {
                     "source": gene1,
                     "target": gene2,
-                    "phenotype": list(pair_annotations["phenotype_shared_annotations"]),
+                    "phenotype": sorted(pair_annotations["phenotype_shared_annotations"]),
                     "edge_size": pair_annotations["phenotype_similarity_score"],
                 }
             }
@@ -440,8 +440,8 @@ def _build_node_info(
         "data": {
             "id": gene,
             "label": gene,
-            "phenotype": phenotypes,
-            "disease": list(diseases) if diseases else "",
+            "phenotype": sorted(phenotypes),
+            "disease": sorted(diseases) if diseases else "",
             "node_color": node_color,
         }
     }
@@ -541,7 +541,7 @@ def build_gene_network_json(
                     "data": {
                         "source": gene1,
                         "target": gene2,
-                        "phenotype": list(phenotypes),
+                        "phenotype": sorted(phenotypes),
                         "edge_size": phenodigm_score,
                     }
                 }
