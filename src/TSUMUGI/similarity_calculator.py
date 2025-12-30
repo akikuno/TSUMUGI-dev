@@ -8,7 +8,6 @@ from itertools import combinations, combinations_with_replacement
 
 import numpy as np
 from tqdm import tqdm
-
 from TSUMUGI.ontology_handler import (
     build_term_hierarchy,
     find_all_descendant_terms,
@@ -309,7 +308,7 @@ def annotate_phenotype_ancestors(
         yield {
             "gene1_symbol": gene1_symbol,
             "gene2_symbol": gene2_symbol,
-            "phenotype_shared_annotations": sorted(ancestors),
+            "phenotype_shared_annotations": ancestors,
         }
 
 
@@ -488,7 +487,10 @@ def summarize_similarity_annotations(
         annotations = {
             "gene1_symbol": gene1_symbol,
             "gene2_symbol": gene2_symbol,
-            "phenotype_shared_annotations": sorted(ancestors_renamed),
+            "phenotype_shared_annotations": sorted(
+                ancestors_renamed,
+                key=lambda x: [x["phenotype"], x["zygosity"], x["life_stage"], x["sexual_dimorphism"]],
+            ),
             "phenotype_similarity_score": phenodigm_score if ancestors_renamed else 0,
         }
 
