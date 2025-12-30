@@ -6,6 +6,7 @@ from TSUMUGI.similarity_calculator import (
     _calculate_pair_mica_and_resnik,
     _calculate_term_ic_map,
     _calculate_weighted_similarity_matrix,
+    _delete_parent_terms_from_ancestors,
     annotate_phenotype_ancestors,
     calculate_all_pairwise_similarities,
     calculate_phenodigm_score,
@@ -214,6 +215,40 @@ def test_calculate_all_pairwise_similarities_single_thread(sample_ontology):
     assert len(ic_map) == len(term_ids)
 
 
+def test_delete_parent_terms_from_ancestors_removes_parent_with_same_meta(sample_ontology):
+    child_map = sample_ontology["child_map"]
+    meta = {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+    candidate_ancestors = [
+        {"phenotype": "B", **meta},
+        {"phenotype": "D", **meta},
+        {"phenotype": "E", "zygosity": "Homo", "life_stage": "Late", "sexual_dimorphism": "None"},
+    ]
+
+    result = _delete_parent_terms_from_ancestors(candidate_ancestors, child_map)
+
+    expected = [
+        {"phenotype": "D", **meta},
+        {"phenotype": "E", "zygosity": "Homo", "life_stage": "Late", "sexual_dimorphism": "None"},
+    ]
+    assert sorted(result, key=lambda item: item["phenotype"]) == sorted(expected, key=lambda item: item["phenotype"])
+
+
+def test_delete_parent_terms_from_ancestors_keeps_parent_with_different_meta(sample_ontology):
+    child_map = sample_ontology["child_map"]
+    candidate_ancestors = [
+        {"phenotype": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+        {"phenotype": "D", "zygosity": "Hetero", "life_stage": "Early", "sexual_dimorphism": "None"},
+    ]
+
+    result = _delete_parent_terms_from_ancestors(candidate_ancestors, child_map)
+
+    expected = [
+        {"phenotype": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+        {"phenotype": "D", "zygosity": "Hetero", "life_stage": "Early", "sexual_dimorphism": "None"},
+    ]
+    assert sorted(result, key=lambda item: item["phenotype"]) == sorted(expected, key=lambda item: item["phenotype"])
+
+
 def test_annotate_phenotype_ancestors_basic(sample_ontology):
     ontology_terms = sample_ontology["ontology_terms"]
     term_ids = set(ontology_terms.keys())
@@ -249,9 +284,9 @@ def test_annotate_phenotype_ancestors_basic(sample_ontology):
     assert len(ancestors) == 1
     assert ancestors[0]["gene1_symbol"] == "Gene1"
     assert ancestors[0]["gene2_symbol"] == "Gene2"
-    assert ancestors[0]["phenotype_shared_annotations"] == {
-        "B": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
-    }
+    assert ancestors[0]["phenotype_shared_annotations"] == [
+        {"phenotype": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+    ]
 
 
 def test_calculate_phenodigm_score_identical_gene_sets():

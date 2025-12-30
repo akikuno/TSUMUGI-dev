@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import logging
+import pickle
 from collections.abc import Iterator
+from pathlib import Path
 
 from TSUMUGI import similarity_calculator
 
@@ -11,11 +13,25 @@ def build_pairwise_similarity(
 ) -> dict[tuple[str], dict[str, dict[str, str] | int]]:
     mp_term_ids = {r["mp_term_id"] for r in genewise_phenotype_significants}
 
-    logging.info(f"Calculating pairwise similarity for {len(mp_term_ids)} terms...")
-
     terms_similarity_map, term_ic_map = similarity_calculator.calculate_all_pairwise_similarities(
         ontology_terms, mp_term_ids, ic_threshold=5, threads=args.threads
     )
+
+    if args.debug:
+        logging.debug("Caching terms similarity map and term IC map...")
+
+        # --------------------------------------------------------
+        # Cache results
+        # --------------------------------------------------------
+
+        output_dir = Path(args.output_dir, ".tempdir", "preprocessed")
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        with open(output_dir / "terms_similarity_map.pkl", "wb") as f:
+            pickle.dump(terms_similarity_map, f)
+
+        with open(output_dir / "term_ic_map.pkl", "wb") as f:
+            pickle.dump(term_ic_map, f)
 
     # ----------------------------------------
     # Calculate phenotype similarity
@@ -31,7 +47,6 @@ def build_pairwise_similarity(
         ontology_terms,
     )
 
-    logging.info(f"Calculating phenodigm similarity for {num_pairs} pairs...")
     phenodigm_scores = similarity_calculator.calculate_phenodigm_score(
         genewise_phenotype_significants, terms_similarity_map, term_ic_map
     )
@@ -56,7 +71,7 @@ def build_pairwise_similarity(
     # Summarize the phenotype similarity results
     # ----------------------------------------
 
-    logging.info(f"Integrating phenotype annotations and similarity score for {num_pairs} pairs...")
+    logging.info(f"Compute phenotype annotations and similarity score for {num_pairs} pairs...")
 
     pairwise_similarity_annotations: Iterator[dict[str, dict[str, str] | int]] = (
         similarity_calculator.summarize_similarity_annotations(

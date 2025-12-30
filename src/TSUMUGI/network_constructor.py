@@ -74,13 +74,14 @@ def _compose_genewise_phenotype_significants(
 
 
 def _compose_pair_similarity_annotations(
-    pair_similarity_annotations: list[dict[str, dict[str, str] | int]],
-) -> dict[tuple[str], dict[str, set[str] | int]]:
+    pair_similarity_annotations: list[dict[str, list[dict[str, str]] | int]],
+) -> dict[tuple[str], dict[str, list[str] | int]]:
     """Compose pair similarity annotations (Edges) into strings."""
     pair_similarity_annotations_composed = {}
     for record in pair_similarity_annotations:
         pair_annotations_composed = set()
-        for mp_term_name, annotation in record["phenotype_shared_annotations"].items():
+        for annotation in record["phenotype_shared_annotations"]:
+            mp_term_name = annotation["phenotype"]
             zygosity = annotation["zygosity"]
             life_stage = annotation.get("life_stage", "")
             sexual_dimorphism = annotation.get("sexual_dimorphism", "")
@@ -92,7 +93,7 @@ def _compose_pair_similarity_annotations(
         gene_pair = (record["gene1_symbol"], record["gene2_symbol"])
 
         pair_similarity_annotations_composed[gene_pair] = {
-            "phenotype_shared_annotations": pair_annotations_composed,
+            "phenotype_shared_annotations": sorted(pair_annotations_composed),
             "phenotype_similarity_score": record["phenotype_similarity_score"],
         }
     return pair_similarity_annotations_composed
@@ -140,11 +141,22 @@ def _scale_to_1_100(x, min_val, max_val) -> int:
 
 
 def _scale_phenotype_similarity_scores(pair_similarity_annotations_filtered):
-    min_val = min(v["phenotype_similarity_score"] for v in pair_similarity_annotations_filtered.values())
-    max_val = max(v["phenotype_similarity_score"] for v in pair_similarity_annotations_filtered.values())
-    for v in pair_similarity_annotations_filtered.values():
-        v["phenotype_similarity_score"] = _scale_to_1_100(v["phenotype_similarity_score"], min_val, max_val)
-    return pair_similarity_annotations_filtered
+    scores = [v["phenotype_similarity_score"] for v in pair_similarity_annotations_filtered.values()]
+    min_val = min(scores)
+    max_val = max(scores)
+
+    scaled_annotations = {}
+
+    for key, annotation in pair_similarity_annotations_filtered.items():
+        scaled_annotation = annotation.copy()
+        scaled_annotation["phenotype_similarity_score"] = _scale_to_1_100(
+            annotation["phenotype_similarity_score"],
+            min_val,
+            max_val,
+        )
+        scaled_annotations[key] = scaled_annotation
+
+    return scaled_annotations
 
 
 def _scale_effect_sizes(gene_records_map_filtered, mp_term_name):
@@ -209,7 +221,7 @@ def _find_optimal_scores(
 def _filter_related_genes(
     records: list[dict[str, str | float]],
     related_genes: set[str],
-    pair_similarity_annotations_composed: dict[tuple[str], dict[str, set[str] | int]],
+    pair_similarity_annotations_composed: dict[tuple[str], dict[str, list[str] | int]],
     is_gene_network: bool = False,
 ) -> set[str]:
     """
@@ -329,7 +341,7 @@ def _convert_to_nodes_json(
 
 def _convert_to_edges_json(
     related_genes: set[str],
-    pair_similarity_annotations_composed: dict[tuple[str], dict[str, set[str] | int]],
+    pair_similarity_annotations_composed: dict[tuple[str], dict[str, list[str] | int]],
 ) -> list[dict[str, dict[str, str | list[str] | float]]]:
     edges_json = []
     pair_similarity_annotations_filtered = {}
@@ -461,12 +473,12 @@ def build_gene_network_json(
         genewise_phenotype_significants, pair_similarity_annotations, disease_annotations_by_gene
     )
 
-    gene_lists = set()
+    gene_sets = set()
     for keys in pair_similarity_annotations_composed.keys():
         for gene in keys:
-            gene_lists.add(gene)
+            gene_sets.add(gene)
 
-    for target_gene in tqdm(gene_lists, total=len(gene_lists)):
+    for target_gene in tqdm(gene_sets, total=len(gene_sets)):
         related_pairs_with_target_gene = []
         for keys in pair_similarity_annotations_composed.keys():
             if target_gene not in keys:
