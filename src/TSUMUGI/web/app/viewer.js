@@ -35,6 +35,7 @@ const AUTO_ARRANGE_DELAY_MS = 150;
 const AUTO_ARRANGE_LAYOUT_TIMEOUT_MS = 4000;
 const AUTO_ARRANGE_REPULSION_TIMEOUT_MS = 2000;
 const INITIAL_AUTO_ARRANGE_TIMEOUT_MS = 15000;
+const INITIAL_ARRANGE_CLICK_DELAY_MS = 500;
 const REPULSION_FINISH_EVENT = "tsumugi:repulsion:finish";
 
 // Initialize UI helpers that only depend on DOM availability.
@@ -1261,21 +1262,63 @@ function autoArrangeModules() {
 
 function setupInitialAutoArrange() {
     let handled = false;
+    let scheduled = false;
+    let hasRendered = false;
+
+    cy.one("render", () => {
+        hasRendered = true;
+    });
+
     const triggerInitialArrange = (reason) => {
         if (handled) return;
         handled = true;
-        queueAutoArrange({ afterLayout: false, delayMs: AUTO_ARRANGE_DELAY_MS });
+        const arrangeButton = document.getElementById("arrange-modules-button");
+        if (arrangeButton) {
+            arrangeButton.click();
+            return;
+        }
+        autoArrangeModules();
+    };
+
+    const scheduleInitialArrange = (reason) => {
+        if (scheduled) return;
+        scheduled = true;
+        setTimeout(() => {
+            triggerInitialArrange(reason);
+        }, INITIAL_ARRANGE_CLICK_DELAY_MS);
+    };
+
+    const triggerAfterRender = (reason) => {
+        const runAfterPaint = () => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    scheduleInitialArrange(reason);
+                });
+            });
+        };
+
+        if (hasRendered) {
+            runAfterPaint();
+            return;
+        }
+
+        cy.one("render", runAfterPaint);
     };
 
     const timeoutId = setTimeout(() => {
-        triggerInitialArrange("timeout");
+        triggerAfterRender("timeout");
     }, INITIAL_AUTO_ARRANGE_TIMEOUT_MS);
+
+    cy.one("layoutstop", () => {
+        clearTimeout(timeoutId);
+        triggerAfterRender("layoutstop");
+    });
 
     window.addEventListener(
         REPULSION_FINISH_EVENT,
-        (event) => {
+        () => {
             clearTimeout(timeoutId);
-            triggerInitialArrange("repulsion");
+            triggerAfterRender("repulsion");
         },
         { once: true },
     );
