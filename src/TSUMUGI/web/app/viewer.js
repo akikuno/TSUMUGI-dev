@@ -100,7 +100,7 @@ function mapEdgeSizeToWidth(edgeSize) {
 // Initialize Cytoscape
 // ############################################################################
 
-const defaultNodeRepulsion = isGeneSymbolPage ? 8 : 5;
+const defaultNodeRepulsion = 5;
 const layoutController = createLayoutController({
     isGeneSymbolPage,
     defaultNodeRepulsion,
