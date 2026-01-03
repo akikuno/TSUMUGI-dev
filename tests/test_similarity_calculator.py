@@ -323,11 +323,16 @@ def test_summarize_similarity_annotations_translates_names():
         {
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
-            "phenotype_shared_annotations": {
-                "MP:1": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
-            },
+            "phenotype_shared_annotations": [
+                {
+                    "phenotype": "MP:1",
+                    "zygosity": "Homo",
+                    "life_stage": "Early",
+                    "sexual_dimorphism": "None",
+                }
+            ],
         },
-        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneC", "phenotype_shared_annotations": {}},
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneC", "phenotype_shared_annotations": []},
     ]
     phenodigm_scores = [
         {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_similarity_score": 80},
@@ -341,15 +346,20 @@ def test_summarize_similarity_annotations_translates_names():
     assert summary[0] == {
         "gene1_symbol": "GeneA",
         "gene2_symbol": "GeneB",
-        "phenotype_shared_annotations": {
-            "Term One": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
-        },
+        "phenotype_shared_annotations": [
+            {
+                "phenotype": "Term One",
+                "zygosity": "Homo",
+                "life_stage": "Early",
+                "sexual_dimorphism": "None",
+            }
+        ],
         "phenotype_similarity_score": 80,
     }
     # When no ancestors exist, the score should be zeroed out
     assert summary[1] == {
         "gene1_symbol": "GeneA",
         "gene2_symbol": "GeneC",
-        "phenotype_shared_annotations": {},
+        "phenotype_shared_annotations": [],
         "phenotype_similarity_score": 0,
     }
