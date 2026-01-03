@@ -51,22 +51,6 @@ def build_pairwise_similarity(
         genewise_phenotype_significants, terms_similarity_map, term_ic_map
     )
 
-    # if args.debug:
-    #     logging.debug("Caching phenotype ancestors and phenodigm scores...")
-
-    #     # --------------------------------------------------------
-    #     # Cache results
-    #     # --------------------------------------------------------
-
-    #     output_dir = Path(args.output_dir, ".tempdir", "preprocessed")
-    #     output_dir.mkdir(parents=True, exist_ok=True)
-
-    #     io_handler.write_jsonl(phenotype_ancestors, output_dir / "phenotype_ancestors.jsonl.gz")
-    #     io_handler.write_jsonl(phenodigm_scores, output_dir / "phenodigm_scores.jsonl.gz")
-
-    #     phenotype_ancestors = io_handler.read_jsonl(output_dir / "phenotype_ancestors.jsonl.gz")
-    #     phenodigm_scores = io_handler.read_jsonl(output_dir / "phenodigm_scores.jsonl.gz")
-
     # ----------------------------------------
     # Summarize the phenotype similarity results
     # ----------------------------------------
