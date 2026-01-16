@@ -49,7 +49,7 @@ function getActiveFilterValues(formSelector, allValues) {
 }
 
 /**
- * Apply genotype/sex/life-stage filters while preserving phenotype highlights.
+ * Apply genotype/sex/life-stage filters to phenotypes.
  */
 export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, filterElements) {
     const allSexes = ["Female", "Male"];
@@ -99,7 +99,6 @@ export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, fi
     if (checkedGenotypes.length !== allGenotypes.length) {
         filteredElements = filteredElements
             .map((item) => {
-                const original = item.data.originalPhenotypes;
                 const filtered = item.data.phenotype.filter((phenotype) =>
                     checkedGenotypes.some((gt) => phenotype.includes(gt)),
                 );
@@ -128,25 +127,6 @@ export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, fi
 
     // Keep elements with at least one phenotype to avoid dropping valid single-annotation nodes
     filteredElements = filteredElements.filter((item) => item.data.phenotype && item.data.phenotype.length > 0);
-
-    // Restore any phenotypes that match the target phenotype
-    if (targetPhenotype) {
-        filteredElements = filteredElements.map((item) => {
-            const original = item.data.originalPhenotypes;
-            const restored = original.filter((phenotype) => phenotype.includes(targetPhenotype));
-
-            const merged = [...item.data.phenotype, ...restored];
-            const unique = Array.from(new Set(merged));
-
-            return {
-                ...item,
-                data: {
-                    ...item.data,
-                    phenotype: unique,
-                },
-            };
-        });
-    }
 
     // Remove nodes that do not contain the target phenotype (edges are filtered later)
     if (targetPhenotype) {

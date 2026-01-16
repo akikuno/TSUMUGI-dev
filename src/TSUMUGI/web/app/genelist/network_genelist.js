@@ -161,7 +161,6 @@ function handleMobileResize() {
 // Adjust Cytoscape once initialization finishes on mobile
 setTimeout(() => {
     if (window.innerWidth <= 600) {
-    console.log("[Mobile] Applying display adjustments");
         cy.resize();
         cy.fit();
         cy.center();
