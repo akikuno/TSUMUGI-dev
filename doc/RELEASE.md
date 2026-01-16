@@ -20,7 +20,119 @@
 
 <!-- ############################################################ # -->
 
-## v0.5.0 (2025-11-25)
+## v1.0.0 (2026-01-16)
+
+## 🌟 New Features
+
++ Generate phenotype/gene HTML and JS on the client side for web builds.  
+  Issue: [#124](https://github.com/akikuno/TSUMUGI-dev/issues/124)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/adf3a36)]  
+
++ Add draggable module frames and tooltip helpers for Cytoscape subnetwork grouping.  
+  Issue: [#125](https://github.com/akikuno/TSUMUGI-dev/issues/125)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/110d680)]  
+
++ Add SVG export with configurable scale in the viewer.  
+  Issue: [#127](https://github.com/akikuno/TSUMUGI-dev/issues/127)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/b431c17)]  
+
++ Add toggle controls for full-screen mode and responsive Cytoscape resizing.  
+  Issue: [#128](https://github.com/akikuno/TSUMUGI-dev/issues/128)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/1911a4b)]  
+
++ Enable command-line filters for pairwise and genewise modes.  
+  Issue: [#129](https://github.com/akikuno/TSUMUGI-dev/issues/129)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/df12997)]  
+
++ Add `--pairwise` option in `tsumugi genes`.  
+  Issue: [#133](https://github.com/akikuno/TSUMUGI-dev/issues/133)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e63d220)]  
+
+- Add `debug_web` option to skip preprocessing for faster web builds.  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ed7cfb1)]  
+
+
+## 🖼️ User Interface
+
++ Make Cytoscape tooltips resizable with scrollable sections.  
+  Issue: [#130](https://github.com/akikuno/TSUMUGI-dev/issues/130)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/d0f19c2)]  
+
++ Scope neighbor dimming to the clicked module and refine node highlight emphasis.  
+  Issue: [#134](https://github.com/akikuno/TSUMUGI-dev/issues/134)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/d7f8ec7)]  
+
++ UI and interaction improvements for network visualization.  
+  Issue: [#136](https://github.com/akikuno/TSUMUGI-dev/issues/136)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/cd63cd3)]  
+  Thanks to @aki2274 for reporting this issue!
+
++ Move phenotype scale SVGs below the graph and center them with updated sizing.  
+  Issue: [#137](https://github.com/akikuno/TSUMUGI-dev/issues/137)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/aa2d430)]  
+
++ Hide phenotype severity scale and legend for binary phenotypes.  
+  Issue: [#138](https://github.com/akikuno/TSUMUGI-dev/issues/138)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/dd2bfc3)]  
+
++ Add All handling and a two-column layout for biological annotation filters.  
+  Issue: [#139](https://github.com/akikuno/TSUMUGI-dev/issues/139)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/7bad871)]  
+  Thanks to @kinari-labwork for reporting to this issue!
+
+
+## 🐛 Bug Fixes
+
++ Fix node count inconsistency after resetting biological annotation filters.  
+  Issue: [#141](https://github.com/akikuno/TSUMUGI-dev/issues/141)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/a0e9ed7)]  
+
+- Preserve edges when resetting genotype filters to All.  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/f6f1dfc)]  
+
+- Fix version file output directory to include the `app` subdirectory.  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/dc397d0)]  
+
+
+## 🚀 Performance
+
++ Codebase refactoring for improved modularity and memory efficiency.  
+  Issue: [#140](https://github.com/akikuno/TSUMUGI-dev/issues/140)  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/5c6c86c)]  
+
+- Refactor similarity calculators to single-threaded, flattened lookups.  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/e62f2bc)]  
+
+- Stream JSONL outputs as iterators to reduce memory usage.  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/5175011)]  
+
+- Use gzip compression level 9 for smaller outputs.  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/621f765)]  
+
+
+## 📝 Documentation
+
+- Document CLI filters for pairwise and genewise modes.  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/c3b0f45)]  
+
+- Update MP term filtering documentation in multiple languages.  
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/54b795b)]  
+
+
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+<details>
+<summary> v0.5.0 (2025-11-25) </summary>
 
 ## 🌟 New Features
 
@@ -40,17 +152,9 @@
 
 - README updated with CLI option descriptions and multilingual links (Japanese, Korean, Simplified/Traditional Chinese, Hindi, Indonesian, Vietnamese, Spanish, French, German, Portuguese).
 
-
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
 </details>
-============================================================= -->
+
+
 
 <details>
 <summary> v0.4.0 (2025-11-12) </summary>
