@@ -93,9 +93,9 @@
 - Fix version file output directory to include the `app` subdirectory.  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/dc397d0)]  
 
-- Fix Phenotype search keeps selected phenotypes even when Biological annotation filter excludes them #142
+- Fix an issue where selected phenotypes remained in the search results even after being excluded by the Biological annotation filter.
   Issue: [#142](https://github.com/akikuno/TSUMUGI-dev/issues/142)  
-  [[Commit Detail](
+  [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9714a84f5b3f50dc81306bf081a14842c46606e0)]
 
 ## 🚀 Performance
 
