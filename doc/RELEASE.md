@@ -97,6 +97,10 @@
   Issue: [#142](https://github.com/akikuno/TSUMUGI-dev/issues/142)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/9714a84f5b3f50dc81306bf081a14842c46606e0)]
 
+- Fixed an issue where an isolated node unexpectedly remained in a phenotype JSON.gz file (#143)  
+  Issue: [#143](https://github.com/akikuno/TSUMUGI-dev/issues/143)  
+
+
 ## 🚀 Performance
 
 + Codebase refactoring for improved modularity and memory efficiency.  

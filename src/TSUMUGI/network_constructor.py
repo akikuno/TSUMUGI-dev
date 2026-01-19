@@ -124,9 +124,7 @@ def _compose_disease_annotations_by_allele(
 
 def _compose_dataset(genewise_phenotype_significants, pairwise_similarity_annotations, disease_annotations_by_allele):
     gene_records_map = _compose_genewise_phenotype_significants(genewise_phenotype_significants)
-    pairwise_similarity_annotations_composed = _compose_pairwise_similarity_annotations(
-        pairwise_similarity_annotations
-    )
+    pairwise_similarity_annotations_composed = _compose_pairwise_similarity_annotations(pairwise_similarity_annotations)
     disease_annotations_composed = _compose_disease_annotations_by_allele(disease_annotations_by_allele)
     return gene_records_map, pairwise_similarity_annotations_composed, disease_annotations_composed
 
@@ -429,17 +427,27 @@ def build_phenotype_network_json(
         if binary_phenotypes:
             is_binary = mp_term_name in binary_phenotypes
 
+        edges_json = _convert_to_edges_json(related_genes, pairwise_similarity_annotations_composed)
+
+        if not edges_json:
+            continue
+
+        # Remove unconnected nodes
+        connected_node_ids = set()
+        for edge in edges_json:
+            connected_node_ids.add(edge["data"]["source"])
+            connected_node_ids.add(edge["data"]["target"])
+
+        if not connected_node_ids:
+            continue
+
         nodes_json = _convert_to_nodes_json(
-            related_genes,
+            connected_node_ids,
             mp_term_name,
             gene_records_map,
             disease_annotations_composed,
             hide_severity=hide_severity or is_binary,
         )
-        edges_json = _convert_to_edges_json(related_genes, pairwise_similarity_annotations_composed)
-
-        if not edges_json:
-            continue
 
         # Sort nodes for stability
         nodes_json = sorted(nodes_json, key=lambda n: n["data"]["id"])
