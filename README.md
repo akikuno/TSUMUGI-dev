@@ -447,15 +447,22 @@ Extract gene–phenotype pairs with KO mouse P-value (`p_value`, `female_ko_effe
 - Annotate sex-specific phenotypes: `female`, `male`
 
 ## Phenotypic similarity
-TSUMUGI computes **Resnik similarity** between MP terms and rescales pairwise gene scores to **Phenodigm (0–100)**.
+TSUMUGI currently follows a **Phenodigm-like** approach ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)). We compute **Resnik similarity** between MP terms and **Jaccard similarity** between term sets, then combine them by the **geometric mean**. The key difference from the original Phenodigm is that TSUMUGI adds **metadata weighting** (zygosity, life stage, sexual dimorphism) when aggregating similarities.
 
-1. Build the MP ontology and compute Information Content (IC):  
+1. Build the MP ontology and compute Information Content(IC) for each term:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC of the most informative common ancestor (MICA); if no common ancestor, similarity = 0.  
-3. For each gene pair, create a matrix of significant MP terms and weight each Resnik score by metadata match (zygosity / life stage / sex) with factors 1.0 / 0.75 / 0.5 / 0.25. Take row/column maxima to obtain the **actual** max and mean similarity observed.  
-4. Derive **theoretical** max and mean from IC values of the terms, then normalize:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   If a theoretical denominator is 0, set that term to 0. The resulting 0–100 score feeds the downloadable tables and the `Phenotypes similarity` slider.
+   Terms below the 5th percentile of IC are set to 0.
+2. For each MP term pair, find the most specific common ancestor and compute Resnik similarity as its IC.  
+   Compute Jaccard index over the ancestor sets.  
+   Pairwise term similarity = `sqrt(Resnik * Jaccard)`.
+3. For each gene pair, build a term-by-term similarity matrix and apply metadata weighting.  
+   Zygosity, life stage, and sexual dimorphism matches contribute weights of 0.25/0.5/0.75/1.0 for 0/1/2/3 matches.
+4. Apply Phenodigm-style scaling to 0–100:  
+   Use row/column maxima to get actual max and mean similarity.  
+   Normalize by theoretical max/mean based on IC, then compute  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   If a theoretical denominator is 0, that term is set to 0.
+
 
 # ✉️ Contact
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  
