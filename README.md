@@ -44,8 +44,9 @@ Paste multiple genes (one per line). This extracts phenotypically similar genes 
 > If no similar genes are found: `No similar phenotypes were found among the entered genes.`  
 > If more than 200 similar genes are found: `Too many genes submitted. Please limit the number to 200 or fewer.`
 
-### 📥 Download raw data
-TSUMUGI publishes gzipped JSONL files.
+### 📥 Download data
+
+TSUMUGI reports gzipped JSONL files.
 
 #### `genewise_phenotype_annotations.jsonl.gz`
 - Gene symbol (e.g., "1110059G10Rik")  
@@ -66,7 +67,7 @@ Example:
 #### `pairwise_similarity_annotations.jsonl.gz`
 - Gene pair (`gene1_symbol`, `gene2_symbol`)  
 - `phenotype_shared_annotations` (per-phenotype metadata: life stage, zygosity, sexual dimorphism)  
-- `phenotype_similarity_score` (Resnik-based Phenodigm score, 0–100)
+- `phenotype_similarity_score` (Phenodigm score, 0–100)
 
 Example:
 ```
