@@ -655,39 +655,21 @@ KOマウスの示す表現型のP値（`p_value` `female_ko_effect_p_value` `mal
 
 ## 表現型類似度の計算
 
-TSUMUGIではMammalian Phenotype (MP)用語間の**Resnik類似度**を算出し、その結果を基に遺伝子ペアのスコアを**Phenodigmスケール（0-100）**へ変換して表現型類似度を定義しています。
+TSUMUGIはPhenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025))に類似したアプローチを採用しています。  
+MP用語間のResnik類似度と、祖先集合のJaccard類似度を計算し、その相乗平均(幾何平均)で統合します。  
+オリジナルのPhenodigmとの違いは、**遺伝型・ライフステージ・性差のメタデータ一致に基づく重み付けを行う点です。**
 
-### 表現型用語間のResnik類似度
-
-MPオントロジーの階層構造を構築し、各用語の子孫（自身を含む）との割合から情報量（Information Content; IC）を計算します：
-
-```math
-IC(term) = -log((子termの数 + 1) / MP用語総数)
-```
-
-任意の2用語に対して共通祖先を列挙し、そのうち**最も情報量が大きい共通祖先**(MICA)のICをResnik類似度とします：
-
-```math
-Resnik(term_1, term_2)=IC(MICA(term_1, term_2))
-```
-
-共通祖先が存在しない場合、類似度は0になります。
-
-### 遺伝子ペアへのPhenodigmスケーリング
-
-1. 各遺伝子ペアについて、有意なMP用語同士のResnik類似度をマトリクス化し、遺伝型（zygosity）、ライフステージ、性差の一致度に応じて 1.0 / 0.75 / 0.5 / 0.25 の重みを掛けます。  
-2. 行・列ごとの最大値から、その遺伝子ペアで実際に観測された類似度の最大値・平均値を求めます。  
-3. 個々のMP用語のICから、理論上達成しうる最大値・平均値を算出します。  
-4. 実測値を理論値で正規化し、最大値と平均値の2つを平均してPhenodigmスコアを得ます：
-
-```math
-\mathrm{Phenodigm} = 100 \times \frac{1}{2} \left( 
-\frac{\mathrm{actual_{max}}}{\mathrm{theoretical_{max}}} + 
-\frac{\mathrm{actual_{mean}}}{\mathrm{theoretical_{mean}}}
-\right)
-```
-
-この正規化によって得られる0〜100のスコアを生データおよびWeb UIの`Phenotypes similarity`スライダーで用いています。
+1. MPオントロジーを構築し、各用語の情報量(Information Content; IC)を計算します：  
+   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
+   ICの5パーセンタイル未満の用語は0に設定します。
+2. 各MP用語ペアについて最も特異的な共通祖先(MICA)を求め、そのICをResnik類似度とします。  
+   さらに祖先集合のJaccard指数を計算し、用語ペア類似度を`sqrt(Resnik * Jaccard)`とします。
+3. 各遺伝子ペアについて用語×用語の類似度行列を作成し、メタデータ一致数に応じて重み付けします。  
+   遺伝型・ライフステージ・性差の一致数0/1/2/3に対して重み0.25/0.5/0.75/1.0を適用します。
+4. Phenodigm型のスケーリングで0–100に正規化します：  
+   行/列の最大値から実測の最大値・平均値を求め、ICに基づく理論最大値・平均値で正規化します。  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   理論分母が0の場合は0とします。
 
 
 # ✉️ お問い合わせ

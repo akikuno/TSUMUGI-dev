@@ -287,15 +287,21 @@ Chọn cặp gen–kiểu hình có P ≤ 0.0001 (`p_value`, `female_ko_effect_p
 - Giới tính: `female`, `male`
 
 ## Độ tương đồng kiểu hình
-Tính **Resnik** giữa các thuật ngữ MP và thu nhỏ về **Phenodigm (0–100)**.
+TSUMUGI hiện theo cách tiếp cận gần với Phenodigm. Chúng tôi tính độ tương đồng **Resnik** giữa các thuật ngữ MP và độ tương đồng **Jaccard** giữa các tập tổ tiên, rồi kết hợp bằng **trung bình hình học**. Khác biệt chính so với Phenodigm gốc là thêm trọng số metadata (zygosity, life stage, sexual dimorphism) khi tổng hợp.
 
-1. Xây dựng ontology MP, tính IC:  
+1. Xây dựng ontology MP và tính IC:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC của tổ tiên chung nhiều thông tin nhất (MICA); nếu không có, bằng 0.  
-3. Với mỗi cặp gen: ma trận Resnik giữa các thuật ngữ ý nghĩa, trọng số theo khớp zygosity/giai đoạn/giới tính (1.0/0.75/0.5/0.25); lấy max và mean thực tế.  
-4. Từ IC, lấy max/mean lý thuyết, rồi chuẩn hóa:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Nếu mẫu số lý thuyết là 0, đặt 0. Điểm 0–100 dùng cho tải xuống và thanh `Phenotypes similarity`.
+   Các thuật ngữ dưới phân vị 5 của IC được đặt về 0.
+2. Với mỗi cặp thuật ngữ MP, tìm tổ tiên chung cụ thể nhất (MICA) và dùng IC của nó làm Resnik.  
+   Tính chỉ số Jaccard trên các tập tổ tiên.  
+   Độ tương đồng thuật ngữ = `sqrt(Resnik * Jaccard)`.
+3. Với mỗi cặp gen, xây dựng ma trận thuật ngữ×thuật ngữ và áp dụng trọng số metadata.  
+   Mức khớp zygosity/giai đoạn sống/dị hình giới tính cho trọng số 0.25/0.5/0.75/1.0 ứng với 0/1/2/3 khớp.
+4. Áp dụng chuẩn hóa kiểu Phenodigm về 0–100:  
+   Dùng max theo hàng/cột để lấy max và mean thực tế.  
+   Chuẩn hóa theo max/mean lý thuyết dựa trên IC và tính  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Nếu mẫu số lý thuyết bằng 0, đặt về 0.
 
 # ✉️ Liên hệ
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

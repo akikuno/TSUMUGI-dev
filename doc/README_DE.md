@@ -287,15 +287,21 @@ Extrahiere Gen–Phänotyp-Paare mit P ≤ 0.0001 (`p_value`, `female_ko_effect_
 - Geschlecht annotieren: `female`, `male`
 
 ## Phänotypische Ähnlichkeit
-Resnik zwischen MP-Begriffen, skaliert zu **Phenodigm (0–100)**.
+TSUMUGI folgt aktuell einem Phenodigm-ähnlichen Ansatz. Wir berechnen die **Resnik-Ähnlichkeit** zwischen MP-Begriffen und die **Jaccard-Ähnlichkeit** der Vorfahrenmengen und kombinieren beides über das **geometrische Mittel**. Der wichtigste Unterschied zu Phenodigm ist eine Metadaten-Gewichtung (Zygosität, Lebensphase, sexueller Dimorphismus) bei der Aggregation.
 
-1. MP-Ontologie bauen, IC berechnen:  
+1. MP-Ontologie aufbauen und IC berechnen:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC des informativsten gemeinsamen Vorfahren (MICA); wenn keiner, 0.  
-3. Für jede Gen-Paar-Matrix Resnik-Werte mit Metadaten-Übereinstimmung (Zygosität/Lebensphase/Geschlecht: 1.0/0.75/0.5/0.25) gewichten; reale Max/Mean nehmen.  
-4. Theoretische Max/Mean aus IC ableiten, normalisieren und mitteln:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Theoretischer Nenner 0 → 0. Ergebnis 0–100 für Downloads und `Phenotypes similarity`-Regler.
+   Begriffe unter dem 5. Perzentil der IC werden auf 0 gesetzt.
+2. Für jedes MP-Begriffs-Paar den spezifischsten gemeinsamen Vorfahren (MICA) bestimmen und dessen IC als Resnik verwenden.  
+   Jaccard-Index über die Vorfahrenmengen berechnen.  
+   Begriffs-Ähnlichkeit = `sqrt(Resnik * Jaccard)`.
+3. Für jedes Genpaar eine Begriff×Begriff-Matrix aufbauen und Metadaten-Gewichtung anwenden.  
+   Übereinstimmungen von Zygosität/Lebensphase/sexuellem Dimorphismus liefern Gewichte 0.25/0.5/0.75/1.0 für 0/1/2/3 Matches.
+4. Phenodigm-Skalierung auf 0–100 anwenden:  
+   Zeilen-/Spaltenmaxima für reales Max/Mean verwenden.  
+   Mit theoretischem Max/Mean aus IC normalisieren und berechnen  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Theoretischer Nenner 0 → 0.
 
 # ✉️ Kontakt
 - Google-Formular: https://forms.gle/ME8EJZZHaRNgKZ979  

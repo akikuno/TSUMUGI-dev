@@ -286,15 +286,21 @@ Extraer pares gen–fenotipo con P (`p_value`, `female_ko_effect_p_value`, `male
 - Sexo: `female`, `male`
 
 ## Similitud fenotípica
-Calculamos **Resnik** entre términos MP y escalamos a **Phenodigm (0–100)**.
+TSUMUGI sigue un enfoque similar a Phenodigm. Calculamos la similitud de **Resnik** entre términos MP y la similitud de **Jaccard** entre conjuntos de ancestros, y las combinamos mediante la **media geométrica**. La diferencia clave con Phenodigm original es la ponderación por metadatos (cigocidad, etapa de vida, dimorfismo sexual) al agregar similitudes.
 
-1. Construir ontología MP y calcular IC:  
+1. Construir la ontología MP y calcular IC:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC del ancestro común más informativo (MICA); si no hay, 0.  
-3. Para cada par de genes: matriz de Resnik entre términos significativos, ponderada por coincidencia de metadatos (cigocidad/etapa/sexo: 1.0/0.75/0.5/0.25); tomar máximos/medias reales.  
-4. Obtener máximos/medias teóricas de los IC y normalizar:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Si el denominador teórico es 0, poner 0. El rango 0–100 se usa en descargas y en el control `Phenotypes similarity`.
+   Los términos por debajo del percentil 5 de IC se ponen a 0.
+2. Para cada par de términos MP, encontrar el ancestro común más específico (MICA) y usar su IC como Resnik.  
+   Calcular el índice de Jaccard sobre los conjuntos de ancestros.  
+   Similitud de términos = `sqrt(Resnik * Jaccard)`.
+3. Para cada par de genes, construir una matriz término×término y aplicar ponderación por metadatos.  
+   Coincidencias de cigocidad/etapa de vida/dimorfismo sexual aportan pesos 0.25/0.5/0.75/1.0 para 0/1/2/3 coincidencias.
+4. Escalado tipo Phenodigm a 0–100:  
+   Usar máximos de filas/columnas para obtener el máximo y la media reales.  
+   Normalizar por máximo/media teóricos basados en IC y calcular  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Si un denominador teórico es 0, ese término se fija en 0.
 
 # ✉️ Contacto
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

@@ -125,7 +125,8 @@
 - Update MP term filtering documentation in multiple languages.  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/54b795b)]  
 
-
+- Update “Download Raw Data” Section on TSUMUGI Top Page.  
+  Issue: [#132](https://github.com/akikuno/TSUMUGI-dev/issues/132)
 
 -------------------------------------------------------------
 

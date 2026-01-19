@@ -286,15 +286,21 @@ Extrair pares gen–fenótipo com P ≤ 0.0001 (`p_value`, `female_ko_effect_p_v
 - Sexo: `female`, `male`
 
 ## Similaridade fenotípica
-Calcula **Resnik** entre termos MP e escala para **Phenodigm (0–100)**.
+TSUMUGI atualmente segue uma abordagem semelhante ao Phenodigm. Calculamos a similaridade de **Resnik** entre termos MP e a similaridade de **Jaccard** entre conjuntos de ancestrais, e combinamos por **média geométrica**. A principal diferença do Phenodigm original é a ponderação de metadados (zigosidade, estágio de vida, dimorfismo sexual) ao agregar as similaridades.
 
-1. Construir ontologia MP e calcular IC:  
+1. Construir a ontologia MP e calcular IC:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC do ancestral comum mais informativo (MICA); se não houver, 0.  
-3. Para cada par: matriz de Resnik dos termos significativos, ponderada por metadados (zigosidade/estágio/sexo: 1.0/0.75/0.5/0.25); obter max/média reais.  
-4. Derivar max/média teóricos dos IC e normalizar:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Se o denominador teórico for 0, usar 0. O score 0–100 alimenta os downloads e o controle `Phenotypes similarity`.
+   Termos abaixo do percentil 5 de IC são definidos como 0.
+2. Para cada par de termos MP, encontrar o ancestral comum mais específico (MICA) e usar seu IC como Resnik.  
+   Calcular o índice de Jaccard sobre os conjuntos de ancestrais.  
+   Similaridade de termos = `sqrt(Resnik * Jaccard)`.
+3. Para cada par de genes, construir uma matriz termo×termo e aplicar ponderação por metadados.  
+   Correspondências de zigosidade/estágio de vida/dimorfismo sexual dão pesos 0.25/0.5/0.75/1.0 para 0/1/2/3 correspondências.
+4. Aplicar escalonamento ao estilo Phenodigm para 0–100:  
+   Usar máximos de linhas/colunas para obter max e média reais.  
+   Normalizar por max/média teóricos baseados em IC e calcular  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Se um denominador teórico for 0, o valor é definido como 0.
 
 # ✉️ Contato
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

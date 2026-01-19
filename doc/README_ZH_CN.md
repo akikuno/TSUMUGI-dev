@@ -303,15 +303,21 @@ CLI 支持标准输入/输出，可串联：`zcat ... | tsumugi mp ... | tsumugi
 - 性别: `female`, `male`
 
 ## 表型相似度
-计算 MP 术语间的 **Resnik 相似度**，并将基因对得分缩放到 **Phenodigm(0–100)**。
+TSUMUGI目前采用类似Phenodigm的方法。我们计算MP术语之间的**Resnik相似度**与祖先集合的**Jaccard相似度**，并用**几何平均**进行合并。与原始Phenodigm的主要差异是加入元数据加权（zygosity、life stage、sexual dimorphism）来汇总相似度。
 
-1. 构建 MP 本体并计算信息量(IC)：  
+1. 构建MP本体并计算信息量(IC)：  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = 最信息丰富公共祖先(MICA)的 IC（无公共祖先则为0）。  
-3. 基因对：将有意义的 MP 术语 Resnik 分数按 zygosity/生命阶段/性别匹配度(1.0/0.75/0.5/0.25)加权。  
-4. 实际最大值/平均值除以理论最大/平均并取平均：  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   若理论分母为0，则设为0。0–100 分用于下载和 `Phenotypes similarity` 滑块。
+   IC低于第5百分位的术语设为0。
+2. 对每个MP术语对，找到最具体的公共祖先(MICA)并用其IC作为Resnik。  
+   计算祖先集合的Jaccard指数。  
+   术语对相似度 = `sqrt(Resnik * Jaccard)`。
+3. 对每个基因对构建术语×术语相似度矩阵并应用元数据加权。  
+   zygosity/生命阶段/性别二态性的匹配数为0/1/2/3时，权重分别为0.25/0.5/0.75/1.0。
+4. 采用Phenodigm式缩放到0–100：  
+   使用行/列最大值获得实际max/mean。  
+   用IC得到的理论max/mean进行归一化并计算  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`。  
+   若理论分母为0，则设为0。
 
 # ✉️ 联系
 - Google 表单: https://forms.gle/ME8EJZZHaRNgKZ979  

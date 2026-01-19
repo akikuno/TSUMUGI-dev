@@ -286,15 +286,21 @@ Extraire les paires gène–phénotype avec P (`p_value`, `female_ko_effect_p_va
 - Sexe : `female`, `male`
 
 ## Similarité phénotypique
-Resnik entre termes MP → échelle Phenodigm (0–100).
+TSUMUGI suit une approche proche de Phenodigm. On calcule la similarité de **Resnik** entre termes MP et la similarité de **Jaccard** entre ensembles d’ancêtres, puis on les combine par **moyenne géométrique**. La principale différence avec Phenodigm est l’ajout d’une pondération par métadonnées (zygosité, stade de vie, dimorphisme sexuel).
 
-1. Construire l’ontologie MP, calculer l’IC :  
+1. Construire l’ontologie MP et calculer l’IC :  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC du MICA; si pas d’ancêtre commun, 0.  
-3. Pour chaque paire : matrice Resnik entre termes significatifs, pondérée par accord des métadonnées (zygosité/stade/sexe : 1.0/0.75/0.5/0.25); prendre max/moyenne réels.  
-4. Obtenir max/moyenne théoriques via les IC, puis normaliser :  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Si le dénominateur théorique est 0, mettre 0. Score 0–100 utilisé pour les téléchargements et le slider `Phenotypes similarity`.
+   Les termes sous le 5e percentile d’IC sont mis à 0.
+2. Pour chaque paire de termes MP, trouver l’ancêtre commun le plus spécifique (MICA) et utiliser son IC comme Resnik.  
+   Calculer l’indice de Jaccard sur les ensembles d’ancêtres.  
+   Similarité de termes = `sqrt(Resnik * Jaccard)`.
+3. Pour chaque paire de gènes, construire une matrice terme×terme et appliquer la pondération par métadonnées.  
+   Les correspondances zygosité/stade de vie/dimorphisme sexuel donnent des poids 0.25/0.5/0.75/1.0 pour 0/1/2/3 correspondances.
+4. Appliquer un scaling de type Phenodigm vers 0–100 :  
+   Utiliser les maxima lignes/colonnes pour obtenir le max et la moyenne réels.  
+   Normaliser par le max/la moyenne théoriques basés sur l’IC, puis calculer  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Si un dénominateur théorique est 0, on met 0.
 
 # ✉️ Contact
 - Formulaire : https://forms.gle/ME8EJZZHaRNgKZ979  

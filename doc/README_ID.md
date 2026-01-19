@@ -286,15 +286,21 @@ Ambil pasangan gen–fenotipe dengan P ≤ 0.0001 (`p_value`, `female_ko_effect_
 - Jenis kelamin: `female`, `male`
 
 ## Kesamaan fenotipik
-Hitung **Resnik** antar istilah MP dan skala ke **Phenodigm (0–100)** untuk pasangan gen.
+TSUMUGI saat ini mengikuti pendekatan mirip Phenodigm. Kami menghitung kemiripan **Resnik** antar istilah MP dan kemiripan **Jaccard** antar himpunan leluhur, lalu menggabungkannya dengan **rata-rata geometrik**. Perbedaan utama dari Phenodigm asli adalah penambahan pembobotan metadata (zygosity, life stage, sexual dimorphism) saat mengagregasi kemiripan.
 
-1. Bangun ontologi MP, hitung IC:  
+1. Bangun ontologi MP dan hitung IC:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC nenek moyang bersama paling informatif (MICA); jika tidak ada, 0.  
-3. Untuk setiap pasangan gen: matriks Resnik antar istilah signifikan, bobot kecocokan zigositas/tahap hidup/jenis kelamin (1.0/0.75/0.5/0.25); ambil max dan mean aktual.  
-4. Dapatkan max/mean teoretis dari IC istilah, lalu normalisasi:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Jika penyebut teoretis 0, setel 0. Skor 0–100 dipakai di unduhan dan slider `Phenotypes similarity`.
+   Istilah di bawah persentil ke-5 IC diset ke 0.
+2. Untuk tiap pasangan istilah MP, temukan leluhur bersama paling spesifik (MICA) dan gunakan IC-nya sebagai Resnik.  
+   Hitung indeks Jaccard pada himpunan leluhur.  
+   Kemiripan istilah = `sqrt(Resnik * Jaccard)`.
+3. Untuk setiap pasangan gen, buat matriks istilah×istilah dan terapkan bobot metadata.  
+   Kecocokan zigositas/tahap hidup/dimorfisme seksual memberi bobot 0.25/0.5/0.75/1.0 untuk 0/1/2/3 kecocokan.
+4. Terapkan penskalaan ala Phenodigm ke 0–100:  
+   Gunakan maksimum baris/kolom untuk mendapatkan max dan mean aktual.  
+   Normalisasi dengan max/mean teoretis berbasis IC lalu hitung  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Jika penyebut teoretis 0, nilainya diset 0.
 
 # ✉️ Kontak
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

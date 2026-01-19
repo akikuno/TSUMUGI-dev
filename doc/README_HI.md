@@ -289,14 +289,20 @@ P ≤ 0.0001(`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`)인
 - Sex: `female`, `male`
 
 ## 표현형 유사도
-MP 용어 간 **Resnik** 유사도를 계산하고, **Phenodigm(0–100)**으로 스케일링합니다。
+TSUMUGI는 현재 Phenodigm과 유사한 접근을 사용합니다. MP용어 간 **Resnik 유사도**와 조상 집합의 **Jaccard 유사도**를 계산한 뒤 **기하평균**으로 결합합니다. 원래 Phenodigm과의 핵심 차이는 메타데이터(zygosity, life stage, sexual dimorphism) 일치도에 따른 가중치를 적용한다는 점입니다.
 
-1. MP 온톨로지 구축, IC 계산: `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = 가장 정보가 큰 공통 조상(MICA)의 IC(없으면 0)  
-3. 유전자 쌍: zygosity/라이프스테이지/성별 일치도(1.0/0.75/0.5/0.25)로 가중  
-4. 실제 max/mean을 이론적 max/mean으로 나눈 뒤 평균:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   분모 0이면 0으로 설정. 0–100 점수는 다운로드 및 `Phenotypes similarity` 슬라이더에 사용됩니다。
+1. MP 온톨로지를 구축하고 IC를 계산합니다:  
+   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
+   IC 하위 5퍼센타일 용어는 0으로 설정합니다.
+2. 각 MP 용어 쌍에서 가장 특이한 공통 조상(MICA)을 찾고 그 IC를 Resnik으로 사용합니다.  
+   조상 집합의 Jaccard 지수를 계산합니다.  
+   용어 쌍 유사도 = `sqrt(Resnik * Jaccard)`.
+3. 각 유전자 쌍에 대해 용어×용어 유사도 행렬을 만들고 메타데이터 가중치를 적용합니다.  
+   zygosity/라이프스테이지/성적 이형 일치 수(0/1/2/3)에 대해 0.25/0.5/0.75/1.0을 부여합니다.
+4. Phenodigm 방식으로 0–100 정규화를 적용합니다:  
+   행/열 최대값에서 실제 max/mean을 구하고 IC 기반 이론 max/mean으로 정규화합니다.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   이론 분모가 0이면 0으로 둡니다.
 
 # ✉️ 연락
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  
