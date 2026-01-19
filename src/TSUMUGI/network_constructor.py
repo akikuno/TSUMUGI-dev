@@ -124,7 +124,9 @@ def _compose_disease_annotations_by_allele(
 
 def _compose_dataset(genewise_phenotype_significants, pairwise_similarity_annotations, disease_annotations_by_allele):
     gene_records_map = _compose_genewise_phenotype_significants(genewise_phenotype_significants)
-    pairwise_similarity_annotations_composed = _compose_pairwise_similarity_annotations(pairwise_similarity_annotations)
+    pairwise_similarity_annotations_composed = _compose_pairwise_similarity_annotations(
+        pairwise_similarity_annotations
+    )
     disease_annotations_composed = _compose_disease_annotations_by_allele(disease_annotations_by_allele)
     return gene_records_map, pairwise_similarity_annotations_composed, disease_annotations_composed
 
