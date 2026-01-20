@@ -91,11 +91,15 @@ Adjust network display from the left panel.
 
 #### Filter by phenotypic similarity
 `Phenotypes similarity` slider thresholds edges by Resnik→Phenodigm score.  
+
+> [!NOTE]
 > For how we compute similarity, see: 👉 [🔍 How We Calculate Phenotypically Similar Genes](#-how-we-calculate-phenotypically-similar-genes)
 
 #### Filter by phenotype severity
 `Phenotype severity` slider filters nodes by effect size (severity in KO mice). Higher values mean stronger impact.  
-> Hidden for binary phenotypes (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binary list [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or single-gene input.
+
+> [!NOTE]
+> Hidden for binary phenotypes (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binary list: 👉 [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or gene(s) input.
 
 #### Specify genotype
 Choose the genotype in which phenotypes appear:
