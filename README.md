@@ -134,7 +134,7 @@ Adjust layout, font size, edge width, and node repulsion (Cose layout).
 Export the current network as PNG/CSV/GraphML.  
 CSV includes connected-component (module) IDs and phenotype lists per gene; GraphML is Cytoscape-compatible.
 
-# 🛠 Command-Line Tool (CLI)
+# 🛠 Command-Line Interface (CLI)
 
 The TSUMUGI CLI allows you to use the latest IMPC data downloaded locally, and provides more fine-grained filtering and output options than the web tool.
 
