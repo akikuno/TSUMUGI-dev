@@ -1,5 +1,10 @@
 import pytest
-from TSUMUGI.subcommands.genes_filterer import _filter_annotations_by_genes
+from TSUMUGI.subcommands import genes_filterer
+from TSUMUGI.subcommands.genes_filterer import (
+    _filter_annotations_by_gene_pairs,
+    _filter_annotations_by_genes,
+    filter_annotations_by_gene_pairs,
+)
 
 
 @pytest.fixture
@@ -68,3 +73,39 @@ def test_empty_input_yields_nothing():
         )
     )
     assert out == []
+
+
+@pytest.mark.parametrize(
+    "gene_pairs,keep,drop,expected_idx",
+    [
+        ({frozenset({"GeneA", "GeneB"})}, True, False, [0]),
+        ({frozenset({"GeneA", "GeneB"})}, False, True, [1, 2]),
+        ({frozenset({"GeneX", "GeneY"})}, True, False, []),
+        (set(), False, True, [0, 1, 2]),
+    ],
+)
+def test_filter_annotations_by_gene_pairs_parametrized(base_input, gene_pairs, keep, drop, expected_idx):
+    out = list(
+        _filter_annotations_by_gene_pairs(
+            pairwise_similarity_annotations=base_input,
+            gene_pairs=gene_pairs,
+            keep=keep,
+            drop=drop,
+        )
+    )
+    assert out == select_expected(base_input, expected_idx)
+
+
+def test_filter_annotations_by_gene_pairs_reads_and_writes(monkeypatch, base_input):
+    dumped = []
+
+    monkeypatch.setattr(genes_filterer.io_handler, "read_jsonl", lambda path: base_input)
+    monkeypatch.setattr(genes_filterer.io_handler, "write_jsonl_to_stdout", lambda record: dumped.append(record))
+
+    filter_annotations_by_gene_pairs(
+        path_pairwise_similarity_annotations="pairwise-path",
+        gene_pairs={frozenset({"GeneC", "GeneD"})},
+        keep=True,
+    )
+
+    assert dumped == [base_input[1]]

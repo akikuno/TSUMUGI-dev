@@ -6,17 +6,18 @@ from pathlib import Path
 
 from TSUMUGI import argparser, core, validator
 from TSUMUGI.subcommands import (
+    count_filterer,
     genes_filterer,
     graphml_builder,
     life_stage_filterer,
     mp_filterer,
-    n_phenos_filterer,
+    score_filterer,
     sex_filterer,
     webapp_builder,
     zygosity_filterer,
 )
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 def main() -> None:
@@ -31,15 +32,15 @@ def main() -> None:
     if getattr(args, "statistical_results", None):
         validator.validate_statistical_results(args.statistical_results)
 
-    if getattr(args, "obo", None):
-        validator.validate_obo_file(args.obo)
+    if getattr(args, "mp_obo", None):
+        validator.validate_obo_file(args.mp_obo)
 
     if getattr(args, "impc_phenodigm", None):
         validator.validate_phenodigm_file(args.impc_phenodigm)
 
-    if getattr(args, "obo", None) and (getattr(args, "exclude", None) or getattr(args, "include", None)):
+    if getattr(args, "mp_obo", None) and (getattr(args, "exclude", None) or getattr(args, "include", None)):
         mp_term_id = args.exclude or args.include
-        validator.validate_mp_term_id(mp_term_id, args.obo)
+        validator.validate_mp_term_id(mp_term_id, args.mp_obo)
 
     ###########################################################
     # Run commands
@@ -47,6 +48,7 @@ def main() -> None:
 
     if args.cmd == "run":
         logging.info("Running TSUMUGI pipeline")
+        Path(args.output_dir).mkdir(parents=True, exist_ok=True)
         core.run_pipeline(args)
 
     # ===========================================================
@@ -58,79 +60,161 @@ def main() -> None:
     # -----------------------------------------------------
     if args.cmd == "mp":
         if args.include:
-            logging.info(f"Including gene pairs with phenotypes related to MP term: {args.include}")
-            mp_filterer.include_specific_phenotype(
-                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
-                path_obo=args.obo,
-                mp_term_id=args.include,
-                life_stage=args.life_stage,
-                sex=args.sex,
-                zygosity=args.zygosity,
-            )
-        elif args.exclude:
-            logging.info(f"Excluding gene pairs with phenotypes related to MP term: {args.exclude}")
-            mp_filterer.exclude_specific_phenotype(
-                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
-                path_genewise_phenotype_annotations=args.path_genewise,
-                path_obo=args.obo,
-                mp_term_id=args.exclude,
-                life_stage=args.life_stage,
-                sex=args.sex,
-                zygosity=args.zygosity,
-            )
+            if args.pairwise:
+                logging.info(f"Including gene pairs with phenotypes related to MP term: {args.include}")
+                mp_filterer.include_specific_phenotype(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    path_genewise_phenotype_annotations=None,
+                    path_obo=args.mp_obo,
+                    mp_term_id=args.include,
+                    life_stage=args.life_stage,
+                    sex=args.sex,
+                    zygosity=args.zygosity,
+                    is_pairwise=True,
+                )
+            else:
+                logging.info(f"Including genes with phenotypes related to MP term: {args.include}")
+                mp_filterer.include_specific_phenotype(
+                    path_pairwise_similarity_annotations=None,
+                    path_genewise_phenotype_annotations=args.path_genewise,
+                    path_obo=args.mp_obo,
+                    mp_term_id=args.include,
+                    life_stage=args.life_stage,
+                    sex=args.sex,
+                    zygosity=args.zygosity,
+                    is_pairwise=False,
+                )
+        if args.exclude:
+            if args.pairwise:
+                logging.info(f"Excluding gene pairs with phenotypes related to MP term: {args.exclude}")
+                mp_filterer.exclude_specific_phenotype(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    path_genewise_phenotype_annotations=args.path_genewise,
+                    path_obo=args.mp_obo,
+                    mp_term_id=args.exclude,
+                    life_stage=args.life_stage,
+                    sex=args.sex,
+                    zygosity=args.zygosity,
+                    is_pairwise=True,
+                )
+            else:
+                logging.info(f"Excluding genes with phenotypes related to MP term: {args.exclude}")
+                mp_filterer.exclude_specific_phenotype(
+                    path_pairwise_similarity_annotations=None,
+                    path_genewise_phenotype_annotations=args.path_genewise,
+                    path_obo=args.mp_obo,
+                    mp_term_id=args.exclude,
+                    life_stage=args.life_stage,
+                    sex=args.sex,
+                    zygosity=args.zygosity,
+                    is_pairwise=False,
+                )
 
     # -----------------------------------------------------
     # Number of phenotypes per gene/pair
     # -----------------------------------------------------
-    if args.cmd == "n-phenos":
+    if args.cmd == "count":
         logging.info("Filtering gene pairs based on number of phenotypes per gene")
         if args.genewise:
-            n_phenos_filterer.filter_by_number_of_phenotypes_per_gene(
+            count_filterer.filter_by_number_of_phenotypes_per_gene(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 path_genewise_phenotype_annotations=args.path_genewise,
                 min_phenotypes=args.min,
                 max_phenotypes=args.max,
             )
         elif args.pairwise:
-            n_phenos_filterer.filter_by_number_of_phenotypes_per_pair(
+            count_filterer.filter_by_number_of_phenotypes_per_pair(
                 path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
                 min_phenotypes=args.min,
                 max_phenotypes=args.max,
             )
 
     # -----------------------------------------------------
+    # Score of phenotype similarity per gene/pair
+    # -----------------------------------------------------
+    if args.cmd == "score":
+        logging.info("Filtering gene pairs based on the score of phenotype similarity per gene")
+        score_filterer.filter_by_score_of_phenotypes_per_pair(
+            path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+            min_phenotypes=args.min,
+            max_phenotypes=args.max,
+        )
+
+    # -----------------------------------------------------
     # gene lists filterer
     # -----------------------------------------------------
     if args.cmd == "genes":
-        if args.keep:
-            if Path(args.keep).is_file():
-                gene_list = set(Path(args.keep).read_text().splitlines())
-            else:
-                gene_list = set(args.keep.split(","))
+        if args.genewise:
+            if args.keep:
+                if Path(args.keep).is_file():
+                    gene_list = set(Path(args.keep).read_text().splitlines())
+                else:
+                    gene_list = set(args.keep.split(","))
 
-            if len(gene_list) == 0:
-                raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
+                if len(gene_list) == 0:
+                    raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
 
-            logging.info(f"Keeping phenotype annotations matching {len(gene_list)} genes")
-            genes_filterer.filter_annotations_by_genes(
-                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
-                gene_list=gene_list,
-                keep=True,
-            )
-        elif args.drop:
-            if Path(args.drop).is_file():
-                gene_list = set(Path(args.drop).read_text().splitlines())
-            else:
-                gene_list = set(args.drop.split(","))
-            if len(gene_list) == 0:
-                raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
+                logging.info(f"Keeping phenotype annotations matching {len(gene_list)} genes")
+                genes_filterer.filter_annotations_by_genes(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    gene_list=gene_list,
+                    keep=True,
+                )
+            elif args.drop:
+                if Path(args.drop).is_file():
+                    gene_list = set(Path(args.drop).read_text().splitlines())
+                else:
+                    gene_list = set(args.drop.split(","))
+                if len(gene_list) == 0:
+                    raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
 
-            logging.info(f"Dropping phenotype annotations matching {len(gene_list)} genes")
-            genes_filterer.filter_annotations_by_genes(
-                path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
-                gene_list=gene_list,
-                drop=True,
-            )
+                logging.info(f"Dropping phenotype annotations matching {len(gene_list)} genes")
+                genes_filterer.filter_annotations_by_genes(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    gene_list=gene_list,
+                    drop=True,
+                )
+        else:
+            if args.keep:
+                gene_pairs = set()
+                for record in Path(args.keep).read_text().splitlines():
+                    # TSV
+                    if "\t" in record:
+                        gene1, gene2 = record.split("\t")
+                    # CSV
+                    elif "," in record:
+                        gene1, gene2 = record.split(",")
+                    gene_pairs.add(frozenset([gene1, gene2]))
+
+                if len(gene_pairs) == 0:
+                    raise ValueError(f"Gene list is empty. Please provide at least one gene pair in {args.keep}.")
+
+                logging.info(f"Keeping phenotype annotations matching {len(gene_pairs)} gene pairs")
+                genes_filterer.filter_annotations_by_gene_pairs(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    gene_pairs=gene_pairs,
+                    keep=True,
+                )
+            elif args.drop:
+                gene_pairs = set()
+                for record in Path(args.drop).read_text().splitlines():
+                    # TSV
+                    if "\t" in record:
+                        gene1, gene2 = record.split("\t")
+                    # CSV
+                    elif "," in record:
+                        gene1, gene2 = record.split(",")
+                    gene_pairs.add(frozenset([gene1, gene2]))
+
+                if len(gene_pairs) == 0:
+                    raise ValueError(f"Gene list is empty. Please provide at least one gene pair in {args.drop}.")
+
+                logging.info(f"Dropping phenotype annotations matching {len(gene_pairs)} gene pairs")
+                genes_filterer.filter_annotations_by_gene_pairs(
+                    path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+                    gene_pairs=gene_pairs,
+                    drop=True,
+                )
 
     # -----------------------------------------------------
     # Life stage filterer

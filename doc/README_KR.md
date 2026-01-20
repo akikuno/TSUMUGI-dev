@@ -24,17 +24,17 @@
 
 TSUMUGI는 세 가지 입력을 지원합니다.
 
-### 1. 표현형(Phenotype)
+### 표현형(Phenotype)
 관심 있는 표현형을 입력하면, 그 표현형을 보이는 KO 마우스 유전자의 집합 중에서 **다른 표현형도 유사한 유전자 군**을 탐색합니다.  
 표현형 이름은 [Mammalian Phenotype Ontology(MPO)](https://www.informatics.jax.org/vocab/mp_ontology)를 따릅니다.  
 👉 [표현형 목록](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
-### 2. 유전자명(Gene)
+### 유전자명(Gene)
 유전자 하나를 지정하면, **그 KO 마우스와 표현형이 비슷한 다른 유전자 군**을 탐색합니다.  
 유전자 명칭은 [MGI](http://www.informatics.jax.org/) 기호를 따릅니다.  
 👉 [유전자 목록](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
-### 3. 유전자 리스트(Gene List)
+### 유전자 리스트(Gene List)
 여러 유전자를 줄바꿈으로 입력합니다. **리스트 내부의 유전자들 간** 표현형 유사 유전자를 추출합니다.  
 > [!CAUTION]  
 > 유사 유전자를 하나도 찾지 못하면 `No similar phenotypes were found among the entered genes.` 경고 후 중단합니다.  
@@ -78,7 +78,8 @@ TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
 
 ### 네트워크 패널
 **노드**는 유전자를 나타냅니다. 클릭하면 KO 마우스에서 관찰된 이상 표현형 리스트를 표시하며, 드래그로 위치를 조정할 수 있습니다.  
-**엣지**를 클릭하면 공유 표현형의 상세를 볼 수 있습니다.
+**엣지**를 클릭하면 공유 표현형의 상세를 볼 수 있습니다.  
+**모듈**은 유전자 서브네트워크를 다각형으로 둘러싸 표시합니다. 모듈을 클릭하면 포함된 유전자의 관련 표현형을 보여주며, 드래그로 이동시켜 겹치지 않게 배치할 수 있습니다.
 
 ### 컨트롤 패널
 좌측 패널에서 네트워크 표시를 조정할 수 있습니다.
@@ -132,8 +133,9 @@ CSV에는 모듈ID와各 유전자의 표현형 리스트가 포함되며, Graph
 
 ## 사용 가능한 명령
 - `tsumugi run`: IMPC 데이터에서 네트워크 재계산  
-- `tsumugi mp --include/--exclude`: MP 용어 포함/미표시 쌍 필터  
-- `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: 표현형 개수로 필터(쌍/유전자)  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: MP 용어 기준으로 유전자 쌍 또는 유전자 단위 필터  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: 표현형 개수로 필터(쌍/유전자)  
+- `tsumugi score (--min/--max)`: 유사도 점수로 필터(페어)
 - `tsumugi genes --keep/--drop`: 유전자 리스트로 유지/제거  
 - `tsumugi life-stage --keep/--drop`: 라이프 스테이지 필터  
 - `tsumugi sex --keep/--drop`: 성별 필터  
@@ -154,12 +156,11 @@ pip install tsumugi
 
 ## 대표 사용 예(명령별)
 
-### 1. IMPC 데이터로 네트워크 재계산(`tsumugi run`)
+### IMPC 데이터로 네트워크 재계산(`tsumugi run`)
 `--mp_obo`를 생략하면 동봉된 `data-version: releases/2025-08-27/mp.obo`를 사용합니다.  
 `--impc_phenodigm`을 생략하면 2025-10-01에 [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)에서 받은 파일을 사용합니다.
 ```bash
 tsumugi run \
-  --output_dir ./tsumugi-output \
   --statistical_results ./statistical-results-ALL.csv.gz \
   --threads 8
 ```
@@ -171,8 +172,11 @@ tsumugi run \
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
-### 2. MP 용어로 필터(`tsumugi mp --include/--exclude`)
+### MP 용어로 필터(`tsumugi mp --include/--exclude`)
 관심 있는 표현형을 가진 유전자 쌍만 추출하거나, 해당 표현형을 측정했지만 유의한 이상이 없었던 유전자 쌍을 추출합니다.
+
+- `--pairwise`(기본값): 유전자 쌍 단위 출력. `--in pairwise_similarity_annotations.jsonl(.gz)` 사용.
+- `--genewise`: 유전자 단위 출력. `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` 사용(`--exclude` 필수, `--include` 권장).
 
 ```bash
 # MP:0001146(abnormal testis morphology)와 그 하위 표현형(MP:0004849 (abnormal testis size) 등)을 포함하는 유전자 쌍만 추출
@@ -185,29 +189,64 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# MP:0001146(하위 포함)을 갖는 유의한 유전자 단위 주석 추출
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# MP:0001146(하위 포함)을 측정했으나 유의하지 않았던 유전자 추출
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
 > **지정한 MP 용어의 하위 용어도 함께 처리됩니다.**  
 > 예를 들어 `MP:0001146 (abnormal testis morphology)`를 지정하면 `MP:0004849 (abnormal testis size)` 같은 하위 용어도 고려됩니다.
 
-### 3. 표현형 개수로 필터(`tsumugi n-phenos`)
+### 표현형 개수로 필터(`tsumugi count`)
+At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
 - 유전자 쌍의 공유 표현형 수:
 ```bash
-tsumugi n-phenos --pairwise --min 3 --max 20 \
+tsumugi count --pairwise --min 3 --max 20 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_min3_max20.jsonl
 ```
 - 유전자별 표현형 수(genewise 필요):
 ```bash
-tsumugi n-phenos --genewise --min 5 --max 50 \
+tsumugi count --genewise --min 5 --max 50 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > genewise_min5_max50.jsonl
 ```
 `--min` 또는 `--max` 단독 지정도 가능합니다.
 
-### 4. 유전자 리스트로 필터(`tsumugi genes --keep/--drop`)
+
+### 유사도 점수로 필터 (`tsumugi score`)
+```txt
+tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+```
+
+`phenotype_similarity_score`(0–100) 기준으로 유전자 쌍을 필터합니다. `--min`이나 `--max` 중 하나 이상이 필요합니다.
+
+#### `--min MIN`, `--max MAX`
+유사도 점수의 하한/상한을 지정합니다. 한쪽만 지정해도 됩니다.
+
+#### `--in IN`
+페어와이즈 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
+```bash
+tsumugi score --min 50 --max 80 \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_score50_80.jsonl
+```
+
+`--min` 또는 `--max` 하나만 지정해도 됩니다.
+
+### 유전자 리스트로 필터(`tsumugi genes --keep/--drop`)
 ```bash
 tsumugi genes --keep genes.txt \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -218,28 +257,28 @@ tsumugi genes --drop geneA,geneB \
   > pairwise_drop_genes.jsonl
 ```
 
-### 5. 라이프 스테이지로 필터(`tsumugi life-stage --keep/--drop`)
+### 라이프 스테이지로 필터(`tsumugi life-stage --keep/--drop`)
 ```bash
 tsumugi life-stage --keep Early \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_lifestage_early.jsonl
 ```
 
-### 6. 성별로 필터(`tsumugi sex --keep/--drop`)
+### 성별로 필터(`tsumugi sex --keep/--drop`)
 ```bash
 tsumugi sex --drop Male \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_no_male.jsonl
 ```
 
-### 7. 접합형으로 필터(`tsumugi zygosity --keep/--drop`)
+### 접합형으로 필터(`tsumugi zygosity --keep/--drop`)
 ```bash
 tsumugi zygosity --keep Homo \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_homo.jsonl
 ```
 
-### 8. GraphML / 웹앱을 생성
+### GraphML / 웹앱을 생성
 ```bash
 tsumugi build-graphml \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -249,7 +288,6 @@ tsumugi build-graphml \
 tsumugi build-webapp \
   --in pairwise_similarity_annotations.jsonl.gz \
   --genewise genewise_phenotype_annotations.jsonl.gz \
-  --output_dir ./webapp_output
 ```
 
 CLI는 표준입력/출력을 지원하므로, `zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`처럼 파이프 연결도 가능합니다.
@@ -266,15 +304,20 @@ KO 마우스의 P값(`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_va
 - Sex: `female`, `male`
 
 ## 표현형 유사도
-MP 용어 간 **Resnik 유사도**를 계산하고, 유전자 쌍을 **Phenodigm(0–100)**으로 스케일링합니다.
+TSUMUGI는 현재 Phenodigm과 유사한 접근을 사용합니다. MP용어 간 **Resnik 유사도**와 조상 집합의 **Jaccard 유사도**를 계산한 뒤 **기하평균**으로 결합합니다. 원래 Phenodigm과의 핵심 차이는 메타데이터(zygosity, life stage, sexual dimorphism) 일치도에 따른 가중치를 적용한다는 점입니다.
 
 1. MP 온톨로지를 구축하고 정보량(IC) 계산:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(두 용어) = 가장 정보량이 큰 공통조상(MICA)의 IC(공통조상 없으면 0).  
-3. 유전자 쌍: 유의한 MP 용어 간 Resnik 점수를 zygosity/라이프스테이지/성별 일치도(1.0/0.75/0.5/0.25)로 가중.  
-4. 실제 max/mean을 이론적 max/mean으로 정규화 후 평균:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   이론 분모가 0이면 0으로 둡니다. 0–100 점수는 다운로드와 `Phenotypes similarity` 슬라이더에 사용됩니다.
+   IC 하위 5퍼센타일 용어는 0으로 설정합니다.
+2. 각 MP 용어 쌍에서 가장 특이한 공통 조상(MICA)을 찾고 그 IC를 Resnik으로 사용합니다.  
+   조상 집합의 Jaccard 지수를 계산합니다.  
+   용어 쌍 유사도 = `sqrt(Resnik * Jaccard)`.
+3. 각 유전자 쌍에 대해 용어×용어 유사도 행렬을 만들고 메타데이터 가중치를 적용합니다.  
+   zygosity/라이프스테이지/성적 이형 일치 수(0/1/2/3)에 대해 0.25/0.5/0.75/1.0을 부여합니다.
+4. Phenodigm 방식으로 0–100 정규화를 적용합니다:  
+   행/열 최대값에서 실제 max/mean을 구하고 IC 기반 이론 max/mean으로 정규화합니다.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   이론 분모가 0이면 0으로 둡니다.
 
 # ✉️ 문의
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

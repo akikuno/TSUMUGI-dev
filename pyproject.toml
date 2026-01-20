@@ -4,8 +4,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "TSUMUGI"
-version = "0.5.0"
-description = "TSUMUGI: Phenotype-driven gene network identifier"
+version = "1.0.0"
+description = "TSUMUGI: Phenotype-Driven Gene Network Identifier"
 authors = ["Akihiro Kuno <akuno@md.tsukuba.ac.jp>"]
 readme = "README.md"
 homepage = "https://github.com/akikuno/TSUMUGI"
@@ -14,9 +14,7 @@ packages = [{ include = "TSUMUGI", from = "src" }]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
-    "Operating System :: POSIX",
-    "Operating System :: MacOS",
-    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 

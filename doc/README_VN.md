@@ -24,17 +24,17 @@ Mở cho mọi người sử dụng trực tuyến 👇️
 
 TSUMUGI hỗ trợ ba kiểu nhập.
 
-### 1. Kiểu hình (Phenotype)
+### Kiểu hình (Phenotype)
 Nhập kiểu hình quan tâm để tìm **các gen có hồ sơ kiểu hình KO tương tự**.  
 Tên kiểu hình dựa trên [MPO](https://www.informatics.jax.org/vocab/mp_ontology).  
 👉 [Danh sách kiểu hình](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
-### 2. Gen (Gene)
+### Gen (Gene)
 Chỉ định một gen để tìm **các gen khác có kiểu hình KO tương tự**.  
 Theo ký hiệu [MGI](http://www.informatics.jax.org/).  
 👉 [Danh sách gen](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
-### 3. Danh sách gen (Gene List)
+### Danh sách gen (Gene List)
 Nhiều gen (mỗi dòng một gen) để tìm **trong danh sách đó**.  
 > [!CAUTION]  
 > Không tìm thấy: `No similar phenotypes were found among the entered genes.`  
@@ -78,7 +78,8 @@ Trang chuyển và vẽ mạng tự động theo đầu vào.
 
 ### Bảng mạng
 **Nút**: gen. Nhấp để xem danh sách kiểu hình bất thường; kéo để sắp xếp.  
-**Cạnh**: nhấp để xem chi tiết kiểu hình chung.
+**Cạnh**: nhấp để xem chi tiết kiểu hình chung.  
+**Module** bao quanh các mạng con gen. Nhấp để liệt kê kiểu hình của các gen trong module; kéo module để di chuyển và tránh chồng lấp.
 
 ### Bảng điều khiển
 Điều chỉnh hiển thị mạng ở bảng trái.
@@ -130,8 +131,9 @@ Phát hành này thêm CLI: tự tải dữ liệu IMPC mới, chạy lại TSUM
 
 ## Lệnh khả dụng
 - `tsumugi run`: tính lại mạng từ dữ liệu IMPC  
-- `tsumugi mp --include/--exclude`: lọc cặp gen theo thuật ngữ MP  
-- `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: lọc theo số kiểu hình (cặp/gen)  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: lọc cặp gen hoặc từng gen theo thuật ngữ MP  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: lọc theo số kiểu hình (cặp/gen)  
+- `tsumugi score (--min/--max)`: lọc theo điểm tương đồng kiểu hình (cặp gen)
 - `tsumugi genes --keep/--drop`: giữ/bỏ theo danh sách gen  
 - `tsumugi life-stage --keep/--drop`: lọc theo giai đoạn sống  
 - `tsumugi sex --keep/--drop`: lọc theo giới tính  
@@ -152,12 +154,11 @@ Sẵn sàng khi `tsumugi --version` hiển thị phiên bản.
 
 ## Ví dụ thường dùng
 
-### 1. Tính lại từ dữ liệu IMPC (`tsumugi run`)
+### Tính lại từ dữ liệu IMPC (`tsumugi run`)
 Nếu bỏ `--mp_obo`, dùng `data-version: releases/2025-08-27/mp.obo` kèm theo.  
 Nếu bỏ `--impc_phenodigm`, dùng file lấy ngày 01/10/2025 từ [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
 ```bash
 tsumugi run \
-  --output_dir ./tsumugi-output \
   --statistical_results ./statistical-results-ALL.csv.gz \
   --threads 8
 ```
@@ -169,8 +170,11 @@ tsumugi run \
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
-### 2. Lọc theo thuật ngữ MP (`tsumugi mp --include/--exclude`)
+### Lọc theo thuật ngữ MP (`tsumugi mp --include/--exclude`)
 Chỉ trích xuất các cặp gen chứa kiểu hình quan tâm, hoặc các cặp đã đo các kiểu hình đó nhưng không có bất thường đáng kể.
+
+- `--pairwise` (mặc định nếu không đặt): xuất theo cặp gen. Dùng `--in pairwise_similarity_annotations.jsonl(.gz)`.
+- `--genewise`: xuất theo từng gen. Dùng `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (bắt buộc với `--exclude`, khuyến nghị với `--include`).
 
 ```bash
 # Chỉ lấy các cặp bao gồm MP:0001146 (abnormal testis morphology) hoặc các thuật ngữ hậu duệ (ví dụ: MP:0004849 abnormal testis size)
@@ -183,29 +187,64 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# Lấy các chú giải có ý nghĩa ở mức gen chứa MP:0001146 (bao gồm thuật ngữ hậu duệ)
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# Lấy các gen đã đo MP:0001146 (bao gồm thuật ngữ hậu duệ) nhưng không ghi nhận bất thường đáng kể
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
 > **Các thuật ngữ MP hậu duệ của ID được chỉ định cũng được xử lý.**  
 > Ví dụ, khi chỉ định `MP:0001146 (abnormal testis morphology)`, các thuật ngữ hậu duệ như `MP:0004849 (abnormal testis size)` cũng được tính đến.
 
-### 3. Lọc theo số kiểu hình (`tsumugi n-phenos`)
+### Lọc theo số kiểu hình (`tsumugi count`)
+At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
 - Kiểu hình chung mỗi cặp:
 ```bash
-tsumugi n-phenos --pairwise --min 3 --max 20 \
+tsumugi count --pairwise --min 3 --max 20 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_min3_max20.jsonl
 ```
 - Kiểu hình mỗi gen (cần genewise):
 ```bash
-tsumugi n-phenos --genewise --min 5 --max 50 \
+tsumugi count --genewise --min 5 --max 50 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > genewise_min5_max50.jsonl
 ```
 `--min` hoặc `--max` có thể dùng riêng.
 
-### 4. Lọc theo danh sách gen (`tsumugi genes --keep/--drop`)
+
+### Lọc theo điểm tương đồng (`tsumugi score`)
+```txt
+tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+```
+
+Lọc cặp gen theo `phenotype_similarity_score` (0–100). Cần ít nhất một trong `--min` hoặc `--max`.
+
+#### `--min MIN`, `--max MAX`
+Giới hạn dưới/trên của điểm. Có thể dùng một trong hai để lọc một phía.
+
+#### `--in IN`
+Đường dẫn tới file anotations pairwise (JSONL/.gz); nếu bỏ qua sẽ đọc từ STDIN.
+
+```bash
+tsumugi score --min 50 --max 80 \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_score50_80.jsonl
+```
+
+`--min` hoặc `--max` dùng riêng cũng được.
+
+### Lọc theo danh sách gen (`tsumugi genes --keep/--drop`)
 ```bash
 tsumugi genes --keep genes.txt \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -216,14 +255,14 @@ tsumugi genes --drop geneA,geneB \
   > pairwise_drop_genes.jsonl
 ```
 
-### 5. Giai đoạn sống / giới tính / zygosity
+### Giai đoạn sống / giới tính / zygosity
 ```bash
 tsumugi life-stage --keep Early --in pairwise_similarity_annotations.jsonl.gz > pairwise_lifestage_early.jsonl
 tsumugi sex --drop Male --in pairwise_similarity_annotations.jsonl.gz > pairwise_no_male.jsonl
 tsumugi zygosity --keep Homo --in pairwise_similarity_annotations.jsonl.gz > pairwise_homo.jsonl
 ```
 
-### 6. Xuất GraphML / webapp
+### Xuất GraphML / webapp
 ```bash
 tsumugi build-graphml \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -233,7 +272,6 @@ tsumugi build-graphml \
 tsumugi build-webapp \
   --in pairwise_similarity_annotations.jsonl.gz \
   --genewise genewise_phenotype_annotations.jsonl.gz \
-  --output_dir ./webapp_output
 ```
 Pipeline mẫu: `zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
 
@@ -249,15 +287,21 @@ Chọn cặp gen–kiểu hình có P ≤ 0.0001 (`p_value`, `female_ko_effect_p
 - Giới tính: `female`, `male`
 
 ## Độ tương đồng kiểu hình
-Tính **Resnik** giữa các thuật ngữ MP và thu nhỏ về **Phenodigm (0–100)**.
+TSUMUGI hiện theo cách tiếp cận gần với Phenodigm. Chúng tôi tính độ tương đồng **Resnik** giữa các thuật ngữ MP và độ tương đồng **Jaccard** giữa các tập tổ tiên, rồi kết hợp bằng **trung bình hình học**. Khác biệt chính so với Phenodigm gốc là thêm trọng số metadata (zygosity, life stage, sexual dimorphism) khi tổng hợp.
 
-1. Xây dựng ontology MP, tính IC:  
+1. Xây dựng ontology MP và tính IC:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC của tổ tiên chung nhiều thông tin nhất (MICA); nếu không có, bằng 0.  
-3. Với mỗi cặp gen: ma trận Resnik giữa các thuật ngữ ý nghĩa, trọng số theo khớp zygosity/giai đoạn/giới tính (1.0/0.75/0.5/0.25); lấy max và mean thực tế.  
-4. Từ IC, lấy max/mean lý thuyết, rồi chuẩn hóa:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Nếu mẫu số lý thuyết là 0, đặt 0. Điểm 0–100 dùng cho tải xuống và thanh `Phenotypes similarity`.
+   Các thuật ngữ dưới phân vị 5 của IC được đặt về 0.
+2. Với mỗi cặp thuật ngữ MP, tìm tổ tiên chung cụ thể nhất (MICA) và dùng IC của nó làm Resnik.  
+   Tính chỉ số Jaccard trên các tập tổ tiên.  
+   Độ tương đồng thuật ngữ = `sqrt(Resnik * Jaccard)`.
+3. Với mỗi cặp gen, xây dựng ma trận thuật ngữ×thuật ngữ và áp dụng trọng số metadata.  
+   Mức khớp zygosity/giai đoạn sống/dị hình giới tính cho trọng số 0.25/0.5/0.75/1.0 ứng với 0/1/2/3 khớp.
+4. Áp dụng chuẩn hóa kiểu Phenodigm về 0–100:  
+   Dùng max theo hàng/cột để lấy max và mean thực tế.  
+   Chuẩn hóa theo max/mean lý thuyết dựa trên IC và tính  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Nếu mẫu số lý thuyết bằng 0, đặt về 0.
 
 # ✉️ Liên hệ
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

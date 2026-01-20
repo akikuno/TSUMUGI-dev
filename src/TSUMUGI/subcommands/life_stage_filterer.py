@@ -45,4 +45,4 @@ def filter_annotations_by_life_stage(
         drop=drop,
     ):
         # output to stdout as JSONL
-        io_handler.safe_jsonl_dump(record)
+        io_handler.write_jsonl_to_stdout(record)

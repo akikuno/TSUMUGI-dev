@@ -24,17 +24,17 @@ Disponível para todos na web 👇️
 
 TSUMUGI oferece três tipos de entrada.
 
-### 1. Fenótipo (Phenotype)
+### Fenótipo (Phenotype)
 Informe um fenótipo de interesse para buscar **genes cujos KO tenham perfis fenotípicos semelhantes**.  
 Nomes baseados na [MPO](https://www.informatics.jax.org/vocab/mp_ontology).  
 👉 [Lista de fenótipos](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
-### 2. Gene (Gene)
+### Gene (Gene)
 Informe um gene para encontrar **outros genes com fenótipos KO parecidos**.  
 Símbolos seguem a [MGI](http://www.informatics.jax.org/).  
 👉 [Lista de genes](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
-### 3. Lista de genes (Gene List)
+### Lista de genes (Gene List)
 Cole vários genes (um por linha) para buscar **dentro da lista**.  
 > [!CAUTION]  
 > Se nada for encontrado: `No similar phenotypes were found among the entered genes.`  
@@ -78,7 +78,8 @@ Página muda e desenha a rede automaticamente.
 
 ### Painel da rede
 **Nós** representam genes. Clique para ver fenótipos anormais; arraste para reposicionar.  
-**Arestas**: clique para ver detalhes de fenótipos compartilhados.
+**Arestas**: clique para ver detalhes de fenótipos compartilhados.  
+**Módulos** contornam sub-redes gênicas. Clique para listar fenótipos dos genes do módulo; arraste os módulos para reposicionar e evitar sobreposição.
 
 ### Painel de controle
 Ajuste de exibição no painel esquerdo.
@@ -130,8 +131,9 @@ Esta versão adiciona o CLI para recalcular com dados IMPC, aplicar filtros fino
 
 ## Comandos disponíveis
 - `tsumugi run`: recalcular a rede a partir de dados IMPC  
-- `tsumugi mp --include/--exclude`: incluir/excluir pares pelo termo MP  
-- `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: filtrar por contagem de fenótipos (pares/genes)  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: incluir/excluir pares ou genes pelo termo MP  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: filtrar por contagem de fenótipos (pares/genes)  
+- `tsumugi score (--min/--max)`: filtrar por pontuação de similaridade (pares de genes)
 - `tsumugi genes --keep/--drop`: manter/remover por lista de genes  
 - `tsumugi life-stage --keep/--drop`: filtrar por estágio de vida  
 - `tsumugi sex --keep/--drop`: filtrar por sexo  
@@ -152,12 +154,11 @@ Pronto se `tsumugi --version` mostrar a versão.
 
 ## Uso comum (por comando)
 
-### 1. Recalcular com dados IMPC (`tsumugi run`)
+### Recalcular com dados IMPC (`tsumugi run`)
 Se `--mp_obo` for omitido, usa o `data-version: releases/2025-08-27/mp.obo` incluído.  
 Se `--impc_phenodigm` for omitido, usa o arquivo obtido em 01/10/2025 do [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
 ```bash
 tsumugi run \
-  --output_dir ./tsumugi-output \
   --statistical_results ./statistical-results-ALL.csv.gz \
   --threads 8
 ```
@@ -169,8 +170,11 @@ Saídas: `./tsumugi-output` contém genewise_phenotype_annotations.jsonl.gz, pai
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
-### 2. Filtrar por termo MP (`tsumugi mp --include/--exclude`)
+### Filtrar por termo MP (`tsumugi mp --include/--exclude`)
 Extraia apenas pares de genes com os fenótipos de interesse ou pares em que esses fenótipos foram medidos, mas não apresentaram anomalias significativas.
+
+- `--pairwise` (padrão se nada for definido): saída em pares de genes. Use `--in pairwise_similarity_annotations.jsonl(.gz)`.
+- `--genewise`: saída por gene individual. Use `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (obrigatório com `--exclude`, recomendado com `--include`).
 
 ```bash
 # Extrair apenas os pares que incluam MP:0001146 (abnormal testis morphology) ou termos descendentes (ex.: MP:0004849 abnormal testis size)
@@ -183,28 +187,63 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# Extrair anotações significativas por gene contendo MP:0001146 (descendentes incluídos)
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# Extrair genes medidos para MP:0001146 (descendentes incluídos) sem anomalia significativa
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
 > **Termos MP descendentes do ID especificado também são considerados.**  
 > Por exemplo, ao indicar `MP:0001146 (abnormal testis morphology)`, termos descendentes como `MP:0004849 (abnormal testis size)` também são incluídos.
 
-### 3. Filtrar por número de fenótipos (`tsumugi n-phenos`)
+### Filtrar por número de fenótipos (`tsumugi count`)
+At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
 - Fenótipos compartilhados por par:
 ```bash
-tsumugi n-phenos --pairwise --min 3 --max 20 \
+tsumugi count --pairwise --min 3 --max 20 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_min3_max20.jsonl
 ```
 - Fenótipos por gen (genewise necessário):
 ```bash
-tsumugi n-phenos --genewise --min 5 --max 50 \
+tsumugi count --genewise --min 5 --max 50 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > genewise_min5_max50.jsonl
 ```
 
-### 4. Lista de genes (`tsumugi genes --keep/--drop`)
+
+### Filtrar por pontuação de similaridade (`tsumugi score`)
+```txt
+tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+```
+
+Filtra pares de genes por `phenotype_similarity_score` (0–100). É obrigatório informar ao menos `--min` ou `--max`.
+
+#### `--min MIN`, `--max MAX`
+Limites inferior/superior do score. Use apenas um deles para filtragem unidirecional.
+
+#### `--in IN`
+Caminho para o arquivo de anotações pairwise (JSONL/.gz); se omitido, lê de STDIN.
+
+```bash
+tsumugi score --min 50 --max 80 \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_score50_80.jsonl
+```
+
+`--min` ou `--max` isoladamente funciona.
+
+### Lista de genes (`tsumugi genes --keep/--drop`)
 ```bash
 tsumugi genes --keep genes.txt \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -215,14 +254,14 @@ tsumugi genes --drop geneA,geneB \
   > pairwise_drop_genes.jsonl
 ```
 
-### 5. Estágio de vida / sexo / zigosidade
+### Estágio de vida / sexo / zigosidade
 ```bash
 tsumugi life-stage --keep Early --in pairwise_similarity_annotations.jsonl.gz > pairwise_lifestage_early.jsonl
 tsumugi sex --drop Male --in pairwise_similarity_annotations.jsonl.gz > pairwise_no_male.jsonl
 tsumugi zygosity --keep Homo --in pairwise_similarity_annotations.jsonl.gz > pairwise_homo.jsonl
 ```
 
-### 6. Exportar GraphML / Webapp
+### Exportar GraphML / Webapp
 ```bash
 tsumugi build-graphml \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -232,7 +271,6 @@ tsumugi build-graphml \
 tsumugi build-webapp \
   --in pairwise_similarity_annotations.jsonl.gz \
   --genewise genewise_phenotype_annotations.jsonl.gz \
-  --output_dir ./webapp_output
 ```
 Pipeline: `zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
 
@@ -248,15 +286,21 @@ Extrair pares gen–fenótipo com P ≤ 0.0001 (`p_value`, `female_ko_effect_p_v
 - Sexo: `female`, `male`
 
 ## Similaridade fenotípica
-Calcula **Resnik** entre termos MP e escala para **Phenodigm (0–100)**.
+TSUMUGI atualmente segue uma abordagem semelhante ao Phenodigm. Calculamos a similaridade de **Resnik** entre termos MP e a similaridade de **Jaccard** entre conjuntos de ancestrais, e combinamos por **média geométrica**. A principal diferença do Phenodigm original é a ponderação de metadados (zigosidade, estágio de vida, dimorfismo sexual) ao agregar as similaridades.
 
-1. Construir ontologia MP e calcular IC:  
+1. Construir a ontologia MP e calcular IC:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC do ancestral comum mais informativo (MICA); se não houver, 0.  
-3. Para cada par: matriz de Resnik dos termos significativos, ponderada por metadados (zigosidade/estágio/sexo: 1.0/0.75/0.5/0.25); obter max/média reais.  
-4. Derivar max/média teóricos dos IC e normalizar:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Se o denominador teórico for 0, usar 0. O score 0–100 alimenta os downloads e o controle `Phenotypes similarity`.
+   Termos abaixo do percentil 5 de IC são definidos como 0.
+2. Para cada par de termos MP, encontrar o ancestral comum mais específico (MICA) e usar seu IC como Resnik.  
+   Calcular o índice de Jaccard sobre os conjuntos de ancestrais.  
+   Similaridade de termos = `sqrt(Resnik * Jaccard)`.
+3. Para cada par de genes, construir uma matriz termo×termo e aplicar ponderação por metadados.  
+   Correspondências de zigosidade/estágio de vida/dimorfismo sexual dão pesos 0.25/0.5/0.75/1.0 para 0/1/2/3 correspondências.
+4. Aplicar escalonamento ao estilo Phenodigm para 0–100:  
+   Usar máximos de linhas/colunas para obter max e média reais.  
+   Normalizar por max/média teóricos baseados em IC e calcular  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Se um denominador teórico for 0, o valor é definido como 0.
 
 # ✉️ Contato
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

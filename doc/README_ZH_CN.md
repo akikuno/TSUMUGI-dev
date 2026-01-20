@@ -24,17 +24,17 @@
 
 TSUMUGI 支持三种输入。
 
-### 1. 表型（Phenotype）
+### 表型（Phenotype）
 输入关注的表型，在该表型的 KO 小鼠基因中寻找**整体表型也相似的基因群**。  
 表型名称基于 [Mammalian Phenotype Ontology (MPO)](https://www.informatics.jax.org/vocab/mp_ontology)。  
 👉 [表型列表](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
-### 2. 基因名（Gene）
+### 基因名（Gene）
 指定一个基因，寻找**KO 小鼠表型相似的其他基因群**。  
 基因符号遵循 [MGI](http://www.informatics.jax.org/)。  
 👉 [基因列表](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
-### 3. 基因列表（Gene List）
+### 基因列表（Gene List）
 支持多个基因（每行一个），在列表内部提取**表型相似的基因**。  
 > [!CAUTION]  
 > 若找不到相似基因：`No similar phenotypes were found among the entered genes.`  
@@ -78,7 +78,8 @@ TSUMUGI 发布 gzip 压缩的 JSONL 文件。
 
 ### 网络面板
 **节点**代表基因。点击可查看该 KO 小鼠的异常表型列表，拖拽可调整位置。  
-**边**点击可查看共享表型的详情。
+**边**点击可查看共享表型的详情。  
+**模块**以多边形圈出基因子网络。点击模块可列出其中基因涉及的表型；可拖拽模块以重新摆放并避免重叠。
 
 ### 控制面板
 在左侧面板调整网络显示。
@@ -131,8 +132,9 @@ CSV 含模块ID及每个基因的表型列表；GraphML 与 Cytoscape 兼容。
 
 ## 可用命令
 - `tsumugi run`: 由 IMPC 数据重算网络  
-- `tsumugi mp --include/--exclude`: 按 MP 术语包含/排除基因对  
-- `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: 按表型数过滤（基因对/基因）  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 按 MP 术语包含/排除基因对或基因  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: 按表型数过滤（基因对/基因）  
+- `tsumugi score (--min/--max)`: 按表型相似性得分筛选（基因对）
 - `tsumugi genes --keep/--drop`: 基因列表保留/剔除  
 - `tsumugi life-stage --keep/--drop`: 按生命阶段过滤  
 - `tsumugi sex --keep/--drop`: 按性别过滤  
@@ -153,12 +155,11 @@ pip install tsumugi
 
 ## 常用示例（按命令）
 
-### 1. 用 IMPC 数据重算(`tsumugi run`)
+### 用 IMPC 数据重算(`tsumugi run`)
 若省略 `--mp_obo`，使用内置 `data-version: releases/2025-08-27/mp.obo`。  
 若省略 `--impc_phenodigm`，使用 2025-10-01 从 [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/) 获取的文件。
 ```bash
 tsumugi run \
-  --output_dir ./tsumugi-output \
   --statistical_results ./statistical-results-ALL.csv.gz \
   --threads 8
 ```
@@ -170,8 +171,11 @@ tsumugi run \
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
-### 2. 按 MP 术语过滤(`tsumugi mp --include/--exclude`)
+### 按 MP 术语过滤(`tsumugi mp --include/--exclude`)
 仅提取包含目标表型的基因对，或提取已测量该表型但未出现显著异常的基因对。
+
+- `--pairwise`（默认）: 输出基因对。使用 `--in pairwise_similarity_annotations.jsonl(.gz)`。
+- `--genewise`: 输出单基因记录。使用 `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)`（`--exclude` 必需，`--include` 建议）。
 
 ```bash
 # 仅提取包含 MP:0001146 (abnormal testis morphology) 或其子术语（如 MP:0004849 (abnormal testis size)）的基因对
@@ -184,29 +188,64 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# 提取含 MP:0001146（含子术语）的显著基因级注释
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# 提取已测量 MP:0001146（含子术语）但未显著异常的基因
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
 > **会同时处理指定 MP 术语的子术语。**  
 > 例如指定 `MP:0001146 (abnormal testis morphology)` 时，也会考虑 `MP:0004849 (abnormal testis size)` 等子术语。
 
-### 3. 按表型数量过滤(`tsumugi n-phenos`)
+### 按表型数量过滤(`tsumugi count`)
+At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
 - 每对共享表型数:
 ```bash
-tsumugi n-phenos --pairwise --min 3 --max 20 \
+tsumugi count --pairwise --min 3 --max 20 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_min3_max20.jsonl
 ```
 - 每基因表型数（需 genewise）:
 ```bash
-tsumugi n-phenos --genewise --min 5 --max 50 \
+tsumugi count --genewise --min 5 --max 50 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > genewise_min5_max50.jsonl
 ```
 `--min` 或 `--max` 可单独指定。
 
-### 4. 基因列表过滤(`tsumugi genes --keep/--drop`)
+
+### 按相似性得分筛选 (`tsumugi score`)
+```txt
+tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+```
+
+按 `phenotype_similarity_score`（0–100）过滤基因对。`--min` 和 `--max` 至少要提供一个。
+
+#### `--min MIN`, `--max MAX`
+相似性得分的下/上限。可单独使用其中一个进行单向过滤。
+
+#### `--in IN`
+成对注释文件路径（JSONL/.gz）；省略则从 STDIN 读取。
+
+```bash
+tsumugi score --min 50 --max 80 \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_score50_80.jsonl
+```
+
+`--min` 或 `--max` 单独使用也可以。
+
+### 基因列表过滤(`tsumugi genes --keep/--drop`)
 ```bash
 tsumugi genes --keep genes.txt \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -217,28 +256,28 @@ tsumugi genes --drop geneA,geneB \
   > pairwise_drop_genes.jsonl
 ```
 
-### 5. 按生命阶段过滤(`tsumugi life-stage --keep/--drop`)
+### 按生命阶段过滤(`tsumugi life-stage --keep/--drop`)
 ```bash
 tsumugi life-stage --keep Early \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_lifestage_early.jsonl
 ```
 
-### 6. 按性别过滤(`tsumugi sex --keep/--drop`)
+### 按性别过滤(`tsumugi sex --keep/--drop`)
 ```bash
 tsumugi sex --drop Male \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_no_male.jsonl
 ```
 
-### 7. 按接合型过滤(`tsumugi zygosity --keep/--drop`)
+### 按接合型过滤(`tsumugi zygosity --keep/--drop`)
 ```bash
 tsumugi zygosity --keep Homo \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_homo.jsonl
 ```
 
-### 8. 导出 GraphML / Web 应用
+### 导出 GraphML / Web 应用
 ```bash
 tsumugi build-graphml \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -248,7 +287,6 @@ tsumugi build-graphml \
 tsumugi build-webapp \
   --in pairwise_similarity_annotations.jsonl.gz \
   --genewise genewise_phenotype_annotations.jsonl.gz \
-  --output_dir ./webapp_output
 ```
 
 CLI 支持标准输入/输出，可串联：`zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
@@ -265,15 +303,21 @@ CLI 支持标准输入/输出，可串联：`zcat ... | tsumugi mp ... | tsumugi
 - 性别: `female`, `male`
 
 ## 表型相似度
-计算 MP 术语间的 **Resnik 相似度**，并将基因对得分缩放到 **Phenodigm(0–100)**。
+TSUMUGI目前采用类似Phenodigm的方法。我们计算MP术语之间的**Resnik相似度**与祖先集合的**Jaccard相似度**，并用**几何平均**进行合并。与原始Phenodigm的主要差异是加入元数据加权（zygosity、life stage、sexual dimorphism）来汇总相似度。
 
-1. 构建 MP 本体并计算信息量(IC)：  
+1. 构建MP本体并计算信息量(IC)：  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = 最信息丰富公共祖先(MICA)的 IC（无公共祖先则为0）。  
-3. 基因对：将有意义的 MP 术语 Resnik 分数按 zygosity/生命阶段/性别匹配度(1.0/0.75/0.5/0.25)加权。  
-4. 实际最大值/平均值除以理论最大/平均并取平均：  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   若理论分母为0，则设为0。0–100 分用于下载和 `Phenotypes similarity` 滑块。
+   IC低于第5百分位的术语设为0。
+2. 对每个MP术语对，找到最具体的公共祖先(MICA)并用其IC作为Resnik。  
+   计算祖先集合的Jaccard指数。  
+   术语对相似度 = `sqrt(Resnik * Jaccard)`。
+3. 对每个基因对构建术语×术语相似度矩阵并应用元数据加权。  
+   zygosity/生命阶段/性别二态性的匹配数为0/1/2/3时，权重分别为0.25/0.5/0.75/1.0。
+4. 采用Phenodigm式缩放到0–100：  
+   使用行/列最大值获得实际max/mean。  
+   用IC得到的理论max/mean进行归一化并计算  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`。  
+   若理论分母为0，则设为0。
 
 # ✉️ 联系
 - Google 表单: https://forms.gle/ME8EJZZHaRNgKZ979  

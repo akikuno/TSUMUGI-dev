@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Generator, Iterable, Iterator
 
 ###########################################################
 # annotate_life_stage
@@ -18,12 +19,12 @@ def _annotate_life_stage(procedure_name: str, pipeline_name: str, embryo_pattern
         return "Early"
 
 
-def annotate_life_stage(records_annotated, embryo_assays: set[str]) -> list[dict]:
+def annotate_life_stage(records_annotated, embryo_assays: set[str]) -> Iterator[dict]:
     embryo_pattern = re.compile("|".join(map(re.escape, embryo_assays)))
     for record in records_annotated:
         record["life_stage"] = _annotate_life_stage(record["procedure_name"], record["pipeline_name"], embryo_pattern)
 
-    return records_annotated
+        yield record
 
 
 ###########################################################
@@ -42,7 +43,7 @@ def _annotate_sexual_dimorphism(
         return "None"
 
 
-def annotate_sexual_dimorphism(records_annotated, threshold: float = 1e-4) -> list[dict]:
+def annotate_sexual_dimorphism(records_annotated, threshold: float = 1e-4) -> Generator[dict]:
     for record in records_annotated:
         # Annotate sexual dimorphism
         record["sexual_dimorphism"] = _annotate_sexual_dimorphism(
@@ -55,7 +56,7 @@ def annotate_sexual_dimorphism(records_annotated, threshold: float = 1e-4) -> li
         elif record["sexual_dimorphism"] == "Male":
             record["effect_size"] = record["male_ko_parameter_estimate"]
 
-    return records_annotated
+        yield record
 
 
 ###########################################################
@@ -63,7 +64,7 @@ def annotate_sexual_dimorphism(records_annotated, threshold: float = 1e-4) -> li
 ###########################################################
 
 
-def annotate_diseases(records_annotated, disease_annotations_by_gene: dict) -> list[dict]:
+def annotate_diseases(records_annotated, disease_annotations_by_gene: dict) -> Generator[dict]:
     for record in records_annotated:
         if not record["significant"]:
             record["disease_annotation"] = []
@@ -84,17 +85,19 @@ def annotate_diseases(records_annotated, disease_annotations_by_gene: dict) -> l
 
         record["disease_annotation"] = sorted(record["disease_annotation"])
 
-    return records_annotated
+        yield record
 
 
-def annotate_non_significant_terms(records_annotated: list[dict]) -> list[dict]:
+def annotate_significant(records_annotated: Iterable[dict]) -> Generator[dict]:
     for record in records_annotated:
         if record["mp_term_id"]:
             record["significant"] = True
-            continue
+            yield record
+
         record["effect_size"] = 0.0
         record["p_value"] = 1.0
         record["significant"] = False
         record["mp_term_id"] = record["intermediate_mp_term_id"].split(",")[-1]
         record["mp_term_name"] = record["intermediate_mp_term_name"].split(",")[-1]
-    return records_annotated
+
+        yield record

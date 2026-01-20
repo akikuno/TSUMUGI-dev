@@ -9,40 +9,16 @@ from pathlib import Path
 ###########################################################
 
 
-def select_targetted_phenotypes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
-    if is_test:
-        targetted_phenotypes = [
-            "edema",
-            "male infertility",
-            "increased fasting circulating glucose level",
-            "preweaning lethality, complete penetrance",
-            "increased blood urea nitrogen level",
-            "increased circulating glycerol level",
-            "convulsive seizures",
-        ]
-    else:
-        mp_terms_file = Path(TEMPDIR, "webapp", "available_mp_terms.txt")
-        targetted_phenotypes = mp_terms_file.read_text().splitlines() if mp_terms_file.exists() else []
+def select_targetted_phenotypes(TEMPDIR: Path) -> set[str]:
+    mp_terms_file = Path(TEMPDIR, "webapp", "available_mp_terms.txt")
+    targetted_phenotypes = mp_terms_file.read_text().splitlines() if mp_terms_file.exists() else []
 
     return set(targetted_phenotypes)
 
 
-def select_targetted_genes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
-    if is_test:
-        targetted_genes = [
-            "Rab10",
-            "Ints8",
-            "Trappc11",
-            "Zfp39",
-            "Kcnma1",
-            "Plekha8",
-            "Dstn",
-            "Vrk1",
-            "Sox4",
-        ]
-    else:
-        gene_symbols_file = Path(TEMPDIR, "webapp", "available_gene_symbols.txt")
-        targetted_genes = gene_symbols_file.read_text().splitlines() if gene_symbols_file.exists() else []
+def select_targetted_genes(TEMPDIR: Path) -> set[str]:
+    gene_symbols_file = Path(TEMPDIR, "webapp", "available_gene_symbols.txt")
+    targetted_genes = gene_symbols_file.read_text().splitlines() if gene_symbols_file.exists() else []
 
     return set(targetted_genes)
 
@@ -55,9 +31,6 @@ def select_targetted_genes(TEMPDIR: Path, is_test: bool = True) -> set[str]:
 def _prepare_directories(output_dir: str | Path) -> None:
     Path(output_dir / "data" / "phenotype").mkdir(parents=True, exist_ok=True)
     Path(output_dir / "data" / "genesymbol").mkdir(parents=True, exist_ok=True)
-    Path(output_dir / "app" / "phenotype").mkdir(parents=True, exist_ok=True)
-    Path(output_dir / "app" / "genesymbol").mkdir(parents=True, exist_ok=True)
-    Path(output_dir / "app" / "genelist").mkdir(parents=True, exist_ok=True)
 
 
 def _generate_index_html(output_dir: str | Path, TSUMUGI_VERSION: str) -> None:
@@ -145,6 +118,7 @@ def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
         Path(TEMPDIR, "webapp", "available_gene_symbols.txt"): data_dir / "available_gene_symbols.txt",
         Path(TEMPDIR, "webapp", "marker_symbol_accession_id.json"): data_dir / "marker_symbol_accession_id.json",
         Path(TEMPDIR, "webapp", "binary_phenotypes.txt"): data_dir / "binary_phenotypes.txt",
+        Path(TEMPDIR, "webapp", "mp_term_id_lookup.json"): data_dir / "mp_term_id_lookup.json",
         Path(ROOT_DIR / "genewise_phenotype_annotations.jsonl.gz"): data_dir
         / "genewise_phenotype_annotations.jsonl.gz",
         Path(ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz"): data_dir
@@ -168,7 +142,7 @@ def prepare_files(
     _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR, output_dir)
     _copy_webapp_files(TEMPDIR, output_dir)
     _generate_index_html(output_dir, TSUMUGI_VERSION)
-    _write_version_file(output_dir, TSUMUGI_VERSION)
+    _write_version_file(Path(output_dir, "app"), TSUMUGI_VERSION)
 
 
 ###########################################################

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import defaultdict
+from collections.abc import Iterator
 from concurrent.futures import ProcessPoolExecutor
 from itertools import combinations, combinations_with_replacement
 
@@ -15,153 +16,151 @@ from TSUMUGI.ontology_handler import (
 )
 
 ###########################################################
-# Shared utilities
-###########################################################
-
-
-def _normalize_pair_key(term1_id: str, term2_id: str) -> tuple[str, str]:
-    """Return a stable tuple key for a pair of term IDs."""
-    return (term1_id, term2_id) if term1_id <= term2_id else (term2_id, term1_id)
-
-
-def _prepare_similarity_maps(
-    term_pair_similarity_map: dict[frozenset[str], dict[str | None, float]],
-) -> tuple[dict[tuple[str, str], tuple[str | None, float]], dict[str, float]]:
-    """
-    Flatten similarity map for faster single-thread lookup.
-    Returns:
-        pair_similarity_lookup: {(t1, t2): (common_ancestor, similarity)}
-        term_ic_map: {term_id: ic_score}
-    """
-    pair_similarity_lookup: dict[tuple[str, str], tuple[str | None, float]] = {}
-    term_ic_map: dict[str, float] = {}
-
-    for key_fs, value_dict in term_pair_similarity_map.items():
-        common_ancestor, similarity = next(iter(value_dict.items()))
-        if len(key_fs) == 1:
-            term = next(iter(key_fs))
-            term_ic_map[term] = similarity
-            pair_similarity_lookup[(term, term)] = (common_ancestor, similarity)
-            continue
-
-        t1, t2 = sorted(key_fs)
-        pair_similarity_lookup[(t1, t2)] = (common_ancestor, similarity)
-
-    return pair_similarity_lookup, term_ic_map
-
-
-###########################################################
 # Pairwise term similarity (with multiprocessing)
 ###########################################################
 
-_worker_parent_term_map: dict[str, set[str]] | None = None
-_worker_child_term_map: dict[str, set[str]] | None = None
-_worker_ic_map: dict[str, float] | None = None
 
-
-def _init_worker(
-    parent_term_map: dict[str, set[str]], child_term_map: dict[str, set[str]], ic_map: dict[str, float]
-) -> None:
-    """Initializer for worker processes to avoid repeatedly pickling large objects."""
-    global _worker_parent_term_map, _worker_child_term_map, _worker_ic_map
-    _worker_parent_term_map = parent_term_map
-    _worker_child_term_map = child_term_map
-    _worker_ic_map = ic_map
-
-
-def _precompute_information_content(
-    ontology_terms: dict[str, dict], child_term_map: dict[str, set[str]]
+def _calculate_term_ic_map(
+    ontology_terms: dict[str, dict], child_term_map: dict[str, set[str]], ic_threshold: int = 5
 ) -> dict[str, float]:
-    """Precompute information content (IC) for all ontology terms."""
+    """
+    Calculate information content (IC) for all ontology terms.
+    Annotate 0 for terms below the given IC threshold percentile (default: 5th percentile).
+    """
     total_term_count = len(ontology_terms)
-    ic_map: dict[str, float] = {}
+    term_ic_map: dict[str, float] = {}
 
     for term_id in ontology_terms:
         descendants = find_all_descendant_terms(term_id, child_term_map)
         term_count = len(descendants) + 1
         probability = term_count / total_term_count
-        ic_map[term_id] = -math.log(probability)
+        term_ic_map[term_id] = -math.log(probability)
 
-    return ic_map
+    ic_values = list(term_ic_map.values())
+    ic_min_values = np.percentile(ic_values, ic_threshold)
+    for term_id, ic in term_ic_map.items():
+        if ic < ic_min_values:
+            term_ic_map[term_id] = 0.0
+
+    return term_ic_map
 
 
-def _compute_pair_mica_and_resnik(
-    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], ic_map: dict[str, float]
+_worker_parent_term_map: dict[str, set[str]] | None = None
+_worker_child_term_map: dict[str, set[str]] | None = None
+_worker_term_ic_map: dict[str, float] | None = None
+
+
+def _init_worker(
+    parent_term_map: dict[str, set[str]], child_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
+) -> None:
+    """Initializer for worker processes to avoid repeatedly pickling large objects."""
+    global _worker_parent_term_map, _worker_child_term_map, _worker_term_ic_map
+    _worker_parent_term_map = parent_term_map
+    _worker_child_term_map = child_term_map
+    _worker_term_ic_map = term_ic_map
+
+
+def _calculate_pair_mica_and_resnik(
+    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
 ) -> tuple[str | None, float]:
-    """Compute MSCA (by IC) and Resnik similarity using precomputed IC."""
+    """Calculate MSCA (by IC) and Resnik similarity using precalculated IC."""
     if term1_id == term2_id:
-        return term1_id, ic_map.get(term1_id, 0.0)
-
+        return term1_id, term_ic_map.get(term1_id, 0.0)
     common_ancestors = find_common_ancestors(term1_id, term2_id, parent_term_map)
     if not common_ancestors:
         return None, 0.0
 
-    msca = max(common_ancestors, key=lambda t: ic_map.get(t, 0.0))
-    similarity = ic_map.get(msca, 0.0)
+    msca = max(common_ancestors, key=lambda t: term_ic_map.get(t, 0.0))
+    similarity = term_ic_map.get(msca, 0.0)
     return msca, similarity
 
 
-def _compute_pair_worker(term_pair: tuple[str, str]) -> tuple[frozenset[str], dict[str | None, float]]:
-    """Worker-side computation using globals set by _init_worker."""
+def _calculate_pair_jaccard(
+    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
+) -> float:
+    """Calculate Jaccard index for parent ancestors."""
+    if term1_id == term2_id:
+        return 1.0
+    ancestors1 = parent_term_map.get(term1_id, set())
+    ancestors2 = parent_term_map.get(term2_id, set())
+
+    intersection = ancestors1.intersection(ancestors2)
+    union = ancestors1.union(ancestors2)
+
+    if not union:
+        return 0.0
+
+    jaccard_index = len(intersection) / len(union)
+    return jaccard_index
+
+
+def _calculate_pair_worker(term_pair: tuple[str, str]) -> tuple[tuple[str], dict[str | None, float]]:
+    """Worker-side calculation using globals set by _init_worker."""
     term1_id, term2_id = term_pair
 
     parent_term_map = _worker_parent_term_map
-    ic_map = _worker_ic_map
+    term_ic_map = _worker_term_ic_map
 
-    if parent_term_map is None or ic_map is None:
+    if parent_term_map is None or term_ic_map is None:
         raise RuntimeError("Worker maps are not initialized.")
 
     if term1_id == term2_id:
         msca = term1_id
-        sim = ic_map.get(term1_id, 0.0)
+        sim = term_ic_map.get(term1_id, 0.0)
     else:
-        common_ancestors = find_common_ancestors(term1_id, term2_id, parent_term_map)
-        if not common_ancestors:
-            return frozenset((term1_id, term2_id)), {None: 0.0}
-        msca = max(common_ancestors, key=lambda t: ic_map.get(t, 0.0))
-        sim = ic_map.get(msca, 0.0)
+        msca, sim = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
 
-    return frozenset((term1_id, term2_id)), {msca: sim}
+    term_pairs = tuple(sorted((term1_id, term2_id)))
+    return term_pairs, {msca: sim}
 
 
-def _compute_pair_singleprocess(
-    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], ic_map: dict[str, float]
-) -> tuple[frozenset[str], dict[str | None, float]]:
-    """Single-process version (used when threads=1)."""
-    msca, sim = _compute_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, ic_map)
-    return frozenset((term1_id, term2_id)), {msca: sim}
+def _calculate_pair_similarity_score(
+    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
+) -> tuple[tuple[str], dict[str | None, float]]:
+    """Calculate pairwise similarity (Phenodigm score).
+    msca: Most Specific Common Ancestor
+    Phenodigm score: sqrt(Resnik similarity * Jaccard index)
+    """
+    msca, resnik = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
+    jaccard = _calculate_pair_jaccard(term1_id, term2_id, parent_term_map, term_ic_map)
+
+    term_pairs = tuple(sorted((term1_id, term2_id)))
+    score = math.sqrt(resnik * jaccard)
+    return term_pairs, {msca: score}
 
 
 def calculate_all_pairwise_similarities(
     ontology_terms: dict[str, dict],
     all_term_ids: set[str],
+    ic_threshold: int = 5,
     threads: int | None = None,
-) -> dict[frozenset[str], dict[str | None, float]]:
+) -> tuple[dict[tuple[str], dict[str | None, float]], dict[str, float]]:
     """Calculate pairwise Resnik similarities for all term IDs."""
     parent_term_map, child_term_map = build_term_hierarchy(ontology_terms)
-    ic_map = _precompute_information_content(ontology_terms, child_term_map)
-
+    term_ic_map = _calculate_term_ic_map(ontology_terms, child_term_map, ic_threshold=ic_threshold)
     term_list = sorted(all_term_ids)
-    pairs: list[tuple[str, str]] = list(combinations_with_replacement(term_list, 2))
-    total_pairs = len(pairs)
 
-    term_pair_similarity_map: dict[frozenset[str], dict[str | None, float]] = {}
+    terms_similarity_map: dict[tuple[str], dict[str | None, float]] = {}
 
     if threads == 1:
-        for term1_id, term2_id in tqdm(pairs, total=total_pairs):
-            key, val = _compute_pair_singleprocess(term1_id, term2_id, parent_term_map, ic_map)
-            term_pair_similarity_map[key] = val
-        return term_pair_similarity_map
+        for term1_id, term2_id in combinations_with_replacement(term_list, 2):
+            term_pairs, ancestor_ic_map = _calculate_pair_similarity_score(
+                term1_id, term2_id, parent_term_map, term_ic_map
+            )
+            terms_similarity_map[term_pairs] = ancestor_ic_map
+        return terms_similarity_map
 
     with ProcessPoolExecutor(
         max_workers=threads,
         initializer=_init_worker,
-        initargs=(parent_term_map, child_term_map, ic_map),
+        initargs=(parent_term_map, child_term_map, term_ic_map),
     ) as executor:
-        for key, val in tqdm(executor.map(_compute_pair_worker, pairs), total=total_pairs):
-            term_pair_similarity_map[key] = val
+        for term_pairs, ancestor_ic_map in executor.map(
+            _calculate_pair_worker, combinations_with_replacement(term_list, 2)
+        ):
+            terms_similarity_map[term_pairs] = ancestor_ic_map
 
-    return term_pair_similarity_map
+    return terms_similarity_map, term_ic_map
 
 
 ###########################################################
@@ -170,127 +169,53 @@ def calculate_all_pairwise_similarities(
 
 
 def _delete_parent_terms_from_ancestors(
-    candidate_ancestors: dict[str, dict[str, str]],
+    candidate_ancestors: list[dict[str, str]],
     child_term_map: dict[str, set[str]],
-) -> dict[str, dict[str, str]]:
+) -> list[dict[str, str]]:
     """
     Remove parent terms from the common ancestors.
     Keep only the most specific terms among candidates with identical metadata.
-    Uses descendant traversal to avoid O(n^2) pair comparisons.
     """
-    to_delete: set[str] = set()
+    to_delete: set[int] = set()
+    phenotype_to_meta = defaultdict(list)
 
-    for term_id, term_meta in candidate_ancestors.items():
-        if term_id in to_delete:
+    for ancestor in candidate_ancestors:
+        phenotype_to_meta[ancestor["phenotype"]].append({k: v for k, v in ancestor.items() if k != "phenotype"})
+
+    for idx, ancestor in enumerate(candidate_ancestors):
+        term_id = ancestor["phenotype"]
+        term_meta = {k: v for k, v in ancestor.items() if k != "phenotype"}
+
+        if idx in to_delete:
             continue
 
         stack = list(child_term_map.get(term_id, ()))
         while stack:
             child_id = stack.pop()
-            child_meta = candidate_ancestors.get(child_id)
-            if child_meta is not None and child_meta == term_meta:
-                to_delete.add(term_id)
+            child_metas = phenotype_to_meta.get(child_id, [])
+            if any(child_meta == term_meta for child_meta in child_metas):
+                to_delete.add(idx)
                 break
             stack.extend(child_term_map.get(child_id, ()))
 
-    for t in to_delete:
-        candidate_ancestors.pop(t, None)
-
-    return candidate_ancestors
+    return [ancestor for i, ancestor in enumerate(candidate_ancestors) if i not in to_delete]
 
 
-def _get_terms_with_low_ic(
-    ontology_terms: dict[str, dict[str, str]],
-    child_term_map: dict[str, set[str]],
-    ic_threshold,
-) -> set[str]:
-    """Return terms whose IC is below the given percentile threshold."""
-    total_term_count = len(ontology_terms)
-    map_term_to_ic: dict[str, float] = {}
-    descendant_cache: dict[str, set[str]] = {}
-
-    def _get_descendants(term_id: str) -> set[str]:
-        if term_id in descendant_cache:
-            return descendant_cache[term_id]
-        descendants = find_all_descendant_terms(term_id, child_term_map)
-        descendant_cache[term_id] = descendants
-        return descendants
-
-    for term_id in ontology_terms.keys():
-        descendant_terms = _get_descendants(term_id)
-        term_count = len(descendant_terms) + 1
-        probability = term_count / total_term_count
-        ic = -math.log(probability)
-        map_term_to_ic[term_id] = ic
-
-    ic_values = list(map_term_to_ic.values())
-    ic_min_values = np.percentile(ic_values, ic_threshold)
-    return {term for term, ic in map_term_to_ic.items() if ic < ic_min_values}
-
-
-# =========================================================
-# Single-process implementation (core per-pair logic)
-# =========================================================
-
-
-def _annotate_ancestors(
-    gene1_symbol: str,
-    gene2_symbol: str,
-    gene_metadata_map: dict[str, dict[tuple[str, str, str], list[str]]],
-    meta_dict_cache: dict[tuple[str, str, str], dict[str, str]],
-    pair_similarity_lookup: dict[tuple[str, str], tuple[str | None, float]],
-    child_term_map: dict[str, set[str]],
-    terms_with_low_ic: set[str],
-) -> tuple[frozenset[str], dict[str, dict[str, str]]]:
-    """Annotate phenotype ancestors for a single gene pair (single-process version)."""
-    gene1_meta_map = gene_metadata_map[gene1_symbol]
-    gene2_meta_map = gene_metadata_map[gene2_symbol]
-
-    candidate_ancestors: dict[str, dict[str, str]] = {}
-    added_keys: set[tuple[str, tuple[str, str, str]]] = set()
-
-    shared_meta_signatures = set(gene1_meta_map.keys()) & set(gene2_meta_map.keys())
-
-    for meta_signature in shared_meta_signatures:
-        gene1_terms = gene1_meta_map[meta_signature]
-        gene2_terms = gene2_meta_map[meta_signature]
-        meta_dict = meta_dict_cache[meta_signature]
-
-        for gene1_mp_term_id in gene1_terms:
-            for gene2_mp_term_id in gene2_terms:
-                pair_key = _normalize_pair_key(gene1_mp_term_id, gene2_mp_term_id)
-                mapping = pair_similarity_lookup.get(pair_key)
-                if not mapping:
-                    continue
-
-                common_ancestor, similarity = mapping
-
-                if not common_ancestor or similarity == 0.0:
-                    continue
-
-                if common_ancestor in terms_with_low_ic:
-                    continue
-
-                current_key = (common_ancestor, meta_signature)
-
-                if current_key in added_keys:
-                    continue
-
-                candidate_ancestors[common_ancestor] = meta_dict
-                added_keys.add(current_key)
-
-    # Remove parent terms from candidate ancestors
-    candidate_ancestors = _delete_parent_terms_from_ancestors(candidate_ancestors, child_term_map)
-
-    gene_pair_key = frozenset([gene1_symbol, gene2_symbol])
-    return gene_pair_key, (dict(candidate_ancestors) if candidate_ancestors else {})
+# ---------------------------------------------------------
+# Helper functions for building gene metadata maps
+# ---------------------------------------------------------
 
 
 def _build_gene_metadata_maps(
     gene_records_map: dict[str, list[dict[str, str | float]]],
     annotations: set[str],
 ) -> tuple[dict[str, dict[tuple[str, str, str], list[str]]], dict[tuple[str, str, str], dict[str, str]]]:
-    """Group gene records by metadata signature for faster matching."""
+    """
+    Group gene records by metadata signature for faster matching.
+    Returns:
+        gene_metadata_map: example: {"GeneA": {("Homo", "Embryo", "None"): ["MP:0001", "MP:0002"]}}
+        meta_dict_cache: example: {("Homo", "Embryo", "None"): {"zygosity": "Homo", "life_stage": "Embryo", "sexual_dimorphism": "None"}}
+    """
     gene_metadata_map: dict[str, dict[tuple[str, str, str], list[str]]] = {}
     meta_dict_cache: dict[tuple[str, str, str], dict[str, str]] = {}
 
@@ -310,51 +235,82 @@ def _build_gene_metadata_maps(
     return gene_metadata_map, meta_dict_cache
 
 
+def _annotate_ancestors(
+    gene1_meta_map: dict,
+    gene2_meta_map: dict,
+    meta_dict_cache: dict,
+    terms_similarity_map: dict[tuple[str, str], dict[str | None, float]],
+    child_term_map: dict[str, set[str]],
+) -> list[dict[str, str]]:
+    """Annotate phenotype ancestors for a single gene pair."""
+
+    candidate_ancestors: list[dict[str, str]] = []
+    added_keys: set[tuple[str, tuple[str, str, str]]] = set()
+
+    shared_meta_signatures = set(gene1_meta_map.keys()) & set(gene2_meta_map.keys())
+
+    for meta_signature in shared_meta_signatures:
+        gene1_terms = gene1_meta_map[meta_signature]
+        gene2_terms = gene2_meta_map[meta_signature]
+        meta_dict = meta_dict_cache[meta_signature]
+
+        for gene1_mp_term_id in gene1_terms:
+            for gene2_mp_term_id in gene2_terms:
+                pair_key = tuple(sorted([gene1_mp_term_id, gene2_mp_term_id]))
+                mapping = terms_similarity_map.get(pair_key)
+                if not mapping:
+                    continue
+
+                common_ancestor, similarity = next(iter(mapping.items()))
+
+                if not common_ancestor or similarity == 0.0:
+                    continue
+
+                current_key = (common_ancestor, meta_signature)
+
+                if current_key in added_keys:
+                    continue
+
+                candidate_ancestors.append({"phenotype": common_ancestor, **meta_dict})
+                added_keys.add(current_key)
+
+    # Remove parent terms from candidate ancestors
+    ancestors = _delete_parent_terms_from_ancestors(candidate_ancestors, child_term_map)
+
+    return ancestors
+
+
 def annotate_phenotype_ancestors(
-    records_significants: list[dict[str, str | float]],
-    term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
+    genewise_phenotype_significants: list[dict[str, str | float]],
+    terms_similarity_map: dict[tuple[str], dict[str, float]],
     ontology_terms: dict[str, dict[str, str]],
-    ic_threshold,
-) -> dict[frozenset[str], dict[str, dict[str, str]]]:
+) -> Iterator[dict[str, str | list[dict[str, str]]]]:
     """
     Annotate phenotype ancestors for each gene pair.
     """
     # Build gene -> records map
     gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
-    for record in records_significants:
+    for record in genewise_phenotype_significants:
         gene_records_map[record["marker_symbol"]].append(record)
-
-    all_gene_symbols = list(gene_records_map.keys())
-    pair_similarity_lookup, _ = _prepare_similarity_maps(term_pair_similarity_map)
 
     # Build hierarchy and IC-based filters
     _, child_term_map = build_term_hierarchy(ontology_terms)
     annotations: set[str] = {"zygosity", "life_stage", "sexual_dimorphism"}
-    terms_with_low_ic: set[str] = _get_terms_with_low_ic(ontology_terms, child_term_map, ic_threshold=ic_threshold)
     gene_metadata_map, meta_dict_cache = _build_gene_metadata_maps(gene_records_map, annotations)
 
-    # Prepare gene pairs
-    gene_pairs: list[tuple[str, str]] = list(combinations(all_gene_symbols, 2))
-    total_pairs = len(gene_pairs)
-
-    phenotype_ancestors: dict[frozenset[str], dict[str, dict[str, str]]] = {}
-
-    for gene1_symbol, gene2_symbol in tqdm(
-        gene_pairs,
-        total=total_pairs,
-    ):
-        key, ancestors = _annotate_ancestors(
-            gene1_symbol=gene1_symbol,
-            gene2_symbol=gene2_symbol,
-            gene_metadata_map=gene_metadata_map,
+    for (gene1_symbol, gene1_meta_map), (gene2_symbol, gene2_meta_map) in combinations(gene_metadata_map.items(), 2):
+        ancestors = _annotate_ancestors(
+            gene1_meta_map=gene1_meta_map,
+            gene2_meta_map=gene2_meta_map,
             meta_dict_cache=meta_dict_cache,
-            pair_similarity_lookup=pair_similarity_lookup,
+            terms_similarity_map=terms_similarity_map,
             child_term_map=child_term_map,
-            terms_with_low_ic=terms_with_low_ic,
         )
-        phenotype_ancestors[key] = ancestors
-
-    return phenotype_ancestors
+        yield {
+            "gene1_symbol": gene1_symbol,
+            "gene2_symbol": gene2_symbol,
+            "phenotype_shared_annotations": ancestors,
+        }
 
 
 ###########################################################
@@ -363,24 +319,24 @@ def annotate_phenotype_ancestors(
 
 
 def _calculate_weighted_similarity_matrix(
-    gene1_data: dict[str, np.ndarray],
-    gene2_data: dict[str, np.ndarray],
-    pair_similarity_lookup: dict[tuple[str, str], tuple[str | None, float]],
+    gene1_record: dict[str, np.ndarray],
+    gene2_record: dict[str, np.ndarray],
+    terms_similarity_map: dict[tuple[str, str], dict[str | None, float]],
 ) -> np.ndarray:
     """Calculate weighted similarity matrix between two genes based on their phenotype records."""
-    gene1_terms = gene1_data["terms"]
-    gene2_terms = gene2_data["terms"]
+    gene1_terms = gene1_record["terms"]
+    gene2_terms = gene2_record["terms"]
 
     similarity_matrix = np.zeros((len(gene1_terms), len(gene2_terms)), dtype=float)
     for i, term1 in enumerate(gene1_terms):
         row = similarity_matrix[i]
         for j, term2 in enumerate(gene2_terms):
-            _, similarity = pair_similarity_lookup.get(_normalize_pair_key(term1, term2), (None, 0.0))
+            _, similarity = next(iter(terms_similarity_map.get(tuple(sorted([term1, term2])), {None: 0.0}).items()))
             row[j] = similarity
 
-    z_match = gene1_data["zygosity"][:, None] == gene2_data["zygosity"][None, :]
-    l_match = gene1_data["life_stage"][:, None] == gene2_data["life_stage"][None, :]
-    s_match = gene1_data["sexual_dimorphism"][:, None] == gene2_data["sexual_dimorphism"][None, :]
+    z_match = gene1_record["zygosity"][:, None] == gene2_record["zygosity"][None, :]
+    l_match = gene1_record["life_stage"][:, None] == gene2_record["life_stage"][None, :]
+    s_match = gene1_record["sexual_dimorphism"][:, None] == gene2_record["sexual_dimorphism"][None, :]
     match_counts = z_match.astype(int) + l_match.astype(int) + s_match.astype(int)
 
     weight_lookup = np.array([0.25, 0.5, 0.75, 1.0])
@@ -391,15 +347,15 @@ def _calculate_weighted_similarity_matrix(
 
 def _apply_phenodigm_scaling(
     weighted_similarity_matrix: np.ndarray,
-    gene1_data: dict[str, np.ndarray],
-    gene2_data: dict[str, np.ndarray],
+    gene1_record: dict[str, np.ndarray],
+    gene2_record: dict[str, np.ndarray],
 ) -> int:
-    """Apply Phenodigm scaling method to similarity scores."""
-    gene1_information_content_scores = gene1_data["ic_scores"]
-    gene2_information_content_scores = gene2_data["ic_scores"]
+    """Apply Phenodigm scaling method to similarity scores (0-100)."""
+    gene1_information_content_scores = gene1_record["ic_scores"]
+    gene2_information_content_scores = gene2_record["ic_scores"]
 
-    max_gene1_information_content = gene1_data["ic_max"]
-    max_gene2_information_content = gene2_data["ic_max"]
+    max_gene1_information_content = gene1_record["ic_max"]
+    max_gene2_information_content = gene2_record["ic_max"]
 
     row_max_similarities = weighted_similarity_matrix.max(axis=1)
     column_max_similarities = weighted_similarity_matrix.max(axis=0)
@@ -427,27 +383,24 @@ def _apply_phenodigm_scaling(
 
 
 def _calculate_phenodigm(
-    gene1_symbol: str,
-    gene2_symbol: str,
-    gene_data_map: dict[str, dict[str, np.ndarray]],
-    pair_similarity_lookup: dict[tuple[str, str], tuple[str | None, float]],
-) -> tuple[frozenset[str], int]:
-    gene1_data = gene_data_map[gene1_symbol]
-    gene2_data = gene_data_map[gene2_symbol]
-
+    gene1_record: dict[str, np.ndarray],
+    gene2_record: dict[str, np.ndarray],
+    terms_similarity_map: dict[tuple[str, str], dict[str | None, float]],
+) -> int:
+    """Calculate the Phenodigm score for a single gene pair."""
     weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
-        gene1_data,
-        gene2_data,
-        pair_similarity_lookup,
+        gene1_record,
+        gene2_record,
+        terms_similarity_map,
     )
 
     score = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
-        gene1_data,
-        gene2_data,
+        gene1_record,
+        gene2_record,
     )
 
-    return frozenset([gene1_symbol, gene2_symbol]), score
+    return score
 
 
 def _build_gene_data_map(
@@ -476,100 +429,27 @@ def _build_gene_data_map(
 
 
 def calculate_phenodigm_score(
-    records_significants: list[dict[str, str | float]],
-    term_pair_similarity_map: dict[frozenset[str], dict[str, float]],
-) -> dict[frozenset[str], int]:
+    genewise_phenotype_significants: list[dict[str, str | float]],
+    terms_similarity_map: dict[tuple[str], dict[str, float]],
+    term_ic_map: dict[str, float],
+) -> Iterator[dict[str, str | int]]:
     """
     Calculate Phenodigm score between gene pairs.
     """
     # Build gene -> records map
     gene_records_map: dict[str, list[dict[str, str | float]]] = defaultdict(list)
-    for record in records_significants:
+    for record in genewise_phenotype_significants:
         gene_records_map[record["marker_symbol"]].append(record)
 
-    pair_similarity_lookup, term_ic_map = _prepare_similarity_maps(term_pair_similarity_map)
     gene_data_map = _build_gene_data_map(gene_records_map, term_ic_map)
 
-    all_gene_symbols = list(gene_records_map.keys())
-    gene_pairs: list[tuple[str, str]] = list(combinations(all_gene_symbols, 2))
-    total_pairs = len(gene_pairs)
-
-    phenodigm_scores: dict[frozenset[str], int] = {}
-
-    for gene1_symbol, gene2_symbol in tqdm(
-        gene_pairs,
-        total=total_pairs,
-    ):
-        key, score = _calculate_phenodigm(
-            gene1_symbol=gene1_symbol,
-            gene2_symbol=gene2_symbol,
-            gene_data_map=gene_data_map,
-            pair_similarity_lookup=pair_similarity_lookup,
+    for (gene1_symbol, gene1_record), (gene2_symbol, gene2_record) in combinations(gene_data_map.items(), 2):
+        score = _calculate_phenodigm(
+            gene1_record=gene1_record,
+            gene2_record=gene2_record,
+            terms_similarity_map=terms_similarity_map,
         )
-        phenodigm_scores[key] = score
-
-    return phenodigm_scores
-
-
-# -----------------------------------------------------------
-# Additional similarity evaluation metrics
-# -----------------------------------------------------------
-
-
-def calculate_num_shared_phenotypes(records_significants: list[dict[str, str | float]]) -> dict[frozenset, int]:
-    """Calculate the number of shared phenotypes between two genes."""
-    gene_phenotypes_map = defaultdict(set)
-    for record in records_significants:
-        gene_phenotypes_map[record["marker_symbol"]].add(
-            frozenset(
-                [
-                    record["mp_term_id"],
-                    record["zygosity"],
-                    record["life_stage"],
-                    record.get("sexual_dimorphism", "None"),
-                ]
-            )
-        )
-    num_shared_phenotypes = {}
-    for gene1, gene2 in tqdm(
-        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
-    ):
-        phenotypes_gene1 = gene_phenotypes_map[gene1]
-        phenotypes_gene2 = gene_phenotypes_map[gene2]
-
-        num_shared_phenotypes[frozenset([gene1, gene2])] = len(phenotypes_gene1.intersection(phenotypes_gene2))
-
-    return num_shared_phenotypes
-
-
-def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]) -> dict[frozenset, int]:
-    """Calculate the number of shared phenotypes between two genes."""
-    gene_phenotypes_map = defaultdict(set)
-    for record in records_significants:
-        gene_phenotypes_map[record["marker_symbol"]].add(
-            frozenset(
-                [
-                    record["mp_term_id"],
-                    record["zygosity"],
-                    record["life_stage"],
-                    record.get("sexual_dimorphism", "None"),
-                ]
-            )
-        )
-
-    jaccard_indices = {}
-    for gene1, gene2 in tqdm(
-        combinations(gene_phenotypes_map.keys(), 2), total=math.comb(len(gene_phenotypes_map), 2)
-    ):
-        phenotypes_gene1 = gene_phenotypes_map[gene1]
-        phenotypes_gene2 = gene_phenotypes_map[gene2]
-
-        intersection = phenotypes_gene1.intersection(phenotypes_gene2)
-        union = phenotypes_gene1.union(phenotypes_gene2)
-        # 0-100 scale
-        jaccard_indices[frozenset([gene1, gene2])] = int(len(intersection) / len(union) * 100 if union else 0)
-
-    return jaccard_indices
+        yield {"gene1_symbol": gene1_symbol, "gene2_symbol": gene2_symbol, "phenotype_similarity_score": score}
 
 
 ###########################################################
@@ -579,23 +459,40 @@ def calculate_jaccard_indices(records_significants: list[dict[str, str | float]]
 
 def summarize_similarity_annotations(
     ontology_terms: dict[str, dict[str, str]],
-    phenotype_ancestors: dict[frozenset[str], dict[str, dict[str, str]]],
-    phenodigm_scores: dict[frozenset[str], int],
-) -> dict[frozenset[str], dict[str, dict[str, str] | int]]:
+    phenotype_ancestors: Iterator[dict[str, str | list[dict[str, str]]]],
+    phenodigm_scores: Iterator[dict[str, str | int]],
+    total_pairs: int,
+) -> Iterator[dict[str, list[dict[str, str]] | int]]:
     """Summarize similarity annotations including common ancestors and Phenodigm scores."""
 
     id_name_map = {v["id"]: v["name"] for v in ontology_terms.values()}
 
-    pair_similarity_annotations = defaultdict(list)
+    for phenotype_ancestor, phenodigm_score in tqdm(zip(phenotype_ancestors, phenodigm_scores), total=total_pairs):
+        gene1_symbol = phenotype_ancestor["gene1_symbol"]
+        gene2_symbol = phenotype_ancestor["gene2_symbol"]
 
-    for gene1_symbol, gene2_symbol in tqdm(phenotype_ancestors.keys(), total=len(phenotype_ancestors)):
-        phenotype_ancestor = phenotype_ancestors[frozenset([gene1_symbol, gene2_symbol])]
-        phenotype_ancestor_name = {id_name_map[k]: v for k, v in phenotype_ancestor.items()}
-        phenodigm_score = phenodigm_scores[frozenset([gene1_symbol, gene2_symbol])]
+        ancestors: list[dict[str, str]] = phenotype_ancestor["phenotype_shared_annotations"]
 
-        pair_similarity_annotations[frozenset([gene1_symbol, gene2_symbol])] = {
-            "phenotype_shared_annotations": phenotype_ancestor_name,
-            "phenotype_similarity_score": phenodigm_score if phenotype_ancestor_name else 0,
+        ancestors_renamed = []
+        for ancestor in ancestors:
+            renamed_ancestor = {}
+            for k, v in ancestor.items():
+                if k == "phenotype" and v in id_name_map:
+                    renamed_ancestor["phenotype"] = id_name_map[v]
+                else:
+                    renamed_ancestor[k] = v
+            ancestors_renamed.append(renamed_ancestor)
+
+        phenodigm_score = phenodigm_score["phenotype_similarity_score"]
+
+        annotations = {
+            "gene1_symbol": gene1_symbol,
+            "gene2_symbol": gene2_symbol,
+            "phenotype_shared_annotations": sorted(
+                ancestors_renamed,
+                key=lambda x: [x["phenotype"], x["zygosity"], x["life_stage"], x["sexual_dimorphism"]],
+            ),
+            "phenotype_similarity_score": phenodigm_score if ancestors_renamed else 0,
         }
 
-    return dict(pair_similarity_annotations)
+        yield annotations

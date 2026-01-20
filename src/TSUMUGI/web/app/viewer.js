@@ -1,183 +1,58 @@
-import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML } from "./js/exporter.js";
-import { scaleToOriginalRange, getColorForValue } from "./js/value_scaler.js";
-import { removeTooltips, showSubnetworkTooltip, showTooltip } from "./js/tooltips.js";
-import { getOrderedComponents, calculateConnectedComponents } from "./js/components.js";
-import { createSlider } from "./js/slider.js";
-import { filterElementsByGenotypeAndSex } from "./js/filters.js";
-import { loadJSONGz, loadJSON } from "./js/data_loader.js";
-import { setupGeneSearch } from "./js/gene_searcher.js";
-import { highlightDiseaseAnnotation } from "./js/highlighter.js";
-import { setupPhenotypeSearch } from "./js/phenotype_searcher.js";
-import { initializeCentralitySystem, recalculateCentrality } from "./js/centrality.js";
+import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML, exportGraphAsSVG } from "./js/export/graphExporter.js";
+import { scaleToOriginalRange, getColorForValue } from "./js/graph/valueScaler.js";
+import { initInfoTooltips, removeTooltips, showSubnetworkTooltip, showTooltip } from "./js/ui/tooltips.js";
+import { getOrderedComponents, calculateConnectedComponents } from "./js/graph/components.js";
+import { createSlider } from "./js/ui/slider.js";
+import { filterElementsByGenotypeAndSex } from "./js/graph/filters.js";
+import { loadJSON } from "./js/data/dataLoader.js";
+import {
+    applyNodeMinMax,
+    getPageConfig,
+    hidePhenotypeOnlySections,
+    isBinaryPhenotypeElements,
+    loadElementsForConfig,
+    renderEmptyState,
+    setPageTitle,
+    setVersionLabel,
+} from "./js/viewer/pageSetup.js";
+import { createLayoutController } from "./js/graph/layoutController.js";
+import { setupGeneSearch } from "./js/search/geneSearcher.js";
+import { highlightDiseaseAnnotation } from "./js/graph/highlighter.js";
+import { setupPhenotypeSearch } from "./js/search/phenotypeSearcher.js";
+import { initializeCentralitySystem, recalculateCentrality } from "./js/graph/centrality.js";
+import { initDynamicFontSize } from "./js/ui/dynamicFontSize.js";
+import { initMobilePanel } from "./js/ui/mobilePanel.js";
+
+if (window.cytoscape && window.cytoscapeSvg && typeof window.cytoscape.use === "function") {
+    window.cytoscape.use(window.cytoscapeSvg);
+}
 
 const NODE_SLIDER_MIN = 1;
 const NODE_SLIDER_MAX = 100;
 const EDGE_SLIDER_MIN = 1;
 const EDGE_SLIDER_MAX = 100;
+const AUTO_ARRANGE_DELAY_MS = 150;
+const AUTO_ARRANGE_LAYOUT_TIMEOUT_MS = 4000;
+const AUTO_ARRANGE_REPULSION_TIMEOUT_MS = 2000;
+const INITIAL_AUTO_ARRANGE_TIMEOUT_MS = 15000;
+const INITIAL_ARRANGE_CLICK_DELAY_MS = 500;
+const REPULSION_FINISH_EVENT = "tsumugi:repulsion:finish";
 
-function getPageConfig() {
-    const params = new URLSearchParams(window.location.search);
-    const modeParam = params.get("mode");
-    const mode = ["phenotype", "genesymbol", "genelist"].includes(modeParam || "") ? modeParam : "phenotype";
-    const providedName = params.get("name") || "";
-    const name = mode === "genelist" && !providedName ? "geneList" : providedName;
-    const title = params.get("title") || name;
-
-    return {
-        mode,
-        name,
-        displayName: title || name || "TSUMUGI",
-    };
-}
-
-function hidePhenotypeOnlySections(isPhenotypePage) {
-    document.querySelectorAll(".phenotype-only").forEach((el) => {
-        el.style.display = isPhenotypePage ? "" : "none";
-    });
-}
-
-function setPageTitle(config, mapSymbolToId) {
-    const pageTitleLink = document.getElementById("page-title-link");
-    const pageTitle = config.displayName || config.name || "TSUMUGI";
-    let targetUrl = "";
-
-    if (config.mode === "genesymbol" && mapSymbolToId) {
-        const accession = mapSymbolToId[config.name];
-        if (accession) {
-            targetUrl = `https://www.mousephenotype.org/data/genes/${accession}`;
-        }
-    }
-
-    if (targetUrl) {
-        pageTitleLink.href = targetUrl;
-        pageTitleLink.target = "_blank";
-        pageTitleLink.rel = "noreferrer";
-    } else {
-        pageTitleLink.removeAttribute("href");
-        pageTitleLink.style.pointerEvents = "none";
-        pageTitleLink.style.cursor = "default";
-    }
-
-    pageTitleLink.textContent = pageTitle;
-    document.title = `${pageTitle} | TSUMUGI`;
-}
-
-function setVersionLabel() {
-    const versionLabel = document.getElementById("tsumugi-version");
-    if (!versionLabel) return;
-
-    fetch("../version.txt")
-        .then((res) => (res.ok ? res.text() : ""))
-        .then((text) => {
-            versionLabel.textContent = text.trim() || "-";
-        })
-        .catch(() => {
-            versionLabel.textContent = "-";
-        });
-}
-
-function loadElementsForConfig(config) {
-    if (config.mode === "phenotype") {
-        return loadJSONGz(`../data/phenotype/${config.name}.json.gz`) || [];
-    }
-
-    if (config.mode === "genesymbol") {
-        return loadJSONGz(`../data/genesymbol/${config.name}.json.gz`) || [];
-    }
-
-    // Gene list page pulls data from localStorage
-    try {
-        const stored = localStorage.getItem("elements");
-        return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-        console.error("Failed to parse stored elements for gene list:", error);
-        return [];
-    }
-}
-
-function renderEmptyState(message) {
-    const container = document.querySelector(".cy");
-    if (!container) return;
-
-    container.innerHTML = `<div style="padding: 24px; font-size: 16px;">${message}</div>`;
-}
-
-function applyNodeMinMax(elements, nodeColorMin, nodeColorMax) {
-    // Ensure at least one gene pair remains visible even at slider extremes. Issue #72
-    const nodeColorMap = new Map();
-    elements.forEach((ele) => {
-        if (ele.data.node_color !== undefined && ele.data.id !== undefined) {
-            nodeColorMap.set(ele.data.id, ele.data.node_color);
-        }
-    });
-
-    const sortedNodeColors = [...new Set([...nodeColorMap.values()])].sort((a, b) => a - b);
-    if (sortedNodeColors.length === 0) {
-        return { nodeMin: nodeColorMin, nodeMax: nodeColorMax };
-    }
-
-    const nodeColorToRank = new Map();
-    sortedNodeColors.forEach((val, idx) => {
-        nodeColorToRank.set(val, idx + 1);
-    });
-
-    const edgeRankPairs = [];
-    elements.forEach((ele) => {
-        if (ele.data.source && ele.data.target) {
-            const sourceVal = nodeColorMap.get(ele.data.source);
-            const targetVal = nodeColorMap.get(ele.data.target);
-
-            if (sourceVal !== undefined && targetVal !== undefined) {
-                const sourceRank = nodeColorToRank.get(sourceVal);
-                const targetRank = nodeColorToRank.get(targetVal);
-                const rankSum = sourceRank + targetRank;
-
-                edgeRankPairs.push({
-                    rankSum: rankSum,
-                    minVal: Math.min(sourceVal, targetVal),
-                    maxVal: Math.max(sourceVal, targetVal),
-                });
-            }
-        }
-    });
-
-    if (edgeRankPairs.length === 0) {
-        return { nodeMin: nodeColorMin, nodeMax: nodeColorMax };
-    }
-
-    const minRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum < b.rankSum ? a : b));
-    const maxRankEdge = edgeRankPairs.reduce((a, b) => (a.rankSum > b.rankSum ? a : b));
-
-    const nodeMin = minRankEdge.maxVal;
-    const nodeMax = maxRankEdge.minVal;
-
-    elements.forEach((ele) => {
-        if (ele.data.node_color !== undefined) {
-            ele.data.original_node_color = ele.data.node_color;
-
-            if (ele.data.node_color <= nodeMin) {
-                ele.data.node_color_for_filter = nodeMin;
-            } else if (ele.data.node_color >= nodeMax) {
-                ele.data.node_color_for_filter = nodeMax;
-            } else {
-                ele.data.node_color_for_filter = ele.data.node_color;
-            }
-        }
-    });
-
-    return { nodeMin, nodeMax };
-}
+// Initialize UI helpers that only depend on DOM availability.
+initInfoTooltips();
+initDynamicFontSize();
+initMobilePanel();
 
 // Track which search mode is active in this viewer
 const pageConfig = getPageConfig();
 const isPhenotypePage = pageConfig.mode === "phenotype";
 const isGeneSymbolPage = pageConfig.mode === "genesymbol";
 
-hidePhenotypeOnlySections(isPhenotypePage);
 setVersionLabel();
 
-const map_symbol_to_id = loadJSON("../data/marker_symbol_accession_id.json") || {};
-setPageTitle(pageConfig, map_symbol_to_id);
+const mapSymbolToId = loadJSON("../data/marker_symbol_accession_id.json") || {};
+const mapPhenotypeToId = loadJSON("../data/mp_term_id_lookup.json") || {};
+setPageTitle(pageConfig, mapSymbolToId, mapPhenotypeToId);
 
 const elements = loadElementsForConfig(pageConfig);
 if (!elements || elements.length === 0) {
@@ -185,13 +60,18 @@ if (!elements || elements.length === 0) {
     throw new Error("No elements available to render");
 }
 
+const isBinaryPhenotype = isPhenotypePage && isBinaryPhenotypeElements(elements);
+hidePhenotypeOnlySections(isPhenotypePage && !isBinaryPhenotype);
+
 // ############################################################################
 // Input handler
 // ############################################################################
 
-const nodeSizes = elements.filter((ele) => ele.data.node_color !== undefined).map((ele) => ele.data.node_color);
-const nodeColorMin = nodeSizes.length ? Math.min(...nodeSizes) : 0;
-const nodeColorMax = nodeSizes.length ? Math.max(...nodeSizes) : 1;
+const nodeColorValues = elements
+    .filter((ele) => ele.data.node_color !== undefined)
+    .map((ele) => ele.data.node_color);
+const nodeColorMin = nodeColorValues.length ? Math.min(...nodeColorValues) : 0;
+const nodeColorMax = nodeColorValues.length ? Math.max(...nodeColorValues) : 1;
 
 let nodeMin = nodeColorMin;
 let nodeMax = nodeColorMax;
@@ -206,6 +86,8 @@ const edgeSizes = elements.filter((ele) => ele.data.edge_size !== undefined).map
 const edgeMin = edgeSizes.length ? Math.min(...edgeSizes) : 0;
 const edgeMax = edgeSizes.length ? Math.max(...edgeSizes) : 1;
 
+const baseElements = JSON.parse(JSON.stringify(elements));
+
 function mapEdgeSizeToWidth(edgeSize) {
     if (edgeMax === edgeMin) {
         return 1.5;
@@ -218,44 +100,11 @@ function mapEdgeSizeToWidth(edgeSize) {
 // Initialize Cytoscape
 // ############################################################################
 
-let currentLayout = "cose";
-
-const nodeRepulsionMin = 1;
-const nodeRepulsionMax = 10000;
-const componentSpacingMin = 1;
-const componentSpacingMax = 200;
-
-const defaultNodeRepulsion = isGeneSymbolPage ? 8 : 5;
-
-let nodeRepulsionValue = scaleToOriginalRange(defaultNodeRepulsion, nodeRepulsionMin, nodeRepulsionMax);
-let componentSpacingValue = scaleToOriginalRange(defaultNodeRepulsion, componentSpacingMin, componentSpacingMax);
-
-function getLayoutOptions() {
-    const baseOptions = {
-        name: currentLayout,
-        nodeRepulsion: nodeRepulsionValue,
-        componentSpacing: componentSpacingValue,
-    };
-
-    if (currentLayout === "cose" && isGeneSymbolPage) {
-        return {
-            ...baseOptions,
-            idealEdgeLength: 100,
-            nodeOverlap: 20,
-            padding: 30,
-            animate: true,
-            animationDuration: 500,
-            gravity: -1.2,
-            numIter: 1500,
-            initialTemp: 200,
-            coolingFactor: 0.95,
-            minTemp: 1.0,
-            edgeElasticity: 100,
-        };
-    }
-
-    return baseOptions;
-}
+const defaultNodeRepulsion = 5;
+const layoutController = createLayoutController({
+    isGeneSymbolPage,
+    defaultNodeRepulsion,
+});
 
 const cy = cytoscape({
     container: document.querySelector(".cy"),
@@ -287,6 +136,30 @@ const cy = cytoscape({
             },
         },
         {
+            selector: "node.dim-node",
+            style: {
+                opacity: 0.05,
+            },
+        },
+        {
+            selector: "edge.dim-edge",
+            style: {
+                opacity: 0.05,
+            },
+        },
+        {
+            selector: "node.focus-node",
+            style: {
+                opacity: 1,
+            },
+        },
+        {
+            selector: "edge.focus-edge",
+            style: {
+                opacity: 1,
+            },
+        },
+        {
             selector: ".disease-highlight",
             style: {
                 "border-width": 5,
@@ -308,26 +181,83 @@ const cy = cytoscape({
             },
         },
     ],
-    layout: getLayoutOptions(),
+    layout: layoutController.getLayoutOptions(),
+    userZoomingEnabled: true,
+    zoomingEnabled: true,
+    wheelSensitivity: 0.2,
 });
 
 window.cy = cy;
+layoutController.attachCy(cy);
+layoutController.registerInitialLayoutStop();
+setupInitialAutoArrange();
+
+const bodyContainer = document.querySelector(".body-container");
+const leftPanelToggleButton = document.getElementById("toggle-left-panel");
+const rightPanelToggleButton = document.getElementById("toggle-right-panel");
+
+// Smooth wheel zoom on the Cytoscape canvas
+const cyContainer = cy.container();
+if (cyContainer) {
+    cyContainer.addEventListener(
+        "wheel",
+        (event) => {
+            event.preventDefault();
+            const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+            const rect = cyContainer.getBoundingClientRect();
+            const renderedPosition = {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top,
+            };
+            const targetZoom = cy.zoom() * zoomFactor;
+            const clampedZoom = Math.min(cy.maxZoom(), Math.max(cy.minZoom(), targetZoom));
+            cy.zoom({ level: clampedZoom, renderedPosition });
+            scheduleSubnetworkFrameUpdate();
+        },
+        { passive: false },
+    );
+}
+
+function resetPanelStatesForMobile() {
+    if (!bodyContainer) return;
+
+    if (window.innerWidth <= 600) {
+        const hadHiddenPanel =
+            bodyContainer.classList.contains("left-panel-hidden") ||
+            bodyContainer.classList.contains("right-panel-hidden");
+
+        bodyContainer.classList.remove("left-panel-hidden", "right-panel-hidden");
+
+        if (leftPanelToggleButton) {
+            leftPanelToggleButton.classList.remove("collapsed");
+            leftPanelToggleButton.setAttribute("aria-label", "Hide left panel");
+        }
+
+        if (rightPanelToggleButton) {
+            rightPanelToggleButton.classList.remove("collapsed");
+            rightPanelToggleButton.setAttribute("aria-label", "Hide right panel");
+        }
+
+        if (hadHiddenPanel) {
+            refreshCyViewport();
+        }
+    }
+}
 
 function handleMobileResize() {
+    resetPanelStatesForMobile();
+
     if (cy) {
         setTimeout(() => {
-            cy.resize();
-            cy.fit();
-            cy.center();
+            refreshCyViewport();
         }, 300);
     }
 }
 
 setTimeout(() => {
     if (window.innerWidth <= 600) {
-        cy.resize();
-        cy.fit();
-        cy.center();
+        resetPanelStatesForMobile();
+        refreshCyViewport();
     }
 }, 500);
 
@@ -344,6 +274,9 @@ const subnetworkOverlay = createSubnetworkOverlay();
 let subnetworkMeta = [];
 let isFrameUpdateQueued = false;
 let subnetworkDragState = null;
+const COMPONENT_PADDING = 16;
+const COMPONENT_MAX_ITER = 30;
+const COMPONENT_FIT_PADDING = 40;
 
 function createSubnetworkOverlay() {
     const cyContainer = document.querySelector(".cy");
@@ -394,18 +327,26 @@ function updateSubnetworkFrames() {
             return;
         }
 
-        const left = Math.max(0, bbox.x1 - padding);
-        const top = Math.max(0, bbox.y1 - padding);
-        const width = Math.min(containerWidth - left, bbox.w + padding * 2);
-        const height = Math.min(containerHeight - top, bbox.h + padding * 2);
+        const rawLeft = bbox.x1 - padding;
+        const rawTop = bbox.y1 - padding;
+        const rawRight = bbox.x1 + bbox.w + padding;
+        const rawBottom = bbox.y1 + bbox.h + padding;
+
+        const visibleLeft = Math.max(0, rawLeft);
+        const visibleTop = Math.max(0, rawTop);
+        const visibleRight = Math.min(containerWidth, rawRight);
+        const visibleBottom = Math.min(containerHeight, rawBottom);
+
+        const width = visibleRight - visibleLeft;
+        const height = visibleBottom - visibleTop;
 
         if (width <= 0 || height <= 0) return;
 
         const frame = document.createElement("div");
         frame.classList.add("subnetwork-frame");
         frame.dataset.componentId = String(idx + 1);
-        frame.style.left = `${left}px`;
-        frame.style.top = `${top}px`;
+        frame.style.left = `${visibleLeft}px`;
+        frame.style.top = `${visibleTop}px`;
         frame.style.width = `${width}px`;
         frame.style.height = `${height}px`;
 
@@ -415,26 +356,148 @@ function updateSubnetworkFrames() {
         label.dataset.componentId = String(idx + 1);
         frame.appendChild(label);
 
+        const borders = ["top", "bottom", "left", "right"];
+        borders.forEach((side) => {
+            const border = document.createElement("div");
+            border.classList.add("subnetwork-frame__border", `subnetwork-frame__border--${side}`);
+            border.dataset.componentId = String(idx + 1);
+            frame.appendChild(border);
+            attachFrameDragHandlers(border, border);
+        });
+
         subnetworkOverlay.appendChild(frame);
         attachFrameDragHandlers(frame, label);
 
         const summary = summarizeEdgePhenotypes(component);
         subnetworkMeta.push({
             id: idx + 1,
-            bbox: { x1: left, y1: top, x2: left + width, y2: top + height },
+            bbox: { x1: visibleLeft, y1: visibleTop, x2: visibleLeft + width, y2: visibleTop + height },
             phenotypes: summary,
             nodes: component.nodes(),
         });
     });
 }
 
-function scheduleSubnetworkFrameUpdate() {
+function scheduleSubnetworkFrameUpdate(options = {}) {
+    const { resolve = false, autoFit = false } = options;
     if (isFrameUpdateQueued) return;
     isFrameUpdateQueued = true;
     requestAnimationFrame(() => {
+        if (resolve) {
+            resolveComponentOverlaps();
+        }
         updateSubnetworkFrames();
+        if (autoFit) {
+            fitVisibleComponents();
+        }
         isFrameUpdateQueued = false;
     });
+}
+
+function translateComponent(comp, dx, dy) {
+    comp.nodes().positions((node) => {
+        const pos = node.position();
+        return { x: pos.x + dx, y: pos.y + dy };
+    });
+}
+
+function resolveComponentOverlaps() {
+    const components = cy.elements(":visible").components().filter((comp) => comp.nodes().length > 0);
+    if (components.length <= 1) return false;
+
+    const zoom = cy.zoom() || 1;
+    let movedAny = false;
+
+    for (let iter = 0; iter < COMPONENT_MAX_ITER; iter++) {
+        let moved = false;
+        for (let i = 0; i < components.length; i++) {
+            const bboxA = components[i].renderedBoundingBox({ includeLabels: true, includeOverlays: false });
+            for (let j = i + 1; j < components.length; j++) {
+                const bboxB = components[j].renderedBoundingBox({ includeLabels: true, includeOverlays: false });
+
+                const ax1 = bboxA.x1 - COMPONENT_PADDING;
+                const ax2 = bboxA.x2 + COMPONENT_PADDING;
+                const ay1 = bboxA.y1 - COMPONENT_PADDING;
+                const ay2 = bboxA.y2 + COMPONENT_PADDING;
+                const bx1 = bboxB.x1 - COMPONENT_PADDING;
+                const bx2 = bboxB.x2 + COMPONENT_PADDING;
+                const by1 = bboxB.y1 - COMPONENT_PADDING;
+                const by2 = bboxB.y2 + COMPONENT_PADDING;
+
+                const overlapX = Math.min(ax2, bx2) - Math.max(ax1, bx1);
+                const overlapY = Math.min(ay2, by2) - Math.max(ay1, by1);
+
+                if (overlapX <= 0 || overlapY <= 0) {
+                    continue;
+                }
+
+                const centerA = { x: (bboxA.x1 + bboxA.x2) / 2, y: (bboxA.y1 + bboxA.y2) / 2 };
+                const centerB = { x: (bboxB.x1 + bboxB.x2) / 2, y: (bboxB.y1 + bboxB.y2) / 2 };
+                let dx = centerB.x - centerA.x;
+                let dy = centerB.y - centerA.y;
+                if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+                    dx = 1;
+                    dy = 0;
+                }
+
+                let shiftX = 0;
+                let shiftY = 0;
+                if (overlapX < overlapY) {
+                    shiftX = Math.sign(dx) * (overlapX + COMPONENT_PADDING);
+                } else {
+                    shiftY = Math.sign(dy) * (overlapY + COMPONENT_PADDING);
+                }
+
+                translateComponent(components[j], shiftX / zoom, shiftY / zoom);
+                moved = true;
+                movedAny = true;
+            }
+        }
+        if (!moved) {
+            break;
+        }
+    }
+
+    return movedAny;
+}
+
+function tileComponents() {
+    const components = cy.elements(":visible").components().filter((comp) => comp.nodes().length > 0);
+    if (components.length === 0) return false;
+
+    const bboxes = components.map((comp) => comp.boundingBox({ includeLabels: true, includeOverlays: false }));
+    const maxW = Math.max(...bboxes.map((b) => b.w));
+    const maxH = Math.max(...bboxes.map((b) => b.h));
+    const tilePadding = COMPONENT_PADDING;
+    const tileW = maxW + tilePadding * 2;
+    const tileH = maxH + tilePadding * 2;
+    const cols = Math.max(1, Math.ceil(Math.sqrt(components.length)));
+
+    components.forEach((comp, idx) => {
+        const col = idx % cols;
+        const row = Math.floor(idx / cols);
+        const targetCenter = {
+            x: col * tileW + tileW / 2,
+            y: row * tileH + tileH / 2,
+        };
+
+        const bbox = bboxes[idx];
+        const compCenter = {
+            x: (bbox.x1 + bbox.x2) / 2,
+            y: (bbox.y1 + bbox.y2) / 2,
+        };
+
+        translateComponent(comp, targetCenter.x - compCenter.x, targetCenter.y - compCenter.y);
+    });
+
+    return true;
+}
+
+function fitVisibleComponents() {
+    const visibles = cy.elements(":visible");
+    if (visibles && visibles.length > 0) {
+        cy.fit(visibles, COMPONENT_FIT_PADDING);
+    }
 }
 
 function findComponentByPosition(renderedPos) {
@@ -521,13 +584,60 @@ function attachFrameDragHandlers(frame, handleElement = frame) {
         const component = subnetworkMeta.find((c) => c.id === compId);
         if (!component) return;
         const renderedPos = pointerToRenderedPos(evt);
-        showSubnetworkTooltip({ component, renderedPos });
+        showSubnetworkTooltip({ component, renderedPos, cyInstance: cy });
     });
 }
 
-cy.on("layoutstop zoom pan", scheduleSubnetworkFrameUpdate);
-window.addEventListener("resize", scheduleSubnetworkFrameUpdate);
-scheduleSubnetworkFrameUpdate();
+cy.on("layoutstop", () => scheduleSubnetworkFrameUpdate({ resolve: true, autoFit: true }));
+cy.on("zoom pan", () => scheduleSubnetworkFrameUpdate());
+cy.on("position", "node", () => scheduleSubnetworkFrameUpdate());
+window.addEventListener("resize", () => scheduleSubnetworkFrameUpdate());
+scheduleSubnetworkFrameUpdate({ resolve: true, autoFit: true });
+
+// ############################################################################
+// Side panel toggles
+// ############################################################################
+
+function refreshCyViewport() {
+    if (!cy) return;
+    if (bodyContainer) {
+        void bodyContainer.offsetWidth;
+    }
+    requestAnimationFrame(() => {
+        cy.resize();
+        cy.fit();
+        cy.center();
+        scheduleSubnetworkFrameUpdate();
+    });
+}
+
+function toggleSidePanel(side) {
+    if (!bodyContainer) return;
+
+    const className = `${side}-panel-hidden`;
+    const shouldHide = !bodyContainer.classList.contains(className);
+
+    bodyContainer.classList.toggle(className, shouldHide);
+
+    const targetButton = side === "left" ? leftPanelToggleButton : rightPanelToggleButton;
+    if (targetButton) {
+        targetButton.classList.toggle("collapsed", shouldHide);
+        targetButton.setAttribute("aria-label", shouldHide ? `Show ${side} panel` : `Hide ${side} panel`);
+    }
+
+    refreshCyViewport();
+}
+
+function setupSidePanelToggles() {
+    if (!leftPanelToggleButton || !rightPanelToggleButton || !bodyContainer) {
+        return;
+    }
+
+    leftPanelToggleButton.addEventListener("click", () => toggleSidePanel("left"));
+    rightPanelToggleButton.addEventListener("click", () => toggleSidePanel("right"));
+}
+
+setupSidePanelToggles();
 
 // ############################################################################
 // Control panel handler
@@ -537,8 +647,10 @@ scheduleSubnetworkFrameUpdate();
 // Network layout dropdown
 // --------------------------------------------------------
 document.getElementById("layout-dropdown").addEventListener("change", function () {
-    currentLayout = this.value;
-    cy.layout(getLayoutOptions()).run();
+    layoutController.setLayout(this.value);
+    layoutController.clearLayoutRefresh();
+    queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
+    layoutController.runLayoutWithRepulsion();
 });
 
 // =============================================================================
@@ -581,7 +693,7 @@ if (edgeSlider) {
 // --------------------------------------------------------
 
 const nodeSlider = document.getElementById("filter-node-slider");
-if (isPhenotypePage && nodeSlider) {
+if (isPhenotypePage && nodeSlider && !isBinaryPhenotype) {
     noUiSlider.create(nodeSlider, {
         start: [NODE_SLIDER_MIN, NODE_SLIDER_MAX],
         connect: true,
@@ -667,7 +779,8 @@ if (isPhenotypePage) {
             }
         });
 
-        cy.layout(getLayoutOptions()).run();
+        layoutController.runLayoutWithRepulsion();
+        checkEmptyState();
 
         if (window.refreshPhenotypeList) {
             window.refreshPhenotypeList();
@@ -751,7 +864,8 @@ if (isPhenotypePage) {
             }
         });
 
-        cy.layout(getLayoutOptions()).run();
+        layoutController.runLayoutWithRepulsion();
+        checkEmptyState();
 
         if (window.refreshPhenotypeList) {
             window.refreshPhenotypeList();
@@ -812,7 +926,8 @@ if (isPhenotypePage) {
             }
         });
 
-        cy.layout(getLayoutOptions()).run();
+        layoutController.runLayoutWithRepulsion();
+        checkEmptyState();
 
         if (window.refreshPhenotypeList) {
             window.refreshPhenotypeList();
@@ -830,6 +945,9 @@ if (edgeSlider && edgeSlider.noUiSlider) {
         document.getElementById("edge-size-value").textContent = formattedValues.join(" - ");
         filterByNodeColorAndEdgeSize();
     });
+    edgeSlider.noUiSlider.on("set", function () {
+        queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
+    });
 }
 
 if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
@@ -841,24 +959,87 @@ if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
         }
         filterByNodeColorAndEdgeSize();
     });
+    nodeSlider.noUiSlider.on("set", function () {
+        queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
+    });
 }
 
 // =============================================================================
 // Genotype, sex, and life-stage specific filtering
 // =============================================================================
 
-let target_phenotype = isPhenotypePage ? pageConfig.displayName : "";
+let targetPhenotype = isPhenotypePage ? pageConfig.displayName : "";
+
+function isGenotypeAllSelected() {
+    const allCheckbox = document.querySelector('#genotype-filter-form input[value="All"]');
+    return allCheckbox ? allCheckbox.checked : true;
+}
 
 function applyFiltering() {
-    filterElementsByGenotypeAndSex(elements, cy, target_phenotype, filterByNodeColorAndEdgeSize);
+    queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
+    const sourceElements = isGenotypeAllSelected() ? baseElements : elements;
+    filterElementsByGenotypeAndSex(sourceElements, cy, targetPhenotype, filterByNodeColorAndEdgeSize);
     if (typeof window.recalculateCentrality === "function") {
         window.recalculateCentrality();
     }
 }
 
-document.getElementById("genotype-filter-form").addEventListener("change", applyFiltering);
-document.getElementById("sex-filter-form").addEventListener("change", applyFiltering);
-document.getElementById("lifestage-filter-form").addEventListener("change", applyFiltering);
+function setupAllToggle(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    const checkboxes = Array.from(form.querySelectorAll('input[type="checkbox"]'));
+    const allCheckbox = checkboxes.find((checkbox) => checkbox.value === "All");
+    const optionCheckboxes = checkboxes.filter((checkbox) => checkbox !== allCheckbox);
+
+    const ensureAllSelected = () => {
+        if (allCheckbox) {
+            allCheckbox.checked = true;
+            optionCheckboxes.forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+        }
+    };
+
+    if (allCheckbox) {
+        allCheckbox.addEventListener("change", () => {
+            if (allCheckbox.checked) {
+                optionCheckboxes.forEach((checkbox) => {
+                    checkbox.checked = false;
+                });
+            } else if (!optionCheckboxes.some((checkbox) => checkbox.checked)) {
+                ensureAllSelected();
+            }
+            applyFiltering();
+        });
+    }
+
+    optionCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+            if (checkbox.checked) {
+                if (allCheckbox) {
+                    allCheckbox.checked = false;
+                }
+                if (optionCheckboxes.every((option) => option.checked)) {
+                    ensureAllSelected();
+                    applyFiltering();
+                    return;
+                }
+            } else if (!optionCheckboxes.some((option) => option.checked)) {
+                ensureAllSelected();
+                applyFiltering();
+                return;
+            }
+            applyFiltering();
+        });
+    });
+
+    if (!optionCheckboxes.some((checkbox) => checkbox.checked)) {
+        ensureAllSelected();
+    }
+}
+
+["genotype-filter-form", "sex-filter-form", "lifestage-filter-form"].forEach((formId) => setupAllToggle(formId));
 
 // =============================================================================
 // Highlight human disease annotations
@@ -894,21 +1075,38 @@ createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
 
 const layoutDropdown = document.getElementById("layout-dropdown");
 const nodeRepulsionContainer = document.getElementById("node-repulsion-container");
+const nodeRepulsionBox = document.getElementById("node-repulsion-box");
 
 function updateNodeRepulsionVisibility() {
-    const selectedLayout = layoutDropdown.value;
-    nodeRepulsionContainer.style.display = selectedLayout === "cose" ? "block" : "none";
+    const displayValue = "block";
+
+    if (nodeRepulsionContainer) {
+        nodeRepulsionContainer.style.display = displayValue;
+    }
+
+    if (nodeRepulsionBox) {
+        nodeRepulsionBox.style.display = displayValue;
+    }
 }
 
 updateNodeRepulsionVisibility();
 layoutDropdown.addEventListener("change", updateNodeRepulsionVisibility);
 
 createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues) => {
-    nodeRepulsionValue = scaleToOriginalRange(intValues, nodeRepulsionMin, nodeRepulsionMax);
-    componentSpacingValue = scaleToOriginalRange(intValues, componentSpacingMin, componentSpacingMax);
     document.getElementById("node-repulsion-value").textContent = intValues;
-    cy.layout(getLayoutOptions()).run();
+    layoutController.updateRepulsionScale(intValues);
+    layoutController.scheduleNodeRepulsion();
+    if (layoutController.getLayout() !== "random") {
+        layoutController.queueLayoutRefresh(150);
+    }
 });
+const nodeRepulsionSlider = document.getElementById("nodeRepulsion-slider");
+if (nodeRepulsionSlider && nodeRepulsionSlider.noUiSlider) {
+    nodeRepulsionSlider.noUiSlider.on("set", () => {
+        const needsLayoutStop = layoutController.getLayout() !== "random";
+        queueAutoArrange({ afterLayout: needsLayoutStop, delayMs: AUTO_ARRANGE_DELAY_MS });
+    });
+}
 
 // ############################################################################
 // Initialize centrality system
@@ -921,8 +1119,73 @@ window.recalculateCentrality = recalculateCentrality;
 // Tooltip handling
 // ############################################################################
 
+const DIM_NODE_CLASS = "dim-node";
+const DIM_EDGE_CLASS = "dim-edge";
+const FOCUS_NODE_CLASS = "focus-node";
+const FOCUS_EDGE_CLASS = "focus-edge";
+
+function clearNeighborHighlights() {
+    cy.nodes().removeClass(DIM_NODE_CLASS);
+    cy.edges().removeClass(DIM_EDGE_CLASS);
+    cy.nodes().removeClass(FOCUS_NODE_CLASS);
+    cy.edges().removeClass(FOCUS_EDGE_CLASS);
+}
+
+function highlightNeighbors(target) {
+    if (!target) {
+        return;
+    }
+
+    clearNeighborHighlights();
+
+    let highlightElements;
+
+    if (target.isNode()) {
+        const nodeId = target.id();
+        const neighborIds = new Set([nodeId]);
+
+        target.connectedEdges().forEach((edge) => {
+            if (!edge.visible()) return;
+            const srcId = edge.source().id();
+            const tgtId = edge.target().id();
+            if (srcId === nodeId) {
+                neighborIds.add(tgtId);
+            }
+            if (tgtId === nodeId) {
+                neighborIds.add(srcId);
+            }
+        });
+
+        const highlightNodes = cy.nodes().filter((n) => n.visible() && neighborIds.has(n.id()));
+        const highlightEdges = cy
+            .edges()
+            .filter((e) => e.visible() && (e.source().id() === nodeId || e.target().id() === nodeId));
+
+        highlightElements = highlightNodes.union(highlightEdges);
+    } else if (target.isEdge()) {
+        highlightElements = target.union(target.connectedNodes()).filter((ele) => ele.visible());
+    } else {
+        return;
+    }
+
+    // Dim all visible elements first, then un-dim the highlight set to ensure neighbors stay emphasized
+    const visibleElements = cy.elements().filter((ele) => ele.visible());
+    visibleElements.nodes().addClass(DIM_NODE_CLASS);
+    visibleElements.edges().addClass(DIM_EDGE_CLASS);
+
+    // Remove dimming from the intended highlight set
+    highlightElements.nodes().removeClass(DIM_NODE_CLASS);
+    highlightElements.edges().removeClass(DIM_EDGE_CLASS);
+    highlightElements.nodes().addClass(FOCUS_NODE_CLASS);
+    highlightElements.edges().addClass(FOCUS_EDGE_CLASS);
+}
+
 cy.on("tap", "node, edge", function (event) {
-    showTooltip(event, cy, map_symbol_to_id, target_phenotype, nodeColorMin, nodeColorMax, edgeMin, edgeMax, nodeSizes);
+    highlightNeighbors(event.target);
+});
+
+cy.on("tap", "node, edge", function (event) {
+    showTooltip(event, cy, mapSymbolToId, targetPhenotype, { nodeColorValues });
 });
 
 cy.on("tap", function (event) {
@@ -933,9 +1196,10 @@ cy.on("tap", function (event) {
     const renderedPos = event.renderedPosition || event.position || { x: 0, y: 0 };
     const component = findComponentByPosition(renderedPos);
     if (component) {
-        showSubnetworkTooltip({ component, renderedPos });
+        showSubnetworkTooltip({ component, renderedPos, cyInstance: cy });
     } else {
         removeTooltips();
+        clearNeighborHighlights();
     }
 });
 
@@ -943,60 +1207,164 @@ cy.on("tap", function (event) {
 // Exporter
 // ############################################################################
 
-const file_name = `TSUMUGI_${pageConfig.name || "network"}`;
+const fileName = `TSUMUGI_${pageConfig.name || "network"}`;
 
-const exportPngButton = document.getElementById("export-png");
-if (exportPngButton) {
-    exportPngButton.addEventListener("click", function () {
-        exportGraphAsPNG(cy, file_name);
+function attachExportHandler(elementId, handler) {
+    const button = document.getElementById(elementId);
+    if (!button) return;
+    button.addEventListener("click", handler);
+}
+
+attachExportHandler("export-png", () => exportGraphAsPNG(cy, fileName));
+attachExportHandler("export-jpg", () => exportGraphAsJPG(cy, fileName));
+attachExportHandler("export-svg", () => exportGraphAsSVG(cy, fileName));
+attachExportHandler("export-csv", () => exportGraphAsCSV(cy, fileName));
+attachExportHandler("export-graphml", () => exportGraphAsGraphML(cy, fileName));
+
+attachExportHandler("export-png-mobile", () => exportGraphAsPNG(cy, fileName));
+attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, fileName));
+attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, fileName));
+attachExportHandler("export-csv-mobile", () => exportGraphAsCSV(cy, fileName));
+attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, fileName));
+
+// ############################################################################
+// UI Helpers
+// ############################################################################
+
+function checkEmptyState() {
+    const visibleNodes = cy.nodes(":visible").length;
+    const messageEl = document.getElementById("no-nodes-message");
+    if (messageEl) {
+        messageEl.style.display = visibleNodes === 0 ? "block" : "none";
+    }
+}
+
+const recenterBtn = document.getElementById("recenter-button");
+if (recenterBtn) {
+    recenterBtn.addEventListener("click", () => {
+        if (cy) {
+            cy.fit();
+            cy.center();
+            scheduleSubnetworkFrameUpdate();
+        }
     });
 }
 
-const exportJpgButton = document.getElementById("export-jpg");
-if (exportJpgButton) {
-    exportJpgButton.addEventListener("click", function () {
-        exportGraphAsJPG(cy, file_name);
+function autoArrangeModules() {
+    if (!cy) return;
+    cy.startBatch();
+    tileComponents();
+    resolveComponentOverlaps();
+    cy.endBatch();
+    fitVisibleComponents();
+    scheduleSubnetworkFrameUpdate();
+}
+
+function setupInitialAutoArrange() {
+    let handled = false;
+    let scheduled = false;
+    let hasRendered = false;
+
+    cy.one("render", () => {
+        hasRendered = true;
+    });
+
+    const triggerInitialArrange = (reason) => {
+        if (handled) return;
+        handled = true;
+        const arrangeButton = document.getElementById("arrange-modules-button");
+        if (arrangeButton) {
+            arrangeButton.click();
+            return;
+        }
+        autoArrangeModules();
+    };
+
+    const scheduleInitialArrange = (reason) => {
+        if (scheduled) return;
+        scheduled = true;
+        setTimeout(() => {
+            triggerInitialArrange(reason);
+        }, INITIAL_ARRANGE_CLICK_DELAY_MS);
+    };
+
+    const triggerAfterRender = (reason) => {
+        const runAfterPaint = () => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    scheduleInitialArrange(reason);
+                });
+            });
+        };
+
+        if (hasRendered) {
+            runAfterPaint();
+            return;
+        }
+
+        cy.one("render", runAfterPaint);
+    };
+
+    const timeoutId = setTimeout(() => {
+        triggerAfterRender("timeout");
+    }, INITIAL_AUTO_ARRANGE_TIMEOUT_MS);
+
+    cy.one("layoutstop", () => {
+        clearTimeout(timeoutId);
+        triggerAfterRender("layoutstop");
+    });
+
+    window.addEventListener(
+        REPULSION_FINISH_EVENT,
+        () => {
+            clearTimeout(timeoutId);
+            triggerAfterRender("repulsion");
+        },
+        { once: true },
+    );
+}
+
+function queueAutoArrange({ afterLayout = false, delayMs = AUTO_ARRANGE_DELAY_MS } = {}) {
+    if (!cy) return;
+    let arranged = false;
+    const runAutoArrange = () => {
+        if (arranged) return;
+        arranged = true;
+        autoArrangeModules();
+    };
+    const scheduleRun = () => {
+        setTimeout(runAutoArrange, delayMs);
+    };
+    if (!afterLayout) {
+        scheduleRun();
+        return;
+    }
+    let repulsionFallbackId = null;
+    const onRepulsionFinish = (event) => {
+        if (repulsionFallbackId) {
+            clearTimeout(repulsionFallbackId);
+            repulsionFallbackId = null;
+        }
+        scheduleRun();
+    };
+    const scheduleAfterRepulsion = () => {
+        window.addEventListener(REPULSION_FINISH_EVENT, onRepulsionFinish, { once: true });
+        repulsionFallbackId = setTimeout(() => {
+            window.removeEventListener(REPULSION_FINISH_EVENT, onRepulsionFinish);
+            scheduleRun();
+        }, AUTO_ARRANGE_REPULSION_TIMEOUT_MS);
+    };
+    const layoutFallbackId = setTimeout(() => {
+        scheduleRun();
+    }, AUTO_ARRANGE_LAYOUT_TIMEOUT_MS);
+    cy.one("layoutstop", () => {
+        if (arranged) return;
+        clearTimeout(layoutFallbackId);
+        scheduleAfterRepulsion();
     });
 }
 
-const exportCsvButton = document.getElementById("export-csv");
-if (exportCsvButton) {
-    exportCsvButton.addEventListener("click", function () {
-        exportGraphAsCSV(cy, file_name);
-    });
-}
-
-const exportGraphmlButton = document.getElementById("export-graphml");
-if (exportGraphmlButton) {
-    exportGraphmlButton.addEventListener("click", function () {
-        exportGraphAsGraphML(cy, file_name);
-    });
-}
-
-const exportPngMobileButton = document.getElementById("export-png-mobile");
-if (exportPngMobileButton) {
-    exportPngMobileButton.addEventListener("click", function () {
-        exportGraphAsPNG(cy, file_name);
-    });
-}
-
-const exportJpgMobileButton = document.getElementById("export-jpg-mobile");
-if (exportJpgMobileButton) {
-    exportJpgMobileButton.addEventListener("click", function () {
-        exportGraphAsJPG(cy, file_name);
-    });
-}
-
-const exportCsvMobileButton = document.getElementById("export-csv-mobile");
-if (exportCsvMobileButton) {
-    exportCsvMobileButton.addEventListener("click", function () {
-        exportGraphAsCSV(cy, file_name);
-    });
-}
-
-const exportGraphmlMobileButton = document.getElementById("export-graphml-mobile");
-if (exportGraphmlMobileButton) {
-    exportGraphmlMobileButton.addEventListener("click", function () {
-        exportGraphAsGraphML(cy, file_name);
-    });
+const arrangeModulesButton = document.getElementById("arrange-modules-button");
+if (arrangeModulesButton) {
+    arrangeModulesButton.addEventListener("click", autoArrangeModules);
 }

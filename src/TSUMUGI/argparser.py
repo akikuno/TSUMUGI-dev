@@ -102,8 +102,16 @@ def build_parser() -> argparse.ArgumentParser:
         help=("Number of threads to use for TSUMUGI pipeline.\nIf not specified, defaults to 1.\n"),
     )
 
+    # Debug options (hidden) to retain temporary files
     run.add_argument(
-        "--is_test",
+        "--debug",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    # Web specific debug options (hidden) to
+    # skip preprocessing and retain temporary files
+    run.add_argument(
+        "--debug_web",
         action="store_true",
         help=argparse.SUPPRESS,
     )
@@ -117,15 +125,16 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
-    group_mp = mp_parser.add_mutually_exclusive_group(required=True)
-    group_mp.add_argument(
+    # --- Group A: MP include/exclude ---
+    group_mp_filter = mp_parser.add_mutually_exclusive_group(required=True)
+    group_mp_filter.add_argument(
         "-i",
         "--include",
         dest="include",
         metavar="MP_ID",
         help=("Include gene pairs that share the specified MP term (descendants included).\nExample: -i MP:0001146"),
     )
-    group_mp.add_argument(
+    group_mp_filter.add_argument(
         "-e",
         "--exclude",
         dest="exclude",
@@ -135,6 +144,14 @@ def build_parser() -> argparse.ArgumentParser:
             "(descendants included).\n"
             "Example: -e MP:0001146"
         ),
+    )
+    # --- Group B: granularity (genewise / pairwise) ---
+    group_level = mp_parser.add_mutually_exclusive_group(required=False)
+    group_level.add_argument(
+        "-g", "--genewise", action="store_true", help="Filter by number of phenotypes per KO mouse"
+    )
+    group_level.add_argument(
+        "-p", "--pairwise", action="store_true", help="Filter by number of shared phenotypes between KO pairs"
     )
 
     mp_parser.add_argument(
@@ -174,14 +191,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    mp_parser.add_argument(
-        "--out",
-        dest="outfile",
-        type=str,
-        required=False,
-        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
-    )
-
     # Annotations
     mp_parser.add_argument(
         "--life_stage",
@@ -198,28 +207,29 @@ def build_parser() -> argparse.ArgumentParser:
     mp_parser.add_argument(
         "--zygosity", type=str, required=False, help=("Filter by zygosity.  'Homo', 'Hetero' or 'Hemi'.")
     )
+
     # =========================================================
-    # n-phenos (Filter by the number of phenotypes)
+    # count (Filter by the number of phenotypes)
     # =========================================================
 
-    nphenos_parser = subparsers.add_parser(
-        "n-phenos",
-        help="Filter by number of phenotypes",
-        description="Filter genes by the number of phenotypes per KO or shared between KO pairs.",
+    count_parser = subparsers.add_parser(
+        "count",
+        help="Filter genes or gene pairs by the number of phenotypes",
+        description="Filter genes based on the number of detected phenotypes per KO or shared between KO pairs.",
     )
 
-    group_nphenos = nphenos_parser.add_mutually_exclusive_group(required=True)
-    group_nphenos.add_argument(
+    group_count = count_parser.add_mutually_exclusive_group(required=True)
+    group_count.add_argument(
         "-g", "--genewise", action="store_true", help="Filter by number of phenotypes per KO mouse"
     )
-    group_nphenos.add_argument(
+    group_count.add_argument(
         "-p", "--pairwise", action="store_true", help="Filter by number of shared phenotypes between KO pairs"
     )
 
-    nphenos_parser.add_argument("--min", type=int, help="Minimum number threshold")
-    nphenos_parser.add_argument("--max", type=int, help="Maximum number threshold")
+    count_parser.add_argument("--min", type=int, help="Minimum number threshold")
+    count_parser.add_argument("--max", type=int, help="Maximum number threshold")
 
-    nphenos_parser.add_argument(
+    count_parser.add_argument(
         "--in",
         dest="path_pairwise",
         type=str,
@@ -230,15 +240,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    nphenos_parser.add_argument(
-        "--out",
-        dest="outfile",
-        type=str,
-        required=False,
-        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
-    )
-
-    nphenos_parser.add_argument(
+    count_parser.add_argument(
         "-a",
         "--genewise_annotations",
         dest="path_genewise",
@@ -251,12 +253,36 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     # =========================================================
-    # genes (Filter by gene symbols)
+    # score (Filter by the similarity score of gene pairs)
+    # =========================================================
+
+    score_parser = subparsers.add_parser(
+        "score",
+        help="Filter genes or gene pairs by the similarity score",
+        description="Filter genes based on the similarity score per KO or shared between KO pairs.",
+    )
+
+    score_parser.add_argument("--min", type=int, help="Minimum number threshold")
+    score_parser.add_argument("--max", type=int, help="Maximum number threshold")
+
+    score_parser.add_argument(
+        "--in",
+        dest="path_pairwise",
+        type=str,
+        required=False,
+        help=(
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+        ),
+    )
+
+    # =========================================================
+    # genes (Filter by gene symbols or gene pairs)
     # =========================================================
 
     genes_parser = subparsers.add_parser(
         "genes",
-        help="Filter gene pairs by gene symbols of phenotype annotations",
+        help="Filter gene pairs by gene symbols or gene pairs of phenotype annotations",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
@@ -274,6 +300,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Drop annotations with the specified gene symbols (comma-separated or path of text file)",
     )
 
+    group_level = genes_parser.add_mutually_exclusive_group(required=False)
+    group_level.add_argument("-g", "--genewise", action="store_true", help="Filter by user-provided gene symbols")
+    group_level.add_argument("-p", "--pairwise", action="store_true", help="Filter by user-provided  gene pairs")
+
     genes_parser.add_argument(
         "--in",
         dest="path_pairwise",
@@ -283,14 +313,6 @@ def build_parser() -> argparse.ArgumentParser:
             "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
             "If omitted, data are read from STDIN.\n"
         ),
-    )
-
-    genes_parser.add_argument(
-        "--out",
-        dest="outfile",
-        type=str,
-        required=False,
-        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
     )
 
     # =========================================================
@@ -332,14 +354,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    life_stage_parser.add_argument(
-        "--out",
-        dest="outfile",
-        type=str,
-        required=False,
-        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
-    )
-
     # =========================================================
     # sex (Filter by sexual dimorphism)
     # =========================================================
@@ -379,14 +393,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    sex_parser.add_argument(
-        "--out",
-        dest="outfile",
-        type=str,
-        required=False,
-        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
-    )
-
     # =========================================================
     # zygosity (Filter by zygosity)
     # =========================================================
@@ -424,14 +430,6 @@ def build_parser() -> argparse.ArgumentParser:
             "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
             "If omitted, data are read from STDIN.\n"
         ),
-    )
-
-    zygosity_parser.add_argument(
-        "--out",
-        dest="outfile",
-        type=str,
-        required=False,
-        help=("Path to output file (JSONL or JSONL.gz).\nIf omitted, data are written to STDOUT.\n"),
     )
 
     # =========================================================
@@ -516,43 +514,81 @@ def parse_args(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    ########################################################################
+    # run
+    ########################################################################
     if args.cmd == "run":
-        # ------------------------------------------------------------
-        # If args.mp_obo or args.impc_phenodigm are not provided,
+        # If args.mp_obo or args.impc_phendigm are not provided,
         # use the built-in files inside the TSUMUGI/data directory.
-        # ------------------------------------------------------------
         if not args.mp_obo:
             args.mp_obo = str(files("TSUMUGI") / "data" / "mp.obo")
 
         if not args.impc_phenodigm:
             args.impc_phenodigm = str(files("TSUMUGI") / "data" / "impc_phenodigm.csv")
 
-    # When using -e / --exclude with the mp subcommand,
-    # the --path_genewise option is required.
-    if args.cmd == "mp" and args.exclude and not args.path_genewise:
-        parser.error(
-            "mp: '-a/--path_genewise' is required when using '-e/--exclude'.\n"
-            "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
-        )
-        # ------------------------------------------------------------
+    ########################################################################
+    # mp
+    ########################################################################
+    if args.cmd == "mp":
         # If args.mp_obo is not provided,
         # use the built-in files inside the TSUMUGI/data directory.
-        # ------------------------------------------------------------
         if not args.mp_obo:
             args.mp_obo = str(files("TSUMUGI") / "data" / "mp.obo")
 
-    # When using the n-phenos subcommand, at least one of --min or --max must be specified.
-    if args.cmd == "n-phenos" and args.min is None and args.max is None:
-        parser.error("n-phenos: At least one of '--min' or '--max' must be specified.")
+        if args.exclude and not args.path_genewise:
+            parser.error(
+                "mp: '-a/--path_genewise' is required when using '-e/--exclude'.\n"
+                "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
+            )
 
-    # When using -g / --genewise with the n-phenos subcommand,
+        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
+        if not args.genewise and not args.pairwise:
+            args.pairwise = True
+        else:
+            args.pairwise = False
+
+    ########################################################################
+    # count / score
+    ########################################################################
+    # When using the count/score subcommand, at least one of --min or --max must be specified.
+    if args.cmd == "count" and args.min is None and args.max is None:
+        parser.error("count: At least one of '--min' or '--max' must be specified.")
+
+    if args.cmd == "score" and args.min is None and args.max is None:
+        parser.error("score: At least one of '--min' or '--max' must be specified.")
+
+    # When using -g / --genewise with the count subcommand,
     # the --genewise_annotations option is required.
-    if args.cmd == "n-phenos" and args.genewise and not args.path_genewise:
+    if args.cmd == "count" and args.genewise and not args.path_genewise:
         parser.error(
-            "n-phenos: '-a/--genewise_annotations' is required when using '-g/--genewise'.\n"
+            "count: '-a/--genewise_annotations' is required when using '-g/--genewise'.\n"
             "Provide the gene phenotype annotations JSONL(.gz) file to identify genes that were measured."
         )
 
+    ########################################################################
+    # genes
+    ########################################################################
+    if args.cmd == "genes":
+        path_arg = args.keep or args.drop
+
+        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
+        if not args.genewise and not args.pairwise:
+            args.pairwise = True
+        elif args.genewise:
+            args.pairwise = False
+        else:
+            args.genewise = False
+
+        # In pairwise mode, the gene list must be provided as a text file.
+        if args.pairwise and not Path(path_arg).is_file():
+            parser.error(
+                "genes --pairwise: Please provide a valid path to a text file containing gene symbols or gene pairs."
+            )
+
+    ########################################################################
+    # build-webapp
+    ########################################################################
+    # For build-webapp, check that output_dir is a directory (not a file)
     if args.cmd == "build-webapp" and Path(args.output_dir).suffix:
         parser.error(
             f"build-webapp: {args.output_dir} looks like a file name (has extension). Please specify a directory."

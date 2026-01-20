@@ -24,17 +24,17 @@ Alat ini terbuka untuk semua pengguna secara daring 👇️
 
 TSUMUGI mendukung tiga jenis input:
 
-### 1. Phenotype
+### Phenotype
 Masukkan fenotipe yang diminati untuk mencari **gen yang KO-nya punya profil fenotipe mirip**.  
 Nama fenotipe mengikuti [MPO](https://www.informatics.jax.org/vocab/mp_ontology).  
 👉 [Daftar fenotipe](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_mp_terms.txt)
 
-### 2. Gene
+### Gene
 Tentukan satu gen untuk mencari **gen lain dengan fenotipe KO serupa**.  
 Simbol mengikuti [MGI](http://www.informatics.jax.org/).  
 👉 [Daftar gen](https://github.com/larc-tsukuba/tsumugi/blob/main/data/available_gene_symbols.txt)
 
-### 3. Gene List
+### Gene List
 Tempel beberapa gen (satu per baris) untuk mencari **di dalam daftar itu**.  
 > [!CAUTION]  
 > Jika tidak ada yang mirip: `No similar phenotypes were found among the entered genes.`  
@@ -78,7 +78,8 @@ Halaman berpindah dan menggambar jaringan secara otomatis sesuai input.
 
 ### Panel jaringan
 **Node** mewakili gen. Klik untuk melihat daftar fenotipe abnormal; seret untuk memindahkan.  
-**Edge** klik untuk melihat detail fenotipe bersama.
+**Edge** klik untuk melihat detail fenotipe bersama.  
+**Module** menggambarkan sub-jaringan gen. Klik modul untuk melihat fenotipe gen di dalamnya; seret modul agar tidak saling tumpang tindih.
 
 ### Panel kontrol
 Menyesuaikan tampilan jaringan di panel kiri.
@@ -130,8 +131,9 @@ Rilis ini menambah CLI: unduh pembaruan IMPC terbaru, jalankan sendiri, filter l
 
 ## Perintah yang tersedia
 - `tsumugi run`: hitung ulang dari data IMPC  
-- `tsumugi mp --include/--exclude`: sertakan/keluarkan pasangan dengan istilah MP  
-- `tsumugi n-phenos --pairwise/--genewise (--min/--max)`: filter jumlah fenotipe (pairwise/genewise)  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: sertakan/keluarkan pasangan atau gen terkait istilah MP  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: filter jumlah fenotipe (pairwise/genewise)  
+- `tsumugi score (--min/--max)`: saring berdasarkan skor kemiripan (pasangan gen)
 - `tsumugi genes --keep/--drop`: simpan/hapus via daftar gen  
 - `tsumugi life-stage --keep/--drop`: filter tahap hidup  
 - `tsumugi sex --keep/--drop`: filter jenis kelamin  
@@ -152,12 +154,11 @@ Siap jika `tsumugi --version` tampil.
 
 ## Contoh umum (per perintah)
 
-### 1. Hitung ulang dari data IMPC (`tsumugi run`)
+### Hitung ulang dari data IMPC (`tsumugi run`)
 Jika `--mp_obo` dilewati, gunakan bawaan `data-version: releases/2025-08-27/mp.obo`.  
 Jika `--impc_phenodigm` dilewati, gunakan file yang diambil 2025-10-01 dari [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
 ```bash
 tsumugi run \
-  --output_dir ./tsumugi-output \
   --statistical_results ./statistical-results-ALL.csv.gz \
   --threads 8
 ```
@@ -169,8 +170,11 @@ Keluaran: `./tsumugi-output` berisi genewise_phenotype_annotations.jsonl.gz, pai
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
-### 2. Filter istilah MP (`tsumugi mp --include/--exclude`)
+### Filter istilah MP (`tsumugi mp --include/--exclude`)
 Ambil hanya pasangan gen yang mengandung fenotipe yang diminati, atau pasangan di mana fenotipe tersebut sudah diukur tetapi tidak menunjukkan kelainan yang signifikan.
+
+- `--pairwise` (default jika tidak ditentukan): keluaran per pasangan gen. Gunakan `--in pairwise_similarity_annotations.jsonl(.gz)`.
+- `--genewise`: keluaran per gen. Gunakan `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (wajib untuk `--exclude`, dianjurkan untuk `--include`).
 
 ```bash
 # Ambil hanya pasangan yang mencakup MP:0001146 (abnormal testis morphology) atau istilah turunannya (mis. MP:0004849 abnormal testis size)
@@ -183,28 +187,63 @@ tsumugi mp --exclude MP:0001146 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_filtered.jsonl
+
+# Ambil anotasi signifikan per gen yang memuat MP:0001146 (termasuk turunan)
+tsumugi mp --include MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_filtered.jsonl
+
+# Ambil gen yang diukur untuk MP:0001146 (termasuk turunan) namun tidak signifikan
+tsumugi mp --exclude MP:0001146 \
+  --genewise \
+  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
+  > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
 > **Istilah MP turunan dari ID yang ditentukan juga diproses.**  
 > Misalnya, jika Anda menentukan `MP:0001146 (abnormal testis morphology)`, istilah turunan seperti `MP:0004849 (abnormal testis size)` juga akan dihitung.
 
-### 3. Filter jumlah fenotipe (`tsumugi n-phenos`)
+### Filter jumlah fenotipe (`tsumugi count`)
+At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
 - Fenotipe bersama per pasangan:
 ```bash
-tsumugi n-phenos --pairwise --min 3 --max 20 \
+tsumugi count --pairwise --min 3 --max 20 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_min3_max20.jsonl
 ```
 - Fenotipe per gen (butuh genewise):
 ```bash
-tsumugi n-phenos --genewise --min 5 --max 50 \
+tsumugi count --genewise --min 5 --max 50 \
   --genewise genewise_phenotype_annotations.jsonl.gz \
   --in pairwise_similarity_annotations.jsonl.gz \
   > genewise_min5_max50.jsonl
 ```
 
-### 4. Filter dengan daftar gen (`tsumugi genes --keep/--drop`)
+
+### Saring berdasarkan skor kemiripan (`tsumugi score`)
+```txt
+tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+```
+
+Saring pasangan gen berdasarkan `phenotype_similarity_score` (0–100). Minimal salah satu dari `--min` atau `--max` harus diisi.
+
+#### `--min MIN`, `--max MAX`
+Batas bawah/atas skor. Bisa pakai salah satu saja untuk filter satu sisi.
+
+#### `--in IN`
+Path ke file anotasi pairwise (JSONL/.gz); jika tidak diisi, baca dari STDIN.
+
+```bash
+tsumugi score --min 50 --max 80 \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > pairwise_score50_80.jsonl
+```
+
+`--min` atau `--max` saja juga bisa.
+
+### Filter dengan daftar gen (`tsumugi genes --keep/--drop`)
 ```bash
 tsumugi genes --keep genes.txt \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -215,14 +254,14 @@ tsumugi genes --drop geneA,geneB \
   > pairwise_drop_genes.jsonl
 ```
 
-### 5. Tahap hidup / jenis kelamin / zigositas
+### Tahap hidup / jenis kelamin / zigositas
 ```bash
 tsumugi life-stage --keep Early --in pairwise_similarity_annotations.jsonl.gz > pairwise_lifestage_early.jsonl
 tsumugi sex --drop Male --in pairwise_similarity_annotations.jsonl.gz > pairwise_no_male.jsonl
 tsumugi zygosity --keep Homo --in pairwise_similarity_annotations.jsonl.gz > pairwise_homo.jsonl
 ```
 
-### 6. Ekspor GraphML / Webapp
+### Ekspor GraphML / Webapp
 ```bash
 tsumugi build-graphml \
   --in pairwise_similarity_annotations.jsonl.gz \
@@ -232,7 +271,6 @@ tsumugi build-graphml \
 tsumugi build-webapp \
   --in pairwise_similarity_annotations.jsonl.gz \
   --genewise genewise_phenotype_annotations.jsonl.gz \
-  --output_dir ./webapp_output
 ```
 Pipeline: `zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
 
@@ -248,15 +286,21 @@ Ambil pasangan gen–fenotipe dengan P ≤ 0.0001 (`p_value`, `female_ko_effect_
 - Jenis kelamin: `female`, `male`
 
 ## Kesamaan fenotipik
-Hitung **Resnik** antar istilah MP dan skala ke **Phenodigm (0–100)** untuk pasangan gen.
+TSUMUGI saat ini mengikuti pendekatan mirip Phenodigm. Kami menghitung kemiripan **Resnik** antar istilah MP dan kemiripan **Jaccard** antar himpunan leluhur, lalu menggabungkannya dengan **rata-rata geometrik**. Perbedaan utama dari Phenodigm asli adalah penambahan pembobotan metadata (zygosity, life stage, sexual dimorphism) saat mengagregasi kemiripan.
 
-1. Bangun ontologi MP, hitung IC:  
+1. Bangun ontologi MP dan hitung IC:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-2. Resnik(t1, t2) = IC nenek moyang bersama paling informatif (MICA); jika tidak ada, 0.  
-3. Untuk setiap pasangan gen: matriks Resnik antar istilah signifikan, bobot kecocokan zigositas/tahap hidup/jenis kelamin (1.0/0.75/0.5/0.25); ambil max dan mean aktual.  
-4. Dapatkan max/mean teoretis dari IC istilah, lalu normalisasi:  
-   `Phenodigm = 100 * 0.5 * ( actual_max / theoretical_max + actual_mean / theoretical_mean )`  
-   Jika penyebut teoretis 0, setel 0. Skor 0–100 dipakai di unduhan dan slider `Phenotypes similarity`.
+   Istilah di bawah persentil ke-5 IC diset ke 0.
+2. Untuk tiap pasangan istilah MP, temukan leluhur bersama paling spesifik (MICA) dan gunakan IC-nya sebagai Resnik.  
+   Hitung indeks Jaccard pada himpunan leluhur.  
+   Kemiripan istilah = `sqrt(Resnik * Jaccard)`.
+3. Untuk setiap pasangan gen, buat matriks istilah×istilah dan terapkan bobot metadata.  
+   Kecocokan zigositas/tahap hidup/dimorfisme seksual memberi bobot 0.25/0.5/0.75/1.0 untuk 0/1/2/3 kecocokan.
+4. Terapkan penskalaan ala Phenodigm ke 0–100:  
+   Gunakan maksimum baris/kolom untuk mendapatkan max dan mean aktual.  
+   Normalisasi dengan max/mean teoretis berbasis IC lalu hitung  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
+   Jika penyebut teoretis 0, nilainya diset 0.
 
 # ✉️ Kontak
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

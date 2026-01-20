@@ -4,7 +4,6 @@
 
 html,
 body {
-    margin: 0 auto;
     padding: 0;
     height: 100%;
     width: 100%;
@@ -53,6 +52,7 @@ a {
     box-sizing: border-box;
     align-items: stretch;
     display: flex;
+    position: relative;
 }
 
 /* ======================================================== */
@@ -77,7 +77,59 @@ a {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     background-color: white;
+}
+
+/* Panel toggle buttons */
+.panel-toggle-button {
+    position: absolute;
+    top: -28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #aaa;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    z-index: 1200;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.panel-toggle-button:hover {
+    background-color: #ffeddc;
+    color: #d65f00;
+}
+
+.panel-toggle-button i {
+    pointer-events: none;
+    transition: transform 0.2s ease;
+}
+
+.panel-toggle-button.collapsed i {
+    transform: rotate(180deg);
+}
+
+.left-panel-toggle {
+    left: 10px;
+}
+
+.right-panel-toggle {
+    right: 10px;
+}
+
+.body-container.left-panel-hidden .left-control-panel-container {
+    display: none;
+}
+
+.body-container.right-panel-hidden .right-control-panel-container {
+    display: none;
 }
 
 .panel-section {
@@ -85,11 +137,18 @@ a {
     background-color: #fff;
     padding-bottom: 10px;
     border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .panel-section:first-child {
     border-top: none;
     margin-top: 0;
+}
+
+.right-control-panel-container .boxed-section {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .panel-title {
@@ -114,11 +173,15 @@ a {
     justify-content: center;
     border: 2px solid #aaa;
     border-radius: 10px;
+    min-width: 0;
+    /* allow shrinking back after expanding */
+    position: relative;
 }
 
 .cy {
     width: 100%;
-    height: calc(100% - 130px);
+    flex: 1;
+    min-height: 0;
     position: relative;
 }
 
@@ -179,6 +242,13 @@ a {
     width: 80%;
 }
 
+.slider-container select.exporter {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+}
+
 .slider-value {
     display: inline-block;
     width: 25px;
@@ -196,12 +266,42 @@ a {
 }
 
 /* SVG */
+.phenotype-scale-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+}
+
+.phenotype-scale-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    grid-column: 2;
+    width: 90%;
+    margin: 0 auto;
+}
+
 .color-scale-container,
 .edge-scale-container {
     width: 50%;
     height: auto;
     text-align: center;
-    margin-top: 10px;
+    margin: 10px auto 0;
+}
+
+.phenotype-scale-wrapper .color-scale-container,
+.phenotype-scale-wrapper .edge-scale-container {
+    width: 50%;
+    margin: 10px 0 0;
+}
+
+.color-scale-container svg,
+.edge-scale-container svg {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 .scale-label {
@@ -352,7 +452,7 @@ ul.suggestions li:hover {
 }
 
 /* Title-style label overlay */
-.boxed-section > span {
+.boxed-section>span {
     position: absolute;
     top: 0;
     left: 50%;
@@ -360,12 +460,32 @@ ul.suggestions li:hover {
     background-color: #fff;
     padding: 2px 10px;
     white-space: nowrap;
+    max-width: 90%;
+    text-align: center;
+    font-size: clamp(12px, 1.3vw, 16px);
+    line-height: 1.1;
 }
 
 .boxed-section form {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+.boxed-section form.two-column-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 8px;
+    align-items: start;
+    padding-left: 8px;
+}
+
+.boxed-section form.two-column-options .option-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
 }
 
 .boxed-section.align-center {
@@ -390,7 +510,7 @@ ul.suggestions li:hover {
     display: none;
 }
 
-.round-checkbox input[type="checkbox"] + label {
+.round-checkbox input[type="checkbox"]+label {
     position: relative;
     padding-left: 35px;
     line-height: 24px;
@@ -398,7 +518,7 @@ ul.suggestions li:hover {
     user-select: none;
 }
 
-.round-checkbox input[type="checkbox"] + label:before {
+.round-checkbox input[type="checkbox"]+label:before {
     display: block;
     position: absolute;
     left: 0;
@@ -413,11 +533,11 @@ ul.suggestions li:hover {
 }
 
 /* Highlight in yellow only when checked */
-.round-checkbox input[type="checkbox"]:checked + label:before {
+.round-checkbox input[type="checkbox"]:checked+label:before {
     background-color: #ff8c00;
 }
 
-.round-checkbox input[type="checkbox"]:checked + label:after {
+.round-checkbox input[type="checkbox"]:checked+label:after {
     display: block;
     position: absolute;
     content: "";
@@ -669,25 +789,31 @@ button.menu-toggle-icon {
     .cy-container {
         margin: 20px 0;
         width: 90%;
-        height: 400px; /* Fixed height so Cytoscape can initialize properly */
-        min-height: 400px; /* Also set the minimum height */
+        height: 400px;
+        /* Fixed height so Cytoscape can initialize properly */
+        min-height: 400px;
+        /* Also set the minimum height */
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    .cy {
-        width: 100%;
-        height: 350px; /* Fixed height for mobile */
-        min-height: 350px;
+    .phenotype-scale-container {
+        width: 90%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
     }
 
-    .color-scale-container,
-    .edge-scale-container {
-        width: 80%;
-        height: auto;
-        text-align: center;
-        margin-top: 10px;
+    .phenotype-scale-wrapper {
+        width: 90%;
+        gap: 12px;
+    }
+
+    .cy {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
     }
 
     .resources-container {
@@ -712,6 +838,113 @@ button.menu-toggle-icon {
         margin: 12px 0;
         flex-wrap: wrap;
     }
+
+    .panel-toggle-button {
+        display: none;
+    }
+}
+
+/* ======================================================== */
+/* Cytoscape Tooltip Styles */
+/* ======================================================== */
+.cy-tooltip {
+    position: absolute;
+    --cy-tooltip-phenotypes-max: 120px;
+    --cy-tooltip-diseases-max: 90px;
+    --cy-tooltip-modules-max: 160px;
+    --cy-tooltip-height: 220px;
+    padding: 10px 10px 18px 14px;
+    min-width: 220px;
+    min-height: 140px;
+    box-sizing: border-box;
+    overflow: hidden;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    cursor: move;
+    user-select: text;
+}
+
+.cy-tooltip__section {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 6px;
+    /* leave space for scrollbar */
+}
+
+.cy-tooltip__section--phenotypes {
+    max-height: var(--cy-tooltip-phenotypes-max);
+}
+
+.cy-tooltip__section--diseases {
+    max-height: var(--cy-tooltip-diseases-max);
+}
+
+.cy-tooltip__section--modules {
+    max-height: var(--cy-tooltip-modules-max);
+}
+
+.cy-tooltip__section-title {
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.cy-tooltip__section-body {
+    line-height: 1.4;
+}
+
+.cy-tooltip__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cy-tooltip__copy {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    z-index: 1001;
+}
+
+.cy-tooltip__copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    padding: 2px 5px;
+}
+
+.cy-tooltip__resize-handle {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    cursor: sw-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    touch-action: none;
+}
+
+.cy-tooltip__resize-handle::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-left: 2px solid #999;
+    border-bottom: 2px solid #999;
+    transform: translate(-1px, 1px);
 }
 
 /* ======================================================== */
@@ -720,7 +953,8 @@ button.menu-toggle-icon {
 .info-tooltip-container {
     position: relative;
     display: inline-block;
-    margin-left: 8px;
+    margin-left: 4px;
+    z-index: 1;
 }
 
 .info-tooltip-icon {
@@ -757,8 +991,7 @@ button.menu-toggle-icon {
     font-size: 14px;
     font-weight: normal;
     line-height: 1.4;
-    white-space: nowrap;
-    z-index: 1000;
+    z-index: 12000;
     transition:
         opacity 0.3s ease,
         visibility 0.3s ease;
@@ -791,3 +1024,78 @@ button.menu-toggle-icon {
 .info-tooltip-content a:hover {
     color: #81d4fa;
 }
+/* ======================================================== */
+/* Cy controls (recenter / arrange) */
+/* ======================================================== */
+.cy-controls {
+    position: absolute;
+    right: 16px;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1200;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.recenter-button {
+    position: static;
+    bottom: auto;
+    right: auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #aaa;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.recenter-button:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+}
+
+/* ======================================================== */
+/* No Nodes Message */
+/* ======================================================== */
+.no-nodes-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px 40px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 18px;
+    color: #555;
+    z-index: 50;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    pointer-events: none;
+}
+/* ======================================================== */
+/* Subnetwork Frame Borders (Drag Handles) */
+/* ======================================================== */
+.subnetwork-frame__border {
+    position: absolute;
+    pointer-events: auto;
+    cursor: move;
+    z-index: 11; /* Above frame content if any */
+}
+.subnetwork-frame__border--top { top: -5px; left: -5px; right: -5px; height: 10px; }
+.subnetwork-frame__border--bottom { bottom: -5px; left: -5px; right: -5px; height: 10px; }
+.subnetwork-frame__border--left { top: -5px; bottom: -5px; left: -5px; width: 10px; }
+.subnetwork-frame__border--right { top: -5px; bottom: -5px; right: -5px; width: 10px; }
