@@ -134,28 +134,16 @@ Adjust layout, font size, edge width, and node repulsion (Cose layout).
 Export the current network as PNG/CSV/GraphML.  
 CSV includes connected-component (module) IDs and phenotype lists per gene; GraphML is Cytoscape-compatible.
 
-# 🛠 Command-Line Edition
+# 🛠 Command-Line Tool (CLI)
 
-This release adds a CLI so you can download the latest IMPC updates yourself, rerun TSUMUGI, and apply finer filters and output options.
+The TSUMUGI CLI allows you to use the latest IMPC data downloaded locally, and provides more fine-grained filtering and output options than the web tool.
+
+## Features
 
 - Recompute with IMPC `statistical-results-ALL.csv.gz` (optionally `mp.obo`, `impc_phenodigm.csv`).  
 - Filter by presence/absence of MP terms.  
 - Filter by gene list (comma-separated or text file).  
 - Outputs: GraphML (`tsumugi build-graphml`), offline webapp bundle (`tsumugi build-webapp`).
-
-## Available commands
-- `tsumugi run`: Recompute the network from IMPC data  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: Filter gene pairs or genes that contain / do not show an MP term  
-- `tsumugi count --pairwise/--genewise (--min/--max)`: Filter by phenotype counts (pairwise or per gene)  
-- `tsumugi score (--min/--max)`: Filter by phenotype similarity score (pairwise)  
-- `tsumugi genes --keep/--drop`: Keep/drop by gene list (comma-separated or text file)  
-- `tsumugi life-stage --keep/--drop`: Filter by life stage (Embryo/Early/Interval/Late)  
-- `tsumugi sex --keep/--drop`: Filter by sex (Male/Female/None)  
-- `tsumugi zygosity --keep/--drop`: Filter by zygosity (Homo/Hetero/Hemi)  
-- `tsumugi build-graphml`: Generate GraphML (Cytoscape, etc.)  
-- `tsumugi build-webapp`: Generate TSUMUGI webapp assets (local HTML/CSS/JS)
-
-All filtering subcommands stream JSONL to STDOUT. Redirect with `>` if you want to save results to a file.
 
 ## Installation
 
@@ -170,6 +158,24 @@ pip install tsumugi
 ```
 
 You are ready if `tsumugi --version` prints the version.
+
+## Available commands
+
+- `tsumugi run`: Recompute the network from IMPC data  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: Filter gene pairs or genes that contain / do not show an MP term  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: Filter by phenotype counts (pairwise or per gene)  
+- `tsumugi score (--min/--max)`: Filter by phenotype similarity score (pairwise)  
+- `tsumugi genes --keep/--drop`: Keep/drop by gene list (comma-separated or text file)  
+- `tsumugi life-stage --keep/--drop`: Filter by life stage (Embryo/Early/Interval/Late)  
+- `tsumugi sex --keep/--drop`: Filter by sex (Male/Female/None)  
+- `tsumugi zygosity --keep/--drop`: Filter by zygosity (Homo/Hetero/Hemi)  
+- `tsumugi build-graphml`: Generate GraphML (Cytoscape, etc.)  
+- `tsumugi build-webapp`: Generate TSUMUGI webapp assets (local HTML/CSS/JS)
+
+> [!NOTE]
+> All filtering subcommands stream JSONL to STDOUT.  
+> Redirect with `>` if you want to save results to a file.
+
 
 ## Usage
 
