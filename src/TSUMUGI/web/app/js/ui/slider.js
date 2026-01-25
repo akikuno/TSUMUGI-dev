@@ -3,7 +3,7 @@ export function createSlider(id, start, min, max, step, updateCallback, isRange 
     const slider = document.getElementById(id);
     if (!slider) {
         console.error(`Slider with ID '${id}' not found.`);
-        return;
+        return null;
     }
 
     noUiSlider.create(slider, {
@@ -17,4 +17,6 @@ export function createSlider(id, start, min, max, step, updateCallback, isRange 
         const intValues = isRange ? value.map(Math.round) : Math.round(value);
         updateCallback(intValues);
     });
+
+    return slider.noUiSlider;
 }

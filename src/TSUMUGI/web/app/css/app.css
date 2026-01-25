@@ -265,6 +265,34 @@ a {
     text-align: center;
 }
 
+.input-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.numeric-inputs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.range-input {
+    width: 64px;
+    padding: 4px 6px;
+    font-size: 12px;
+    text-align: center;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+.range-separator {
+    font-size: 12px;
+    color: #666;
+}
+
 /* SVG */
 .phenotype-scale-container {
     width: 100%;

@@ -22,6 +22,11 @@
 
 ## v1.0.1 (2026-MM-DD)
 
+### 🌟 New Features
+
+- Add numeric inputs for viewer sliders and sync with controls  
+  Issue: [#148](https://github.com/akikuno/TSUMUGI-dev/issues/148)  
+
 ### 🐛 Bug Fixes
 
 - Fix a bug of "No Gene Network Found” popup is not displayed when a gene has no network.  
