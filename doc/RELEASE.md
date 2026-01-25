@@ -24,12 +24,12 @@
 
 ### 🐛 Bug Fixes
 
-
-
 - Fix a bug of "No Gene Network Found” popup is not displayed when a gene has no network.  
   Issue: [#146](https://github.com/akikuno/TSUMUGI-dev/issues/146)  
   Thanks to @aki2274 for reporting the issue!  
 
+- Fix tooltip hover from disabling network pan.  
+  Issue: [#147](https://github.com/akikuno/TSUMUGI-dev/issues/147)  
 
 -------------------------------------------------------------
 
