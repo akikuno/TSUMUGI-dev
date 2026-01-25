@@ -48,6 +48,27 @@ const pageConfig = getPageConfig();
 const isPhenotypePage = pageConfig.mode === "phenotype";
 const isGeneSymbolPage = pageConfig.mode === "genesymbol";
 
+let subnetworkOverlay = null;
+
+function updateNoNodesMessage(shouldShow) {
+    const messageEl = document.getElementById("no-nodes-message");
+    if (!messageEl) return;
+
+    if (messageEl.textContent !== "No Gene Network Found") {
+        messageEl.textContent = "No Gene Network Found";
+    }
+
+    messageEl.style.display = shouldShow ? "block" : "none";
+
+    if (!subnetworkOverlay) {
+        subnetworkOverlay = document.querySelector(".subnetwork-overlay");
+    }
+
+    if (subnetworkOverlay) {
+        subnetworkOverlay.style.display = shouldShow ? "none" : "";
+    }
+}
+
 setVersionLabel();
 
 const mapSymbolToId = loadJSON("../data/marker_symbol_accession_id.json") || {};
@@ -56,6 +77,9 @@ setPageTitle(pageConfig, mapSymbolToId, mapPhenotypeToId);
 
 const elements = loadElementsForConfig(pageConfig);
 if (!elements || elements.length === 0) {
+    if (isGeneSymbolPage) {
+        updateNoNodesMessage(true);
+    }
     renderEmptyState("No data found. Please check your input.");
     throw new Error("No elements available to render");
 }
@@ -191,6 +215,9 @@ window.cy = cy;
 layoutController.attachCy(cy);
 layoutController.registerInitialLayoutStop();
 setupInitialAutoArrange();
+cy.one("render", () => {
+    checkEmptyState();
+});
 
 const bodyContainer = document.querySelector(".body-container");
 const leftPanelToggleButton = document.getElementById("toggle-left-panel");
@@ -270,7 +297,7 @@ window.addEventListener("orientationchange", () => {
 // Module (connected component) frames & tooltips
 // ############################################################################
 
-const subnetworkOverlay = createSubnetworkOverlay();
+subnetworkOverlay = createSubnetworkOverlay();
 let subnetworkMeta = [];
 let isFrameUpdateQueued = false;
 let subnetworkDragState = null;
@@ -822,6 +849,7 @@ if (isPhenotypePage) {
         const targetNode = cy.getElementById(targetGene);
 
         if (targetNode.length === 0) {
+            updateNoNodesMessage(true);
             return;
         }
 
@@ -1233,10 +1261,18 @@ attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, file
 
 function checkEmptyState() {
     const visibleNodes = cy.nodes(":visible").length;
-    const messageEl = document.getElementById("no-nodes-message");
-    if (messageEl) {
-        messageEl.style.display = visibleNodes === 0 ? "block" : "none";
+    const visibleEdges = cy.edges(":visible").length;
+    let shouldShow = visibleNodes === 0;
+
+    if (isGeneSymbolPage) {
+        const targetNode = cy.getElementById(pageConfig.name);
+        const targetVisible = targetNode.length > 0 && targetNode.style("display") !== "none";
+        if (!targetVisible || visibleEdges === 0) {
+            shouldShow = true;
+        }
     }
+
+    updateNoNodesMessage(shouldShow);
 }
 
 const recenterBtn = document.getElementById("recenter-button");

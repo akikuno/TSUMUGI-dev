@@ -20,7 +20,29 @@
 
 <!-- ############################################################ # -->
 
-## v1.0.0 (2026-01-21)
+## v1.0.1 (2026-MM-DD)
+
+### 🐛 Bug Fixes
+
+
+
+- Fix a bug of "No Gene Network Found” popup is not displayed when a gene has no network.  
+  Issue: [#146](https://github.com/akikuno/TSUMUGI-dev/issues/146)  
+  Thanks to @aki2274 for reporting the issue!  
+
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+<details>
+<summary> v1.0.0 (2026-01-21) </summary>
 
 ### 🌟 New Features
 
@@ -125,16 +147,7 @@
 - Update 'Download Data' Section on TSUMUGI Top Page.  
   Issue: [#132](https://github.com/akikuno/TSUMUGI-dev/issues/132)
 
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
 </details>
-============================================================= -->
 
 <details>
 <summary> v0.5.0 (2025-11-25) </summary>
