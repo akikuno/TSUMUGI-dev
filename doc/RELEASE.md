@@ -20,14 +20,18 @@
 
 <!-- ############################################################ # -->
 
-## v1.0.1 (2026-MM-DD)
+## v1.0.1 (2026-01-27)
 
-### 🌟 New Features
+### 🖼️ Web Interface
+
+- https://larc-tsukuba.github.io/tsumugi/
+
+#### 🌟 New Features
 
 - Add numeric inputs for viewer sliders and sync with controls  
   Issue: [#148](https://github.com/akikuno/TSUMUGI-dev/issues/148)  
 
-### 🐛 Bug Fixes
+#### 🐛 Bug Fixes
 
 - Fix a bug of "No Gene Network Found” popup is not displayed when a gene has no network.  
   Issue: [#146](https://github.com/akikuno/TSUMUGI-dev/issues/146)  
