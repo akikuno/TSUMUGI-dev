@@ -74,20 +74,32 @@
 
                 <div class="slider-container">
                     <div class="label-row">
-                        <span class="control-label">
-                            Phenotypes similarity:
-                            <span id="edge-size-value"> 1 - 100 </span>
-                        </span>
+                        <span class="control-label">Phenotypes similarity:</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="numeric-inputs" aria-label="Phenotypes similarity range">
+                            <input type="number" id="edge-size-min-input" class="range-input" min="1" max="100" step="1"
+                                aria-label="Phenotypes similarity minimum" />
+                            <span class="range-separator">-</span>
+                            <input type="number" id="edge-size-max-input" class="range-input" min="1" max="100" step="1"
+                                aria-label="Phenotypes similarity maximum" />
+                        </div>
                     </div>
                     <div class="slider-element" id="filter-edge-slider"></div>
                 </div>
 
                 <div class="slider-container phenotype-only" id="phenotype-severity-controls">
                     <div class="label-row">
-                        <span class="control-label">
-                            Phenotype severity:
-                            <span id="node-color-value"> 1 - 100 </span>
-                        </span>
+                        <span class="control-label">Phenotype severity:</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="numeric-inputs" aria-label="Phenotype severity range">
+                            <input type="number" id="node-color-min-input" class="range-input" min="1" max="100" step="1"
+                                aria-label="Phenotype severity minimum" />
+                            <span class="range-separator">-</span>
+                            <input type="number" id="node-color-max-input" class="range-input" min="1" max="100" step="1"
+                                aria-label="Phenotype severity maximum" />
+                        </div>
                     </div>
                     <div class="slider-element" id="filter-node-slider"></div>
                 </div>
@@ -214,7 +226,7 @@
                     </div>
                 </div>
             </div>
-            <div id="no-nodes-message" class="no-nodes-message" style="display: none;">No Gene Network found</div>
+            <div id="no-nodes-message" class="no-nodes-message" style="display: none;">No Gene Network Found</div>
         </div>
 
         <div class="right-control-panel-container">
@@ -300,7 +312,8 @@
                     <div class="slider-container hidden" id="centrality-slider-container">
                         <div class="label-row">
                             <span class="control-label">Scale:</span>
-                            <span id="centrality-scale-value">0</span>
+                            <input type="number" id="centrality-scale-input" class="range-input" min="0" max="100"
+                                step="1" aria-label="Centrality scale" />
                         </div>
                         <div class="slider-element" id="centrality-scale-slider"></div>
                     </div>
@@ -337,7 +350,9 @@
                     <span>Node repulsion</span>
                     <div class="slider-container" id="node-repulsion-container">
                         <div class="label-row">
-                            <span class="control-label">Scale: <span id="node-repulsion-value">5</span></span>
+                            <span class="control-label">Scale:</span>
+                            <input type="number" id="node-repulsion-input" class="range-input" min="1" max="10" step="1"
+                                aria-label="Node repulsion scale" />
                         </div>
                         <div class="slider-element" id="nodeRepulsion-slider"></div>
                     </div>
@@ -347,14 +362,18 @@
                     <span>Size & Width</span>
                     <div class="slider-container">
                         <div class="label-row">
-                            <span class="control-label"> Font size: <span id="font-size-value">20</span></span>
+                            <span class="control-label">Font size:</span>
+                            <input type="number" id="font-size-input" class="range-input" min="1" max="50" step="1"
+                                aria-label="Font size" />
                         </div>
                         <div class="slider-element" id="font-size-slider"></div>
                     </div>
 
                     <div class="slider-container">
                         <div class="label-row">
-                            <span class="control-label">Line width: <span id="edge-width-value">5</span></span>
+                            <span class="control-label">Line width:</span>
+                            <input type="number" id="edge-width-input" class="range-input" min="1" max="10" step="1"
+                                aria-label="Line width" />
                         </div>
                         <div class="slider-element" id="edge-width-slider"></div>
                     </div>

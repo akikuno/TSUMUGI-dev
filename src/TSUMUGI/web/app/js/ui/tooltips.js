@@ -317,18 +317,7 @@ function enableTooltipResize(tooltip, containerElement = null) {
 }
 
 function isolateTooltipScroll(tooltip, cyInstance = null) {
-    let previousZoomEnabled;
-    let previousPanEnabled;
-    const restoreCyInteractions = () => {
-        if (!cyInstance) return;
-        if (typeof previousZoomEnabled === "boolean") {
-            cyInstance.userZoomingEnabled(previousZoomEnabled);
-        }
-        if (typeof previousPanEnabled === "boolean") {
-            cyInstance.userPanningEnabled(previousPanEnabled);
-        }
-    };
-
+    void cyInstance;
     const stopScrollPropagation = (event) => {
         event.stopPropagation();
     };
@@ -339,22 +328,8 @@ function isolateTooltipScroll(tooltip, cyInstance = null) {
     tooltip.addEventListener("touchstart", stopScrollPropagation, { passive: true, capture: true });
     tooltip.addEventListener("touchmove", stopScrollPropagation, { passive: true, capture: true });
 
-    tooltip.addEventListener(
-        "mouseenter",
-        () => {
-            if (!cyInstance) return;
-            previousZoomEnabled = cyInstance.userZoomingEnabled();
-            previousPanEnabled = cyInstance.userPanningEnabled();
-            cyInstance.userZoomingEnabled(false);
-            cyInstance.userPanningEnabled(false);
-        },
-        { capture: true },
-    );
-
-    tooltip.addEventListener("mouseleave", restoreCyInteractions, { capture: true });
-
     // Allow cleanup if the tooltip is removed while hovered.
-    tooltip.__restoreCyInteractions = restoreCyInteractions;
+    tooltip.__restoreCyInteractions = () => {};
 }
 
 function addCopyButtonToTooltip(tooltip) {

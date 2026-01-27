@@ -223,6 +223,64 @@ let centralityType = 'normalized_degree'; // active options: none, degree, betwe
 let centralityScale = 0; // 0 to 1 scale factor
 let cytoscapeInstance = null;
 let createSliderFunction = null;
+let isCentralityInputBound = false;
+
+function clampNumber(value, min, max) {
+    if (!Number.isFinite(value)) {
+        return min;
+    }
+    return Math.min(Math.max(value, min), max);
+}
+
+function setupCentralityInput(sliderInstance) {
+    if (!sliderInstance || isCentralityInputBound) return;
+    const input = document.getElementById("centrality-scale-input");
+    if (!input) return;
+
+    const rangeMin = 0;
+    const rangeMax = 100;
+
+    input.min = rangeMin;
+    input.max = rangeMax;
+    input.step = 1;
+
+    const initial = Math.round(Number(sliderInstance.get()));
+    if (Number.isFinite(initial)) {
+        input.value = initial;
+    }
+
+    const commit = () => {
+        const currentValue = Math.round(Number(sliderInstance.get()));
+        let value = Number(input.value);
+        if (!Number.isFinite(value)) {
+            value = currentValue;
+        }
+        value = clampNumber(value, rangeMin, rangeMax);
+        value = Math.round(value);
+        input.value = value;
+        sliderInstance.set(value);
+    };
+
+    ["change", "blur"].forEach((eventName) => {
+        input.addEventListener(eventName, () => commit());
+    });
+
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            commit();
+        }
+    });
+
+    sliderInstance.on("update", (value) => {
+        const nextValue = Math.round(Number(Array.isArray(value) ? value[0] : value));
+        if (Number.isFinite(nextValue) && input.value !== String(nextValue)) {
+            input.value = nextValue;
+        }
+    });
+
+    isCentralityInputBound = true;
+}
 
 /**
  * Initialize centrality system with dependencies
@@ -282,13 +340,17 @@ function handleCentralityTypeChange(value) {
 function initializeCentralitySlider() {
     const sliderElement = document.getElementById("centrality-scale-slider");
     if (sliderElement && createSliderFunction) {
-        window.centralitySliderInstance = createSliderFunction("centrality-scale-slider", 0, 0, 100, 1, (value) => {
+        const sliderInstance = createSliderFunction("centrality-scale-slider", 0, 0, 100, 1, (value) => {
             // Convert 0-100 integer to 0.00-1.00 for internal calculation
             centralityScale = parseInt(value) / 100;
-            // Display as integer
-            document.getElementById("centrality-scale-value").textContent = parseInt(value);
+            const input = document.getElementById("centrality-scale-input");
+            if (input) {
+                input.value = parseInt(value);
+            }
             updateNodeSizeByCentrality();
         });
+        window.centralitySliderInstance = sliderInstance;
+        setupCentralityInput(sliderInstance);
     } else {
         console.error("Centrality slider element not found or createSlider function not available");
     }

@@ -48,6 +48,27 @@ const pageConfig = getPageConfig();
 const isPhenotypePage = pageConfig.mode === "phenotype";
 const isGeneSymbolPage = pageConfig.mode === "genesymbol";
 
+let subnetworkOverlay = null;
+
+function updateNoNodesMessage(shouldShow) {
+    const messageEl = document.getElementById("no-nodes-message");
+    if (!messageEl) return;
+
+    if (messageEl.textContent !== "No Gene Network Found") {
+        messageEl.textContent = "No Gene Network Found";
+    }
+
+    messageEl.style.display = shouldShow ? "block" : "none";
+
+    if (!subnetworkOverlay) {
+        subnetworkOverlay = document.querySelector(".subnetwork-overlay");
+    }
+
+    if (subnetworkOverlay) {
+        subnetworkOverlay.style.display = shouldShow ? "none" : "";
+    }
+}
+
 setVersionLabel();
 
 const mapSymbolToId = loadJSON("../data/marker_symbol_accession_id.json") || {};
@@ -56,6 +77,9 @@ setPageTitle(pageConfig, mapSymbolToId, mapPhenotypeToId);
 
 const elements = loadElementsForConfig(pageConfig);
 if (!elements || elements.length === 0) {
+    if (isGeneSymbolPage) {
+        updateNoNodesMessage(true);
+    }
     renderEmptyState("No data found. Please check your input.");
     throw new Error("No elements available to render");
 }
@@ -191,6 +215,9 @@ window.cy = cy;
 layoutController.attachCy(cy);
 layoutController.registerInitialLayoutStop();
 setupInitialAutoArrange();
+cy.one("render", () => {
+    checkEmptyState();
+});
 
 const bodyContainer = document.querySelector(".body-container");
 const leftPanelToggleButton = document.getElementById("toggle-left-panel");
@@ -270,7 +297,7 @@ window.addEventListener("orientationchange", () => {
 // Module (connected component) frames & tooltips
 // ############################################################################
 
-const subnetworkOverlay = createSubnetworkOverlay();
+subnetworkOverlay = createSubnetworkOverlay();
 let subnetworkMeta = [];
 let isFrameUpdateQueued = false;
 let subnetworkDragState = null;
@@ -657,11 +684,152 @@ document.getElementById("layout-dropdown").addEventListener("change", function (
 // Slider initialization and filtering helpers
 // =============================================================================
 
+function clampNumber(value, min, max) {
+    if (!Number.isFinite(value)) {
+        return min;
+    }
+    return Math.min(Math.max(value, min), max);
+}
+
+function getSliderRoundedValues(slider) {
+    if (!slider || !slider.noUiSlider) return null;
+    return slider.noUiSlider.get().map((value) => Math.round(Number(value)));
+}
+
+function getSingleSliderValue(sliderInstance) {
+    if (!sliderInstance) return null;
+    const raw = sliderInstance.get();
+    const value = Array.isArray(raw) ? raw[0] : raw;
+    const numeric = Math.round(Number(value));
+    if (!Number.isFinite(numeric)) return null;
+    return numeric;
+}
+
+function syncRangeInputs(minInput, maxInput, values) {
+    if (!minInput || !maxInput || !values) return;
+    const [minValue, maxValue] = values;
+    if (minInput.value !== String(minValue)) {
+        minInput.value = minValue;
+    }
+    if (maxInput.value !== String(maxValue)) {
+        maxInput.value = maxValue;
+    }
+}
+
+function setupRangeInputs({ minInput, maxInput, slider, rangeMin, rangeMax, step = 1 }) {
+    if (!minInput || !maxInput || !slider || !slider.noUiSlider) return;
+
+    minInput.min = rangeMin;
+    minInput.max = rangeMax;
+    minInput.step = step;
+    maxInput.min = rangeMin;
+    maxInput.max = rangeMax;
+    maxInput.step = step;
+
+    syncRangeInputs(minInput, maxInput, getSliderRoundedValues(slider));
+
+    const commit = () => {
+        const currentValues = getSliderRoundedValues(slider) || [rangeMin, rangeMax];
+        let minValue = Number(minInput.value);
+        let maxValue = Number(maxInput.value);
+
+        if (!Number.isFinite(minValue)) minValue = currentValues[0];
+        if (!Number.isFinite(maxValue)) maxValue = currentValues[1];
+
+        minValue = clampNumber(minValue, rangeMin, rangeMax);
+        maxValue = clampNumber(maxValue, rangeMin, rangeMax);
+
+        if (minValue > maxValue) {
+            [minValue, maxValue] = [maxValue, minValue];
+        }
+
+        minValue = Math.round(minValue);
+        maxValue = Math.round(maxValue);
+
+        syncRangeInputs(minInput, maxInput, [minValue, maxValue]);
+        slider.noUiSlider.set([minValue, maxValue]);
+    };
+
+    ["change", "blur"].forEach((eventName) => {
+        minInput.addEventListener(eventName, () => commit());
+        maxInput.addEventListener(eventName, () => commit());
+    });
+
+    minInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            commit();
+        }
+    });
+    maxInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            commit();
+        }
+    });
+
+    slider.noUiSlider.on("update", (values) => {
+        const rounded = values.map((value) => Math.round(Number(value)));
+        syncRangeInputs(minInput, maxInput, rounded);
+    });
+}
+
+function setupSingleInput({ input, sliderInstance, rangeMin, rangeMax, step = 1 }) {
+    if (!input || !sliderInstance) return;
+
+    input.min = rangeMin;
+    input.max = rangeMax;
+    input.step = step;
+
+    const initialValue = getSingleSliderValue(sliderInstance);
+    if (initialValue !== null && input.value !== String(initialValue)) {
+        input.value = initialValue;
+    }
+
+    const commit = () => {
+        const currentValue = getSingleSliderValue(sliderInstance) ?? rangeMin;
+        let value = Number(input.value);
+
+        if (!Number.isFinite(value)) {
+            value = currentValue;
+        }
+
+        value = clampNumber(value, rangeMin, rangeMax);
+        value = Math.round(value);
+
+        if (input.value !== String(value)) {
+            input.value = value;
+        }
+
+        sliderInstance.set(value);
+    };
+
+    ["change", "blur"].forEach((eventName) => {
+        input.addEventListener(eventName, () => commit());
+    });
+
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            commit();
+        }
+    });
+
+    sliderInstance.on("update", (value) => {
+        const nextValue = Math.round(Number(Array.isArray(value) ? value[0] : value));
+        if (Number.isFinite(nextValue) && input.value !== String(nextValue)) {
+            input.value = nextValue;
+        }
+    });
+}
+
 // --------------------------------------------------------
 // Edge size slider for Phenotypes similarity
 // --------------------------------------------------------
 
 const edgeSlider = document.getElementById("filter-edge-slider");
+const edgeMinInput = document.getElementById("edge-size-min-input");
+const edgeMaxInput = document.getElementById("edge-size-max-input");
 let edgeSliderRangeMin = EDGE_SLIDER_MIN;
 let edgeSliderRangeMax = EDGE_SLIDER_MAX;
 let edgeSliderStartMin = EDGE_SLIDER_MIN;
@@ -688,16 +856,36 @@ if (edgeSlider) {
     });
 }
 
+setupRangeInputs({
+    minInput: edgeMinInput,
+    maxInput: edgeMaxInput,
+    slider: edgeSlider,
+    rangeMin: edgeSliderRangeMin,
+    rangeMax: edgeSliderRangeMax,
+    step: 1,
+});
+
 // --------------------------------------------------------
 // Phenotype severity slider (Phenotype pages only)
 // --------------------------------------------------------
 
 const nodeSlider = document.getElementById("filter-node-slider");
+const nodeMinInput = document.getElementById("node-color-min-input");
+const nodeMaxInput = document.getElementById("node-color-max-input");
 if (isPhenotypePage && nodeSlider && !isBinaryPhenotype) {
     noUiSlider.create(nodeSlider, {
         start: [NODE_SLIDER_MIN, NODE_SLIDER_MAX],
         connect: true,
         range: { min: NODE_SLIDER_MIN, max: NODE_SLIDER_MAX },
+        step: 1,
+    });
+
+    setupRangeInputs({
+        minInput: nodeMinInput,
+        maxInput: nodeMaxInput,
+        slider: nodeSlider,
+        rangeMin: NODE_SLIDER_MIN,
+        rangeMax: NODE_SLIDER_MAX,
         step: 1,
     });
 }
@@ -822,6 +1010,7 @@ if (isPhenotypePage) {
         const targetNode = cy.getElementById(targetGene);
 
         if (targetNode.length === 0) {
+            updateNoNodesMessage(true);
             return;
         }
 
@@ -941,8 +1130,6 @@ if (isPhenotypePage) {
 
 if (edgeSlider && edgeSlider.noUiSlider) {
     edgeSlider.noUiSlider.on("update", function (values) {
-        const formattedValues = values.map((value) => Math.round(Number(value)));
-        document.getElementById("edge-size-value").textContent = formattedValues.join(" - ");
         filterByNodeColorAndEdgeSize();
     });
     edgeSlider.noUiSlider.on("set", function () {
@@ -952,11 +1139,6 @@ if (edgeSlider && edgeSlider.noUiSlider) {
 
 if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
     nodeSlider.noUiSlider.on("update", function (values) {
-        const intValues = values.map((value) => Math.round(value));
-        const label = document.getElementById("node-color-value");
-        if (label) {
-            label.textContent = intValues.join(" - ");
-        }
         filterByNodeColorAndEdgeSize();
     });
     nodeSlider.noUiSlider.on("set", function () {
@@ -1054,16 +1236,22 @@ setupGeneSearch({ cy });
 
 setupPhenotypeSearch({ cy, elements });
 
-createSlider("font-size-slider", isGeneSymbolPage ? 10 : 20, 1, 50, 1, (intValues) => {
-    document.getElementById("font-size-value").textContent = intValues;
+const fontSizeInput = document.getElementById("font-size-input");
+const fontSizeSliderInstance = createSlider("font-size-slider", isGeneSymbolPage ? 10 : 20, 1, 50, 1, (intValues) => {
+    if (fontSizeInput) {
+        fontSizeInput.value = intValues;
+    }
     cy.style()
         .selector("node")
         .style("font-size", intValues + "px")
         .update();
 });
 
-createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
-    document.getElementById("edge-width-value").textContent = intValues;
+const edgeWidthInput = document.getElementById("edge-width-input");
+const edgeWidthSliderInstance = createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
+    if (edgeWidthInput) {
+        edgeWidthInput.value = intValues;
+    }
     cy.style()
         .selector("edge")
         .style("width", function (ele) {
@@ -1092,13 +1280,40 @@ function updateNodeRepulsionVisibility() {
 updateNodeRepulsionVisibility();
 layoutDropdown.addEventListener("change", updateNodeRepulsionVisibility);
 
-createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues) => {
-    document.getElementById("node-repulsion-value").textContent = intValues;
+const nodeRepulsionInput = document.getElementById("node-repulsion-input");
+const nodeRepulsionSliderInstance = createSlider("nodeRepulsion-slider", defaultNodeRepulsion, 1, 10, 1, (intValues) => {
+    if (nodeRepulsionInput) {
+        nodeRepulsionInput.value = intValues;
+    }
     layoutController.updateRepulsionScale(intValues);
     layoutController.scheduleNodeRepulsion();
     if (layoutController.getLayout() !== "random") {
         layoutController.queueLayoutRefresh(150);
     }
+});
+
+setupSingleInput({
+    input: fontSizeInput,
+    sliderInstance: fontSizeSliderInstance,
+    rangeMin: 1,
+    rangeMax: 50,
+    step: 1,
+});
+
+setupSingleInput({
+    input: edgeWidthInput,
+    sliderInstance: edgeWidthSliderInstance,
+    rangeMin: 1,
+    rangeMax: 10,
+    step: 1,
+});
+
+setupSingleInput({
+    input: nodeRepulsionInput,
+    sliderInstance: nodeRepulsionSliderInstance,
+    rangeMin: 1,
+    rangeMax: 10,
+    step: 1,
 });
 const nodeRepulsionSlider = document.getElementById("nodeRepulsion-slider");
 if (nodeRepulsionSlider && nodeRepulsionSlider.noUiSlider) {
@@ -1233,10 +1448,18 @@ attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, file
 
 function checkEmptyState() {
     const visibleNodes = cy.nodes(":visible").length;
-    const messageEl = document.getElementById("no-nodes-message");
-    if (messageEl) {
-        messageEl.style.display = visibleNodes === 0 ? "block" : "none";
+    const visibleEdges = cy.edges(":visible").length;
+    let shouldShow = visibleNodes === 0;
+
+    if (isGeneSymbolPage) {
+        const targetNode = cy.getElementById(pageConfig.name);
+        const targetVisible = targetNode.length > 0 && targetNode.style("display") !== "none";
+        if (!targetVisible || visibleEdges === 0) {
+            shouldShow = true;
+        }
     }
+
+    updateNoNodesMessage(shouldShow);
 }
 
 const recenterBtn = document.getElementById("recenter-button");
