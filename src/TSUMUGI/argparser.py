@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import argparse
-from importlib.metadata import PackageNotFoundError, version as pkg_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as pkg_version
 from importlib.resources import files
 from pathlib import Path
 
@@ -541,11 +542,8 @@ def parse_args(argv=None):
                 "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
             )
 
-        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
         if not args.genewise and not args.pairwise:
-            args.pairwise = True
-        else:
-            args.pairwise = False
+            parser.error("genes: Please specify either '-g/--genewise' or '-p/--pairwise'.")
 
     ########################################################################
     # count / score
@@ -571,19 +569,12 @@ def parse_args(argv=None):
     if args.cmd == "genes":
         path_arg = args.keep or args.drop
 
-        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
         if not args.genewise and not args.pairwise:
-            args.pairwise = True
-        elif args.genewise:
-            args.pairwise = False
-        else:
-            args.genewise = False
+            parser.error("genes: Please specify either '-g/--genewise' or '-p/--pairwise'.")
 
         # In genes mode, the list must be provided as a text file.
         if not Path(path_arg).is_file():
-            parser.error(
-                "genes: Please provide a valid path to a text file containing gene symbols or gene pairs."
-            )
+            parser.error("genes: Please provide a valid path to a text file containing gene symbols or gene pairs.")
 
     ########################################################################
     # build-webapp

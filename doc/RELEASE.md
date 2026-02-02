@@ -20,7 +20,7 @@
 
 <!-- ############################################################ # -->
 
-## v1.0.2 (2026-01-27)
+## v1.0.2 (2026-02-03)
 
 ### 💻️ Command-line Interface
 
@@ -29,6 +29,9 @@
 - Fix inconsistent phenotype_shared_annotations types (list[dict])  
   Issue: [#150](https://github.com/akikuno/TSUMUGI-dev/issues/150)  
 
+- Update template paths in webapp_builder.py to reflect current directory structure.
+  Issue: [#154](https://github.com/akikuno/TSUMUGI-dev/issues/154)  
+
 ### 🔧 Maintenance
 
 - Rename pairwise_similarity_annotations key from phenotype to mp_term_name.  
@@ -36,6 +39,12 @@
 
 - Automate E2E tests for the TSUMUGI subcommand using GitHub Actions  
   Issue: [#152](https://github.com/akikuno/TSUMUGI-dev/issues/152)  
+
+- Restrict tsumugi genes input to text files only for better maintainability.  
+  Issue: [#153](https://github.com/akikuno/TSUMUGI-dev/issues/153)  
+
+- Require explicit --genewise or --pairwise option for tsumugi genes and mp commands.  
+  Issue: [#155](https://github.com/akikuno/TSUMUGI-dev/issues/155)  
 
 -------------------------------------------------------------
 
