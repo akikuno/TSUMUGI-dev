@@ -180,11 +180,11 @@ def _delete_parent_terms_from_ancestors(
     phenotype_to_meta = defaultdict(list)
 
     for ancestor in candidate_ancestors:
-        phenotype_to_meta[ancestor["phenotype"]].append({k: v for k, v in ancestor.items() if k != "phenotype"})
+        phenotype_to_meta[ancestor["mp_term_name"]].append({k: v for k, v in ancestor.items() if k != "mp_term_name"})
 
     for idx, ancestor in enumerate(candidate_ancestors):
-        term_id = ancestor["phenotype"]
-        term_meta = {k: v for k, v in ancestor.items() if k != "phenotype"}
+        term_id = ancestor["mp_term_name"]
+        term_meta = {k: v for k, v in ancestor.items() if k != "mp_term_name"}
 
         if idx in to_delete:
             continue
@@ -271,7 +271,7 @@ def _annotate_ancestors(
                 if current_key in added_keys:
                     continue
 
-                candidate_ancestors.append({"phenotype": common_ancestor, **meta_dict})
+                candidate_ancestors.append({"mp_term_name": common_ancestor, **meta_dict})
                 added_keys.add(current_key)
 
     # Remove parent terms from candidate ancestors
@@ -477,8 +477,8 @@ def summarize_similarity_annotations(
         for ancestor in ancestors:
             renamed_ancestor = {}
             for k, v in ancestor.items():
-                if k == "phenotype" and v in id_name_map:
-                    renamed_ancestor["phenotype"] = id_name_map[v]
+                if k == "mp_term_name" and v in id_name_map:
+                    renamed_ancestor["mp_term_name"] = id_name_map[v]
                 else:
                     renamed_ancestor[k] = v
             ancestors_renamed.append(renamed_ancestor)
@@ -490,7 +490,7 @@ def summarize_similarity_annotations(
             "gene2_symbol": gene2_symbol,
             "phenotype_shared_annotations": sorted(
                 ancestors_renamed,
-                key=lambda x: [x["phenotype"], x["zygosity"], x["life_stage"], x["sexual_dimorphism"]],
+                key=lambda x: [x["mp_term_name"], x["zygosity"], x["life_stage"], x["sexual_dimorphism"]],
             ),
             "phenotype_similarity_score": phenodigm_score if ancestors_renamed else 0,
         }

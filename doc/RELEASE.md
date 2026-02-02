@@ -20,7 +20,32 @@
 
 <!-- ############################################################ # -->
 
-## v1.0.1 (2026-01-27)
+## v1.0.2 (2026-01-27)
+
+### 💻️ Command-line Interface
+
+#### 🐛 Bug Fixes
+
+### 🔧 Maintenance
+
+- Rename pairwise_similarity_annotations key from phenotype to mp_term_name.  
+  Issue: [#151](https://github.com/akikuno/TSUMUGI-dev/issues/151)  
+
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+
+<details>
+<summary> v1.0.1 (2026-01-27) </summary>
 
 ### 🖼️ Web Interface
 
@@ -40,16 +65,9 @@
 - Fix tooltip hover from disabling network pan.  
   Issue: [#147](https://github.com/akikuno/TSUMUGI-dev/issues/147)  
 
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
 
 </details>
-============================================================= -->
+
 <details>
 <summary> v1.0.0 (2026-01-21) </summary>
 

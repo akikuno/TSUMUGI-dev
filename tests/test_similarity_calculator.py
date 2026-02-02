@@ -219,34 +219,38 @@ def test_delete_parent_terms_from_ancestors_removes_parent_with_same_meta(sample
     child_map = sample_ontology["child_map"]
     meta = {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
     candidate_ancestors = [
-        {"phenotype": "B", **meta},
-        {"phenotype": "D", **meta},
-        {"phenotype": "E", "zygosity": "Homo", "life_stage": "Late", "sexual_dimorphism": "None"},
+        {"mp_term_name": "B", **meta},
+        {"mp_term_name": "D", **meta},
+        {"mp_term_name": "E", "zygosity": "Homo", "life_stage": "Late", "sexual_dimorphism": "None"},
     ]
 
     result = _delete_parent_terms_from_ancestors(candidate_ancestors, child_map)
 
     expected = [
-        {"phenotype": "D", **meta},
-        {"phenotype": "E", "zygosity": "Homo", "life_stage": "Late", "sexual_dimorphism": "None"},
+        {"mp_term_name": "D", **meta},
+        {"mp_term_name": "E", "zygosity": "Homo", "life_stage": "Late", "sexual_dimorphism": "None"},
     ]
-    assert sorted(result, key=lambda item: item["phenotype"]) == sorted(expected, key=lambda item: item["phenotype"])
+    assert sorted(result, key=lambda item: item["mp_term_name"]) == sorted(
+        expected, key=lambda item: item["mp_term_name"]
+    )
 
 
 def test_delete_parent_terms_from_ancestors_keeps_parent_with_different_meta(sample_ontology):
     child_map = sample_ontology["child_map"]
     candidate_ancestors = [
-        {"phenotype": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
-        {"phenotype": "D", "zygosity": "Hetero", "life_stage": "Early", "sexual_dimorphism": "None"},
+        {"mp_term_name": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+        {"mp_term_name": "D", "zygosity": "Hetero", "life_stage": "Early", "sexual_dimorphism": "None"},
     ]
 
     result = _delete_parent_terms_from_ancestors(candidate_ancestors, child_map)
 
     expected = [
-        {"phenotype": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
-        {"phenotype": "D", "zygosity": "Hetero", "life_stage": "Early", "sexual_dimorphism": "None"},
+        {"mp_term_name": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+        {"mp_term_name": "D", "zygosity": "Hetero", "life_stage": "Early", "sexual_dimorphism": "None"},
     ]
-    assert sorted(result, key=lambda item: item["phenotype"]) == sorted(expected, key=lambda item: item["phenotype"])
+    assert sorted(result, key=lambda item: item["mp_term_name"]) == sorted(
+        expected, key=lambda item: item["mp_term_name"]
+    )
 
 
 def test_annotate_phenotype_ancestors_basic(sample_ontology):
@@ -285,7 +289,7 @@ def test_annotate_phenotype_ancestors_basic(sample_ontology):
     assert ancestors[0]["gene1_symbol"] == "Gene1"
     assert ancestors[0]["gene2_symbol"] == "Gene2"
     assert ancestors[0]["phenotype_shared_annotations"] == [
-        {"phenotype": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+        {"mp_term_name": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
     ]
 
 
@@ -325,7 +329,7 @@ def test_summarize_similarity_annotations_translates_names():
             "gene2_symbol": "GeneB",
             "phenotype_shared_annotations": [
                 {
-                    "phenotype": "MP:1",
+                    "mp_term_name": "MP:1",
                     "zygosity": "Homo",
                     "life_stage": "Early",
                     "sexual_dimorphism": "None",
@@ -348,7 +352,7 @@ def test_summarize_similarity_annotations_translates_names():
         "gene2_symbol": "GeneB",
         "phenotype_shared_annotations": [
             {
-                "phenotype": "Term One",
+                "mp_term_name": "Term One",
                 "zygosity": "Homo",
                 "life_stage": "Early",
                 "sexual_dimorphism": "None",
