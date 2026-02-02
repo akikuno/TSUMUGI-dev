@@ -26,11 +26,16 @@
 
 #### 🐛 Bug Fixes
 
+- Fix inconsistent phenotype_shared_annotations types (list[dict])  
+  Issue: [#150](https://github.com/akikuno/TSUMUGI-dev/issues/150)  
+
 ### 🔧 Maintenance
 
 - Rename pairwise_similarity_annotations key from phenotype to mp_term_name.  
   Issue: [#151](https://github.com/akikuno/TSUMUGI-dev/issues/151)  
 
+- Automate E2E tests for the TSUMUGI subcommand using GitHub Actions  
+  Issue: [#152](https://github.com/akikuno/TSUMUGI-dev/issues/152)  
 
 -------------------------------------------------------------
 
