@@ -15,11 +15,11 @@ Translations: [日本語](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/R
 
 **TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** is a web tool that uses knockout (KO) mouse phenotype data from the [International Mouse Phenotyping Consortium (IMPC)](https://www.mousephenotype.org/) to **extract and visualize gene modules based on phenotypic similarity**.  
 
-**TSUMUGI (紡ぎ)** comes from the idea of “weaving together gene groups that form phenotypes.”
+**TSUMUGI (紡ぎ in Japanese)** comes from the idea of “weaving together gene groups that form phenotypes.”
 
 This web app is available to everyone online👇️  
 
-🔗https://larc-tsukuba.github.io/tsumugi/
+🔗 https://larc-tsukuba.github.io/tsumugi/
 
 # 📖 How to Use TSUMUGI
 
