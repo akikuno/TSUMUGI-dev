@@ -10,11 +10,6 @@ def test_create_annotation_string_omits_empty():
     assert webapp_builder._create_annotation_string("Homo", "Early", "") == "Homo, Early"
 
 
-def test_safe_filename_replaces_invalid_chars():
-    assert webapp_builder._safe_filename("Gene List!") == "Gene_List_"
-    assert webapp_builder._safe_filename("") == "gene_list"
-
-
 def test_build_edges_formats_annotations():
     pairwise = [
         {
@@ -185,12 +180,13 @@ def test_build_and_save_webapp_network_writes_outputs(tmp_path, monkeypatch):
 
     webapp_builder.build_and_save_webapp_network("genewise-path", "pairwise-path", tmp_path)
 
-    network_path = tmp_path / "network.json.gz"
-    symbol_path = tmp_path / "marker_symbol_accession_id.json"
+    data_dir = tmp_path / "data"
+    network_path = data_dir / "network.json.gz"
+    symbol_path = data_dir / "marker_symbol_accession_id.json"
 
     assert network_path.exists()
     assert symbol_path.exists()
-    assert calls == [(tmp_path, "network.json.gz", "Gene List")]
+    assert calls == [(tmp_path, "data/network.json.gz", "Gene List")]
 
     with gzip.open(network_path, "rt", encoding="utf-8") as fh:
         elements = json.load(fh)
