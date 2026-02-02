@@ -144,12 +144,15 @@ def main() -> None:
     # gene lists filterer
     # -----------------------------------------------------
     if args.cmd == "genes":
+        def _read_lines(path: str) -> list[str]:
+            lines = [line.strip() for line in Path(path).read_text().splitlines()]
+            return [line for line in lines if line]
+
         if args.genewise:
             if args.keep:
-                if Path(args.keep).is_file():
-                    gene_list = set(Path(args.keep).read_text().splitlines())
-                else:
-                    gene_list = set(args.keep.split(","))
+                if not Path(args.keep).is_file():
+                    raise ValueError(f"Gene list file not found: {args.keep}")
+                gene_list = set(_read_lines(args.keep))
 
                 if len(gene_list) == 0:
                     raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
@@ -161,10 +164,9 @@ def main() -> None:
                     keep=True,
                 )
             elif args.drop:
-                if Path(args.drop).is_file():
-                    gene_list = set(Path(args.drop).read_text().splitlines())
-                else:
-                    gene_list = set(args.drop.split(","))
+                if not Path(args.drop).is_file():
+                    raise ValueError(f"Gene list file not found: {args.drop}")
+                gene_list = set(_read_lines(args.drop))
                 if len(gene_list) == 0:
                     raise ValueError("Gene list is empty. Please provide at least one gene symbol.")
 
@@ -177,13 +179,20 @@ def main() -> None:
         else:
             if args.keep:
                 gene_pairs = set()
-                for record in Path(args.keep).read_text().splitlines():
+                if not Path(args.keep).is_file():
+                    raise ValueError(f"Gene pairs file not found: {args.keep}")
+                for record in _read_lines(args.keep):
                     # TSV
                     if "\t" in record:
                         gene1, gene2 = record.split("\t")
                     # CSV
                     elif "," in record:
                         gene1, gene2 = record.split(",")
+                    else:
+                        raise ValueError(f"Invalid gene pair format: {record}")
+
+                    gene1 = gene1.strip()
+                    gene2 = gene2.strip()
                     gene_pairs.add(frozenset([gene1, gene2]))
 
                 if len(gene_pairs) == 0:
@@ -197,13 +206,20 @@ def main() -> None:
                 )
             elif args.drop:
                 gene_pairs = set()
-                for record in Path(args.drop).read_text().splitlines():
+                if not Path(args.drop).is_file():
+                    raise ValueError(f"Gene pairs file not found: {args.drop}")
+                for record in _read_lines(args.drop):
                     # TSV
                     if "\t" in record:
                         gene1, gene2 = record.split("\t")
                     # CSV
                     elif "," in record:
                         gene1, gene2 = record.split(",")
+                    else:
+                        raise ValueError(f"Invalid gene pair format: {record}")
+
+                    gene1 = gene1.strip()
+                    gene2 = gene2.strip()
                     gene_pairs.add(frozenset([gene1, gene2]))
 
                 if len(gene_pairs) == 0:

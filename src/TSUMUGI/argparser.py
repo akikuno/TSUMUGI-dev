@@ -291,13 +291,13 @@ def build_parser() -> argparse.ArgumentParser:
         "-k",
         "--keep",
         metavar="GENE_SYMBOL",
-        help="Keep ONLY annotations with the specified gene symbols (comma-separated or path of text file)",
+        help="Keep ONLY annotations with gene symbols or gene pairs listed in a text file",
     )
     group_genes.add_argument(
         "-d",
         "--drop",
         metavar="GENE_SYMBOL",
-        help="Drop annotations with the specified gene symbols (comma-separated or path of text file)",
+        help="Drop annotations with gene symbols or gene pairs listed in a text file",
     )
 
     group_level = genes_parser.add_mutually_exclusive_group(required=False)
@@ -579,10 +579,10 @@ def parse_args(argv=None):
         else:
             args.genewise = False
 
-        # In pairwise mode, the gene list must be provided as a text file.
-        if args.pairwise and not Path(path_arg).is_file():
+        # In genes mode, the list must be provided as a text file.
+        if not Path(path_arg).is_file():
             parser.error(
-                "genes --pairwise: Please provide a valid path to a text file containing gene symbols or gene pairs."
+                "genes: Please provide a valid path to a text file containing gene symbols or gene pairs."
             )
 
     ########################################################################
