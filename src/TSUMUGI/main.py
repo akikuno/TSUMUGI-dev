@@ -144,6 +144,7 @@ def main() -> None:
     # gene lists filterer
     # -----------------------------------------------------
     if args.cmd == "genes":
+
         def _read_lines(path: str) -> list[str]:
             lines = [line.strip() for line in Path(path).read_text().splitlines()]
             return [line for line in lines if line]
