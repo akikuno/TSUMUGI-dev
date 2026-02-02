@@ -148,64 +148,91 @@ def test_pairwise_similarity_annotations_content():
         {
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
-            "phenotype_shared_annotations": {
-                "vertebral transformation": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"},
-                "abnormal vertebral column morphology": {
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "vertebral transformation",
                     "zygosity": "Homo",
                     "life_stage": "Early",
                     "sexual_dimorphism": "Male",
                 },
-                "mammalian phenotype": {"zygosity": "Hetero", "life_stage": "Late", "sexual_dimorphism": "Female"},
-            },
+                {
+                    "mp_term_name": "abnormal vertebral column morphology",
+                    "zygosity": "Homo",
+                    "life_stage": "Early",
+                    "sexual_dimorphism": "Male",
+                },
+            ],
             "phenotype_similarity_score": 42,
         },
         {
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneC",
-            "phenotype_shared_annotations": {
-                "mammalian phenotype": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"},
-                "abnormal immune system physiology": {
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "mammalian phenotype",
                     "zygosity": "Homo",
                     "life_stage": "Early",
                     "sexual_dimorphism": "Male",
                 },
-            },
+                {
+                    "mp_term_name": "abnormal immune system physiology",
+                    "zygosity": "Homo",
+                    "life_stage": "Early",
+                    "sexual_dimorphism": "Male",
+                },
+            ],
             "phenotype_similarity_score": 54,
         },
         {
             "gene1_symbol": "GeneB",
             "gene2_symbol": "GeneC",
-            "phenotype_shared_annotations": {
-                "vertebral transformation": {"zygosity": "Homo", "life_stage": "Late", "sexual_dimorphism": "Male"},
-            },
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "vertebral transformation",
+                    "zygosity": "Homo",
+                    "life_stage": "Late",
+                    "sexual_dimorphism": "Male",
+                }
+            ],
             "phenotype_similarity_score": 63,
         },
         {
             "gene1_symbol": "GeneC",
             "gene2_symbol": "GeneD",
-            "phenotype_shared_annotations": {
-                "obsolete term": {
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "obsolete term",
                     "zygosity": "Homo",
                     "life_stage": "Early",
                     "sexual_dimorphism": "Male",
-                },  # Obsolete term
-            },
+                }
+            ],  # Obsolete term
             "phenotype_similarity_score": 70,
         },
         {
             "gene1_symbol": "GeneD",
             "gene2_symbol": "GeneE",
-            "phenotype_shared_annotations": {
-                "random phenotype": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"},
-            },
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "random phenotype",
+                    "zygosity": "Homo",
+                    "life_stage": "Early",
+                    "sexual_dimorphism": "Male",
+                }
+            ],
             "phenotype_similarity_score": 80,
         },  # This pair should be output
         {
             "gene1_symbol": "GeneX",
             "gene2_symbol": "GeneY",
-            "phenotype_shared_annotations": {
-                "some other phenotype": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"},
-            },
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "some other phenotype",
+                    "zygosity": "Homo",
+                    "life_stage": "Early",
+                    "sexual_dimorphism": "Male",
+                }
+            ],
             "phenotype_similarity_score": 10,
         },
     ]
@@ -333,6 +360,36 @@ def test_include_specific_phenotype_basic(mock_stdout, setup_test_files):
     assert len(output) == 2
     assert any(record["gene1_symbol"] == "GeneA" and record["gene2_symbol"] == "GeneB" for record in output)
     assert any(record["gene1_symbol"] == "GeneB" and record["gene2_symbol"] == "GeneC" for record in output)
+
+
+def test_include_specific_phenotype_invalid_structure_raises(tmp_path, test_obo_content, monkeypatch):
+    path_obo = tmp_path / "test.obo"
+    path_obo.write_text(test_obo_content)
+
+    invalid_pairwise = [
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": {
+                "vertebral transformation": {
+                    "zygosity": "Homo",
+                    "life_stage": "Early",
+                    "sexual_dimorphism": "Male",
+                }
+            },
+            "phenotype_similarity_score": 42,
+        }
+    ]
+
+    monkeypatch.setattr("TSUMUGI.subcommands.mp_filterer.io_handler.read_jsonl", lambda path: invalid_pairwise)
+
+    with pytest.raises(TypeError):
+        include_specific_phenotype(
+            path_pairwise_similarity_annotations="pairwise-path",
+            path_genewise_phenotype_annotations=None,
+            path_obo=path_obo,
+            mp_term_id="MP:0000002",
+        )
 
 
 @patch("sys.stdout", new_callable=StringIO)

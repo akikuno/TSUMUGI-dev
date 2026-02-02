@@ -1,27 +1,29 @@
-from collections.abc import Generator
+from collections.abc import Generator, Iterator
 from pathlib import Path
 
 from TSUMUGI import io_handler
 
 
 def _filter_annotations_by_sex(
-    pairwise_similarity_annotations: list[dict[str, str | dict[str, dict] | dict[str | int]]],
+    pairwise_similarity_annotations: Iterator[dict[str, str | int | list[dict[str, str]]]],
     sex: str = "None",
     keep: bool = False,
     drop: bool = False,
-) -> Generator[frozenset[str], dict[str, dict, int]]:
+) -> Generator[dict[str, str | int | list[dict[str, str]]], None, None]:
     for pairwise_similarity_annotation in pairwise_similarity_annotations:
-        phenotype_shared_annotations = pairwise_similarity_annotation["phenotype_shared_annotations"]
+        phenotype_shared_annotations: list[dict[str, str]] = pairwise_similarity_annotation[
+            "phenotype_shared_annotations"
+        ]
 
         if len(phenotype_shared_annotations) == 0:
             continue
 
-        phenotype_shared_annotations_filtered = {}
-        for term_name, annotation in phenotype_shared_annotations.items():
+        phenotype_shared_annotations_filtered = []
+        for annotation in phenotype_shared_annotations:
             if annotation["sexual_dimorphism"] == sex and keep:
-                phenotype_shared_annotations_filtered[term_name] = annotation
+                phenotype_shared_annotations_filtered.append(annotation)
             if annotation["sexual_dimorphism"] != sex and drop:
-                phenotype_shared_annotations_filtered[term_name] = annotation
+                phenotype_shared_annotations_filtered.append(annotation)
 
         if len(phenotype_shared_annotations_filtered) == 0:
             continue

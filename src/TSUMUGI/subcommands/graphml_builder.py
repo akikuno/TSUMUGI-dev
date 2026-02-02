@@ -1,21 +1,19 @@
 import io
 import sys
 from collections import defaultdict
+from collections.abc import Iterator
 
 import networkx as nx
 
 from TSUMUGI import io_handler
 
 
-def format_suffix(zygosity: str, life_stage: str, sexual_dimorphism: str) -> str:
-    """Produce strings like (Homo, Early, Male); omit sexual_dimorphism when it equals 'None'."""
-    parts = [zygosity, life_stage]
-    if sexual_dimorphism and sexual_dimorphism != "None":
-        parts.append(sexual_dimorphism)
-    return f"({', '.join(parts)})"
+def _create_annotation_string(*parts):
+    """Join non-empty parts with commas."""
+    return ", ".join([p for p in parts if p])
 
 
-def build_nodes(genewise_phenotype_annotations: list[dict]) -> dict:
+def build_nodes(genewise_phenotype_annotations: Iterator[dict[str, str | bool | float | list[str]]]) -> dict:
     """
     Read genewise_phenotype_annotations.jsonl.gz and aggregate node attributes per marker_symbol.
     - node_id: marker_symbol
@@ -37,18 +35,20 @@ def build_nodes(genewise_phenotype_annotations: list[dict]) -> dict:
         mp_term_name = record["mp_term_name"]
         zygosity = record["zygosity"]
         life_stage = record["life_stage"]
-        sexual_dimorphism = record.get("sexual_dimorphism", "None")
-        disease_annotation = record.get("disease_annotation", [])
+        sexual_dimorphism = record["sexual_dimorphism"]
+        if sexual_dimorphism == "None":
+            sexual_dimorphism = ""
+        disease_annotation = record["disease_annotation"]
 
-        suffix = format_suffix(zygosity, life_stage, sexual_dimorphism)
+        annotations = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
 
         # KO mouse phenotypes
-        pheno_text = f"{mp_term_name} {suffix}"
+        pheno_text = f"{mp_term_name} ({annotations})"
         phenotypes_per_gene[marker_symbol].append(pheno_text)
 
         # Human diseases
-        for d in disease_annotation:
-            disease_text = f"{d} {suffix}"
+        for disease in disease_annotation:
+            disease_text = f"{disease} ({annotations})"
             diseases_per_gene[marker_symbol].append(disease_text)
 
     nodes = {}
@@ -64,8 +64,8 @@ def build_nodes(genewise_phenotype_annotations: list[dict]) -> dict:
         diseases = diseases_per_gene.get(marker_symbol, [])
         if diseases:
             lines.append("Associated Human Diseases")
-            for dis in diseases:
-                lines.append(f"- {dis}")
+            for disease in diseases:
+                lines.append(f"- {disease}")
 
         node_annotations = "\n".join(lines)
 
@@ -78,7 +78,9 @@ def build_nodes(genewise_phenotype_annotations: list[dict]) -> dict:
     return nodes
 
 
-def build_graph(pairwise_similarity_annotations: list[dict], nodes: dict) -> nx.Graph:
+def build_graph(
+    pairwise_similarity_annotations: Iterator[dict[str, str | int | list[dict[str, str]]]], nodes: dict
+) -> nx.Graph:
     """
     Build a Graph using pairwise_similarity_annotations and the supplied nodes.
     - Nodes: add the contents from nodes (and create empty nodes for unseen genes)
@@ -98,7 +100,7 @@ def build_graph(pairwise_similarity_annotations: list[dict], nodes: dict) -> nx.
         g1 = record["gene1_symbol"]
         g2 = record["gene2_symbol"]
         score = record["phenotype_similarity_score"]
-        shared = record.get("phenotype_shared_annotations", {})
+        shared_annotations = record.get("phenotype_shared_annotations", [])
 
         # Add missing nodes (genes absent from the genewise data)
         if g1 not in G:
@@ -108,12 +110,16 @@ def build_graph(pairwise_similarity_annotations: list[dict], nodes: dict) -> nx.
 
         # Format phenotype_shared_annotations
         edge_texts = []
-        for mp_term_name, meta in shared.items():
-            zygosity = meta.get("zygosity", "")
-            life_stage = meta.get("life_stage", "")
-            sexual_dimorphism = meta.get("sexual_dimorphism", "None")
-            suffix = format_suffix(zygosity, life_stage, sexual_dimorphism)
-            edge_texts.append(f"{mp_term_name} {suffix}")
+        for shared_annotation in shared_annotations:
+            mp_term_name = shared_annotation["mp_term_name"]
+            zygosity = shared_annotation["zygosity"]
+            life_stage = shared_annotation["life_stage"]
+            sexual_dimorphism = shared_annotation["sexual_dimorphism"]
+            if sexual_dimorphism == "None":
+                sexual_dimorphism = ""
+
+            annotations = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
+            edge_texts.append(f"{mp_term_name} ({annotations})")
 
         lines = []
         lines.append(f"Shared phenotypes of {g1} and {g2} KOs (Similarity: {score})")

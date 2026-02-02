@@ -13,19 +13,25 @@ def base_input():
         {
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
-            "phenotype_shared_annotations": {"dummy": {}},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "dummy", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 70,
         },
         {
             "gene1_symbol": "GeneC",
             "gene2_symbol": "GeneD",
-            "phenotype_shared_annotations": {"dummy": {}},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "dummy", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 60,
         },
         {
             "gene1_symbol": "GeneE",
             "gene2_symbol": "GeneF",
-            "phenotype_shared_annotations": {"dummy": {}},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "dummy", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 50,
         },
     ]

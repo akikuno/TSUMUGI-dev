@@ -35,14 +35,6 @@ def _create_annotation_string(*parts):
 ###############################################################################
 
 
-def _format_suffix(zygosity: str, life_stage: str, sexual_dimorphism: str) -> str:
-    """Return a suffix like '(Homo, Early, Male)'; omit 'None'."""
-    parts = [zygosity, life_stage]
-    if sexual_dimorphism and sexual_dimorphism != "None":
-        parts.append(sexual_dimorphism)
-    return f"({', '.join(parts)})"
-
-
 def build_nodes(gene_to_records, all_genes, hide_severity: bool = False):
     """
     Embed the following formatted text into data.annotation:
@@ -56,25 +48,26 @@ def build_nodes(gene_to_records, all_genes, hide_severity: bool = False):
     nodes = []
 
     for gene in sorted(all_genes):
-        recs = gene_to_records.get(gene, [])
+        records = gene_to_records.get(gene, [])
 
         phenotype_lines: list[str] = []
         disease_lines: list[str] = []
 
-        for r in recs:
-            mp = r.get("mp_term_name", "")
-            zyg = r.get("zygosity", "")
-            ls = r.get("life_stage", "")
-            sd = r.get("sexual_dimorphism", "None")
-            suffix = _format_suffix(zygosity=zyg, life_stage=ls, sexual_dimorphism=sd)
+        for record in records:
+            mp_term_name = record["mp_term_name"]
+            zygosity = record["zygosity"]
+            life_stage = record["life_stage"]
+            sexual_dimorphism = record["sexual_dimorphism"]
+            if sexual_dimorphism == "None":
+                sexual_dimorphism = ""
 
-            # Phenotypes of {gene} KO mice
-            if mp:
-                phenotype_lines.append(f"{mp} {suffix}")
+            annotations = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
+
+            phenotype_lines.append(f"{mp_term_name} ({annotations})")
 
             # Associated Human Diseases (list[str] only)
-            for dis in r.get("disease_annotation", []) or []:
-                disease_lines.append(f"{dis} {suffix}")
+            for disease in record["disease_annotation"]:
+                disease_lines.append(f"{disease} ({annotations})")
 
         phenotype_lines = list(set(phenotype_lines))
         disease_lines = list(set(disease_lines))
@@ -108,40 +101,37 @@ def build_nodes(gene_to_records, all_genes, hide_severity: bool = False):
 ###############################################################################
 
 
-def _build_edges(pairwise_similarity_annotations: Iterator[dict]):
+def _build_edges(pairwise_similarity_annotations: Iterator[dict[str, str | int | list[dict[str, str]]]]) -> list[dict]:
     """Return list of Cytoscape.js edges."""
     edges = []
 
-    for r in pairwise_similarity_annotations:
-        g1 = r["gene1_symbol"]
-        g2 = r["gene2_symbol"]
+    for records in pairwise_similarity_annotations:
+        g1 = records["gene1_symbol"]
+        g2 = records["gene2_symbol"]
 
-        shared = r.get("phenotype_shared_annotations", {}) or {}
-        phen_list = []
+        shared_annotations: list[dict[str, str]] = records["phenotype_shared_annotations"]
+        phenotype_lines = []
 
-        for mp, ann in shared.items():
-            zyg = ann.get("zygosity", "")
-            ls = ann.get("life_stage", "")
-            sd = ann.get("sexual_dimorphism", "")
-            if sd == "None":
-                sd = ""
+        for shared_annotation in shared_annotations:
+            mp_term_name = shared_annotation["mp_term_name"]
+            zygosity = shared_annotation["zygosity"]
+            life_stage = shared_annotation["life_stage"]
+            sexual_dimorphism = shared_annotation["sexual_dimorphism"]
+            if sexual_dimorphism == "None":
+                sexual_dimorphism = ""
 
-            ann_str = _create_annotation_string(zyg, ls, sd)
+            annotations = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
 
-            if mp:
-                if ann_str:
-                    phen_list.append(f"{mp} ({ann_str})")
-                else:
-                    phen_list.append(mp)
+            phenotype_lines.append(f"{mp_term_name} ({annotations})")
 
-        edge_size = r.get("phenotype_similarity_score", 0)
+        edge_size = records["phenotype_similarity_score"]
 
         edges.append(
             {
                 "data": {
                     "source": g1,
                     "target": g2,
-                    "phenotype": phen_list,
+                    "phenotype": phenotype_lines,
                     "edge_size": edge_size,
                 }
             }
@@ -169,10 +159,9 @@ def _build_symbol_to_id_map(gene_to_records: dict[str, list[dict]]) -> dict[str,
 def build_webapp_network(genewise_path, pairwise_path, hide_severity: bool = False):
     """Return (nodes, edges)."""
     # Read pairwise annotations and collect all genes
-    pairwise_similarity_annotations: list[dict] = list(io_handler.read_jsonl(pairwise_path))
 
     all_genes = set()
-    for record in pairwise_similarity_annotations:
+    for record in io_handler.read_jsonl(pairwise_path):
         all_genes.add(record["gene1_symbol"])
         all_genes.add(record["gene2_symbol"])
 
@@ -192,7 +181,7 @@ def build_webapp_network(genewise_path, pairwise_path, hide_severity: bool = Fal
             "command and visualize it with Cytoscape or another network visualization tool."
         )
 
-    edges = _build_edges(pairwise_similarity_annotations)
+    edges = _build_edges(io_handler.read_jsonl(pairwise_path))
 
     symbol_to_id = _build_symbol_to_id_map(gene_to_records)
 
