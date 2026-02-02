@@ -41,6 +41,9 @@ jobs:
           {"gene1_symbol":"GeneB","gene2_symbol":"GeneC","phenotype_similarity_score":1,"phenotype_shared_annotations":[{"mp_term_name":"abnormal tail morphology","zygosity":"Homo","life_stage":"Early","sexual_dimorphism":"Male"}]}
           {"gene1_symbol":"GeneA","gene2_symbol":"GeneC","phenotype_similarity_score":10,"phenotype_shared_annotations":[{"mp_term_name":"abnormal body weight","zygosity":"Hetero","life_stage":"Late","sexual_dimorphism":"None"}]}
           EOF
+          cat > e2e-data/genes.txt <<'EOF'
+          GeneA
+          EOF
       - name: Create webapp templates
         run: |
           mkdir -p src/TSUMUGI/web/template/template-app-js
@@ -92,11 +95,11 @@ jobs:
         run: |
           set -euo pipefail
 
-          python -m TSUMUGI.main mp -i MP:0000002 -m e2e-data/mp.obo --in e2e-data/pairwise.jsonl > e2e-data/out-mp-include.jsonl
-          python -m TSUMUGI.main mp -e MP:0000002 -m e2e-data/mp.obo -a e2e-data/genewise.jsonl --in e2e-data/pairwise.jsonl > e2e-data/out-mp-exclude.jsonl
+          python -m TSUMUGI.main mp -p -i MP:0000002 -m e2e-data/mp.obo --in e2e-data/pairwise.jsonl > e2e-data/out-mp-include.jsonl
+          python -m TSUMUGI.main mp -p -e MP:0000002 -m e2e-data/mp.obo -a e2e-data/genewise.jsonl --in e2e-data/pairwise.jsonl > e2e-data/out-mp-exclude.jsonl
           python -m TSUMUGI.main count -p --min 2 --max 2 --in e2e-data/pairwise.jsonl > e2e-data/out-count.jsonl
           python -m TSUMUGI.main score --min 5 --max 5 --in e2e-data/pairwise.jsonl > e2e-data/out-score.jsonl
-          python -m TSUMUGI.main genes -g -k GeneA --in e2e-data/pairwise.jsonl > e2e-data/out-genes.jsonl
+          python -m TSUMUGI.main genes -g -k e2e-data/genes.txt --in e2e-data/pairwise.jsonl > e2e-data/out-genes.jsonl
           python -m TSUMUGI.main life-stage -k Early --in e2e-data/pairwise.jsonl > e2e-data/out-life.jsonl
           python -m TSUMUGI.main sex -k Male --in e2e-data/pairwise.jsonl > e2e-data/out-sex.jsonl
           python -m TSUMUGI.main zygosity -k Homo --in e2e-data/pairwise.jsonl > e2e-data/out-zygosity.jsonl
