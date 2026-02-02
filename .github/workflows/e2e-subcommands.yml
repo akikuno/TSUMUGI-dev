@@ -145,6 +145,6 @@ jobs:
 
           if not Path("e2e-data/webapp/index.html").is_file():
               raise SystemExit("e2e-data/webapp/index.html: missing")
-          if not Path("e2e-data/webapp/network.json.gz").is_file():
-              raise SystemExit("e2e-data/webapp/network.json.gz: missing")
+          if not Path("e2e-data/webapp/data/network.json.gz").is_file():
+              raise SystemExit("e2e-data/webapp/data/network.json.gz: missing")
           PY
