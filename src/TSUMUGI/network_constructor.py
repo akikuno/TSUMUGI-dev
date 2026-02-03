@@ -53,7 +53,7 @@ def _compose_genewise_phenotype_significants(
         sexual_dimorphism = "" if sexual_dimorphism == "None" else sexual_dimorphism
 
         annotation_str = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
-        phenotype_composed = f"{record['mp_term_name']} ({annotation_str})"
+        mp_term_name_with_metadata = f"{record['mp_term_name']} ({annotation_str})"
 
         effect_size = record["effect_size"]
 
@@ -61,7 +61,7 @@ def _compose_genewise_phenotype_significants(
             {
                 "mp_term_name": record["mp_term_name"],
                 "effect_size": effect_size,
-                "phenotype": phenotype_composed,
+                "mp_term_name_with_metadata": mp_term_name_with_metadata,
             }
         )
 
@@ -338,7 +338,7 @@ def _convert_to_nodes_json(
     gene_records_map_filtered = _scale_effect_sizes(gene_records_map_filtered, mp_term_name)
 
     for gene, records in gene_records_map_filtered.items():
-        phenotypes: list[str] = [r["mp_term_name"] for r in records]
+        phenotypes: list[str] = [r["mp_term_name_with_metadata"] for r in records]
         diseases: set[str] = disease_annotations_composed.get(gene, set())
         node_color: int = next((r["effect_size"] for r in records if r["mp_term_name"] == mp_term_name), 1)
 
@@ -355,6 +355,8 @@ def _convert_to_nodes_json(
             node["data"]["hide_severity"] = True
         nodes_json.append(node)
 
+    # Sort nodes for stability
+    nodes_json.sort(key=lambda x: x["data"]["id"])
     return nodes_json
 
 
@@ -390,6 +392,8 @@ def _convert_to_edges_json(
                 }
             }
         )
+    # Sort edges for stability
+    edges_json.sort(key=lambda e: (e["data"]["source"], e["data"]["target"]))
     return edges_json
 
 
@@ -451,10 +455,6 @@ def build_phenotype_network_json(
             hide_severity=hide_severity or is_binary,
         )
 
-        # Sort nodes for stability
-        nodes_json = sorted(nodes_json, key=lambda n: n["data"]["id"])
-        edges_json = sorted(edges_json, key=lambda e: (e["data"]["source"], e["data"]["target"]))
-
         network_json = nodes_json + edges_json
 
         mp_term_name_underscore = mp_term_name.replace(" ", "_").replace("/", "_")
@@ -475,7 +475,7 @@ def _build_node_info(
     target_gene: str,
     hide_severity: bool = False,
 ) -> dict[str, dict[str, str | list[str] | float]]:
-    phenotypes: list[str] = [r["mp_term_name"] for r in gene_records_map.get(gene, [])]
+    phenotypes: list[str] = [r["mp_term_name_with_metadata"] for r in gene_records_map.get(gene, [])]
     diseases: set[str] = disease_annotations_composed.get(gene, set())
     node_color: int = 100 if target_gene == gene else 1
 
@@ -561,6 +561,8 @@ def build_gene_network_json(
                 )
                 nodes_json.append(node_json)
 
+        # Sort nodes for stability
+        nodes_json.sort(key=lambda x: x["data"]["id"])
         # ---------------------------------------
         # Edges
         # ---------------------------------------
@@ -593,8 +595,7 @@ def build_gene_network_json(
             )
 
         # Sort nodes for stability
-        nodes_json = sorted(nodes_json, key=lambda n: n["data"]["id"])
-        edges_json = sorted(edges_json, key=lambda e: (e["data"]["source"], e["data"]["target"]))
+        edges_json.sort(key=lambda e: (e["data"]["source"], e["data"]["target"]))
 
         network_json = nodes_json + edges_json
 
