@@ -1,9 +1,11 @@
+import math
 import numpy as np
 import pytest
 from TSUMUGI.ontology_handler import build_term_hierarchy
 from TSUMUGI.similarity_calculator import (
     _apply_phenodigm_scaling,
     _calculate_pair_mica_and_resnik,
+    _calculate_pair_msca_score_map,
     _calculate_term_ic_map,
     _calculate_weighted_similarity_matrix,
     _delete_parent_terms_from_ancestors,
@@ -66,29 +68,73 @@ def test_calculate_pair_mica_and_resnik(sample_ontology, term1, term2, expected_
     assert sim == pytest.approx(ic_map[expected_mica])
 
 
+@pytest.mark.parametrize(
+    "term1, term2, parent_map_override, term_ic_map_override, expected_msca, expected_jaccard, expected_score",
+    [
+        ("D", "D", None, None, "D", 1.0, None),
+        ("D", "E", None, None, "B", 1 / 2, None),
+        ("X", "Y", {}, {}, None, 0.0, 0.0),
+    ],
+)
+def test_calculate_pair_msca_score_map(
+    sample_ontology,
+    term1,
+    term2,
+    parent_map_override,
+    term_ic_map_override,
+    expected_msca,
+    expected_jaccard,
+    expected_score,
+):
+    if parent_map_override is None:
+        parent_map = sample_ontology["parent_map"]
+        term_ic_map = _calculate_term_ic_map(sample_ontology["ontology_terms"], sample_ontology["child_map"])
+    else:
+        parent_map = parent_map_override
+        term_ic_map = term_ic_map_override
+
+    term_pairs, msca_score_map = _calculate_pair_msca_score_map(term1, term2, parent_map, term_ic_map)
+
+    assert term_pairs == tuple(sorted((term1, term2)))
+    assert expected_msca in msca_score_map
+    assert len(msca_score_map) == 1
+
+    if expected_score is None:
+        resnik = term_ic_map.get(expected_msca, 0.0)
+        expected_score = math.sqrt(resnik * expected_jaccard)
+
+    assert msca_score_map[expected_msca] == pytest.approx(expected_score)
+
+
 def test_apply_phenodigm_scaling_identical_phenotypes():
     """
     Case 1: When phenotype sets match exactly, score should be 100.
     """
 
-    term_ic_map = {"MP:A": 2.0, "MP:B": 4.0}
-    ic_scores = np.array([term_ic_map["MP:A"], term_ic_map["MP:B"]], dtype=float)
-    gene1_data = {
+    terms_similarity_map = {
+        ("MP:A", "MP:A"): {"MP:A": 2.0},
+        ("MP:B", "MP:B"): {"MP:B": 4.0},
+        ("MP:A", "MP:B"): {"MP:C": 1.5},
+    }
+
+    similarity_scores = np.array([2.0, 4.0], dtype=float)  # MP:A and MP:B
+
+    gene1_record = {
         "terms": np.array(["MP:A", "MP:B"], dtype=object),
-        "zygosity": np.array(["hom", "hom"], dtype=object),
+        "zygosity": np.array(["Homo", "Homo"], dtype=object),
         "life_stage": np.array(["A", "A"], dtype=object),
         "sexual_dimorphism": np.array(["None", "None"], dtype=object),
-        "ic_scores": ic_scores,
-        "ic_max": float(ic_scores.max()),
+        "similarity_scores": similarity_scores,
+        "similarity_max": float(similarity_scores.max()),
     }
-    gene2_data = gene1_data
+    gene2_record = gene1_record
 
-    weighted_similarity_matrix = np.array([[2.0, 1.0], [1.0, 4.0]])
+    weighted_similarity_matrix = _calculate_weighted_similarity_matrix(gene1_record, gene2_record, terms_similarity_map)
 
     result = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
-        gene1_data,
-        gene2_data,
+        gene1_record,
+        gene2_record,
     )
 
     assert result == 100
@@ -100,23 +146,23 @@ def test_apply_phenodigm_scaling_disjoint_phenotypes():
     """
 
     term_ic_map = {"MP:A": 2.0, "MP:B": 4.0, "MP:C": 3.0, "MP:D": 5.0}
-    gene1_ic = np.array([term_ic_map["MP:A"], term_ic_map["MP:B"]], dtype=float)
-    gene2_ic = np.array([term_ic_map["MP:C"], term_ic_map["MP:D"]], dtype=float)
+    gene1_similarity_score = np.sqrt(np.array([term_ic_map["MP:A"], term_ic_map["MP:B"]], dtype=float))
+    gene2_similarity_score = np.sqrt(np.array([term_ic_map["MP:C"], term_ic_map["MP:D"]], dtype=float))
     gene1_data = {
         "terms": np.array(["MP:A", "MP:B"], dtype=object),
-        "zygosity": np.array(["hom", "hom"], dtype=object),
-        "life_stage": np.array(["A", "A"], dtype=object),
+        "zygosity": np.array(["Homo", "Homo"], dtype=object),
+        "life_stage": np.array(["Early", "Early"], dtype=object),
         "sexual_dimorphism": np.array(["None", "None"], dtype=object),
-        "ic_scores": gene1_ic,
-        "ic_max": float(gene1_ic.max()),
+        "similarity_scores": gene1_similarity_score,
+        "similarity_max": float(gene1_similarity_score.max()),
     }
     gene2_data = {
         "terms": np.array(["MP:C", "MP:D"], dtype=object),
-        "zygosity": np.array(["hom", "hom"], dtype=object),
-        "life_stage": np.array(["A", "A"], dtype=object),
+        "zygosity": np.array(["Homo", "Homo"], dtype=object),
+        "life_stage": np.array(["Early", "Early"], dtype=object),
         "sexual_dimorphism": np.array(["None", "None"], dtype=object),
-        "ic_scores": gene2_ic,
-        "ic_max": float(gene2_ic.max()),
+        "similarity_scores": gene2_similarity_score,
+        "similarity_max": float(gene2_similarity_score.max()),
     }
 
     weighted_similarity_matrix = np.array([[0.0, 0.0], [0.0, 0.0]])
@@ -135,33 +181,36 @@ def test_apply_phenodigm_scaling_average_score_50():
     Case 3: Observed similarity is exactly half of theoretical maximum -> score 50.
     """
 
-    term_ic_map = {"MP:A": 4.0, "MP:B": 4.0}
+    terms_similarity_map = {
+        ("MP:A", "MP:A"): {"MP:A": 2.0},
+        ("MP:B", "MP:B"): {"MP:B": 2.0},
+        ("MP:A", "MP:B"): {"MP:C": 1.0},
+    }
+    similarity_scores = np.array([2.0, 2.0], dtype=float)
 
-    gene1_ic = np.array([term_ic_map["MP:A"]], dtype=float)
-    gene2_ic = np.array([term_ic_map["MP:B"]], dtype=float)
-    gene1_data = {
+    gene1_record = {
         "terms": np.array(["MP:A"], dtype=object),
-        "zygosity": np.array(["hom"], dtype=object),
-        "life_stage": np.array(["A"], dtype=object),
+        "zygosity": np.array(["Homo"], dtype=object),
+        "life_stage": np.array(["Early"], dtype=object),
         "sexual_dimorphism": np.array(["None"], dtype=object),
-        "ic_scores": gene1_ic,
-        "ic_max": float(gene1_ic.max()),
+        "similarity_scores": similarity_scores,
+        "similarity_max": float(similarity_scores.max()),
     }
-    gene2_data = {
+    gene2_record = {
         "terms": np.array(["MP:B"], dtype=object),
-        "zygosity": np.array(["hom"], dtype=object),
-        "life_stage": np.array(["A"], dtype=object),
+        "zygosity": np.array(["Homo"], dtype=object),
+        "life_stage": np.array(["Early"], dtype=object),
         "sexual_dimorphism": np.array(["None"], dtype=object),
-        "ic_scores": gene2_ic,
-        "ic_max": float(gene2_ic.max()),
+        "similarity_scores": similarity_scores,
+        "similarity_max": float(similarity_scores.max()),
     }
 
-    weighted_similarity_matrix = np.array([[2.0]])
+    weighted_similarity_matrix = _calculate_weighted_similarity_matrix(gene1_record, gene2_record, terms_similarity_map)
 
     result = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
-        gene1_data,
-        gene2_data,
+        gene1_record,
+        gene2_record,
     )
 
     assert result == 50
@@ -170,24 +219,24 @@ def test_apply_phenodigm_scaling_average_score_50():
 def test_calculate_weighted_similarity_matrix_metadata_weights():
     gene1_data = {
         "terms": np.array(["T1", "T2"], dtype=object),
-        "zygosity": np.array(["hom", "het"], dtype=object),
-        "life_stage": np.array(["E", "A"], dtype=object),
+        "zygosity": np.array(["Homo", "Hetero"], dtype=object),
+        "life_stage": np.array(["Early", "Late"], dtype=object),
         "sexual_dimorphism": np.array(["None", "None"], dtype=object),
     }
     gene2_data = {
         "terms": np.array(["T1", "T3"], dtype=object),
-        "zygosity": np.array(["hom", "het"], dtype=object),
-        "life_stage": np.array(["E", "E"], dtype=object),
+        "zygosity": np.array(["Homo", "Hetero"], dtype=object),
+        "life_stage": np.array(["Early", "Early"], dtype=object),
         "sexual_dimorphism": np.array(["None", "None"], dtype=object),
     }
-    term_pair_similarity_map = {
+    terms_similarity_map = {
         ("T1", "T1"): {"T1": 4.0},
         ("T1", "T2"): {"T1": 3.0},
         ("T1", "T3"): {"T1": 1.0},
         ("T2", "T3"): {"T2": 2.0},
     }
 
-    weighted = _calculate_weighted_similarity_matrix(gene1_data, gene2_data, term_pair_similarity_map)
+    weighted = _calculate_weighted_similarity_matrix(gene1_data, gene2_data, terms_similarity_map)
 
     expected = np.array(
         [
@@ -298,22 +347,22 @@ def test_calculate_phenodigm_score_identical_gene_sets():
         {
             "marker_symbol": "Gene1",
             "mp_term_id": "MP:1",
-            "zygosity": "hom",
-            "life_stage": "E",
+            "zygosity": "Homo",
+            "life_stage": "Early",
             "sexual_dimorphism": "None",
         },
         {
             "marker_symbol": "Gene2",
             "mp_term_id": "MP:1",
-            "zygosity": "hom",
-            "life_stage": "E",
+            "zygosity": "Homo",
+            "life_stage": "Early",
             "sexual_dimorphism": "None",
         },
     ]
-    term_pair_similarity_map = {("MP:1", "MP:1"): {"MP:1": 2.0}}
+    terms_similarity_map = {("MP:1", "MP:1"): {"MP:1": np.sqrt(2.0)}}
     term_ic_map = {"MP:1": 2.0}
 
-    scores = list(calculate_phenodigm_score(records, term_pair_similarity_map, term_ic_map))
+    scores = list(calculate_phenodigm_score(records, terms_similarity_map, term_ic_map))
 
     assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 100}]
 
