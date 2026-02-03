@@ -122,157 +122,301 @@ Exporte en PNG/CSV/GraphML. CSV inclut les IDs de modules et les phénotypes; Gr
 
 # 🛠 Interface en ligne de commande
 
-Cette version ajoute le CLI pour actualiser avec les données IMPC, appliquer des filtres fins et exporter en GraphML ou webapp hors ligne.
+Le CLI TSUMUGI permet d'utiliser localement les dernières données IMPC, avec des filtres et sorties plus fines que l'outil web.
 
-- Recalculer avec `statistical-results-ALL.csv.gz` (optionnel `mp.obo`, `impc_phenodigm.csv`)  
-- Filtrer par présence/absence de terme MP  
-- Filtrer par liste de gènes (CSV ou fichier texte)  
-- Sorties : GraphML (`tsumugi build-graphml`), webapp hors ligne (`tsumugi build-webapp`)
+## Fonctionnalités
 
-## Commandes disponibles
-- `tsumugi run` : recalcul depuis les données IMPC  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)` : conserver/exclure des paires ou des gènes selon un terme MP  
-- `tsumugi count --pairwise/--genewise (--min/--max)` : filtrer par nombre de phénotypes (paires/gènes)  
-- `tsumugi score (--min/--max)`: filtrer par score de similarité (paires de gènes)
-- `tsumugi genes --keep/--drop` : conserver/retirer via liste de gènes  
-- `tsumugi life-stage --keep/--drop` : filtrer par stade de vie  
-- `tsumugi sex --keep/--drop` : filtrer par sexe  
-- `tsumugi zygosity --keep/--drop` : filtrer par zygosité  
-- `tsumugi build-graphml` : générer GraphML  
-- `tsumugi build-webapp` : générer les assets web TSUMUGI
+- Recalculer avec `statistical-results-ALL.csv.gz` IMPC (optionnel `mp.obo`, `impc_phenodigm.csv`).  
+- Filtrer par présence/absence de termes MP.  
+- Filtrer par liste de gènes (séparée par virgules ou fichier texte).  
+- Sorties: GraphML (`tsumugi build-graphml`), bundle webapp hors ligne (`tsumugi build-webapp`).
 
 ## Installation
-BioConda :
+
+BioConda:
 ```bash
 conda install -c conda-forge -c bioconda tsumugi
 ```
-PyPI :
+
+PyPI:
 ```bash
 pip install tsumugi
 ```
+
 Prêt quand `tsumugi --version` affiche la version.
 
-## Exemples courants
+## Commandes disponibles
 
-### Recalculer avec les données IMPC (`tsumugi run`)
-Sans `--mp_obo`, TSUMUGI utilise le `data-version: releases/2025-08-27/mp.obo` fourni.  
-Sans `--impc_phenodigm`, il utilise le fichier récupéré le 2025-10-01 sur le [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
+- `tsumugi run`: recalculer le réseau à partir des données IMPC  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: filtrer des paires ou des gènes qui contiennent/ne montrent pas un terme MP  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: filtrer par nombre de phénotypes (paires/gènes)  
+- `tsumugi score (--min/--max)`: filtrer par score de similarité (paires)  
+- `tsumugi genes --keep/--drop`: conserver/retirer via liste de gènes (virgules ou fichier texte)  
+- `tsumugi life-stage --keep/--drop`: filtrer par stade de vie (Embryo/Early/Interval/Late)  
+- `tsumugi sex --keep/--drop`: filtrer par sexe (Male/Female/None)  
+- `tsumugi zygosity --keep/--drop`: filtrer par zygosité (Homo/Hetero/Hemi)  
+- `tsumugi build-graphml`: générer GraphML (Cytoscape, etc.)  
+- `tsumugi build-webapp`: générer les assets web TSUMUGI (HTML/CSS/JS locaux)
+
+> [!NOTE]
+> Toutes les sous-commandes de filtrage écrivent du JSONL sur STDOUT.  
+> Redirigez avec `>` pour enregistrer dans un fichier.
+
+> [!IMPORTANT]
+> Toutes les commandes sauf `tsumugi run` nécessitent `pairwise_similarity_annotation.jsonl.gz` ou `genewise_phenotype_annotation.jsonl.gz`.
+> Les deux fichiers peuvent être téléchargés depuis la [page d’accueil de TSUMUGI](https://larc-tsukuba.github.io/tsumugi/).
+
+## Utilisation
+
+### Recalculer à partir des données IMPC (`tsumugi run`)
+Si `--mp_obo` est omis, TSUMUGI utilise le `data-version: releases/2025-08-27/mp.obo` fourni.  
+Si `--impc_phenodigm` est omis, il utilise le fichier récupéré le 2025-10-01 depuis l'[IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
 ```bash
-tsumugi run \
-  --statistical_results ./statistical-results-ALL.csv.gz \
-  --threads 8
+tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-Sorties : dans `./tsumugi-output`, JSONL genewise/pairwise et assets de visualisation (`TSUMUGI-webapp`).
+Sorties: `./tsumugi-output` contient les annotations genewise (genewise_phenotype_annotations.jsonl.gz), les similarités pairwise (pairwise_similarity_annotations.jsonl.gz) et les assets de visualisation (`TSUMUGI-webapp`).
 
 > [!IMPORTANT]  
-> `TSUMUGI-webapp` contient des scripts de lancement par OS; double-cliquez pour ouvrir l’app locale :  
-> - Windows : `open_webapp_windows.bat`  
-> - macOS : `open_webapp_mac.command`  
-> - Linux : `open_webapp_linux.sh`
+> Le dossier `TSUMUGI-webapp` inclut des scripts de lancement par OS; double-cliquez pour ouvrir l'app locale:  
+> - Windows: `open_webapp_windows.bat`  
+> - macOS: `open_webapp_mac.command`  
+> - Linux: `open_webapp_linux.sh`
 
 ### Filtrer par terme MP (`tsumugi mp --include/--exclude`)
-Extrayez uniquement les paires de gènes qui contiennent les phénotypes d’intérêt, ou les paires où ces phénotypes ont été mesurés sans montrer d’anomalie significative.
+Extraire les paires de gènes (ou gènes) qui incluent les phénotypes d'intérêt, ou celles mesurées sans anomalie significative.
 
-- `--pairwise` (par défaut si rien n’est défini) : sortie par paires. Utilisez `--in pairwise_similarity_annotations.jsonl(.gz)`.
-- `--genewise` : sortie par gène individuel. Utilisez `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (obligatoire avec `--exclude`, recommandé avec `--include`).
+```bash
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+                  [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
+```
+
+#### `-i MP_ID`, `--include MP_ID`
+Inclure les gènes/paires qui possèdent le terme MP spécifié (descendants inclus).
+
+#### `-e MP_ID`, `--exclude MP_ID`
+Renvoyer les gènes/paires mesurés pour le terme MP (descendants inclus) sans anomalie significative. `-a/--genewise_annotations` requis.
+
+#### `-g`, `--genewise`
+Filtrer au niveau gène. Lit `genewise_phenotype_annotations.jsonl(.gz)`. Avec `--genewise`, indiquez `-a/--genewise_annotations`.
+
+#### `-p`, `--pairwise`
+Filtrer au niveau paire. Cible `pairwise_similarity_annotations.jsonl(.gz)`. Si `--in` est omis, lecture depuis STDIN.
+
+#### `-m PATH_MP_OBO`, `--mp_obo PATH_MP_OBO`
+Chemin vers l'ontologie Mammalian Phenotype (mp.obo). Si omis, utilise `data/mp.obo` fourni.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+Chemin vers les annotations genewise (JSONL/.gz). Requis pour `--exclude`; à indiquer aussi avec `--genewise`.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
+
+#### `--life_stage LIFE_STAGE`
+Filtre additionnel par stade de vie. Valeurs: `Embryo`, `Early`, `Interval`, `Late`.
+
+#### `--sex SEX`
+Filtre additionnel par dimorphisme sexuel. Utilisez les valeurs des annotations (ex.: `Male`, `Female`, `None`).
+
+#### `--zygosity ZYGOSITY`
+Filtre additionnel par zygosité. Valeurs: `Homo`, `Hetero`, `Hemi`.
 
 ```bash
 # Extraire uniquement les paires contenant MP:0001146 (abnormal testis morphology) ou des termes descendants (ex. MP:0004849 abnormal testis size)
-tsumugi mp --include MP:0001146 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_filtered.jsonl
+tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Extraire les paires où MP:0001146 et les termes descendants ont été mesurés sans anomalie significative
-tsumugi mp --exclude MP:0001146 \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Extraire les annotations significatives au niveau du gène contenant MP:0001146 (descendants inclus)
-tsumugi mp --include MP:0001146 \
-  --genewise \
-  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
-  > genewise_filtered.jsonl
+tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
 
 # Extraire les gènes mesurés pour MP:0001146 (descendants inclus) sans anomalie significative
-tsumugi mp --exclude MP:0001146 \
-  --genewise \
-  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
-  > genewise_no_phenotype.jsonl
+tsumugi mp --exclude MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
-> **Les termes MP descendants de l’ID spécifié sont également pris en charge.**  
+> **Les termes MP descendants de l'ID spécifié sont également pris en charge.**  
 > Par exemple, si vous indiquez `MP:0001146 (abnormal testis morphology)`, les termes descendants comme `MP:0004849 (abnormal testis size)` sont aussi pris en compte.
 
 ### Filtrer par nombre de phénotypes (`tsumugi count`)
-At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
-- Phénotypes partagés par paire :
 ```bash
-tsumugi count --pairwise --min 3 --max 20 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_min3_max20.jsonl
-```
-- Phénotypes par gène (genewise requis) :
-```bash
-tsumugi count --genewise --min 5 --max 50 \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > genewise_min5_max50.jsonl
+tsumugi count [-h] (-g | -p) [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS] [-a PATH_GENEWISE_ANNOTATIONS]
 ```
 
+Filtrer des gènes ou paires par nombre de phénotypes. Au moins `--min` ou `--max` est requis.
 
-### Filtrer par score de similarité (`tsumugi score`)
-```txt
-tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
-```
+#### `-g`, `--genewise`
+Filtre par nombre de phénotypes significatifs par gène. Requiert `-a/--genewise_annotations` avec `genewise_phenotype_annotations.jsonl(.gz)`.
 
-Filtre les paires de gènes selon `phenotype_similarity_score` (0–100). Au moins `--min` ou `--max` est requis.
+#### `-p`, `--pairwise`
+Filtre par nombre de phénotypes partagés par paire. Si `--in` est omis, lecture depuis STDIN.
 
 #### `--min MIN`, `--max MAX`
-Bornes basse/haute du score. Une seule borne suffit pour un filtrage unilatéral.
+Bornes basse/haute du nombre de phénotypes. Une seule borne suffit pour un filtrage unilatéral.
 
-#### `--in IN`
-Chemin vers les annotations pairwise (JSONL/.gz); si omis, lecture sur STDIN.
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
 
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+Chemin vers les annotations genewise (JSONL/.gz). Requis avec `--genewise`.
+
+- Phénotypes partagés par paire:
 ```bash
-tsumugi score --min 50 --max 80 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_score50_80.jsonl
+tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_min3_max20.jsonl
+```
+
+- Phénotypes par gène (genewise requis):
+```bash
+tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
 ```
 
 `--min` ou `--max` seul est accepté.
 
-### Liste de gènes (`tsumugi genes --keep/--drop`)
+### Filtrer par score de similarité (`tsumugi score`)
 ```bash
-tsumugi genes --keep genes.txt \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_keep_genes.jsonl
-
-tsumugi genes --drop geneA,geneB \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_drop_genes.jsonl
+tsumugi score [-h] [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
-### Stade de vie / sexe / zygosité
+Filtre les paires selon `phenotype_similarity_score` (0–100). Au moins `--min` ou `--max` est requis.
+
+#### `--min MIN`, `--max MAX`
+Bornes basse/haute du score. Une seule borne suffit pour un filtrage unilatéral.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
+
 ```bash
-tsumugi life-stage --keep Early --in pairwise_similarity_annotations.jsonl.gz > pairwise_lifestage_early.jsonl
-tsumugi sex --drop Male --in pairwise_similarity_annotations.jsonl.gz > pairwise_no_male.jsonl
-tsumugi zygosity --keep Homo --in pairwise_similarity_annotations.jsonl.gz > pairwise_homo.jsonl
+tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_score50_80.jsonl
 ```
 
-### Export GraphML / Webapp
-```bash
-tsumugi build-graphml \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  > network.graphml
+`--min` ou `--max` seul est accepté.
 
-tsumugi build-webapp \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
+### Filtrer par liste de gènes (`tsumugi genes --keep/--drop`)
+```bash
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
-Pipeline exemple : `zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+
+#### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
+Conserver uniquement les paires contenant les gènes spécifiés dans un fichier texte.
+
+#### `-d GENE_SYMBOL`, `--drop GENE_SYMBOL`
+Supprimer les paires contenant les gènes spécifiés dans un fichier texte.
+
+#### `-g`, `--genewise`
+Filtrer par symboles de gènes fournis par l'utilisateur.
+
+#### `-p`, `--pairwise`
+Filtrer par paires de gènes fournies par l'utilisateur.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
+
+```bash
+cat << EOF > genes.txt
+Maf
+Aamp
+Cacna1c
+EOF
+
+tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+
+cat << EOF > gene_pairs.csv
+Maf,Aamp
+Maf,Cacna1c
+EOF
+
+tsumugi genes --pairwise --drop gene_pairs.csv   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_drop_genes.jsonl
+
+```
+
+### Filtrer par stade de vie (`tsumugi life-stage --keep/--drop`)
+```bash
+tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k LIFE_STAGE`, `--keep LIFE_STAGE`
+Conserver uniquement le stade de vie spécifié (`Embryo`, `Early`, `Interval`, `Late`).
+
+#### `-d LIFE_STAGE`, `--drop LIFE_STAGE`
+Supprimer le stade de vie spécifié.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
+
+```bash
+tsumugi life-stage --keep Early   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_lifestage_early.jsonl
+```
+
+### Filtrer par sexe (`tsumugi sex --keep/--drop`)
+```bash
+tsumugi sex [-h] (-k SEX | -d SEX) [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k SEX`, `--keep SEX`
+Conserver uniquement le sexe spécifié (`Male`, `Female`, `None`).
+
+#### `-d SEX`, `--drop SEX`
+Supprimer le sexe spécifié.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
+
+```bash
+tsumugi sex --drop Male   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_no_male.jsonl
+```
+
+### Filtrer par zygosité (`tsumugi zygosity --keep/--drop`)
+```bash
+tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k ZYGOSITY`, `--keep ZYGOSITY`
+Conserver uniquement la zygosité spécifiée (`Homo`, `Hetero`, `Hemi`).
+
+#### `-d ZYGOSITY`, `--drop ZYGOSITY`
+Supprimer la zygosité spécifiée.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
+
+```bash
+tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
+```
+
+### Export GraphML / webapp
+```bash
+tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS
+```
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+Chemin vers les annotations genewise (JSONL/.gz). Requis.
+
+```bash
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+```
+
+```bash
+tsumugi build-webapp [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS -o OUT
+```
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+Chemin vers les annotations genewise (JSONL/.gz). Requis.
+
+#### `-o OUT`, `--out OUT`
+Répertoire de sortie du bundle webapp (HTML/CSS/JS + données réseau). Ne pas fournir un nom de fichier avec extension.
+
+```bash
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+```
+
+Le CLI prend en charge STDIN/STDOUT, vous pouvez chaîner les commandes:  
+`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
 
 # 🔍 Calcul des groupes de gènes phénotypiquement similaires
 

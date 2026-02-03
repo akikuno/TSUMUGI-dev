@@ -122,175 +122,303 @@ IMPC Disease Models Portal 데이터를 사용해 질병 관련 유전자를 하
 PNG/CSV/GraphML로 내보낼 수 있습니다.  
 CSV에는 모듈ID와各 유전자의 표현형 리스트가 포함되며, GraphML은 Cytoscape 호환입니다.
 
-# 🛠 커맨드라인 버전
+# 🛠 커맨드라인 인터페이스
 
-이번 릴리스에서 **CLI**가 추가되었습니다. 최신 IMPC 데이터를 받아 스스로 파이프라인을 실행하고, Web보다 세밀한 필터·출력 옵션을 적용할 수 있습니다.
+TSUMUGI CLI는 로컬에 다운로드한 최신 IMPC 데이터를 사용해 재계산할 수 있으며, 웹 버전보다 더 세밀한 필터와 출력 옵션을 제공합니다.
 
-- IMPC `statistical-results-ALL.csv.gz`(및 옵션 `mp.obo`, `impc_phenodigm.csv`)로 재계산  
-- MP 용어 포함/제외 필터  
-- 유전자 리스트(쉼표 구분 또는 텍스트 파일)로 필터  
-- 출력: GraphML(`tsumugi build-graphml`), 오프라인 웹앱 번들(`tsumugi build-webapp`)
+## 기능
 
-## 사용 가능한 명령
-- `tsumugi run`: IMPC 데이터에서 네트워크 재계산  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: MP 용어 기준으로 유전자 쌍 또는 유전자 단위 필터  
-- `tsumugi count --pairwise/--genewise (--min/--max)`: 표현형 개수로 필터(쌍/유전자)  
-- `tsumugi score (--min/--max)`: 유사도 점수로 필터(페어)
-- `tsumugi genes --keep/--drop`: 유전자 리스트로 유지/제거  
-- `tsumugi life-stage --keep/--drop`: 라이프 스테이지 필터  
-- `tsumugi sex --keep/--drop`: 성별 필터  
-- `tsumugi zygosity --keep/--drop`: 접합형 필터  
-- `tsumugi build-graphml`: GraphML 생성  
-- `tsumugi build-webapp`: TSUMUGI 웹앱 자산 생성
+- IMPC `statistical-results-ALL.csv.gz`로 재계산(선택적으로 `mp.obo`, `impc_phenodigm.csv`).  
+- MP 용어 포함/제외 필터.  
+- 유전자 목록 필터(콤마 구분 또는 텍스트 파일).  
+- 출력: GraphML(`tsumugi build-graphml`), 오프라인 웹앱 번들(`tsumugi build-webapp`).
 
 ## 설치
+
 BioConda:
 ```bash
 conda install -c conda-forge -c bioconda tsumugi
 ```
+
 PyPI:
 ```bash
 pip install tsumugi
 ```
-`tsumugi --version`이 출력되면 준비 완료입니다.
 
-## 대표 사용 예(명령별)
+`tsumugi --version`이 버전을 출력하면 사용 가능합니다.
 
-### IMPC 데이터로 네트워크 재계산(`tsumugi run`)
-`--mp_obo`를 생략하면 동봉된 `data-version: releases/2025-08-27/mp.obo`를 사용합니다.  
-`--impc_phenodigm`을 생략하면 2025-10-01에 [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)에서 받은 파일을 사용합니다.
+## 사용 가능한 명령
+
+- `tsumugi run`: IMPC 데이터에서 네트워크 재계산  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: MP 용어를 포함/비포함하는 유전자 쌍 또는 유전자 필터  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: phenotype 개수로 필터(쌍/유전자)  
+- `tsumugi score (--min/--max)`: phenotype 유사도 점수로 필터(쌍)  
+- `tsumugi genes --keep/--drop`: 유전자 목록 기준 유지/제외(콤마 또는 텍스트 파일)  
+- `tsumugi life-stage --keep/--drop`: 생애 단계 필터(Embryo/Early/Interval/Late)  
+- `tsumugi sex --keep/--drop`: 성별 필터(Male/Female/None)  
+- `tsumugi zygosity --keep/--drop`: 접합형 필터(Homo/Hetero/Hemi)  
+- `tsumugi build-graphml`: GraphML 생성(Cytoscape 등)  
+- `tsumugi build-webapp`: TSUMUGI 웹앱 에셋 생성(로컬 HTML/CSS/JS)
+
+> [!NOTE]
+> 모든 필터링 서브커맨드는 JSONL을 STDOUT으로 출력합니다.  
+> 파일로 저장하려면 `>`로 리다이렉트하세요.
+
+> [!IMPORTANT]
+> `tsumugi run`을 제외한 모든 명령은 `pairwise_similarity_annotation.jsonl.gz` 또는 `genewise_phenotype_annotation.jsonl.gz`가 필요합니다.
+> 두 파일 모두 [TSUMUGI 메인 페이지](https://larc-tsukuba.github.io/tsumugi/)에서 다운로드할 수 있습니다.
+
+## 사용법
+
+### IMPC 데이터로 재계산(`tsumugi run`)
+`--mp_obo`를 생략하면 TSUMUGI는 번들 `data-version: releases/2025-08-27/mp.obo`를 사용합니다.  
+`--impc_phenodigm`를 생략하면 2025-10-01에 [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)에서 가져온 파일을 사용합니다.
 ```bash
-tsumugi run \
-  --statistical_results ./statistical-results-ALL.csv.gz \
-  --threads 8
+tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-출력: `./tsumugi-output`에 genewise_phenotype_annotations.jsonl.gz, pairwise_similarity_annotations.jsonl.gz, 시각화 자산(`TSUMUGI-webapp`)이 생성됩니다.
+출력: `./tsumugi-output`에는 genewise 주석(genewise_phenotype_annotations.jsonl.gz), pairwise 유사도 데이터(pairwise_similarity_annotations.jsonl.gz), 시각화 에셋(`TSUMUGI-webapp`)이 포함됩니다.
 
 > [!IMPORTANT]  
-> `TSUMUGI-webapp`에는 OS별 실행 스크립트가 포함되어 있으며, 더블클릭으로 로컬 웹앱을 열 수 있습니다.  
+> `TSUMUGI-webapp` 디렉터리에는 OS별 실행 스크립트가 포함되어 있습니다. 더블 클릭하면 로컬 웹앱을 열 수 있습니다:  
 > - Windows: `open_webapp_windows.bat`  
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
 ### MP 용어로 필터(`tsumugi mp --include/--exclude`)
-관심 있는 표현형을 가진 유전자 쌍만 추출하거나, 해당 표현형을 측정했지만 유의한 이상이 없었던 유전자 쌍을 추출합니다.
-
-- `--pairwise`(기본값): 유전자 쌍 단위 출력. `--in pairwise_similarity_annotations.jsonl(.gz)` 사용.
-- `--genewise`: 유전자 단위 출력. `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` 사용(`--exclude` 필수, `--include` 권장).
+관심 있는 phenotype를 포함하는 유전자 쌍(또는 유전자)을 추출하거나, 측정되었지만 유의한 이상이 없던 쌍을 추출합니다.
 
 ```bash
-# MP:0001146(abnormal testis morphology)와 그 하위 표현형(MP:0004849 (abnormal testis size) 등)을 포함하는 유전자 쌍만 추출
-tsumugi mp --include MP:0001146 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_filtered.jsonl
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+                  [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
+```
 
-# MP:0001146(abnormal testis morphology)와 그 하위 표현형(MP:0004849 (abnormal testis size) 등)을 측정했지만 유의한 이상이 없었던 유전자 쌍을 추출
-tsumugi mp --exclude MP:0001146 \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_filtered.jsonl
+#### `-i MP_ID`, `--include MP_ID`
+지정한 MP 용어(하위 용어 포함)를 가진 유전자/유전자 쌍을 포함합니다.
 
-# MP:0001146(하위 포함)을 갖는 유의한 유전자 단위 주석 추출
-tsumugi mp --include MP:0001146 \
-  --genewise \
-  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
-  > genewise_filtered.jsonl
+#### `-e MP_ID`, `--exclude MP_ID`
+지정한 MP 용어(하위 용어 포함)를 측정했지만 유의한 phenotype가 없었던 유전자/유전자 쌍을 반환합니다. `-a/--genewise_annotations`가 필요합니다.
 
-# MP:0001146(하위 포함)을 측정했으나 유의하지 않았던 유전자 추출
-tsumugi mp --exclude MP:0001146 \
-  --genewise \
-  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
-  > genewise_no_phenotype.jsonl
+#### `-g`, `--genewise`
+유전자 단위로 필터합니다. `genewise_phenotype_annotations.jsonl(.gz)`를 읽으며, `--genewise` 사용 시 `-a/--genewise_annotations`를 지정합니다.
+
+#### `-p`, `--pairwise`
+유전자 쌍 단위로 필터합니다. `pairwise_similarity_annotations.jsonl(.gz)`를 대상으로 하며, `--in`을 생략하면 STDIN에서 읽습니다.
+
+#### `-m PATH_MP_OBO`, `--mp_obo PATH_MP_OBO`
+Mammalian Phenotype ontology(mp.obo) 경로. 생략 시 `data/mp.obo`를 사용합니다.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+genewise 주석 파일(JSONL/.gz) 경로. `--exclude`에서 필수이며, `--genewise`에서도 지정해야 합니다.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
+#### `--life_stage LIFE_STAGE`
+생애 단계 추가 필터. 가능한 값: `Embryo`, `Early`, `Interval`, `Late`.
+
+#### `--sex SEX`
+성별 추가 필터. 주석에 있는 값(예: `Male`, `Female`, `None`)을 사용하세요.
+
+#### `--zygosity ZYGOSITY`
+접합형 추가 필터. 가능한 값: `Homo`, `Hetero`, `Hemi`.
+
+```bash
+# MP:0001146(abnormal testis morphology) 또는 하위 용어(예: MP:0004849 abnormal testis size)를 포함하는 유전자 쌍만 추출
+tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+
+# MP:0001146 및 하위 용어가 측정되었지만 유의한 이상이 없던 유전자 쌍을 추출
+tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+
+# 유전자 단위로 MP:0001146을 포함하는 유의한 phenotype만 추출
+tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
+
+# 유전자 단위로 MP:0001146을 측정했지만 유의하지 않았던 유전자 추출
+tsumugi mp --exclude MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
-> **지정한 MP 용어의 하위 용어도 함께 처리됩니다.**  
-> 예를 들어 `MP:0001146 (abnormal testis morphology)`를 지정하면 `MP:0004849 (abnormal testis size)` 같은 하위 용어도 고려됩니다.
+> **지정한 MP ID의 하위 용어도 포함됩니다.**  
+> 예: `MP:0001146 (abnormal testis morphology)`를 지정하면 `MP:0004849 (abnormal testis size)` 같은 하위 용어도 포함됩니다.
 
-### 표현형 개수로 필터(`tsumugi count`)
-At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
-- 유전자 쌍의 공유 표현형 수:
+### phenotype 수로 필터(`tsumugi count`)
 ```bash
-tsumugi count --pairwise --min 3 --max 20 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_min3_max20.jsonl
-```
-- 유전자별 표현형 수(genewise 필요):
-```bash
-tsumugi count --genewise --min 5 --max 50 \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > genewise_min5_max50.jsonl
-```
-`--min` 또는 `--max` 단독 지정도 가능합니다.
-
-
-### 유사도 점수로 필터 (`tsumugi score`)
-```txt
-tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+tsumugi count [-h] (-g | -p) [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS] [-a PATH_GENEWISE_ANNOTATIONS]
 ```
 
-`phenotype_similarity_score`(0–100) 기준으로 유전자 쌍을 필터합니다. `--min`이나 `--max` 중 하나 이상이 필요합니다.
+유전자 또는 유전자 쌍을 phenotype 수로 필터합니다. `--min` 또는 `--max` 중 하나는 필수입니다.
+
+#### `-g`, `--genewise`
+유전자별 유의한 phenotype 수로 필터합니다. `genewise_phenotype_annotations.jsonl(.gz)`를 위한 `-a/--genewise_annotations`가 필요합니다.
+
+#### `-p`, `--pairwise`
+유전자 쌍의 공유 phenotype 수로 필터합니다. `--in`을 생략하면 STDIN에서 `pairwise_similarity_annotations.jsonl(.gz)`를 읽습니다.
 
 #### `--min MIN`, `--max MAX`
-유사도 점수의 하한/상한을 지정합니다. 한쪽만 지정해도 됩니다.
+phenotype 수의 하한/상한. 한쪽만 지정해도 됩니다.
 
-#### `--in IN`
-페어와이즈 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
 
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+genewise 주석 파일(JSONL/.gz) 경로. `--genewise`에서 필수입니다.
+
+- 유전자 쌍의 공유 phenotype 수:
 ```bash
-tsumugi score --min 50 --max 80 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_score50_80.jsonl
+tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_min3_max20.jsonl
 ```
 
-`--min` 또는 `--max` 하나만 지정해도 됩니다.
-
-### 유전자 리스트로 필터(`tsumugi genes --keep/--drop`)
+- 유전자별 phenotype 수(genewise 필요):
 ```bash
-tsumugi genes --keep genes.txt \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_keep_genes.jsonl
-
-tsumugi genes --drop geneA,geneB \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_drop_genes.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
 ```
 
-### 라이프 스테이지로 필터(`tsumugi life-stage --keep/--drop`)
+`--min` 또는 `--max` 중 하나만 사용해도 됩니다.
+
+### 유사도 점수로 필터(`tsumugi score`)
 ```bash
-tsumugi life-stage --keep Early \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_lifestage_early.jsonl
+tsumugi score [-h] [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+`phenotype_similarity_score`(0–100)로 유전자 쌍을 필터합니다. `--min` 또는 `--max` 중 하나는 필수입니다.
+
+#### `--min MIN`, `--max MAX`
+점수 하한/상한. 한쪽만 지정해도 됩니다.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
+```bash
+tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_score50_80.jsonl
+```
+
+`--min` 또는 `--max` 중 하나만 사용해도 됩니다.
+
+### 유전자 목록으로 필터(`tsumugi genes --keep/--drop`)
+```bash
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
+텍스트 파일로 지정한 유전자를 포함하는 쌍만 유지합니다.
+
+#### `-d GENE_SYMBOL`, `--drop GENE_SYMBOL`
+텍스트 파일로 지정한 유전자를 포함하는 쌍을 제거합니다.
+
+#### `-g`, `--genewise`
+사용자 지정 유전자 심볼로 필터합니다.
+
+#### `-p`, `--pairwise`
+사용자 지정 유전자 쌍으로 필터합니다.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
+```bash
+cat << EOF > genes.txt
+Maf
+Aamp
+Cacna1c
+EOF
+
+tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+
+cat << EOF > gene_pairs.csv
+Maf,Aamp
+Maf,Cacna1c
+EOF
+
+tsumugi genes --pairwise --drop gene_pairs.csv   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_drop_genes.jsonl
+
+```
+
+### 생애 단계로 필터(`tsumugi life-stage --keep/--drop`)
+```bash
+tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k LIFE_STAGE`, `--keep LIFE_STAGE`
+지정한 생애 단계(`Embryo`, `Early`, `Interval`, `Late`)만 유지합니다.
+
+#### `-d LIFE_STAGE`, `--drop LIFE_STAGE`
+지정한 생애 단계를 제거합니다.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
+```bash
+tsumugi life-stage --keep Early   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_lifestage_early.jsonl
 ```
 
 ### 성별로 필터(`tsumugi sex --keep/--drop`)
 ```bash
-tsumugi sex --drop Male \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_no_male.jsonl
+tsumugi sex [-h] (-k SEX | -d SEX) [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k SEX`, `--keep SEX`
+지정한 성별(`Male`, `Female`, `None`)만 유지합니다.
+
+#### `-d SEX`, `--drop SEX`
+지정한 성별을 제거합니다.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
+```bash
+tsumugi sex --drop Male   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_no_male.jsonl
 ```
 
 ### 접합형으로 필터(`tsumugi zygosity --keep/--drop`)
 ```bash
-tsumugi zygosity --keep Homo \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_homo.jsonl
+tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
-### GraphML / 웹앱을 생성
+#### `-k ZYGOSITY`, `--keep ZYGOSITY`
+지정한 접합형(`Homo`, `Hetero`, `Hemi`)만 유지합니다.
+
+#### `-d ZYGOSITY`, `--drop ZYGOSITY`
+지정한 접합형을 제거합니다.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
 ```bash
-tsumugi build-graphml \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  > network.graphml
-
-tsumugi build-webapp \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
+tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
-CLI는 표준입력/출력을 지원하므로, `zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`처럼 파이프 연결도 가능합니다.
+### GraphML / webapp 내보내기
+```bash
+tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS
+```
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+genewise 주석 파일(JSONL/.gz) 경로. 필수입니다.
+
+```bash
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+```
+
+```bash
+tsumugi build-webapp [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS -o OUT
+```
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+genewise 주석 파일(JSONL/.gz) 경로. 필수입니다.
+
+#### `-o OUT`, `--out OUT`
+웹앱 번들(HTML/CSS/JS + 네트워크 데이터) 출력 디렉터리. 확장자가 있는 파일명은 지정하지 마세요.
+
+```bash
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+```
+
+CLI는 STDIN/STDOUT을 지원하므로 파이프로 연결할 수 있습니다:  
+`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
 
 # 🔍 표현형 유사 유전자군 계산
 

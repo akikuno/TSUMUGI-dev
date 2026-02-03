@@ -193,249 +193,161 @@ GraphMLは、デスクトップ版Cytoscapeと互換性のある形式で、Cyto
 
 # 🛠 コマンドライン版
 
-TSUMUGIにはコマンドラインインターフェース（CLI）も付属しています。  
-以下のように、Web版より柔軟なデータ操作が可能です。  
+TSUMUGIのCLIでは、ローカルにダウンロードした最新のIMPCデータを使って再計算でき、Web版より細かなフィルターや出力が可能です。
 
-- 自前データで最新版を再計算: IMPC `statistical-results-ALL.csv.gz`（必要に応じて`mp.obo`と`impc_phenodigm.csv`も）を渡してネットワークを一括生成できます。
-- MP用語の有無でフィルター: `tsumugi mp --include MP:xxxx`で含める、`--exclude MP:xxxx`で除外するなど、Web版より細かい指定が可能です。
-- 遺伝子リストや生物学的アノテーションでの絞り込み・除外: 興味のある遺伝子リストやアノテーションに絞ってフィルターできます。
-- 出力の拡張: Web版に比べてより大規模なネットワークに対して、GraphMLを直接生成(`tsumugi build-graphml`)したり、TSUMUGI用Webアプリ一式をオフライン向けに出力(`tsumugi build-webapp`)できます。
+## 特徴
 
-## 利用可能なコマンド一覧
-- `tsumugi run`: IMPCデータからネットワークを再計算
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 指定MP用語を含む/示さない遺伝子ペアまたは遺伝子単位でフィルター
-- `tsumugi count --pairwise/--genewise (--min/--max)`: 表現型の数でフィルター（遺伝子ペア/遺伝子単位）
-- `tsumugi score (--min/--max)`: 表現型類似度スコアでフィルター（遺伝子ペア）
-- `tsumugi genes --keep/--drop`: 遺伝子リストで抽出または除外（カンマ区切りorテキストファイル）
-- `tsumugi life-stage --keep/--drop`: ライフステージでフィルター (Embryo/Early/Interval/Late)
-- `tsumugi sex --keep/--drop`: 性差でフィルター (Male/Female/None)
-- `tsumugi zygosity --keep/--drop`: 接合型でフィルター (Homo/Hetero/Hemi)
-- `tsumugi build-graphml`: GraphMLを生成（Cytoscape等で利用可能）
-- `tsumugi build-webapp`: TSUMUGIのWebアプリ素材一式を生成（ローカルで閲覧可能）
+- IMPCの`statistical-results-ALL.csv.gz`を用いて再計算（必要に応じて`mp.obo`、`impc_phenodigm.csv`）
+- MP用語の有無でフィルター
+- 遺伝子リストでフィルター（カンマ区切りまたはテキストファイル）
+- GraphML(`tsumugi build-graphml`)、オフラインWebアプリバンドル(`tsumugi build-webapp`)の出力
 
 ## インストール
 
 BioConda:
-
 ```bash
 conda install -c conda-forge -c bioconda tsumugi
 ```
 
 PyPI:
-
 ```bash
 pip install tsumugi
 ```
 
 `tsumugi --version`でバージョンが表示されれば利用可能です。
 
-## 代表的な使い方（コマンド別）
+## 利用可能なコマンド
 
-### IMPCの統計データからTSUMUGIのWebアプリを生成する (`tsumugi run`)
+- `tsumugi run`: IMPCデータからネットワークを再計算  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 指定MP用語を含む/示さない遺伝子ペアまたは遺伝子単位でフィルター  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: 表現型の数でフィルター（遺伝子ペア/遺伝子単位）  
+- `tsumugi score (--min/--max)`: 表現型類似度スコアでフィルター（遺伝子ペア）  
+- `tsumugi genes --keep/--drop`: 遺伝子リストで抽出/除外（カンマ区切りまたはテキストファイル）  
+- `tsumugi life-stage --keep/--drop`: ライフステージでフィルター (Embryo/Early/Interval/Late)  
+- `tsumugi sex --keep/--drop`: 性差でフィルター (Male/Female/None)  
+- `tsumugi zygosity --keep/--drop`: 接合型でフィルター (Homo/Hetero/Hemi)  
+- `tsumugi build-graphml`: GraphMLを生成（Cytoscape等で利用可能）  
+- `tsumugi build-webapp`: TSUMUGIのWebアプリ素材一式を生成（ローカルで閲覧可能なHTML/CSS/JS）
 
-```txt
-tsumugi run [-h] -o OUTPUT_DIR -s STATISTICAL_RESULTS [-m MP_OBO] [-i IMPC_PHENODIGM] [-t THREADS]
-```
+> [!NOTE]
+> すべてのフィルター系サブコマンドはJSONLをSTDOUTに出力します。  
+> ファイルに保存する場合は`>`でリダイレクトしてください。
 
-**出力ディレクトリの指定 (必須)**  
+> [!IMPORTANT]
+> `tsumugi run`以外のすべてのコマンドは`pairwise_similarity_annotation.jsonl.gz`または`genewise_phenotype_annotation.jsonl.gz`のいずれかが必要です。
+> どちらのファイルも[TSUMUGIトップページ](https://larc-tsukuba.github.io/tsumugi/)からダウンロードできます。
 
-TSUMUGIの解析結果を保存するディレクトリを指定します。  
-途中経過ファイルおよび最終的な出力結果がすべてこのディレクトリに格納されます。
 
-#### `-s STATISTICAL_RESULTS`, `--statistical_results STATISTICAL_RESULTS`
-**IMPC表現型統計結果ファイルの指定 (必須)**
+## 使い方
 
-IMPCの`statistical_results_ALL.csv`へのパスを指定します。  
-このファイルには、すべてのIMPC表現型実験における統計検定結果（効果量、p値など）が含まれています。
-
-**取得先:**
-
-```
-https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/TSUMUGI-results/
-```
-
-#### `-m MP_OBO`, `--mp_obo MP_OBO`
-**哺乳類表現型オントロジーファイル(mp.obo)の指定（オプション）**
-
-MP(Ontology)ファイルへのパスを指定します。  
-TSUMUGIはこのファイルを用いて表現型用語間の階層関係を推論します。
-
-`--mp_obo`を指定しない場合、TSUMUGIは同梱の`data-version: releases/2025-08-27/mp.obo`を利用します。  
-
-**取得先:**
-```
-https://obofoundry.org/ontology/mp.html
-```
-
-#### `-i IMPC_PHENODIGM`, `--impc_phenodigm IMPC_PHENODIGM`
-**Phenodigmアノテーションファイルの指定（オプション）**
-
-IMPCの`impc_phenodigm.csv`へのパスを指定します。  
-このファイルには、マウス表現型とヒト疾患をPhenodigm類似度に基づいて関連付けた情報が含まれています。
-
-`--impc_phenodigm`を指定しない場合、2025-10-01に[IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)から取得したファイルを利用します。
-
-**取得先:**
-```
-https://diseasemodels.research.its.qmul.ac.uk/
-```
-
-#### `-t THREADS`, `--threads THREADS`
-**並列処理スレッド数の指定（オプション）**
-
-TSUMUGIパイプラインで使用するスレッド数を指定します。  
-指定しない場合、デフォルトは`1`です。
-
-#### 実行例
-
+### IMPCデータから再計算する(`tsumugi run`)
+`--mp_obo`を省略すると、同梱の`data-version: releases/2025-08-27/mp.obo`を使います。  
+`--impc_phenodigm`を省略すると、2025-10-01に[IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)から取得したファイルを使います。
 ```bash
-tsumugi run \
-  --statistical_results ./statistical-results-ALL.csv.gz \
-  --threads 8
+tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
+出力: `./tsumugi-output`にgenewise注釈（genewise_phenotype_annotations.jsonl.gz）、ペアの類似度データ（pairwise_similarity_annotations.jsonl.gz）、可視化用素材（`TSUMUGI-webapp`）が生成されます。
 
-上記の例では`./tsumugi-output`に遺伝子ごとの注釈（genewise_phenotype_annotations.jsonl.gz）、遺伝子ペアの類似度データ(pairwise_similarity_annotations.jsonl.gz)、可視化用素材(TSUMUGI-webapp)が生成されます。
-
->[!IMPORTANT]
-> TSUMUGI-webappディレクトリにはOSごとの起動スクリプトが含まれています。  
-> お使いのOSに合わせてダブルクリックするとローカルでTSUMUGIのWebアプリケーションを開けます。  
-> - Windows: `open_webapp_windows.bat`
-> - macOS: `open_webapp_mac.command`
+> [!IMPORTANT]  
+> `TSUMUGI-webapp`ディレクトリにはOS別の起動スクリプトが含まれています。ダブルクリックでローカルWebアプリを開けます:  
+> - Windows: `open_webapp_windows.bat`  
+> - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
+### MP用語でフィルターする(`tsumugi mp --include/--exclude`)
 
-### 表現型（MP term）でフィルター (`tsumugi mp --include/--exclude`)
+興味のある表現型を含む遺伝子ペア（または遺伝子）を抽出し、該当表現型を測定済みだが有意な異常を示さなかったペアも抽出できます。
 
-興味のある表現型を持つ遺伝子ペアのみ抽出、または該当表現型を測定済みだが有意な異常を示さなかった遺伝子ペアを抽出できます。
-
-```txt
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m MP_OBO] [-a GENEWISE_ANNOTATIONS] [--in IN]  [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
+```bash
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+                  [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
 #### `-i MP_ID`, `--include MP_ID`
-**指定したMP表現型（下位語含む）を持つ遺伝子/遺伝子ペアを抽出（必須オプションの一つ）**  
+指定したMP用語（下位語含む）を持つ遺伝子/遺伝子ペアを含めます。
 
 #### `-e MP_ID`, `--exclude MP_ID`
-**指定したMP表現型（下位語含む）を測定済みで「表現型が出なかった」遺伝子/遺伝子ペアを抽出（必須オプションの一つ）**  
-`--exclude`を使う場合は`-a/--genewise_annotations`を指定してください。
+指定したMP用語（下位語含む）を測定済みで、有意な表現型が出なかった遺伝子/遺伝子ペアを返します。`-a/--genewise_annotations`が必須です。
 
 #### `-g`, `--genewise`
-**遺伝子単位でフィルター**  
-`genewise_phenotype_annotations.jsonl(.gz)`を読み込み、有意な表現型の有無で抽出します。  
-`--genewise`を使う場合は`-a/--genewise_annotations`を指定してください。
+遺伝子単位でフィルターします。`genewise_phenotype_annotations.jsonl(.gz)`を読み込み、`--genewise`使用時は`-a/--genewise_annotations`を指定します。
 
 #### `-p`, `--pairwise`
+遺伝子ペア単位でフィルターします。`pairwise_similarity_annotations.jsonl(.gz)`を対象にし、`--in`未指定時はSTDINを読み込みます。
 
-**遺伝子ペア単位でフィルター (デフォルト)**  
-`pairwise_similarity_annotations.jsonl(.gz)`を対象にします。`--in`未指定なら標準入力を読み込みます。
+#### `-m PATH_MP_OBO`, `--mp_obo PATH_MP_OBO`
+哺乳類表現型オントロジー(mp.obo)のパス。省略時は同梱の`data/mp.obo`を使います。
 
-#### `-m MP_OBO`, `--mp_obo MP_OBO`
-**哺乳類表現型オントロジーファイル(mp.obo)のパス（オプション）**  
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+遺伝子注釈ファイル（JSONL/.gz）のパス。`--exclude`では必須で、`--genewise`使用時にも指定してください。
 
-`--mp_obo`を指定しない場合、TSUMUGIは同梱の`data-version: releases/2025-08-27/mp.obo`を利用します。  
-
-#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
-
-**遺伝子注釈ファイルのパス（JSONL/.gz）**  
-`--exclude`では必須です。`--genewise`での抽出時にも指定してください。
-
-#### `--in IN`
-**pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます。
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
 
 #### `--life_stage LIFE_STAGE`
-**ライフステージで追加フィルター（オプション）**  
-`Embryo`, `Early`, `Interval`, `Late`を指定可能。
+ライフステージで追加フィルターします。指定可能: `Embryo`, `Early`, `Interval`, `Late`。
 
 #### `--sex SEX`
-**性差で追加フィルター（オプション）**  
-`Male`, `Female`, `None`など、注釈に記載された値を指定します。
+性差で追加フィルターします。注釈にある値（例: `Male`, `Female`, `None`）を指定します。
 
 #### `--zygosity ZYGOSITY`
-**接合型で追加フィルター（オプション）**  
-`Homo`, `Hetero`, `Hemi`を指定可能。
-
-#### 実行例
+接合型で追加フィルターします。指定可能: `Homo`, `Hetero`, `Hemi`。
 
 ```bash
-# MP:0001146(abnormal testis morphology)とその下層の表現型（MP:0004849 (abnormal testis size)など）を含む遺伝子ペアだけを抽出
-tsumugi mp --include MP:0001146 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_filtered.jsonl
+# MP:0001146(abnormal testis morphology)を含む遺伝子ペアのみ抽出（下位語も対象）
+tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
-# MP:0001146(abnormal testis morphology)とその下層の表現型（MP:0004849 (abnormal testis size)など）を
-# 測定しており、かつ有意な示さなかった遺伝子ペアを抽出
-tsumugi mp --exclude MP:0001146 \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_filtered.jsonl
+# MP:0001146を測定済みだが有意な異常を示さなかった遺伝子ペアを抽出
+tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # 遺伝子単位でMP:0001146を含む有意な表現型のみを抽出
-tsumugi mp --include MP:0001146 \
-  --genewise \
-  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
-  > genewise_filtered.jsonl
+tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
 
 # 遺伝子単位でMP:0001146を測定済みかつ有意ではなかった遺伝子を抽出
-tsumugi mp --exclude MP:0001146 \
-  --genewise \
-  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
-  > genewise_no_phenotype.jsonl
+tsumugi mp --exclude MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
-> **指定されたMP用語の下層にある用語も対処されます。**
-> 例えば`MP:0001146 (abnormal testis morphology)`を指定した場合、`MP:0004849 (abnormal testis size)`などの下層用語も考慮されます。
+> **指定したMP IDの下位語も対象です。**  
+> 例: `MP:0001146 (abnormal testis morphology)`を指定すると、`MP:0004849 (abnormal testis size)`などの下位語も含まれます。
 
 ### 表現型数でフィルターする(`tsumugi count`)
-At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
-
-```txt
-tsumugi count [-h] (-g | -p) [--min MIN] [--max MAX] [--in IN]  [-a GENEWISE_ANNOTATIONS]
+```bash
+tsumugi count [-h] (-g | -p) [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS] [-a PATH_GENEWISE_ANNOTATIONS]
 ```
+
+遺伝子または遺伝子ペアを表現型数でフィルターします。`--min`または`--max`の少なくとも一方が必須です。
 
 #### `-g`, `--genewise`
-**遺伝子ごとの有意表現型数でフィルター**  
-`-a/--genewise_annotations`で`genewise_phenotype_annotations.jsonl(.gz)`が必要です。
+遺伝子ごとの有意表現型数でフィルターします。`-a/--genewise_annotations`で`genewise_phenotype_annotations.jsonl(.gz)`が必要です。
 
 #### `-p`, `--pairwise`
-**遺伝子ペアで共有する表現型数でフィルター**  
-`--in`未指定なら標準入力から`pairwise_similarity_annotations.jsonl(.gz)`を読み込みます。
+遺伝子ペアで共有する表現型数でフィルターします。`--in`未指定ならSTDINから`pairwise_similarity_annotations.jsonl(.gz)`を読み込みます。
 
 #### `--min MIN`, `--max MAX`
-**最小/最大の閾値指定（少なくともどちらか一方が必須）**  
-片方のみ指定して下限または上限フィルターとして利用できます。
+表現型数の下限/上限を指定します。片方のみ指定して片側フィルターとして使えます。
 
-#### `--in IN`
-**pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます。
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
 
-#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
-**遺伝子注釈ファイルのパス（JSONL/.gz）**  
-`--genewise`指定時は必須。
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+遺伝子注釈ファイル（JSONL/.gz）のパス。`--genewise`指定時は必須です。
 
-#### 実行例
-
-
-- 遺伝子ペア内で共有する表現型の数でフィルター:  
+- 遺伝子ペア内で共有する表現型の数でフィルター:
 ```bash
-tsumugi count --pairwise --min 3 --max 20 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_min3_max20.jsonl
+tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_min3_max20.jsonl
 ```
-- 遺伝子ごとの表現型数でフィルター（genewiseが必要）:  
+
+- 遺伝子ごとの表現型数でフィルター（genewiseが必要）:
 ```bash
-tsumugi count --genewise --min 5 --max 50 \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
 ```
-`--min`または`--max`を単独で指定しても使えます。
 
+`--min`または`--max`の片方だけでも利用できます。
 
-### 類似度スコアでフィルター (`tsumugi score`)
-```txt
-tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+### 類似度スコアでフィルターする(`tsumugi score`)
+```bash
+tsumugi score [-h] [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 表現型類似度スコア（0–100）で遺伝子ペアをフィルターします。`--min`または`--max`の少なくとも一方が必須です。
@@ -443,202 +355,141 @@ tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
 #### `--min MIN`, `--max MAX`
 `phenotype_similarity_score`の下限/上限を指定します。片方だけでも指定できます。
 
-#### `--in IN`
-pairwise注釈ファイル（JSONL/.gz）のパス。未指定時は標準入力を読み込みます。
-
-#### 実行例
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
 
 ```bash
-tsumugi score --min 50 --max 80 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_score50_80.jsonl
+tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_score50_80.jsonl
 ```
 
 `--min`または`--max`の片方だけでも利用できます。
 
-### 遺伝子リストで絞り込み・除外する(`tsumugi genes --keep/--drop`)
-
-```txt
-tsumugi genes [-h] [-p | -g] (-k GENE_SYMBOLS | -d GENE_SYMBOLS) [--in IN] 
+### 遺伝子リストでフィルターする(`tsumugi genes --keep/--drop`)
+```bash
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
-#### `-p`, `--pairwise`
-**遺伝子ペア単位でフィルター (デフォルト)**  
-`pairwise_similarity_annotations.jsonl(.gz)`を対象にします。`-p/--pairwise`を指定しない場合もこのモードになります。  
-`-k/-d` に渡すのは遺伝子ペアを1行1レコードで書いたテキストファイル（CSV/TSV）です。
-```text
-Gene1,Gene2
-Gene2,Gene3
-```
+#### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
+指定した遺伝子を含むペアのみ残します（テキストファイルで指定）。
+
+#### `-d GENE_SYMBOL`, `--drop GENE_SYMBOL`
+指定した遺伝子を含むペアを除外します（テキストファイルで指定）。
 
 #### `-g`, `--genewise`
-**遺伝子単位でフィルター**  
-`pairwise_similarity_annotations.jsonl(.gz)`を読み込み、指定した遺伝子リストを含む/含まないペアだけを残します。  
-`-k/-d` はカンマ区切り（`GeneA,GeneB`）または1行1遺伝子のテキストファイルを指定できます。
+ユーザー指定の遺伝子シンボルでフィルターします。
 
+#### `-p`, `--pairwise`
+ユーザー指定の遺伝子ペアでフィルターします。
 
-#### `-k GENE_SYMBOLS`, `--keep GENE_SYMBOLS`
-**指定条件に一致するものだけ残す（必須オプションの一つ）**  
-pairwiseモードでは遺伝子ペアを並べたテキストファイルを指定します。  
-genewiseモードではカンマ区切りまたは1行1遺伝子のテキストファイルを指定します。
-
-
-#### `-d GENE_SYMBOLS`, `--drop GENE_SYMBOLS`
-**指定条件に一致するものを除外（必須オプションの一つ）**  
-pairwiseモードでは遺伝子ペアを並べたテキストファイルを指定します。  
-genewiseモードではカンマ区切りまたは1行1遺伝子のテキストファイルを指定します。
-
-
-#### `--in IN`
-**pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます（genewiseモードでも入力はpairwise JSONLです）。
-
-
-#### 実行例
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
 
 ```bash
-# pairwiseモード: リストに含まれる遺伝子ペアのみ残す
-tsumugi genes --keep gene_pairs.txt \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_keep_gene_pairs.jsonl
+cat << EOF > genes.txt
+Maf
+Aamp
+Cacna1c
+EOF
 
-# genewiseモード: 指定遺伝子を含むペアを除外
-tsumugi genes --genewise --drop GeneA,GeneB \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_drop_genes.jsonl
+tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+
+cat << EOF > gene_pairs.csv
+Maf,Aamp
+Maf,Cacna1c
+EOF
+
+tsumugi genes --pairwise --drop gene_pairs.csv   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_drop_genes.jsonl
+
 ```
 
 ### ライフステージでフィルターする(`tsumugi life-stage --keep/--drop`)
-
-```txt
-tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in IN] 
+```bash
+tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k LIFE_STAGE`, `--keep LIFE_STAGE`
-**指定したライフステージのデータのみ残す（必須オプションの一つ）**  
-指定可能: `Embryo`, `Early`, `Interval`, `Late`
+指定したライフステージ（`Embryo`, `Early`, `Interval`, `Late`）のみ残します。
 
 #### `-d LIFE_STAGE`, `--drop LIFE_STAGE`
-**指定したライフステージのデータを除外（必須オプションの一つ）**
+指定したライフステージを除外します。
 
-#### `--in IN`
-**pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます。
-
-#### 実行例
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
 
 ```bash
-tsumugi life-stage --keep Early \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_lifestage_early.jsonl
+tsumugi life-stage --keep Early   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_lifestage_early.jsonl
 ```
 
 ### 性差でフィルターする(`tsumugi sex --keep/--drop`)
-
-```txt
-tsumugi sex [-h] (-k SEX | -d SEX) [--in IN] 
+```bash
+tsumugi sex [-h] (-k SEX | -d SEX) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k SEX`, `--keep SEX`
-**指定した性差のデータのみ残す（必須オプションの一つ）**  
-指定可能: `Male`, `Female`, `None`
+指定した性差（`Male`, `Female`, `None`）のみ残します。
 
 #### `-d SEX`, `--drop SEX`
-**指定した性差のデータを除外（必須オプションの一つ）**
+指定した性差を除外します。
 
-#### `--in IN`
-**pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます。
-
-#### 実行例
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
 
 ```bash
-tsumugi sex --drop Male \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_no_male.jsonl
+tsumugi sex --drop Male   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_no_male.jsonl
 ```
 
 ### 接合型でフィルターする(`tsumugi zygosity --keep/--drop`)
-
-```txt
-tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in IN] 
+```bash
+tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k ZYGOSITY`, `--keep ZYGOSITY`
-**指定した接合型のデータのみ残す（必須オプションの一つ）**  
-指定可能: `Homo`, `Hetero`, `Hemi`
+指定した接合型（`Homo`, `Hetero`, `Hemi`）のみ残します。
 
 #### `-d ZYGOSITY`, `--drop ZYGOSITY`
-**指定した接合型のデータを除外（必須オプションの一つ）**
+指定した接合型を除外します。
 
-#### `--in IN`
-**pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます。
-
-#### 実行例
-
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
 
 ```bash
-tsumugi zygosity --keep Homo \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_homo.jsonl
+tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
-### 出力をGraphML／Webアプリに変換する
-
-```txt
-tsumugi build-graphml [-h] [--in IN] -a GENEWISE_ANNOTATIONS
+### GraphML / Webアプリに出力する
+```bash
+tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS
 ```
 
-#### `--in IN`
-**pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます。
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
 
-#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
-**遺伝子注釈ファイルのパス（JSONL/.gz）**  
-必須です。
-
-#### 実行例
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+遺伝子注釈ファイル（JSONL/.gz）のパス。必須です。
 
 ```bash
-# GraphMLを生成（Cytoscape等で利用可能）
-tsumugi build-graphml \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
-
-```txt
-tsumugi build-webapp [-h] [--in IN] -a GENEWISE_ANNOTATIONS -o OUT
-```
-
-#### `--in IN`
-**pairwise注釈ファイルのパス（JSONL/.gz）**  
-未指定時は標準入力を読み込みます。
-
-#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
-**遺伝子注釈ファイルのパス（JSONL/.gz）**  
-必須です。
-
-**出力ディレクトリの指定（必須）**  
-指定先にWebアプリ用のHTML/CSS/JSとネットワークデータを生成します。
-
-#### 実行例
 
 ```bash
-# TSUMUGIのWebアプリ素材を生成（ローカルで開けるHTML/CSS/JS一式）
-tsumugi build-webapp \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
+tsumugi build-webapp [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS -o OUT
 ```
 
-CLIは標準入力・標準出力をサポートしているため、パイプでつなげて柔軟に処理できます。
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+pairwise注釈ファイル（JSONL/.gz）のパス。未指定時はSTDINを読み込みます。
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+遺伝子注釈ファイル（JSONL/.gz）のパス。必須です。
+
+#### `-o OUT`, `--out OUT`
+Webアプリバンドル（HTML/CSS/JS +ネットワークデータ）の出力先ディレクトリ。拡張子付きのファイル名は指定しないでください。
 
 ```bash
-zcat pairwise_similarity_annotations.jsonl.gz |
-  tsumugi mp ... |
-  tsumugi genes ... > out.jsonl
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
 ```
+
+CLIはSTDIN/STDOUTをサポートしているため、パイプでつなげて柔軟に処理できます:  
+`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
 
 # 🔍 表現型類似遺伝子群の算出方法
 
