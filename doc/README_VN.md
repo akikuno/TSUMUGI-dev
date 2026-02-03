@@ -56,7 +56,7 @@ TSUMUGI cung cấp file JSONL nén gzip.
 
 Ví dụ:
 ```
-{"life_stage": "Early", "marker_symbol": "1110059G10Rik", "marker_accession_id": "MGI:1913452", "effect_size": 0.0, "mp_term_name": "fused joints", "disease_annotation": [], "significant": false, "zygosity": "Homo", "sexual_dimorphism": "", "mp_term_id": "MP:0000137"}
+{"significant": true, "sexual_dimorphism": "Female", "effect_size": 0.0119677350763567, "marker_symbol": "4930447C04Rik", "zygosity": "Homo", "marker_accession_id": "MGI:1923051", "mp_term_id": "MP:0000063", "disease_annotation": ["Male Infertility With Azoospermia Or Oligozoospermia Due To Single Gene Mutation", "Premature Ovarian Failure 18", "Spermatogenic Failure 52"], "life_stage": "Early", "mp_term_name": "decreased bone mineral density"}
 ```
 
 #### `pairwise_similarity_annotations.jsonl.gz`
@@ -66,7 +66,7 @@ Ví dụ:
 
 Ví dụ:
 ```
-{"gene1_symbol": "1110059G10Rik", "gene2_symbol": "Cog6", "phenotype_shared_annotations": {"vertebral transformation": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"}}, "phenotype_similarity_score": 42}
+{"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
 # 🌐 Mạng
@@ -120,188 +120,354 @@ Tìm tên gen trong mạng.
 #### Export
 Xuất PNG/CSV/GraphML. CSV có ID mô-đun và danh sách kiểu hình; GraphML tương thích Cytoscape.
 
-# 🛠 Phiên bản dòng lệnh
+# 🛠 Giao diện dòng lệnh
 
-Phát hành này thêm CLI: tự tải dữ liệu IMPC mới, chạy lại TSUMUGI, lọc linh hoạt, xuất GraphML hoặc webapp offline.
+CLI của TSUMUGI cho phép dùng dữ liệu IMPC mới nhất tải về cục bộ, với bộ lọc và đầu ra chi tiết hơn so với bản web.
 
-- Tính lại với IMPC `statistical-results-ALL.csv.gz` (tùy chọn `mp.obo`, `impc_phenodigm.csv`)  
-- Lọc theo có/không có thuật ngữ MP  
-- Lọc theo danh sách gen (CSV hoặc tệp văn bản)  
-- Đầu ra: GraphML (`tsumugi build-graphml`), gói webapp offline (`tsumugi build-webapp`)
+## Tính năng
 
-## Lệnh khả dụng
-- `tsumugi run`: tính lại mạng từ dữ liệu IMPC  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: lọc cặp gen hoặc từng gen theo thuật ngữ MP  
-- `tsumugi count --pairwise/--genewise (--min/--max)`: lọc theo số kiểu hình (cặp/gen)  
-- `tsumugi score (--min/--max)`: lọc theo điểm tương đồng kiểu hình (cặp gen)
-- `tsumugi genes --keep/--drop`: giữ/bỏ theo danh sách gen  
-- `tsumugi life-stage --keep/--drop`: lọc theo giai đoạn sống  
-- `tsumugi sex --keep/--drop`: lọc theo giới tính  
-- `tsumugi zygosity --keep/--drop`: lọc theo zygosity  
-- `tsumugi build-graphml`: tạo GraphML  
-- `tsumugi build-webapp`: tạo asset webapp TSUMUGI
+- Tính lại bằng `statistical-results-ALL.csv.gz` của IMPC (tùy chọn `mp.obo`, `impc_phenodigm.csv`).  
+- Lọc theo có/không có thuật ngữ MP.  
+- Lọc theo danh sách gene (ngăn cách bằng dấu phẩy hoặc file text).  
+- Đầu ra: GraphML (`tsumugi build-graphml`), gói webapp offline (`tsumugi build-webapp`).
 
 ## Cài đặt
+
 BioConda:
 ```bash
 conda install -c conda-forge -c bioconda tsumugi
 ```
+
 PyPI:
 ```bash
 pip install tsumugi
 ```
+
 Sẵn sàng khi `tsumugi --version` hiển thị phiên bản.
 
-## Ví dụ thường dùng
+## Lệnh có sẵn
+
+- `tsumugi run`: tính lại mạng từ dữ liệu IMPC  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: lọc cặp gene hoặc gene có/không có thuật ngữ MP  
+- `tsumugi count --pairwise/--genewise (--min/--max)`: lọc theo số lượng phenotype (pairwise/genewise)  
+- `tsumugi score (--min/--max)`: lọc theo điểm tương đồng (pairwise)  
+- `tsumugi genes --keep/--drop`: giữ/bỏ theo danh sách gene (dấu phẩy hoặc file text)  
+- `tsumugi life-stage --keep/--drop`: lọc theo giai đoạn sống (Embryo/Early/Interval/Late)  
+- `tsumugi sex --keep/--drop`: lọc theo giới tính (Male/Female/None)  
+- `tsumugi zygosity --keep/--drop`: lọc theo kiểu hợp tử (Homo/Hetero/Hemi)  
+- `tsumugi build-graphml`: tạo GraphML (Cytoscape, v.v.)  
+- `tsumugi build-webapp`: tạo tài nguyên web TSUMUGI (HTML/CSS/JS cục bộ)
+
+> [!NOTE]
+> Tất cả các subcommand lọc đều xuất JSONL ra STDOUT.  
+> Dùng `>` để ghi ra file.
+
+> [!IMPORTANT]
+> Tất cả lệnh, trừ `tsumugi run`, yêu cầu `pairwise_similarity_annotation.jsonl.gz` hoặc `genewise_phenotype_annotation.jsonl.gz`.
+> Cả hai file đều có thể tải từ [trang chủ TSUMUGI](https://larc-tsukuba.github.io/tsumugi/).
+
+## Cách dùng
 
 ### Tính lại từ dữ liệu IMPC (`tsumugi run`)
-Nếu bỏ `--mp_obo`, dùng `data-version: releases/2025-08-27/mp.obo` kèm theo.  
-Nếu bỏ `--impc_phenodigm`, dùng file lấy ngày 01/10/2025 từ [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
+Nếu bỏ `--mp_obo`, TSUMUGI dùng `data-version: releases/2025-08-27/mp.obo` đi kèm.  
+Nếu bỏ `--impc_phenodigm`, TSUMUGI dùng file lấy ngày 2025-10-01 từ [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
 ```bash
-tsumugi run \
-  --statistical_results ./statistical-results-ALL.csv.gz \
-  --threads 8
+tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-Đầu ra: `./tsumugi-output` chứa genewise_phenotype_annotations.jsonl.gz, pairwise_similarity_annotations.jsonl.gz và gói webapp (`TSUMUGI-webapp`).
+Đầu ra: `./tsumugi-output` chứa chú giải genewise (genewise_phenotype_annotations.jsonl.gz), dữ liệu tương đồng pairwise (pairwise_similarity_annotations.jsonl.gz) và tài nguyên trực quan (`TSUMUGI-webapp`).
 
 > [!IMPORTANT]  
-> `TSUMUGI-webapp` bao gồm script khởi động theo OS; nhấp đúp để mở webapp cục bộ:  
+> Thư mục `TSUMUGI-webapp` có script mở theo hệ điều hành; nhấp đúp để mở webapp cục bộ:  
 > - Windows: `open_webapp_windows.bat`  
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`
 
 ### Lọc theo thuật ngữ MP (`tsumugi mp --include/--exclude`)
-Chỉ trích xuất các cặp gen chứa kiểu hình quan tâm, hoặc các cặp đã đo các kiểu hình đó nhưng không có bất thường đáng kể.
-
-- `--pairwise` (mặc định nếu không đặt): xuất theo cặp gen. Dùng `--in pairwise_similarity_annotations.jsonl(.gz)`.
-- `--genewise`: xuất theo từng gen. Dùng `--genewise_annotations genewise_phenotype_annotations.jsonl(.gz)` (bắt buộc với `--exclude`, khuyến nghị với `--include`).
+Trích xuất các cặp gene (hoặc gene) có phenotype quan tâm, hoặc các cặp đã đo nhưng không có bất thường đáng kể.
 
 ```bash
-# Chỉ lấy các cặp bao gồm MP:0001146 (abnormal testis morphology) hoặc các thuật ngữ hậu duệ (ví dụ: MP:0004849 abnormal testis size)
-tsumugi mp --include MP:0001146 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_filtered.jsonl
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+                  [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
+```
 
-# Lấy các cặp đã đo MP:0001146 và các thuật ngữ hậu duệ nhưng không ghi nhận bất thường đáng kể
-tsumugi mp --exclude MP:0001146 \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_filtered.jsonl
+#### `-i MP_ID`, `--include MP_ID`
+Bao gồm gene/cặp gene có thuật ngữ MP chỉ định (tính cả hậu duệ).
 
-# Lấy các chú giải có ý nghĩa ở mức gen chứa MP:0001146 (bao gồm thuật ngữ hậu duệ)
-tsumugi mp --include MP:0001146 \
-  --genewise \
-  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
-  > genewise_filtered.jsonl
+#### `-e MP_ID`, `--exclude MP_ID`
+Trả về gene/cặp gene đã đo cho thuật ngữ MP (tính cả hậu duệ) nhưng không có phenotype đáng kể. Yêu cầu `-a/--genewise_annotations`.
 
-# Lấy các gen đã đo MP:0001146 (bao gồm thuật ngữ hậu duệ) nhưng không ghi nhận bất thường đáng kể
-tsumugi mp --exclude MP:0001146 \
-  --genewise \
-  --genewise_annotations genewise_phenotype_annotations.jsonl.gz \
-  > genewise_no_phenotype.jsonl
+#### `-g`, `--genewise`
+Lọc ở mức gene. Đọc `genewise_phenotype_annotations.jsonl(.gz)`. Khi dùng `--genewise`, hãy chỉ định `-a/--genewise_annotations`.
+
+#### `-p`, `--pairwise`
+Lọc ở mức cặp gene. Dùng `pairwise_similarity_annotations.jsonl(.gz)`. Nếu bỏ `--in`, đọc từ STDIN.
+
+#### `-m PATH_MP_OBO`, `--mp_obo PATH_MP_OBO`
+Đường dẫn tới ontology Mammalian Phenotype (mp.obo). Nếu bỏ, dùng `data/mp.obo` đi kèm.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+Đường dẫn tới file genewise (JSONL/.gz). Bắt buộc với `--exclude`; cũng dùng với `--genewise`.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
+
+#### `--life_stage LIFE_STAGE`
+Bộ lọc thêm theo giai đoạn sống. Giá trị: `Embryo`, `Early`, `Interval`, `Late`.
+
+#### `--sex SEX`
+Bộ lọc thêm theo dimorphism giới tính. Dùng giá trị trong annotation (ví dụ: `Male`, `Female`, `None`).
+
+#### `--zygosity ZYGOSITY`
+Bộ lọc thêm theo zygosity. Giá trị: `Homo`, `Hetero`, `Hemi`.
+
+```bash
+# Chỉ trích xuất các cặp gene có MP:0001146 (abnormal testis morphology) hoặc hậu duệ (ví dụ: MP:0004849 abnormal testis size)
+tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+
+# Trích xuất các cặp mà MP:0001146 và hậu duệ được đo nhưng không có bất thường đáng kể
+tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+
+# Trích xuất annotation có ý nghĩa ở mức gene chứa MP:0001146 (tính cả hậu duệ)
+tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
+
+# Trích xuất gene đã đo cho MP:0001146 (tính cả hậu duệ) nhưng không có bất thường đáng kể
+tsumugi mp --exclude MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_no_phenotype.jsonl
 ```
 
 > [!IMPORTANT]
-> **Các thuật ngữ MP hậu duệ của ID được chỉ định cũng được xử lý.**  
-> Ví dụ, khi chỉ định `MP:0001146 (abnormal testis morphology)`, các thuật ngữ hậu duệ như `MP:0004849 (abnormal testis size)` cũng được tính đến.
+> **Các thuật ngữ MP hậu duệ của ID chỉ định cũng được tính.**  
+> Ví dụ, nếu chỉ định `MP:0001146 (abnormal testis morphology)`, các thuật ngữ hậu duệ như `MP:0004849 (abnormal testis size)` cũng được tính.
 
-### Lọc theo số kiểu hình (`tsumugi count`)
-At least one of `--min` or `--max` is required. Use either alone for one-sided filtering.
-- Kiểu hình chung mỗi cặp:
+### Lọc theo số lượng phenotype (`tsumugi count`)
 ```bash
-tsumugi count --pairwise --min 3 --max 20 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_min3_max20.jsonl
-```
-- Kiểu hình mỗi gen (cần genewise):
-```bash
-tsumugi count --genewise --min 5 --max 50 \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > genewise_min5_max50.jsonl
-```
-`--min` hoặc `--max` có thể dùng riêng.
-
-
-### Lọc theo điểm tương đồng (`tsumugi score`)
-```txt
-tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+tsumugi count [-h] (-g | -p) [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS] [-a PATH_GENEWISE_ANNOTATIONS]
 ```
 
-Lọc cặp gen theo `phenotype_similarity_score` (0–100). Cần ít nhất một trong `--min` hoặc `--max`.
+Lọc gene hoặc cặp gene theo số lượng phenotype. Cần ít nhất `--min` hoặc `--max`.
+
+#### `-g`, `--genewise`
+Lọc theo số phenotype có ý nghĩa trên mỗi gene. Cần `-a/--genewise_annotations` với `genewise_phenotype_annotations.jsonl(.gz)`.
+
+#### `-p`, `--pairwise`
+Lọc theo số phenotype chung trên mỗi cặp. Nếu bỏ `--in`, đọc từ STDIN.
 
 #### `--min MIN`, `--max MAX`
-Giới hạn dưới/trên của điểm. Có thể dùng một trong hai để lọc một phía.
+Ngưỡng dưới/trên cho số lượng phenotype. Chỉ một ngưỡng cũng đủ cho lọc một phía.
 
-#### `--in IN`
-Đường dẫn tới file anotations pairwise (JSONL/.gz); nếu bỏ qua sẽ đọc từ STDIN.
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
 
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+Đường dẫn tới file genewise (JSONL/.gz). Bắt buộc khi dùng `--genewise`.
+
+- Phenotype chung theo cặp:
 ```bash
-tsumugi score --min 50 --max 80 \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_score50_80.jsonl
+tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_min3_max20.jsonl
 ```
 
-`--min` hoặc `--max` dùng riêng cũng được.
-
-### Lọc theo danh sách gen (`tsumugi genes --keep/--drop`)
+- Phenotype theo gene (cần genewise):
 ```bash
-tsumugi genes --keep genes.txt \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_keep_genes.jsonl
-
-tsumugi genes --drop geneA,geneB \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  > pairwise_drop_genes.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
 ```
 
-### Giai đoạn sống / giới tính / zygosity
+Có thể chỉ dùng `--min` hoặc `--max`.
+
+### Lọc theo điểm tương đồng (`tsumugi score`)
 ```bash
-tsumugi life-stage --keep Early --in pairwise_similarity_annotations.jsonl.gz > pairwise_lifestage_early.jsonl
-tsumugi sex --drop Male --in pairwise_similarity_annotations.jsonl.gz > pairwise_no_male.jsonl
-tsumugi zygosity --keep Homo --in pairwise_similarity_annotations.jsonl.gz > pairwise_homo.jsonl
+tsumugi score [-h] [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+Lọc cặp gene theo `phenotype_similarity_score` (0–100). Cần ít nhất `--min` hoặc `--max`.
+
+#### `--min MIN`, `--max MAX`
+Ngưỡng dưới/trên của điểm số. Chỉ một ngưỡng cũng đủ cho lọc một phía.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
+
+```bash
+tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_score50_80.jsonl
+```
+
+Có thể chỉ dùng `--min` hoặc `--max`.
+
+### Lọc theo danh sách gene (`tsumugi genes --keep/--drop`)
+```bash
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
+Chỉ giữ các cặp chứa gene chỉ định trong file text.
+
+#### `-d GENE_SYMBOL`, `--drop GENE_SYMBOL`
+Loại bỏ các cặp chứa gene chỉ định trong file text.
+
+#### `-g`, `--genewise`
+Lọc theo symbol gene do người dùng cung cấp.
+
+#### `-p`, `--pairwise`
+Lọc theo cặp gene do người dùng cung cấp.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
+
+```bash
+cat << EOF > genes.txt
+Maf
+Aamp
+Cacna1c
+EOF
+
+tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+
+cat << EOF > gene_pairs.csv
+Maf,Aamp
+Maf,Cacna1c
+EOF
+
+tsumugi genes --pairwise --drop gene_pairs.csv   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_drop_genes.jsonl
+
+```
+
+### Lọc theo giai đoạn sống (`tsumugi life-stage --keep/--drop`)
+```bash
+tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k LIFE_STAGE`, `--keep LIFE_STAGE`
+Chỉ giữ giai đoạn sống chỉ định (`Embryo`, `Early`, `Interval`, `Late`).
+
+#### `-d LIFE_STAGE`, `--drop LIFE_STAGE`
+Loại bỏ giai đoạn sống chỉ định.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
+
+```bash
+tsumugi life-stage --keep Early   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_lifestage_early.jsonl
+```
+
+### Lọc theo giới tính (`tsumugi sex --keep/--drop`)
+```bash
+tsumugi sex [-h] (-k SEX | -d SEX) [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k SEX`, `--keep SEX`
+Chỉ giữ giới tính chỉ định (`Male`, `Female`, `None`).
+
+#### `-d SEX`, `--drop SEX`
+Loại bỏ giới tính chỉ định.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
+
+```bash
+tsumugi sex --drop Male   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_no_male.jsonl
+```
+
+### Lọc theo zygosity (`tsumugi zygosity --keep/--drop`)
+```bash
+tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+#### `-k ZYGOSITY`, `--keep ZYGOSITY`
+Chỉ giữ zygosity chỉ định (`Homo`, `Hetero`, `Hemi`).
+
+#### `-d ZYGOSITY`, `--drop ZYGOSITY`
+Loại bỏ zygosity chỉ định.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
+
+```bash
+tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
 ### Xuất GraphML / webapp
 ```bash
-tsumugi build-graphml \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
-  > network.graphml
-
-tsumugi build-webapp \
-  --in pairwise_similarity_annotations.jsonl.gz \
-  --genewise genewise_phenotype_annotations.jsonl.gz \
+tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS
 ```
-Pipeline mẫu: `zcat ... | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+Đường dẫn tới file genewise (JSONL/.gz). Bắt buộc.
+
+```bash
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+```
+
+```bash
+tsumugi build-webapp [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS -o OUT
+```
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Đường dẫn tới file pairwise (JSONL/.gz). Nếu bỏ, đọc từ STDIN.
+
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
+Đường dẫn tới file genewise (JSONL/.gz). Bắt buộc.
+
+#### `-o OUT`, `--out OUT`
+Thư mục đầu ra cho bundle webapp (HTML/CSS/JS + dữ liệu mạng). Không dùng tên file có đuôi mở rộng.
+
+```bash
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+```
+
+CLI hỗ trợ STDIN/STDOUT, vì vậy bạn có thể nối lệnh:  
+`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
 
 # 🔍 Cách tính nhóm gen tương đồng kiểu hình
 
 ## Nguồn dữ liệu
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Trường thông tin: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+Chúng tôi dùng bộ dữ liệu IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Thông tin cột dữ liệu: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Tiền xử lý
-Chọn cặp gen–kiểu hình có P ≤ 0.0001 (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`).  
-- Zygosity: `homo`, `hetero`, `hemi`  
-- Giới tính: `female`, `male`
+
+Trích xuất các cặp gene–kiểu hình có P-value ở chuột KO (`p_value`, `female_ko_effect_p_value` hoặc `male_ko_effect_p_value`) ≤ 0.0001.  
+- Gắn nhãn kiểu hình đặc hiệu kiểu gen là `homo`, `hetero` hoặc `hemi`.  
+- Gắn nhãn kiểu hình đặc hiệu giới tính là `female` hoặc `male`.
 
 ## Độ tương đồng kiểu hình
-TSUMUGI hiện theo cách tiếp cận gần với Phenodigm. Chúng tôi tính độ tương đồng **Resnik** giữa các thuật ngữ MP và độ tương đồng **Jaccard** giữa các tập tổ tiên, rồi kết hợp bằng **trung bình hình học**. Khác biệt chính so với Phenodigm gốc là thêm trọng số metadata (zygosity, life stage, sexual dimorphism) khi tổng hợp.
 
-1. Xây dựng ontology MP và tính IC:  
+TSUMUGI áp dụng cách tiếp cận kiểu Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> Các khác biệt so với Phenodigm gốc như sau.  
+> 1. **Các thuật ngữ dưới phân vị IC thứ 5 được đặt IC=0, để không đánh giá các kiểu hình quá chung (ví dụ: embryo phenotype).**
+> 2. **Chúng tôi áp dụng trọng số dựa trên mức khớp metadata: kiểu gen, giai đoạn sống và giới tính.**
+
+### 1. Định nghĩa độ tương đồng cặp thuật ngữ MP
+
+* Xây dựng ontology MP và tính Information Content (IC) cho từng thuật ngữ:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Các thuật ngữ dưới phân vị 5 của IC được đặt về 0.
-2. Với mỗi cặp thuật ngữ MP, tìm tổ tiên chung cụ thể nhất (MICA) và dùng IC của nó làm Resnik.  
-   Tính chỉ số Jaccard trên các tập tổ tiên.  
-   Độ tương đồng thuật ngữ = `sqrt(Resnik * Jaccard)`.
-3. Với mỗi cặp gen, xây dựng ma trận thuật ngữ×thuật ngữ và áp dụng trọng số metadata.  
-   Mức khớp zygosity/giai đoạn sống/dị hình giới tính cho trọng số 0.25/0.5/0.75/1.0 ứng với 0/1/2/3 khớp.
-4. Áp dụng chuẩn hóa kiểu Phenodigm về 0–100:  
-   Dùng max theo hàng/cột để lấy max và mean thực tế.  
-   Chuẩn hóa theo max/mean lý thuyết dựa trên IC và tính  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   Nếu mẫu số lý thuyết bằng 0, đặt về 0.
+   Các thuật ngữ dưới phân vị IC thứ 5 được đặt IC=0.
+
+* Với mỗi cặp thuật ngữ MP, tìm tổ tiên chung đặc hiệu nhất (MICA) và dùng IC của nó làm độ tương đồng Resnik.  
+
+* Với hai thuật ngữ MP, tính chỉ số Jaccard của các tập tổ tiên.  
+
+* Định nghĩa độ tương đồng cặp thuật ngữ MP là `sqrt(Resnik * Jaccard)`.
+
+### 2. Trọng số theo mức độ khớp metadata kiểu hình
+
+* Áp dụng trọng số theo metadata kiểu hình: kiểu gen, giai đoạn sống và giới tính.
+
+* Với mỗi cặp gene, tạo ma trận độ tương đồng thuật ngữ MP × thuật ngữ MP.  
+
+* Nhân với trọng số 0.2, 0.5, 0.75, 1.0 cho 0, 1, 2, 3 mức khớp kiểu gen/giai đoạn sống/giới tính.
+
+### 3. Chuẩn hóa Phenodigm
+
+* Áp dụng chuẩn hóa kiểu Phenodigm để đưa độ tương đồng kiểu hình của từng chuột KO về 0–100:  
+   Tính giá trị tối đa/trung bình quan sát được, rồi chuẩn hóa theo tối đa/trung bình lý thuyết.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   Nếu mẫu số bằng 0, điểm được đặt về 0.
+
+---
 
 # ✉️ Liên hệ
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

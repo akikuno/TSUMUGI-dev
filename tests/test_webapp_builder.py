@@ -2,18 +2,12 @@ import gzip
 import json
 
 import pytest
-
-from TSUMUGI.subcommands import webapp_builder as wb
-
-
-def test_format_suffix_omits_none():
-    assert wb._format_suffix("Homo", "Early", "Male") == "(Homo, Early, Male)"
-    assert wb._format_suffix("Homo", "Early", "None") == "(Homo, Early)"
+from TSUMUGI.subcommands import webapp_builder
 
 
-def test_safe_filename_replaces_invalid_chars():
-    assert wb._safe_filename("Gene List!") == "Gene_List_"
-    assert wb._safe_filename("") == "gene_list"
+def test_create_annotation_string_omits_empty():
+    assert webapp_builder._create_annotation_string("Homo", "Early", "Male") == "Homo, Early, Male"
+    assert webapp_builder._create_annotation_string("Homo", "Early", "") == "Homo, Early"
 
 
 def test_build_edges_formats_annotations():
@@ -22,22 +16,24 @@ def test_build_edges_formats_annotations():
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
             "phenotype_similarity_score": 12,
-            "phenotype_shared_annotations": {
-                "abnormal movement": {
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "abnormal movement",
                     "zygosity": "Homo",
                     "life_stage": "Early",
                     "sexual_dimorphism": "None",
                 },
-                "eye defect": {
+                {
+                    "mp_term_name": "eye defect",
                     "zygosity": "Hetero",
                     "life_stage": "Late",
                     "sexual_dimorphism": "Male",
                 },
-            },
+            ],
         }
     ]
 
-    edges = wb._build_edges(pairwise)
+    edges = webapp_builder._build_edges(pairwise)
 
     assert len(edges) == 1
     data = edges[0]["data"]
@@ -71,7 +67,7 @@ def test_build_nodes_includes_hide_severity():
     }
     all_genes = {"GeneA", "GeneB"}
 
-    nodes = wb.build_nodes(gene_to_records, all_genes, hide_severity=True)
+    nodes = webapp_builder.build_nodes(gene_to_records, all_genes, hide_severity=True)
     node_map = {node["data"]["id"]: node["data"] for node in nodes}
 
     assert node_map["GeneA"]["hide_severity"] is True
@@ -87,7 +83,7 @@ def test_build_webapp_network_rejects_large_network(monkeypatch):
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
             "phenotype_similarity_score": 12,
-            "phenotype_shared_annotations": {},
+            "phenotype_shared_annotations": [],
         }
     ]
     genewise = [
@@ -97,6 +93,8 @@ def test_build_webapp_network_rejects_large_network(monkeypatch):
             "mp_term_name": "abnormal movement",
             "zygosity": "Homo",
             "life_stage": "Early",
+            "sexual_dimorphism": "None",
+            "disease_annotation": [],
         },
         {
             "marker_symbol": "GeneB",
@@ -104,6 +102,8 @@ def test_build_webapp_network_rejects_large_network(monkeypatch):
             "mp_term_name": "eye defect",
             "zygosity": "Homo",
             "life_stage": "Late",
+            "sexual_dimorphism": "None",
+            "disease_annotation": [],
         },
     ]
 
@@ -112,11 +112,11 @@ def test_build_webapp_network_rejects_large_network(monkeypatch):
             return pairwise
         return genewise
 
-    monkeypatch.setattr(wb.io_handler, "read_jsonl", fake_read_jsonl)
-    monkeypatch.setattr(wb, "MAX_NODE_COUNT", 1)
+    monkeypatch.setattr(webapp_builder.io_handler, "read_jsonl", fake_read_jsonl)
+    monkeypatch.setattr(webapp_builder, "MAX_NODE_COUNT", 1)
 
     with pytest.raises(ValueError, match="exceeds the maximum allowed"):
-        wb.build_webapp_network("genewise-path", "pairwise-path")
+        webapp_builder.build_webapp_network("genewise-path", "pairwise-path")
 
 
 def test_build_and_save_webapp_network_writes_outputs(tmp_path, monkeypatch):
@@ -125,13 +125,14 @@ def test_build_and_save_webapp_network_writes_outputs(tmp_path, monkeypatch):
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
             "phenotype_similarity_score": 12,
-            "phenotype_shared_annotations": {
-                "abnormal movement": {
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "abnormal movement",
                     "zygosity": "Homo",
                     "life_stage": "Early",
                     "sexual_dimorphism": "None",
                 }
-            },
+            ],
         }
     ]
     genewise = [
@@ -174,17 +175,18 @@ def test_build_and_save_webapp_network_writes_outputs(tmp_path, monkeypatch):
     def fake_create_bundle(output_dir, data_filename, network_label):
         calls.append((output_dir, data_filename, network_label))
 
-    monkeypatch.setattr(wb.io_handler, "read_jsonl", fake_read_jsonl)
-    monkeypatch.setattr(wb, "_create_webapp_bundle", fake_create_bundle)
+    monkeypatch.setattr(webapp_builder.io_handler, "read_jsonl", fake_read_jsonl)
+    monkeypatch.setattr(webapp_builder, "_create_webapp_bundle", fake_create_bundle)
 
-    wb.build_and_save_webapp_network("genewise-path", "pairwise-path", tmp_path)
+    webapp_builder.build_and_save_webapp_network("genewise-path", "pairwise-path", tmp_path)
 
-    network_path = tmp_path / "network.json.gz"
-    symbol_path = tmp_path / "marker_symbol_accession_id.json"
+    data_dir = tmp_path / "data"
+    network_path = data_dir / "network.json.gz"
+    symbol_path = data_dir / "marker_symbol_accession_id.json"
 
     assert network_path.exists()
     assert symbol_path.exists()
-    assert calls == [(tmp_path, "network.json.gz", "Gene List")]
+    assert calls == [(tmp_path, "data/network.json.gz", "Gene List")]
 
     with gzip.open(network_path, "rt", encoding="utf-8") as fh:
         elements = json.load(fh)

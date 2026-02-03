@@ -20,7 +20,48 @@
 
 <!-- ############################################################ # -->
 
-## v1.0.1 (2026-01-27)
+## v1.0.2 (2026-02-03)
+
+#### 🐛 Bug Fixes
+
+- Fix inconsistent phenotype_shared_annotations types (list[dict])  
+  Issue: [#150](https://github.com/akikuno/TSUMUGI-dev/issues/150)  
+  Thanks @kinari-labwork for reporting the issue!!
+
+- Update template paths in webapp_builder.py to reflect current directory structure.
+  Issue: [#154](https://github.com/akikuno/TSUMUGI-dev/issues/154)  
+
+- Use Jaccard index in `_calculate_pair_worker` for pairwise similarity computation.  
+  Issue: [#156](https://github.com/akikuno/TSUMUGI-dev/issues/156)  
+
+### 🔧 Maintenance
+
+- Rename pairwise_similarity_annotations key from "phenotype" to "mp_term_name".  
+  Issue: [#151](https://github.com/akikuno/TSUMUGI-dev/issues/151)  
+
+- Automate E2E tests for the TSUMUGI subcommand using GitHub Actions  
+  Issue: [#152](https://github.com/akikuno/TSUMUGI-dev/issues/152)  
+
+- Restrict tsumugi genes input to text files only for better maintainability.  
+  Issue: [#153](https://github.com/akikuno/TSUMUGI-dev/issues/153)  
+
+- Require explicit --genewise or --pairwise option for tsumugi genes and mp commands.  
+  Issue: [#155](https://github.com/akikuno/TSUMUGI-dev/issues/155)  
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+
+<details>
+<summary> v1.0.1 (2026-01-27) </summary>
 
 ### 🖼️ Web Interface
 
@@ -40,16 +81,9 @@
 - Fix tooltip hover from disabling network pan.  
   Issue: [#147](https://github.com/akikuno/TSUMUGI-dev/issues/147)  
 
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
 
 </details>
-============================================================= -->
+
 <details>
 <summary> v1.0.0 (2026-01-21) </summary>
 

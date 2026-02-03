@@ -34,9 +34,27 @@ def test_filter_by_number_of_phenotypes_per_gene(monkeypatch):
         {"marker_symbol": "GeneC", "significant": True},
     ]
     pairwise_annotations = [
-        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_shared_annotations": {"x": {}}},
-        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneC", "phenotype_shared_annotations": {"y": {}}},
-        {"gene1_symbol": "GeneB", "gene2_symbol": "GeneC", "phenotype_shared_annotations": {"z": {}}},
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "x", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
+        },
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneC",
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "y", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
+        },
+        {
+            "gene1_symbol": "GeneB",
+            "gene2_symbol": "GeneC",
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "z", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
+        },
     ]
     dumped = []
 
@@ -61,12 +79,29 @@ def test_filter_by_number_of_phenotypes_per_gene(monkeypatch):
 
 def test_filter_by_number_of_phenotypes_per_pair(monkeypatch):
     pairwise_annotations = [
-        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_shared_annotations": {"a": {}, "b": {}}},
-        {"gene1_symbol": "GeneC", "gene2_symbol": "GeneD", "phenotype_shared_annotations": {"c": {}}},
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "a", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+                {"mp_term_name": "b", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+            ],
+        },
+        {
+            "gene1_symbol": "GeneC",
+            "gene2_symbol": "GeneD",
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "c", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
+        },
         {
             "gene1_symbol": "GeneE",
             "gene2_symbol": "GeneF",
-            "phenotype_shared_annotations": {"x": {}, "y": {}, "z": {}},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "x", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+                {"mp_term_name": "y", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+                {"mp_term_name": "z", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+            ],
         },
     ]
     dumped = []

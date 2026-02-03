@@ -15,11 +15,11 @@ Translations: [日本語](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/R
 
 **TSUMUGI (Trait-driven Surveillance for Mutation-based Gene module Identification)** is a web tool that uses knockout (KO) mouse phenotype data from the [International Mouse Phenotyping Consortium (IMPC)](https://www.mousephenotype.org/) to **extract and visualize gene modules based on phenotypic similarity**.  
 
-**TSUMUGI (紡ぎ)** comes from the idea of “weaving together gene groups that form phenotypes.”
+**TSUMUGI (紡ぎ in Japanese)** comes from the idea of “weaving together gene groups that form phenotypes.”
 
 This web app is available to everyone online👇️  
 
-🔗https://larc-tsukuba.github.io/tsumugi/
+🔗 https://larc-tsukuba.github.io/tsumugi/
 
 # 📖 How to Use TSUMUGI
 
@@ -49,6 +49,7 @@ Paste multiple genes (one per line). This extracts phenotypically similar genes 
 TSUMUGI reports gzipped JSONL files.
 
 #### `genewise_phenotype_annotations.jsonl.gz`
+
 - Gene symbol (e.g., "1110059G10Rik")  
 - Marker accession ID (e.g., "MGI:1913452")  
 - Phenotype term name/ID (e.g., "fused joints", "MP:0000137")  
@@ -59,19 +60,20 @@ TSUMUGI reports gzipped JSONL files.
 - Sexual dimorphism ("None", "Male", "Female")  
 - Disease annotation (e.g., [] or "Premature Ovarian Failure 18")
 
-Example:
-```
-{"life_stage": "Early", "marker_symbol": "1110059G10Rik", "marker_accession_id": "MGI:1913452", "effect_size": 0.0, "mp_term_name": "fused joints", "disease_annotation": [], "significant": false, "zygosity": "Homo", "sexual_dimorphism": "None", "mp_term_id": "MP:0000137"}
+Example:  
+```json
+{"significant": true, "sexual_dimorphism": "Female", "effect_size": 0.0119677350763567, "marker_symbol": "4930447C04Rik", "zygosity": "Homo", "marker_accession_id": "MGI:1923051", "mp_term_id": "MP:0000063", "disease_annotation": ["Male Infertility With Azoospermia Or Oligozoospermia Due To Single Gene Mutation", "Premature Ovarian Failure 18", "Spermatogenic Failure 52"], "life_stage": "Early", "mp_term_name": "decreased bone mineral density"}
 ```
 
 #### `pairwise_similarity_annotations.jsonl.gz`
+
 - Gene pair (`gene1_symbol`, `gene2_symbol`)  
 - `phenotype_shared_annotations` (per-phenotype metadata: life stage, zygosity, sexual dimorphism)  
 - `phenotype_similarity_score` (Phenodigm score, 0–100)
 
-Example:
-```
-{"gene1_symbol": "1110059G10Rik", "gene2_symbol": "Cog6", "phenotype_shared_annotations": {"vertebral transformation": {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "Male"}}, "phenotype_similarity_score": 42}
+Example:  
+```json
+{"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
 # 🌐 Network
@@ -176,6 +178,10 @@ You are ready if `tsumugi --version` prints the version.
 > All filtering subcommands stream JSONL to STDOUT.  
 > Redirect with `>` if you want to save results to a file.
 
+> [!IMPORTANT]
+> All commands except `tsumugi run` require either `pairwise_similarity_annotation.jsonl.gz` or `genewise_phenotype_annotation.jsonl.gz`.
+> Both files can be downloaded from the [TSUMUGI top page](https://larc-tsukuba.github.io/tsumugi/).
+
 
 ## Usage
 
@@ -199,8 +205,9 @@ Outputs: `./tsumugi-output` contains genewise annotations (genewise_phenotype_an
 ### Filter by MP term (`tsumugi mp --include/--exclude`)
 Extract gene pairs (or genes) that include phenotypes of interest, or pairs whose relevant phenotypes were measured but did not show significant abnormalities.
 
-```txt
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m MP_OBO] [-a GENEWISE_ANNOTATIONS] [--in IN] [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
+```bash
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+                  [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
 #### `-i MP_ID`, `--include MP_ID`
@@ -215,13 +222,13 @@ Filter at gene level. Reads `genewise_phenotype_annotations.jsonl(.gz)`. When us
 #### `-p`, `--pairwise`
 Filter at gene-pair level. Targets `pairwise_similarity_annotations.jsonl(.gz)`. If `--in` is omitted, reads from STDIN.
 
-#### `-m MP_OBO`, `--mp_obo MP_OBO`
+#### `-m PATH_MP_OBO`, `--mp_obo PATH_MP_OBO`
 Path to Mammalian Phenotype ontology (mp.obo). If omitted, uses the bundled `data/mp.obo`.
 
-#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
 Path to the genewise annotation file (JSONL/.gz). Required for `--exclude`; also specify when using `--genewise`.
 
-#### `--in IN`
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
 #### `--life_stage LIFE_STAGE`
@@ -263,8 +270,8 @@ tsumugi mp --exclude MP:0001146 \
 > For example, if you specify `MP:0001146 (abnormal testis morphology)`, descendant terms such as `MP:0004849 (abnormal testis size)` are considered as well.
 
 ### Filter by phenotype counts (`tsumugi count`)
-```txt
-tsumugi count [-h] (-g | -p) [--min MIN] [--max MAX] [--in IN] [-a GENEWISE_ANNOTATIONS]
+```bash
+tsumugi count [-h] (-g | -p) [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS] [-a PATH_GENEWISE_ANNOTATIONS]
 ```
 
 Filter genes or gene pairs by the number of phenotypes. At least one of `--min` or `--max` is required.
@@ -278,18 +285,20 @@ Filter by the number of shared phenotypes per gene pair. If `--in` is omitted, r
 #### `--min MIN`, `--max MAX`
 Lower/upper bounds for phenotype counts. Use either flag alone for one-sided filtering.
 
-#### `--in IN`
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
-#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
 Path to the genewise annotation file (JSONL/.gz). Required with `--genewise`.
 
 - Shared phenotypes per pair:
+
 ```bash
 tsumugi count --pairwise --min 3 --max 20 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_min3_max20.jsonl
 ```
+
 - Phenotypes per gene (genewise required):
 ```bash
 tsumugi count --genewise --min 5 --max 50 \
@@ -297,11 +306,12 @@ tsumugi count --genewise --min 5 --max 50 \
   --in pairwise_similarity_annotations.jsonl.gz \
   > genewise_min5_max50.jsonl
 ```
+
 `--min` or `--max` alone is fine.
 
 ### Filter by similarity score (`tsumugi score`)
-```txt
-tsumugi score [-h] [--min MIN] [--max MAX] [--in IN]
+```bash
+tsumugi score [-h] [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 Filter gene pairs by `phenotype_similarity_score` (0–100). At least one of `--min` or `--max` is required.
@@ -309,7 +319,7 @@ Filter gene pairs by `phenotype_similarity_score` (0–100). At least one of `--
 #### `--min MIN`, `--max MAX`
 Lower/upper bounds for phenotype similarity score. Use either flag alone for one-sided filtering.
 
-#### `--in IN`
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
 ```bash
@@ -321,32 +331,51 @@ tsumugi score --min 50 --max 80 \
 `--min` or `--max` alone is fine.
 
 ### Filter by gene list (`tsumugi genes --keep/--drop`)
-```txt
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [--in IN]
+```bash
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
-Keep only pairs containing specified genes (comma-separated list or text file).
+Keep only pairs containing specified genes in a text file.
 
 #### `-d GENE_SYMBOL`, `--drop GENE_SYMBOL`
-Drop pairs containing specified genes (comma-separated list or text file).
+Drop pairs containing specified genes in a text file.
 
-#### `--in IN`
+####  `-g, --genewise`
+Filter by user-provided gene symbols.  
+
+####  `-p, --pairwise`
+Filter by user-provided  gene pairs.  
+
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
 ```bash
-tsumugi genes --keep genes.txt \
-  --in pairwise_similarity_annotations.jsonl.gz \
+cat << EOF > genes.txt
+Maf
+Aamp
+Cacna1c
+EOF
+
+tsumugi genes --genewise --keep genes.txt \
+  --in "$directory"/pairwise_similarity_annotations.jsonl.gz \
   > pairwise_keep_genes.jsonl
 
-tsumugi genes --drop geneA,geneB \
+cat << EOF > gene_pairs.csv
+Maf,Aamp
+Maf,Cacna1c
+EOF
+
+tsumugi genes --pairwise --drop gene_pairs.csv \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_drop_genes.jsonl
+
 ```
 
 ### Filter by life stage (`tsumugi life-stage --keep/--drop`)
-```txt
-tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in IN]
+```bash
+tsumugi life-stage [-h] (-k LIFE_STAGE | -d LIFE_STAGE) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k LIFE_STAGE`, `--keep LIFE_STAGE`
@@ -355,7 +384,7 @@ Keep only annotations with the specified life stage (`Embryo`, `Early`, `Interva
 #### `-d LIFE_STAGE`, `--drop LIFE_STAGE`
 Drop annotations with the specified life stage.
 
-#### `--in IN`
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
 ```bash
@@ -365,8 +394,8 @@ tsumugi life-stage --keep Early \
 ```
 
 ### Filter by sex (`tsumugi sex --keep/--drop`)
-```txt
-tsumugi sex [-h] (-k SEX | -d SEX) [--in IN]
+```bash
+tsumugi sex [-h] (-k SEX | -d SEX) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k SEX`, `--keep SEX`
@@ -375,7 +404,7 @@ Keep only annotations with the specified sexual dimorphism (`Male`, `Female`, `N
 #### `-d SEX`, `--drop SEX`
 Drop annotations with the specified sexual dimorphism.
 
-#### `--in IN`
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
 ```bash
@@ -385,8 +414,8 @@ tsumugi sex --drop Male \
 ```
 
 ### Filter by zygosity (`tsumugi zygosity --keep/--drop`)
-```txt
-tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in IN]
+```bash
+tsumugi zygosity [-h] (-k ZYGOSITY | -d ZYGOSITY) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k ZYGOSITY`, `--keep ZYGOSITY`
@@ -395,7 +424,7 @@ Keep only annotations with the specified zygosity (`Homo`, `Hetero`, `Hemi`).
 #### `-d ZYGOSITY`, `--drop ZYGOSITY`
 Drop annotations with the specified zygosity.
 
-#### `--in IN`
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
 ```bash
@@ -405,14 +434,14 @@ tsumugi zygosity --keep Homo \
 ```
 
 ### Export GraphML / webapp
-```txt
-tsumugi build-graphml [-h] [--in IN] -a GENEWISE_ANNOTATIONS
+```bash
+tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS
 ```
 
-#### `--in IN`
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
-#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
 Path to the genewise annotation file (JSONL/.gz). Required.
 
 ```bash
@@ -422,14 +451,14 @@ tsumugi build-graphml \
   > network.graphml
 ```
 
-```txt
-tsumugi build-webapp [-h] [--in IN] -a GENEWISE_ANNOTATIONS -o OUT
+```bash
+tsumugi build-webapp [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS -o OUT
 ```
 
-#### `--in IN`
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 
-#### `-a GENEWISE_ANNOTATIONS`, `--genewise_annotations GENEWISE_ANNOTATIONS`
+#### `-a PATH_GENEWISE_ANNOTATIONS`, `--genewise_annotations PATH_GENEWISE_ANNOTATIONS`
 Path to the genewise annotation file (JSONL/.gz). Required.
 
 #### `-o OUT`, `--out OUT`
@@ -448,31 +477,53 @@ CLI supports STDIN/STDOUT, so you can chain commands:
 # 🔍 How We Calculate Phenotypically Similar Genes
 
 ## Data source
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Columns: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+We use the IMPC dataset [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+See dataset columns: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Preprocessing
-Extract gene–phenotype pairs with KO mouse P-value (`p_value`, `female_ko_effect_p_value`, or `male_ko_effect_p_value`) ≤ 0.0001.  
-- Annotate genotype-specific phenotypes: `homo`, `hetero`, `hemi`  
-- Annotate sex-specific phenotypes: `female`, `male`
+
+Extract gene–phenotype pairs whose KO mouse P-values (`p_value`, `female_ko_effect_p_value`, or `male_ko_effect_p_value`) are ≤ 0.0001.  
+- Annotate genotype-specific phenotypes as `homo`, `hetero`, or `hemi`.  
+- Annotate sex-specific phenotypes as `female` or `male`.
 
 ## Phenotypic similarity
-TSUMUGI currently follows a **Phenodigm-like** approach ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)). We compute **Resnik similarity** between MP terms and **Jaccard similarity** between term sets, then combine them by the **geometric mean**. The key difference from the original Phenodigm is that TSUMUGI adds **metadata weighting** (zygosity, life stage, sexual dimorphism) when aggregating similarities.
 
-1. Build the MP ontology and compute Information Content(IC) for each term:  
+TSUMUGI adopts a Phenodigm-like approach ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> Differences from the original Phenodigm are as follows.  
+> 1. **Terms below the 5th percentile of IC are set to IC=0, so overly general phenotypes (e.g., embryo phenotype) are not evaluated.**
+> 2. **We apply weighting based on metadata matches in genotype, life stage, and sex.**
+
+### 1. Definition of MP term-pair similarity
+
+* Build the MP ontology and compute Information Content (IC) for each term:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Terms below the 5th percentile of IC are set to 0.
-2. For each MP term pair, find the most specific common ancestor and compute Resnik similarity as its IC.  
-   Compute Jaccard index over the ancestor sets.  
-   Pairwise term similarity = `sqrt(Resnik * Jaccard)`.
-3. For each gene pair, build a term-by-term similarity matrix and apply metadata weighting.  
-   Zygosity, life stage, and sexual dimorphism matches contribute weights of 0.25/0.5/0.75/1.0 for 0/1/2/3 matches.
-4. Apply Phenodigm-style scaling to 0–100:  
-   Use row/column maxima to get actual max and mean similarity.  
-   Normalize by theoretical max/mean based on IC, then compute  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   If a theoretical denominator is 0, that term is set to 0.
+   Terms below the 5th percentile of IC are set to IC=0.
 
+* For each MP term pair, find the most specific common ancestor (MICA) and use its IC as Resnik similarity.  
+
+* For two MP terms, compute the Jaccard index of their ancestor sets.  
+
+* Define MP term-pair similarity as `sqrt(Resnik * Jaccard)`.
+
+### 2. Weighting by phenotype metadata agreement
+
+* Apply weights based on phenotype metadata: genotype, life stage, and sex.
+
+* For each gene pair, build an MP-term × MP-term similarity matrix.  
+
+* Multiply by weights 0.2, 0.5, 0.75, 1.0 for 0, 1, 2, 3 matches of genotype/life stage/sex.
+
+### 3. Phenodigm scaling
+
+* Apply Phenodigm-style scaling to normalize each KO mouse phenotype similarity to 0–100:  
+   Compute observed max/mean, then normalize by theoretical max/mean.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   If the denominator is 0, the score is set to 0.
+
+---
 
 # ✉️ Contact
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

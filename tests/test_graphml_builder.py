@@ -1,7 +1,5 @@
 import pytest
-import networkx as nx
-from TSUMUGI.subcommands import graphml_builder as gb
-
+from TSUMUGI.subcommands import graphml_builder
 
 ###############################################################################
 # format_suffix
@@ -11,15 +9,15 @@ from TSUMUGI.subcommands import graphml_builder as gb
 @pytest.mark.parametrize(
     "zygosity, life_stage, sexual_dimorphism, expected",
     [
-        ("Homo", "Early", "Male", "(Homo, Early, Male)"),
-        ("Homo", "Early", "Female", "(Homo, Early, Female)"),
-        ("Homo", "Early", "None", "(Homo, Early)"),
-        ("Hetero", "Late", "None", "(Hetero, Late)"),
-        ("Hemi", "Embryo", "Male", "(Hemi, Embryo, Male)"),
+        ("Homo", "Early", "Male", "Homo, Early, Male"),
+        ("Homo", "Early", "Female", "Homo, Early, Female"),
+        ("Homo", "Early", "", "Homo, Early"),
+        ("Hetero", "Late", "", "Hetero, Late"),
+        ("Hemi", "Embryo", "Male", "Hemi, Embryo, Male"),
     ],
 )
-def test_format_suffix(zygosity, life_stage, sexual_dimorphism, expected):
-    assert gb.format_suffix(zygosity, life_stage, sexual_dimorphism) == expected
+def test_create_annotation_string(zygosity, life_stage, sexual_dimorphism, expected):
+    assert graphml_builder._create_annotation_string(zygosity, life_stage, sexual_dimorphism) == expected
 
 
 ###############################################################################
@@ -64,11 +62,11 @@ def test_format_suffix(zygosity, life_stage, sexual_dimorphism, expected):
             },
         ),
         (
-            # --- テストケース2：sexual_dimorphism=None（省略） ---
+            # --- テストケース2：sexual_dimorphism=""（省略） ---
             [
                 {
                     "mp_term_name": "fused joints",
-                    "sexual_dimorphism": "None",
+                    "sexual_dimorphism": "",
                     "significant": False,
                     "effect_size": 0.0,
                     "mp_term_id": "MP:0000137",
@@ -90,7 +88,7 @@ def test_format_suffix(zygosity, life_stage, sexual_dimorphism, expected):
     ],
 )
 def test_build_nodes(records, expected):
-    result = gb.build_nodes(records)
+    result = graphml_builder.build_nodes(records)
     assert result == expected
 
 
@@ -109,13 +107,14 @@ def test_build_nodes(records, expected):
                     "gene1_symbol": "GeneA",
                     "gene2_symbol": "GeneB",
                     "phenotype_similarity_score": 42,
-                    "phenotype_shared_annotations": {
-                        "vertebral transformation": {
+                    "phenotype_shared_annotations": [
+                        {
+                            "mp_term_name": "vertebral transformation",
                             "sexual_dimorphism": "Male",
                             "zygosity": "Homo",
                             "life_stage": "Early",
                         }
-                    },
+                    ],
                 }
             ],
             {
@@ -141,13 +140,14 @@ def test_build_nodes(records, expected):
                     "gene1_symbol": "GeneA",
                     "gene2_symbol": "GeneC",
                     "phenotype_similarity_score": 10,
-                    "phenotype_shared_annotations": {
-                        "some phenotype": {
+                    "phenotype_shared_annotations": [
+                        {
+                            "mp_term_name": "some phenotype",
                             "sexual_dimorphism": "None",
                             "zygosity": "Hetero",
                             "life_stage": "Late",
                         }
-                    },
+                    ],
                 }
             ],
             {
@@ -173,7 +173,7 @@ def test_build_nodes(records, expected):
     ],
 )
 def test_build_graph(pairwise_records, initial_nodes, expected_new_nodes, expected_edges):
-    G = gb.build_graph(pairwise_records, initial_nodes)
+    G = graphml_builder.build_graph(pairwise_records, initial_nodes)
 
     # initial_nodes が保持される
     for node_id, attrs in initial_nodes.items():

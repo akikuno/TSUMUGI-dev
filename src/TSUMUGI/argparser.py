@@ -291,13 +291,13 @@ def build_parser() -> argparse.ArgumentParser:
         "-k",
         "--keep",
         metavar="GENE_SYMBOL",
-        help="Keep ONLY annotations with the specified gene symbols (comma-separated or path of text file)",
+        help="Keep ONLY annotations with gene symbols or gene pairs listed in a text file",
     )
     group_genes.add_argument(
         "-d",
         "--drop",
         metavar="GENE_SYMBOL",
-        help="Drop annotations with the specified gene symbols (comma-separated or path of text file)",
+        help="Drop annotations with gene symbols or gene pairs listed in a text file",
     )
 
     group_level = genes_parser.add_mutually_exclusive_group(required=False)
@@ -541,11 +541,8 @@ def parse_args(argv=None):
                 "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
             )
 
-        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
         if not args.genewise and not args.pairwise:
-            args.pairwise = True
-        else:
-            args.pairwise = False
+            parser.error("genes: Please specify either '-g/--genewise' or '-p/--pairwise'.")
 
     ########################################################################
     # count / score
@@ -571,19 +568,12 @@ def parse_args(argv=None):
     if args.cmd == "genes":
         path_arg = args.keep or args.drop
 
-        # Default to pairwise if neither -g / --genewise nor -p / --pairwise is specified.
         if not args.genewise and not args.pairwise:
-            args.pairwise = True
-        elif args.genewise:
-            args.pairwise = False
-        else:
-            args.genewise = False
+            parser.error("genes: Please specify either '-g/--genewise' or '-p/--pairwise'.")
 
-        # In pairwise mode, the gene list must be provided as a text file.
-        if args.pairwise and not Path(path_arg).is_file():
-            parser.error(
-                "genes --pairwise: Please provide a valid path to a text file containing gene symbols or gene pairs."
-            )
+        # In genes mode, the list must be provided as a text file.
+        if not Path(path_arg).is_file():
+            parser.error("genes: Please provide a valid path to a text file containing gene symbols or gene pairs.")
 
     ########################################################################
     # build-webapp

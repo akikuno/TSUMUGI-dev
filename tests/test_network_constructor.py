@@ -6,11 +6,16 @@ from TSUMUGI import network_constructor
 def test_scale_phenotype_similarity_scores_does_not_mutate_input():
     input_data = {
         ("GeneA", "GeneB"): {
-            "phenotype_shared_annotations": {"P1"},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "P1", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 10,
         },
         ("GeneC", "GeneD"): {
-            "phenotype_shared_annotations": {"P2", "P3"},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "P2", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+                {"mp_term_name": "P3", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
+            ],
             "phenotype_similarity_score": 30,
         },
     }
@@ -28,11 +33,15 @@ def test_scale_phenotype_similarity_scores_does_not_mutate_input():
 def test_scale_phenotype_similarity_scores_all_same_value():
     input_data = {
         ("GeneA", "GeneB"): {
-            "phenotype_shared_annotations": {"P1"},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "P1", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 42,
         },
         ("GeneC", "GeneD"): {
-            "phenotype_shared_annotations": {"P2"},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "P2", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 42,
         },
     }
@@ -46,15 +55,21 @@ def test_scale_phenotype_similarity_scores_all_same_value():
 def test_scale_phenotype_similarity_scores_target_gene_only():
     input_data = {
         ("GeneA", "GeneB"): {
-            "phenotype_shared_annotations": {"P1"},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "P1", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 30,
         },
         ("GeneA", "GeneC"): {
-            "phenotype_shared_annotations": {"P2"},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "P2", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 40,
         },
         ("GeneB", "GeneC"): {
-            "phenotype_shared_annotations": {"P3"},
+            "phenotype_shared_annotations": [
+                {"mp_term_name": "P3", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+            ],
             "phenotype_similarity_score": 10,
         },
     }

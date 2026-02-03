@@ -8,7 +8,6 @@ from itertools import combinations, combinations_with_replacement
 
 import numpy as np
 from tqdm import tqdm
-
 from TSUMUGI.ontology_handler import (
     build_term_hierarchy,
     find_all_descendant_terms,
@@ -75,9 +74,7 @@ def _calculate_pair_mica_and_resnik(
     return msca, similarity
 
 
-def _calculate_pair_jaccard(
-    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
-) -> float:
+def _calculate_pair_jaccard(term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]]) -> float:
     """Calculate Jaccard index for parent ancestors."""
     if term1_id == term2_id:
         return 1.0
@@ -94,71 +91,70 @@ def _calculate_pair_jaccard(
     return jaccard_index
 
 
+def _calculate_pair_msca_score_map(
+    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
+) -> tuple[tuple[str], dict[str | float]]:
+    """Calculate pairwise term similarity.
+    Pairwise term similarity: sqrt(Resnik similarity * Jaccard index)
+    msca: Most Specific Common Ancestor
+    """
+    term_pairs = tuple(sorted((term1_id, term2_id)))
+
+    if term1_id == term2_id:
+        msca = term1_id
+        resnik = term_ic_map.get(term1_id, 0.0)
+        jaccard = 1.0
+    else:
+        msca, resnik = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
+        jaccard = _calculate_pair_jaccard(term1_id, term2_id, parent_term_map)
+
+    score = math.sqrt(resnik * jaccard)
+
+    return term_pairs, {msca: score}
+
+
 def _calculate_pair_worker(term_pair: tuple[str, str]) -> tuple[tuple[str], dict[str | None, float]]:
     """Worker-side calculation using globals set by _init_worker."""
     term1_id, term2_id = term_pair
 
     parent_term_map = _worker_parent_term_map
     term_ic_map = _worker_term_ic_map
-
     if parent_term_map is None or term_ic_map is None:
         raise RuntimeError("Worker maps are not initialized.")
 
-    if term1_id == term2_id:
-        msca = term1_id
-        sim = term_ic_map.get(term1_id, 0.0)
-    else:
-        msca, sim = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
-
-    term_pairs = tuple(sorted((term1_id, term2_id)))
-    return term_pairs, {msca: sim}
-
-
-def _calculate_pair_similarity_score(
-    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
-) -> tuple[tuple[str], dict[str | None, float]]:
-    """Calculate pairwise similarity (Phenodigm score).
-    msca: Most Specific Common Ancestor
-    Phenodigm score: sqrt(Resnik similarity * Jaccard index)
-    """
-    msca, resnik = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
-    jaccard = _calculate_pair_jaccard(term1_id, term2_id, parent_term_map, term_ic_map)
-
-    term_pairs = tuple(sorted((term1_id, term2_id)))
-    score = math.sqrt(resnik * jaccard)
-    return term_pairs, {msca: score}
+    return _calculate_pair_msca_score_map(term1_id, term2_id, parent_term_map, term_ic_map)
 
 
 def calculate_all_pairwise_similarities(
     ontology_terms: dict[str, dict],
     all_term_ids: set[str],
     ic_threshold: int = 5,
-    threads: int | None = None,
+    threads: int = 1,
 ) -> tuple[dict[tuple[str], dict[str | None, float]], dict[str, float]]:
-    """Calculate pairwise Resnik similarities for all term IDs."""
+    """Calculate pairwise term similarities for all term IDs."""
     parent_term_map, child_term_map = build_term_hierarchy(ontology_terms)
     term_ic_map = _calculate_term_ic_map(ontology_terms, child_term_map, ic_threshold=ic_threshold)
     term_list = sorted(all_term_ids)
 
-    terms_similarity_map: dict[tuple[str], dict[str | None, float]] = {}
+    terms_similarity_map: dict[tuple[str, str], dict[str | float]] = {}
 
     if threads == 1:
         for term1_id, term2_id in combinations_with_replacement(term_list, 2):
-            term_pairs, ancestor_ic_map = _calculate_pair_similarity_score(
+            term_pairs, msca_score_map = _calculate_pair_msca_score_map(
                 term1_id, term2_id, parent_term_map, term_ic_map
             )
-            terms_similarity_map[term_pairs] = ancestor_ic_map
-        return terms_similarity_map
+            terms_similarity_map[term_pairs] = msca_score_map
+        return terms_similarity_map, term_ic_map
 
     with ProcessPoolExecutor(
         max_workers=threads,
         initializer=_init_worker,
         initargs=(parent_term_map, child_term_map, term_ic_map),
     ) as executor:
-        for term_pairs, ancestor_ic_map in executor.map(
+        for term_pairs, msca_score_map in executor.map(
             _calculate_pair_worker, combinations_with_replacement(term_list, 2)
         ):
-            terms_similarity_map[term_pairs] = ancestor_ic_map
+            terms_similarity_map[term_pairs] = msca_score_map
 
     return terms_similarity_map, term_ic_map
 
@@ -180,11 +176,11 @@ def _delete_parent_terms_from_ancestors(
     phenotype_to_meta = defaultdict(list)
 
     for ancestor in candidate_ancestors:
-        phenotype_to_meta[ancestor["phenotype"]].append({k: v for k, v in ancestor.items() if k != "phenotype"})
+        phenotype_to_meta[ancestor["mp_term_name"]].append({k: v for k, v in ancestor.items() if k != "mp_term_name"})
 
     for idx, ancestor in enumerate(candidate_ancestors):
-        term_id = ancestor["phenotype"]
-        term_meta = {k: v for k, v in ancestor.items() if k != "phenotype"}
+        term_id = ancestor["mp_term_name"]
+        term_meta = {k: v for k, v in ancestor.items() if k != "mp_term_name"}
 
         if idx in to_delete:
             continue
@@ -239,7 +235,7 @@ def _annotate_ancestors(
     gene1_meta_map: dict,
     gene2_meta_map: dict,
     meta_dict_cache: dict,
-    terms_similarity_map: dict[tuple[str, str], dict[str | None, float]],
+    terms_similarity_map: dict[tuple[str, str], dict[str, float]],
     child_term_map: dict[str, set[str]],
 ) -> list[dict[str, str]]:
     """Annotate phenotype ancestors for a single gene pair."""
@@ -271,7 +267,7 @@ def _annotate_ancestors(
                 if current_key in added_keys:
                     continue
 
-                candidate_ancestors.append({"phenotype": common_ancestor, **meta_dict})
+                candidate_ancestors.append({"mp_term_name": common_ancestor, **meta_dict})
                 added_keys.add(current_key)
 
     # Remove parent terms from candidate ancestors
@@ -282,7 +278,7 @@ def _annotate_ancestors(
 
 def annotate_phenotype_ancestors(
     genewise_phenotype_significants: list[dict[str, str | float]],
-    terms_similarity_map: dict[tuple[str], dict[str, float]],
+    terms_similarity_map: dict[tuple[str, str], dict[str, float]],
     ontology_terms: dict[str, dict[str, str]],
 ) -> Iterator[dict[str, str | list[dict[str, str]]]]:
     """
@@ -321,7 +317,7 @@ def annotate_phenotype_ancestors(
 def _calculate_weighted_similarity_matrix(
     gene1_record: dict[str, np.ndarray],
     gene2_record: dict[str, np.ndarray],
-    terms_similarity_map: dict[tuple[str, str], dict[str | None, float]],
+    terms_similarity_map: dict[tuple[str, str], dict[str, float]],
 ) -> np.ndarray:
     """Calculate weighted similarity matrix between two genes based on their phenotype records."""
     gene1_terms = gene1_record["terms"]
@@ -333,6 +329,9 @@ def _calculate_weighted_similarity_matrix(
         for j, term2 in enumerate(gene2_terms):
             _, similarity = next(iter(terms_similarity_map.get(tuple(sorted([term1, term2])), {None: 0.0}).items()))
             row[j] = similarity
+
+    if np.max(similarity_matrix) == 0:
+        return similarity_matrix
 
     z_match = gene1_record["zygosity"][:, None] == gene2_record["zygosity"][None, :]
     l_match = gene1_record["life_stage"][:, None] == gene2_record["life_stage"][None, :]
@@ -351,30 +350,22 @@ def _apply_phenodigm_scaling(
     gene2_record: dict[str, np.ndarray],
 ) -> int:
     """Apply Phenodigm scaling method to similarity scores (0-100)."""
-    gene1_information_content_scores = gene1_record["ic_scores"]
-    gene2_information_content_scores = gene2_record["ic_scores"]
+    # Calculate max and average scores from weighted similarity matrix (real model)
+    max_row_similarities = weighted_similarity_matrix.max(axis=1)
+    max_column_similarities = weighted_similarity_matrix.max(axis=0)
 
-    max_gene1_information_content = gene1_record["ic_max"]
-    max_gene2_information_content = gene2_record["ic_max"]
+    max_score_real_model = np.max([np.max(max_row_similarities), np.max(max_column_similarities)])
+    average_score_real_model = np.mean(np.concatenate([max_row_similarities, max_column_similarities]))
 
-    row_max_similarities = weighted_similarity_matrix.max(axis=1)
-    column_max_similarities = weighted_similarity_matrix.max(axis=0)
+    # Calculate max and average scores from similarity scores (best model)
+    max_score_best_model = max(gene1_record["similarity_max"], gene2_record["similarity_max"])
+    combined_similarity_scores = np.concatenate([gene1_record["similarity_scores"], gene2_record["similarity_scores"]])
+    average_score_best_model = float(np.mean(combined_similarity_scores))
 
-    max_score_actual = np.max([np.max(row_max_similarities), np.max(column_max_similarities)])
-    average_score_actual = (
-        np.mean(np.concatenate([row_max_similarities, column_max_similarities]))
-        if (len(row_max_similarities) > 0 or len(column_max_similarities) > 0)
-        else 0.0
-    )
-
-    max_score_theoretical = max(max_gene1_information_content, max_gene2_information_content)
-
-    combined_ic_scores = np.concatenate([gene1_information_content_scores, gene2_information_content_scores])
-    average_score_theoretical = float(np.mean(combined_ic_scores)) if combined_ic_scores.size else 0.0
-
-    normalized_max_score = max_score_actual / max_score_theoretical if max_score_theoretical > 0 else 0.0
+    # Normalize scores and compute final Phenodigm score
+    normalized_max_score = max_score_real_model / max_score_best_model if max_score_best_model > 0 else 0.0
     normalized_average_score = (
-        average_score_actual / average_score_theoretical if average_score_theoretical > 0 else 0.0
+        average_score_real_model / average_score_best_model if average_score_best_model > 0 else 0.0
     )
 
     phenodigm_score = 100 * (normalized_max_score + normalized_average_score) / 2
@@ -385,7 +376,7 @@ def _apply_phenodigm_scaling(
 def _calculate_phenodigm(
     gene1_record: dict[str, np.ndarray],
     gene2_record: dict[str, np.ndarray],
-    terms_similarity_map: dict[tuple[str, str], dict[str | None, float]],
+    terms_similarity_map: dict[tuple[str, str], dict[str, float]],
 ) -> int:
     """Calculate the Phenodigm score for a single gene pair."""
     weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
@@ -393,6 +384,9 @@ def _calculate_phenodigm(
         gene2_record,
         terms_similarity_map,
     )
+
+    if np.max(weighted_similarity_matrix) == 0:
+        return 0
 
     score = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
@@ -414,15 +408,16 @@ def _build_gene_data_map(
         zygosity = np.array([r["zygosity"] for r in records], dtype=object)
         life_stage = np.array([r["life_stage"] for r in records], dtype=object)
         sexual_dimorphism = np.array([r.get("sexual_dimorphism", "None") for r in records], dtype=object)
-        ic_scores = np.array([term_ic_map.get(term, 0.0) for term in terms], dtype=float)
+        # sqrt IC scores for each term: Similarity score is sqrt(Resnik * Jaccard) and Jaccard = 1 for identical terms
+        similarity_scores = np.sqrt(np.array([term_ic_map.get(term, 0.0) for term in terms], dtype=float))
 
         gene_data_map[gene_symbol] = {
             "terms": terms,
             "zygosity": zygosity,
             "life_stage": life_stage,
             "sexual_dimorphism": sexual_dimorphism,
-            "ic_scores": ic_scores,
-            "ic_max": float(ic_scores.max()) if ic_scores.size else 0.0,
+            "similarity_scores": similarity_scores,
+            "similarity_max": float(similarity_scores.max()) if similarity_scores.size else 0.0,
         }
 
     return gene_data_map
@@ -430,7 +425,7 @@ def _build_gene_data_map(
 
 def calculate_phenodigm_score(
     genewise_phenotype_significants: list[dict[str, str | float]],
-    terms_similarity_map: dict[tuple[str], dict[str, float]],
+    terms_similarity_map: dict[tuple[str, str], dict[str, float]],
     term_ic_map: dict[str, float],
 ) -> Iterator[dict[str, str | int]]:
     """
@@ -477,8 +472,8 @@ def summarize_similarity_annotations(
         for ancestor in ancestors:
             renamed_ancestor = {}
             for k, v in ancestor.items():
-                if k == "phenotype" and v in id_name_map:
-                    renamed_ancestor["phenotype"] = id_name_map[v]
+                if k == "mp_term_name" and v in id_name_map:
+                    renamed_ancestor["mp_term_name"] = id_name_map[v]
                 else:
                     renamed_ancestor[k] = v
             ancestors_renamed.append(renamed_ancestor)
@@ -490,7 +485,7 @@ def summarize_similarity_annotations(
             "gene2_symbol": gene2_symbol,
             "phenotype_shared_annotations": sorted(
                 ancestors_renamed,
-                key=lambda x: [x["phenotype"], x["zygosity"], x["life_stage"], x["sexual_dimorphism"]],
+                key=lambda x: [x["mp_term_name"], x["zygosity"], x["life_stage"], x["sexual_dimorphism"]],
             ),
             "phenotype_similarity_score": phenodigm_score if ancestors_renamed else 0,
         }

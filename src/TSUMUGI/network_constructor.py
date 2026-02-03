@@ -81,7 +81,7 @@ def _compose_pairwise_similarity_annotations(
     for record in pairwise_similarity_annotations:
         pair_annotations_composed = set()
         for annotation in record["phenotype_shared_annotations"]:
-            mp_term_name = annotation["phenotype"]
+            mp_term_name = annotation["mp_term_name"]
             zygosity = annotation["zygosity"]
             life_stage = annotation.get("life_stage", "")
             sexual_dimorphism = annotation.get("sexual_dimorphism", "")
@@ -338,7 +338,7 @@ def _convert_to_nodes_json(
     gene_records_map_filtered = _scale_effect_sizes(gene_records_map_filtered, mp_term_name)
 
     for gene, records in gene_records_map_filtered.items():
-        phenotypes: list[str] = [r["phenotype"] for r in records]
+        phenotypes: list[str] = [r["mp_term_name"] for r in records]
         diseases: set[str] = disease_annotations_composed.get(gene, set())
         node_color: int = next((r["effect_size"] for r in records if r["mp_term_name"] == mp_term_name), 1)
 
@@ -475,7 +475,7 @@ def _build_node_info(
     target_gene: str,
     hide_severity: bool = False,
 ) -> dict[str, dict[str, str | list[str] | float]]:
-    phenotypes: list[str] = [r["phenotype"] for r in gene_records_map.get(gene, [])]
+    phenotypes: list[str] = [r["mp_term_name"] for r in gene_records_map.get(gene, [])]
     diseases: set[str] = disease_annotations_composed.get(gene, set())
     node_color: int = 100 if target_gene == gene else 1
 

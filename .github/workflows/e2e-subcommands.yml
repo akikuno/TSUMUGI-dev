@@ -1,0 +1,150 @@
+name: e2e-subcommands
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  e2e:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-14]
+        python-version: ["3.13"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy tqdm networkx
+      - name: Create sample data
+        run: |
+          mkdir -p e2e-data
+          cat > e2e-data/mp.obo <<'EOF'
+          format-version: 1.2
+
+          [Term]
+          id: MP:0000002
+          name: abnormal tail morphology
+
+          EOF
+          cat > e2e-data/genewise.jsonl <<'EOF'
+          {"marker_symbol":"GeneA","marker_accession_id":"MGI:0000001","mp_term_id":"MP:0000002","mp_term_name":"abnormal tail morphology","zygosity":"Homo","life_stage":"Early","sexual_dimorphism":"Male","significant":true,"disease_annotation":["DiseaseA"]}
+          {"marker_symbol":"GeneB","marker_accession_id":"MGI:0000002","mp_term_id":"MP:0000002","mp_term_name":"abnormal tail morphology","zygosity":"Homo","life_stage":"Early","sexual_dimorphism":"Male","significant":false,"disease_annotation":[]}
+          {"marker_symbol":"GeneC","marker_accession_id":"MGI:0000003","mp_term_id":"MP:0000002","mp_term_name":"abnormal tail morphology","zygosity":"Homo","life_stage":"Early","sexual_dimorphism":"Male","significant":false,"disease_annotation":["DiseaseC"]}
+          EOF
+          cat > e2e-data/pairwise.jsonl <<'EOF'
+          {"gene1_symbol":"GeneA","gene2_symbol":"GeneB","phenotype_similarity_score":5,"phenotype_shared_annotations":[{"mp_term_name":"abnormal tail morphology","zygosity":"Homo","life_stage":"Early","sexual_dimorphism":"Male"},{"mp_term_name":"abnormal body weight","zygosity":"Hetero","life_stage":"Late","sexual_dimorphism":"Female"}]}
+          {"gene1_symbol":"GeneB","gene2_symbol":"GeneC","phenotype_similarity_score":1,"phenotype_shared_annotations":[{"mp_term_name":"abnormal tail morphology","zygosity":"Homo","life_stage":"Early","sexual_dimorphism":"Male"}]}
+          {"gene1_symbol":"GeneA","gene2_symbol":"GeneC","phenotype_similarity_score":10,"phenotype_shared_annotations":[{"mp_term_name":"abnormal body weight","zygosity":"Hetero","life_stage":"Late","sexual_dimorphism":"None"}]}
+          EOF
+          cat > e2e-data/genes.txt <<'EOF'
+          GeneA
+          EOF
+      - name: Create webapp templates
+        run: |
+          mkdir -p src/TSUMUGI/web/template/template-app-js
+          mkdir -p src/TSUMUGI/web/template/template-app-html
+          cat > src/TSUMUGI/web/template/template-app-js/template_app.js <<'EOF'
+          const isGeneSymbolPage = "XXX_ELEMENTS".includes("genesymbol");
+          // XXX_NODE_COLOR_INITIALIZATION
+          // XXX_NODE_COLOR_UPDATE
+          XXX_FILTER_BY_NODE_COLOR_AND_EDGE_SIZE
+          XXX_NODE_MIN_MAX
+          XXX_EDGE_MIN_MAX
+          const elements = XXX_ELEMENTS;
+          const phenotype = "XXX_PHENOTYPE";
+          const name = "XXX_NAME";
+          EOF
+          cat > src/TSUMUGI/web/template/template-app-js/filterByNodeColorAndEdgeSize_genelist.js <<'EOF'
+          // placeholder filter logic for E2E
+          EOF
+          cat > src/TSUMUGI/web/template/template-app-html/body-container.html <<'EOF'
+          <div id="body">XXX_PHENOTYPE_SEVERITY</div>
+          EOF
+          cat > src/TSUMUGI/web/template/template-app-html/cy-container.html <<'EOF'
+          <div id="cy">XXX_PHENOTYPE_SEVERITY</div>
+          EOF
+          cat > src/TSUMUGI/web/template/template-app-html/head.html <<'EOF'
+          <head>
+            <meta charset="utf-8" />
+            <title>XXX_TITLE</title>
+            <script src="./XXX_JS_FILE_NAME.js"></script>
+          </head>
+          EOF
+          cat > src/TSUMUGI/web/template/template-app-html/header.html <<'EOF'
+          <h1>XXX_TITLE</h1>
+          EOF
+          cat > src/TSUMUGI/web/template/template-app-html/template_app.html <<'EOF'
+          <!doctype html>
+          <html>
+          XXX_HEAD
+          <body>
+            XXX_H1
+            XXX_BODY_CONTAINER
+            XXX_CY_CONTAINER
+          </body>
+          </html>
+          EOF
+      - name: Run subcommand e2e checks
+        env:
+          PYTHONPATH: src
+        run: |
+          set -euo pipefail
+
+          python -m TSUMUGI.main mp -p -i MP:0000002 -m e2e-data/mp.obo --in e2e-data/pairwise.jsonl > e2e-data/out-mp-include.jsonl
+          python -m TSUMUGI.main mp -p -e MP:0000002 -m e2e-data/mp.obo -a e2e-data/genewise.jsonl --in e2e-data/pairwise.jsonl > e2e-data/out-mp-exclude.jsonl
+          python -m TSUMUGI.main count -p --min 2 --max 2 --in e2e-data/pairwise.jsonl > e2e-data/out-count.jsonl
+          python -m TSUMUGI.main score --min 5 --max 5 --in e2e-data/pairwise.jsonl > e2e-data/out-score.jsonl
+          python -m TSUMUGI.main genes -g -k e2e-data/genes.txt --in e2e-data/pairwise.jsonl > e2e-data/out-genes.jsonl
+          python -m TSUMUGI.main life-stage -k Early --in e2e-data/pairwise.jsonl > e2e-data/out-life.jsonl
+          python -m TSUMUGI.main sex -k Male --in e2e-data/pairwise.jsonl > e2e-data/out-sex.jsonl
+          python -m TSUMUGI.main zygosity -k Homo --in e2e-data/pairwise.jsonl > e2e-data/out-zygosity.jsonl
+          python -m TSUMUGI.main build-graphml -a e2e-data/genewise.jsonl --in e2e-data/pairwise.jsonl > e2e-data/out.graphml
+          python -m TSUMUGI.main build-webapp -a e2e-data/genewise.jsonl --in e2e-data/pairwise.jsonl -o e2e-data/webapp
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          def read_jsonl(path):
+              with open(path, encoding="utf-8") as f:
+                  return [json.loads(line) for line in f if line.strip()]
+
+          def assert_count(path, expected):
+              rows = read_jsonl(path)
+              if len(rows) != expected:
+                  raise SystemExit(f"{path}: expected {expected} lines, got {len(rows)}")
+
+          assert_count("e2e-data/out-mp-include.jsonl", 2)
+          assert_count("e2e-data/out-mp-exclude.jsonl", 1)
+          assert_count("e2e-data/out-count.jsonl", 1)
+          assert_count("e2e-data/out-score.jsonl", 1)
+          assert_count("e2e-data/out-genes.jsonl", 2)
+          assert_count("e2e-data/out-life.jsonl", 2)
+          assert_count("e2e-data/out-sex.jsonl", 2)
+          assert_count("e2e-data/out-zygosity.jsonl", 2)
+
+          def assert_all_annotations(path, key, expected):
+              rows = read_jsonl(path)
+              for row in rows:
+                  for ann in row.get("phenotype_shared_annotations", []):
+                      if ann.get(key) != expected:
+                          raise SystemExit(f"{path}: expected {key}={expected}, got {ann.get(key)}")
+
+          assert_all_annotations("e2e-data/out-life.jsonl", "life_stage", "Early")
+          assert_all_annotations("e2e-data/out-sex.jsonl", "sexual_dimorphism", "Male")
+          assert_all_annotations("e2e-data/out-zygosity.jsonl", "zygosity", "Homo")
+
+          graphml = Path("e2e-data/out.graphml").read_text(encoding="utf-8")
+          if "<graphml" not in graphml:
+              raise SystemExit("e2e-data/out.graphml: missing <graphml")
+
+          if not Path("e2e-data/webapp/index.html").is_file():
+              raise SystemExit("e2e-data/webapp/index.html: missing")
+          if not Path("e2e-data/webapp/data/network.json.gz").is_file():
+              raise SystemExit("e2e-data/webapp/data/network.json.gz: missing")
+          PY

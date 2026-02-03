@@ -10,28 +10,32 @@ def base_input():
         {
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
-            "phenotype_shared_annotations": {
-                "abnormal embryo size": {
+            "phenotype_shared_annotations": [
+                {
+                    "mp_term_name": "abnormal embryo size",
                     "life_stage": "Embryo",
                     "sexual_dimorphism": "None",
                     "zygosity": "Homo",
                 },
-                "preweaning lethality": {
+                {
+                    "mp_term_name": "preweaning lethality",
                     "life_stage": "Early",
                     "sexual_dimorphism": "None",
                     "zygosity": "Homo",
                 },
-                "decreased survival": {
+                {
+                    "mp_term_name": "decreased survival",
                     "life_stage": "Late",
                     "sexual_dimorphism": "None",
                     "zygosity": "Homo",
                 },
-                "abnormal gait": {
+                {
+                    "mp_term_name": "abnormal gait",
                     "life_stage": "Interval",
                     "sexual_dimorphism": "None",
                     "zygosity": "Homo",
                 },
-            },
+            ],
             "phenotype_similarity_score": 70,
         }
     ]
@@ -41,13 +45,23 @@ def build_expected_list(kept_terms):
     """Build the expected (yielded dict) list assuming a single-record input."""
     if not kept_terms:
         return []
-    all_terms = {
-        "abnormal embryo size": {"life_stage": "Embryo", "sexual_dimorphism": "None", "zygosity": "Homo"},
-        "preweaning lethality": {"life_stage": "Early", "sexual_dimorphism": "None", "zygosity": "Homo"},
-        "decreased survival": {"life_stage": "Late", "sexual_dimorphism": "None", "zygosity": "Homo"},
-        "abnormal gait": {"life_stage": "Interval", "sexual_dimorphism": "None", "zygosity": "Homo"},
-    }
-    kept = {k: all_terms[k] for k in kept_terms}
+    all_terms = [
+        {
+            "mp_term_name": "abnormal embryo size",
+            "life_stage": "Embryo",
+            "sexual_dimorphism": "None",
+            "zygosity": "Homo",
+        },
+        {
+            "mp_term_name": "preweaning lethality",
+            "life_stage": "Early",
+            "sexual_dimorphism": "None",
+            "zygosity": "Homo",
+        },
+        {"mp_term_name": "decreased survival", "life_stage": "Late", "sexual_dimorphism": "None", "zygosity": "Homo"},
+        {"mp_term_name": "abnormal gait", "life_stage": "Interval", "sexual_dimorphism": "None", "zygosity": "Homo"},
+    ]
+    kept = [term for term in all_terms if term["mp_term_name"] in kept_terms]
     return [
         {
             "gene1_symbol": "GeneA",
@@ -98,7 +112,7 @@ def test_empty_annotations_skipped():
         {
             "gene1_symbol": "GeneX",
             "gene2_symbol": "GeneY",
-            "phenotype_shared_annotations": {},
+            "phenotype_shared_annotations": [],
             "phenotype_similarity_score": 42,
         }
     ]
@@ -111,3 +125,30 @@ def test_empty_annotations_skipped():
         )
     )
     assert result == []
+
+
+def test_invalid_structure_raises_typeerror():
+    data = [
+        {
+            "gene1_symbol": "GeneX",
+            "gene2_symbol": "GeneY",
+            "phenotype_shared_annotations": {
+                "abnormal embryo size": {
+                    "life_stage": "Embryo",
+                    "sexual_dimorphism": "None",
+                    "zygosity": "Homo",
+                }
+            },
+            "phenotype_similarity_score": 42,
+        }
+    ]
+
+    with pytest.raises(TypeError):
+        list(
+            _filter_annotations_by_life_stage(
+                pairwise_similarity_annotations=data,
+                life_stage="Embryo",
+                keep=True,
+                drop=False,
+            )
+        )
