@@ -129,7 +129,9 @@ def test_apply_phenodigm_scaling_identical_phenotypes():
     }
     gene2_record = gene1_record
 
-    weighted_similarity_matrix = _calculate_weighted_similarity_matrix(gene1_record, gene2_record, terms_similarity_map)
+    weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
+        gene1_record, gene2_record, terms_similarity_map
+    )
 
     result = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
@@ -205,7 +207,9 @@ def test_apply_phenodigm_scaling_average_score_50():
         "similarity_max": float(similarity_scores.max()),
     }
 
-    weighted_similarity_matrix = _calculate_weighted_similarity_matrix(gene1_record, gene2_record, terms_similarity_map)
+    weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
+        gene1_record, gene2_record, terms_similarity_map
+    )
 
     result = _apply_phenodigm_scaling(
         weighted_similarity_matrix,
