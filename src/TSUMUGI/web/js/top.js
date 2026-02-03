@@ -1,7 +1,7 @@
 // Track which search mode is active (defaults to 'phenotype')
 let searchMode = "phenotype";
 
-const geneListPlaceHolder = "Trappc11\r\nRab10\r\nInts8\r\nVrk1\r\nSox4"; // Example content for the placeholder
+const geneListPlaceHolder = "Trappc11\r\nRab10\r\nInts8\r\nFah\r\nSox4"; // Example content for the placeholder
 
 // ====================================================================
 // Handle tab switching and keep searchMode in sync
