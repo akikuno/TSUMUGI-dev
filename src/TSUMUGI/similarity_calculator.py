@@ -8,7 +8,6 @@ from itertools import combinations, combinations_with_replacement
 
 import numpy as np
 from tqdm import tqdm
-
 from TSUMUGI.ontology_handler import (
     build_term_hierarchy,
     find_all_descendant_terms,
@@ -94,6 +93,21 @@ def _calculate_pair_jaccard(
     return jaccard_index
 
 
+def _calculate_pair_similarity_score(
+    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
+) -> tuple[tuple[str], dict[str | None, float]]:
+    """Calculate pairwise term similarity.
+    Pairwise term similarity: sqrt(Resnik similarity * Jaccard index)
+    msca: Most Specific Common Ancestor
+    """
+    msca, resnik = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
+    jaccard = _calculate_pair_jaccard(term1_id, term2_id, parent_term_map, term_ic_map)
+    score = math.sqrt(resnik * jaccard)
+
+    term_pairs = tuple(sorted((term1_id, term2_id)))
+    return term_pairs, {msca: score}
+
+
 def _calculate_pair_worker(term_pair: tuple[str, str]) -> tuple[tuple[str], dict[str | None, float]]:
     """Worker-side calculation using globals set by _init_worker."""
     term1_id, term2_id = term_pair
@@ -106,26 +120,14 @@ def _calculate_pair_worker(term_pair: tuple[str, str]) -> tuple[tuple[str], dict
 
     if term1_id == term2_id:
         msca = term1_id
-        sim = term_ic_map.get(term1_id, 0.0)
+        score = term_ic_map.get(term1_id, 0.0)
+        # ignore jaccard for identical terms because it is always 1.0
     else:
-        msca, sim = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
+        msca, resnik = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
+        jaccard = _calculate_pair_jaccard(term1_id, term2_id, parent_term_map, term_ic_map)
+        score = math.sqrt(resnik * jaccard)
 
     term_pairs = tuple(sorted((term1_id, term2_id)))
-    return term_pairs, {msca: sim}
-
-
-def _calculate_pair_similarity_score(
-    term1_id: str, term2_id: str, parent_term_map: dict[str, set[str]], term_ic_map: dict[str, float]
-) -> tuple[tuple[str], dict[str | None, float]]:
-    """Calculate pairwise similarity (Phenodigm score).
-    msca: Most Specific Common Ancestor
-    Phenodigm score: sqrt(Resnik similarity * Jaccard index)
-    """
-    msca, resnik = _calculate_pair_mica_and_resnik(term1_id, term2_id, parent_term_map, term_ic_map)
-    jaccard = _calculate_pair_jaccard(term1_id, term2_id, parent_term_map, term_ic_map)
-
-    term_pairs = tuple(sorted((term1_id, term2_id)))
-    score = math.sqrt(resnik * jaccard)
     return term_pairs, {msca: score}
 
 
@@ -133,9 +135,9 @@ def calculate_all_pairwise_similarities(
     ontology_terms: dict[str, dict],
     all_term_ids: set[str],
     ic_threshold: int = 5,
-    threads: int | None = None,
+    threads: int = 1,
 ) -> tuple[dict[tuple[str], dict[str | None, float]], dict[str, float]]:
-    """Calculate pairwise Resnik similarities for all term IDs."""
+    """Calculate pairwise term similarities for all term IDs."""
     parent_term_map, child_term_map = build_term_hierarchy(ontology_terms)
     term_ic_map = _calculate_term_ic_map(ontology_terms, child_term_map, ic_threshold=ic_threshold)
     term_list = sorted(all_term_ids)
@@ -148,7 +150,7 @@ def calculate_all_pairwise_similarities(
                 term1_id, term2_id, parent_term_map, term_ic_map
             )
             terms_similarity_map[term_pairs] = ancestor_ic_map
-        return terms_similarity_map
+        return terms_similarity_map, term_ic_map
 
     with ProcessPoolExecutor(
         max_workers=threads,

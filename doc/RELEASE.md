@@ -32,6 +32,9 @@
 - Update template paths in webapp_builder.py to reflect current directory structure.
   Issue: [#154](https://github.com/akikuno/TSUMUGI-dev/issues/154)  
 
+- Use Jaccard index in `_calculate_pair_worker` for pairwise similarity computation.  
+  Issue: [#156](https://github.com/akikuno/TSUMUGI-dev/issues/156)  
+
 ### 🔧 Maintenance
 
 - Rename pairwise_similarity_annotations key from phenotype to mp_term_name.  
