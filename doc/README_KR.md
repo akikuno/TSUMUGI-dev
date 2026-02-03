@@ -423,29 +423,53 @@ CLI는 STDIN/STDOUT을 지원하므로 파이프로 연결할 수 있습니다:
 # 🔍 표현형 유사 유전자군 계산
 
 ## 데이터 소스
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results)의 `statistical-results-ALL.csv.gz` 사용.  
-열 정보: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+IMPC 데이터셋 [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`를 사용합니다.  
+데이터셋 컬럼 정보: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## 전처리
-KO 마우스의 P값(`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`)이 0.0001 이하인 유전자–표현형을 추출합니다.  
-- Zygosity: `homo`, `hetero`, `hemi`  
-- Sex: `female`, `male`
+
+KO 마우스의 P-value (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`)가 ≤ 0.0001인 유전자–표현형 쌍을 추출합니다.  
+- 유전형 특이적 표현형은 `homo`, `hetero`, `hemi`로 주석합니다.  
+- 성 특이적 표현형은 `female` 또는 `male`로 주석합니다.
 
 ## 표현형 유사도
-TSUMUGI는 현재 Phenodigm과 유사한 접근을 사용합니다. MP용어 간 **Resnik 유사도**와 조상 집합의 **Jaccard 유사도**를 계산한 뒤 **기하평균**으로 결합합니다. 원래 Phenodigm과의 핵심 차이는 메타데이터(zygosity, life stage, sexual dimorphism) 일치도에 따른 가중치를 적용한다는 점입니다.
 
-1. MP 온톨로지를 구축하고 정보량(IC) 계산:  
+TSUMUGI는 Phenodigm 유사 접근법을 채택합니다([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> 원본 Phenodigm과의 차이는 다음과 같습니다.  
+> 1. **IC 5퍼센타일 미만의 용어는 IC=0으로 설정하여 지나치게 일반적인 표현형(예: embryo phenotype)을 평가하지 않습니다.**
+> 2. **유전형, 생애 단계, 성별 메타데이터 일치에 기반한 가중치를 적용합니다.**
+
+### 1. MP 용어 쌍 유사도 정의
+
+* MP 온톨로지를 구축하고 각 용어의 Information Content (IC)를 계산합니다:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   IC 하위 5퍼센타일 용어는 0으로 설정합니다.
-2. 각 MP 용어 쌍에서 가장 특이한 공통 조상(MICA)을 찾고 그 IC를 Resnik으로 사용합니다.  
-   조상 집합의 Jaccard 지수를 계산합니다.  
-   용어 쌍 유사도 = `sqrt(Resnik * Jaccard)`.
-3. 각 유전자 쌍에 대해 용어×용어 유사도 행렬을 만들고 메타데이터 가중치를 적용합니다.  
-   zygosity/라이프스테이지/성적 이형 일치 수(0/1/2/3)에 대해 0.25/0.5/0.75/1.0을 부여합니다.
-4. Phenodigm 방식으로 0–100 정규화를 적용합니다:  
-   행/열 최대값에서 실제 max/mean을 구하고 IC 기반 이론 max/mean으로 정규화합니다.  
+   IC 5퍼센타일 미만의 용어는 IC=0으로 설정합니다.
+
+* 각 MP 용어 쌍에 대해 가장 특이적인 공통 조상(MICA)을 찾고, 그 IC를 Resnik 유사도로 사용합니다.  
+
+* 두 MP 용어의 조상 집합에 대해 Jaccard 지수를 계산합니다.  
+
+* MP 용어 쌍 유사도를 `sqrt(Resnik * Jaccard)`로 정의합니다.
+
+### 2. 표현형 메타데이터 일치에 따른 가중치
+
+* 유전형, 생애 단계, 성별 메타데이터에 따라 가중치를 적용합니다.
+
+* 각 유전자 쌍에 대해 MP 용어 × MP 용어 유사도 행렬을 만듭니다.  
+
+* 유전형/생애 단계/성별의 일치 수가 0, 1, 2, 3일 때 가중치 0.2, 0.5, 0.75, 1.0을 곱합니다.
+
+### 3. Phenodigm 스케일링
+
+* Phenodigm형 스케일링으로 각 KO 마우스의 표현형 유사도를 0–100으로 정규화합니다:  
+   관측된 최대/평균을 계산하고 이론적 최대/평균으로 정규화합니다.  
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
-   이론 분모가 0이면 0으로 둡니다.
+   분모가 0이면 점수는 0입니다.
+
+---
 
 # ✉️ 문의
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

@@ -421,30 +421,53 @@ Le CLI prend en charge STDIN/STDOUT, vous pouvez chaîner les commandes:
 # 🔍 Calcul des groupes de gènes phénotypiquement similaires
 
 ## Source de données
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Colonnes : [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+Nous utilisons le jeu de données IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Détails des colonnes: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Prétraitement
-Extraire les paires gène–phénotype avec P (`p_value`, `female_ko_effect_p_value` ou `male_ko_effect_p_value`) ≤ 0.0001.  
-- Zygosité : `homo`, `hetero`, `hemi`  
-- Sexe : `female`, `male`
+
+Extraire les paires gène–phénotype dont les P-values de souris KO (`p_value`, `female_ko_effect_p_value` ou `male_ko_effect_p_value`) sont ≤ 0.0001.  
+- Annoter les phénotypes spécifiques au génotype en `homo`, `hetero` ou `hemi`.  
+- Annoter les phénotypes spécifiques au sexe en `female` ou `male`.
 
 ## Similarité phénotypique
-TSUMUGI suit une approche proche de Phenodigm. On calcule la similarité de **Resnik** entre termes MP et la similarité de **Jaccard** entre ensembles d’ancêtres, puis on les combine par **moyenne géométrique**. La principale différence avec Phenodigm est l’ajout d’une pondération par métadonnées (zygosité, stade de vie, dimorphisme sexuel).
 
-1. Construire l’ontologie MP et calculer l’IC :  
+TSUMUGI adopte une approche de type Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> Les différences par rapport au Phenodigm original sont les suivantes.  
+> 1. **Les termes en dessous du 5e percentile d’IC sont fixés à IC=0, afin de ne pas évaluer des phénotypes trop généraux (ex. embryo phenotype).**
+> 2. **Nous appliquons une pondération basée sur les correspondances de métadonnées: génotype, stade de vie, sexe.**
+
+### 1. Définition de la similarité des paires de termes MP
+
+* Construire l’ontologie MP et calculer l’Information Content (IC) pour chaque terme:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Les termes sous le 5e percentile d’IC sont mis à 0.
-2. Pour chaque paire de termes MP, trouver l’ancêtre commun le plus spécifique (MICA) et utiliser son IC comme Resnik.  
-   Calculer l’indice de Jaccard sur les ensembles d’ancêtres.  
-   Similarité de termes = `sqrt(Resnik * Jaccard)`.
-3. Pour chaque paire de gènes, construire une matrice terme×terme et appliquer la pondération par métadonnées.  
-   Les correspondances zygosité/stade de vie/dimorphisme sexuel donnent des poids 0.25/0.5/0.75/1.0 pour 0/1/2/3 correspondances.
-4. Appliquer un scaling de type Phenodigm vers 0–100 :  
-   Utiliser les maxima lignes/colonnes pour obtenir le max et la moyenne réels.  
-   Normaliser par le max/la moyenne théoriques basés sur l’IC, puis calculer  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   Si un dénominateur théorique est 0, on met 0.
+   Les termes sous le 5e percentile d’IC sont fixés à IC=0.
+
+* Pour chaque paire de termes MP, trouver l’ancêtre commun le plus spécifique (MICA) et utiliser son IC comme similarité de Resnik.  
+
+* Pour deux termes MP, calculer l’indice de Jaccard de leurs ensembles d’ancêtres.  
+
+* Définir la similarité de paires de termes MP comme `sqrt(Resnik * Jaccard)`.
+
+### 2. Pondération selon l’accord des métadonnées phénotypiques
+
+* Appliquer des poids selon les métadonnées phénotypiques: génotype, stade de vie, sexe.
+
+* Pour chaque paire de gènes, construire une matrice de similarité termes MP × termes MP.  
+
+* Multiplier par des poids 0.2, 0.5, 0.75, 1.0 pour 0, 1, 2, 3 correspondances de génotype/stade de vie/sexe.
+
+### 3. Mise à l’échelle Phenodigm
+
+* Appliquer un scaling de type Phenodigm pour normaliser la similarité phénotypique de chaque souris KO à 0–100:  
+   Calculer le maximum/la moyenne observés, puis normaliser par le maximum/la moyenne théoriques.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   Si le dénominateur est 0, le score est 0.
+
+---
 
 # ✉️ Contact
 - Formulaire : https://forms.gle/ME8EJZZHaRNgKZ979  

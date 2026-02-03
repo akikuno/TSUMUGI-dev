@@ -421,30 +421,53 @@ Die CLI unterstützt STDIN/STDOUT, sodass du Befehle verketten kannst:
 # 🔍 Berechnung ähnlicher Gen-Gruppen
 
 ## Datenquelle
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Felder: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+Wir verwenden den IMPC-Datensatz [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Spalten des Datensatzes: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Vorverarbeitung
-Extrahiere Gen–Phänotyp-Paare mit P ≤ 0.0001 (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`).  
-- Zygosität annotieren: `homo`, `hetero`, `hemi`  
-- Geschlecht annotieren: `female`, `male`
+
+Extrahiere Gen–Phänotyp-Paare mit KO-Maus-P-Werten (`p_value`, `female_ko_effect_p_value` oder `male_ko_effect_p_value`) ≤ 0.0001.  
+- Genotyp-spezifische Phänotypen als `homo`, `hetero` oder `hemi` annotieren.  
+- Geschlechtsspezifische Phänotypen als `female` oder `male` annotieren.
 
 ## Phänotypische Ähnlichkeit
-TSUMUGI folgt aktuell einem Phenodigm-ähnlichen Ansatz. Wir berechnen die **Resnik-Ähnlichkeit** zwischen MP-Begriffen und die **Jaccard-Ähnlichkeit** der Vorfahrenmengen und kombinieren beides über das **geometrische Mittel**. Der wichtigste Unterschied zu Phenodigm ist eine Metadaten-Gewichtung (Zygosität, Lebensphase, sexueller Dimorphismus) bei der Aggregation.
 
-1. MP-Ontologie aufbauen und IC berechnen:  
+TSUMUGI verfolgt einen Phenodigm-ähnlichen Ansatz ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> Die Unterschiede zum Original-Phenodigm sind wie folgt.  
+> 1. **Begriffe unterhalb des 5. IC-Perzentils werden auf IC=0 gesetzt, sodass zu allgemeine Phänotypen (z. B. embryo phenotype) nicht bewertet werden.**
+> 2. **Wir gewichten basierend auf Metadaten-Übereinstimmungen in Genotyp, Lebensphase und Geschlecht.**
+
+### 1. Definition der MP-Term-Paar-Similarität
+
+* Die MP-Ontologie aufbauen und den Information Content (IC) für jeden Term berechnen:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Begriffe unter dem 5. Perzentil der IC werden auf 0 gesetzt.
-2. Für jedes MP-Begriffs-Paar den spezifischsten gemeinsamen Vorfahren (MICA) bestimmen und dessen IC als Resnik verwenden.  
-   Jaccard-Index über die Vorfahrenmengen berechnen.  
-   Begriffs-Ähnlichkeit = `sqrt(Resnik * Jaccard)`.
-3. Für jedes Genpaar eine Begriff×Begriff-Matrix aufbauen und Metadaten-Gewichtung anwenden.  
-   Übereinstimmungen von Zygosität/Lebensphase/sexuellem Dimorphismus liefern Gewichte 0.25/0.5/0.75/1.0 für 0/1/2/3 Matches.
-4. Phenodigm-Skalierung auf 0–100 anwenden:  
-   Zeilen-/Spaltenmaxima für reales Max/Mean verwenden.  
-   Mit theoretischem Max/Mean aus IC normalisieren und berechnen  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   Theoretischer Nenner 0 → 0.
+   Begriffe unterhalb des 5. IC-Perzentils werden auf IC=0 gesetzt.
+
+* Für jedes MP-Term-Paar den spezifischsten gemeinsamen Vorfahren (MICA) bestimmen und dessen IC als Resnik-Similarität verwenden.  
+
+* Für zwei MP-Terme den Jaccard-Index ihrer Vorfahrenmengen berechnen.  
+
+* Die MP-Term-Paar-Similarität als `sqrt(Resnik * Jaccard)` definieren.
+
+### 2. Gewichtung nach Übereinstimmung der Phänotyp-Metadaten
+
+* Gewichte basierend auf Phänotyp-Metadaten anwenden: Genotyp, Lebensphase und Geschlecht.
+
+* Für jedes Genpaar eine MP-Term × MP-Term-Similaritätsmatrix erstellen.  
+
+* Mit Gewichten 0.2, 0.5, 0.75, 1.0 für 0, 1, 2, 3 Übereinstimmungen von Genotyp/Lebensphase/Geschlecht multiplizieren.
+
+### 3. Phenodigm-Skalierung
+
+* Phenodigm-ähnliche Skalierung anwenden, um die phänotypische Ähnlichkeit jeder KO-Maus auf 0–100 zu normalisieren:  
+   Beobachtetes Maximum/Mittel berechnen und durch theoretisches Maximum/Mittel normalisieren.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   Wenn der Nenner 0 ist, wird der Score auf 0 gesetzt.
+
+---
 
 # ✉️ Kontakt
 - Google-Formular: https://forms.gle/ME8EJZZHaRNgKZ979  

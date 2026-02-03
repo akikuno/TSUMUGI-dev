@@ -421,30 +421,53 @@ A CLI suporta STDIN/STDOUT, então você pode encadear comandos:
 # 🔍 Cálculo de grupos gênicos com fenótipos similares
 
 ## Fonte de dados
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Campos: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+Usamos o conjunto de dados IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Colunas do dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Pré-processamento
-Extrair pares gen–fenótipo com P ≤ 0.0001 (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`).  
-- Zigosidade: `homo`, `hetero`, `hemi`  
-- Sexo: `female`, `male`
+
+Extraímos pares gene–fenótipo cujos P-values em camundongos KO (`p_value`, `female_ko_effect_p_value` ou `male_ko_effect_p_value`) são ≤ 0.0001.  
+- Anotar fenótipos específicos de genótipo como `homo`, `hetero` ou `hemi`.  
+- Anotar fenótipos específicos de sexo como `female` ou `male`.
 
 ## Similaridade fenotípica
-TSUMUGI atualmente segue uma abordagem semelhante ao Phenodigm. Calculamos a similaridade de **Resnik** entre termos MP e a similaridade de **Jaccard** entre conjuntos de ancestrais, e combinamos por **média geométrica**. A principal diferença do Phenodigm original é a ponderação de metadados (zigosidade, estágio de vida, dimorfismo sexual) ao agregar as similaridades.
 
-1. Construir a ontologia MP e calcular IC:  
+TSUMUGI adota uma abordagem semelhante ao Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> As diferenças em relação ao Phenodigm original são as seguintes.  
+> 1. **Termos abaixo do percentil 5 de IC são definidos como IC=0, para não avaliar fenótipos excessivamente gerais (ex.: embryo phenotype).**
+> 2. **Aplicamos ponderação baseada em correspondências de metadados: genótipo, estágio de vida e sexo.**
+
+### 1. Definição da similaridade de pares de termos MP
+
+* Construir a ontologia MP e calcular o Information Content (IC) de cada termo:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Termos abaixo do percentil 5 de IC são definidos como 0.
-2. Para cada par de termos MP, encontrar o ancestral comum mais específico (MICA) e usar seu IC como Resnik.  
-   Calcular o índice de Jaccard sobre os conjuntos de ancestrais.  
-   Similaridade de termos = `sqrt(Resnik * Jaccard)`.
-3. Para cada par de genes, construir uma matriz termo×termo e aplicar ponderação por metadados.  
-   Correspondências de zigosidade/estágio de vida/dimorfismo sexual dão pesos 0.25/0.5/0.75/1.0 para 0/1/2/3 correspondências.
-4. Aplicar escalonamento ao estilo Phenodigm para 0–100:  
-   Usar máximos de linhas/colunas para obter max e média reais.  
-   Normalizar por max/média teóricos baseados em IC e calcular  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   Se um denominador teórico for 0, o valor é definido como 0.
+   Termos abaixo do percentil 5 de IC são definidos como IC=0.
+
+* Para cada par de termos MP, encontrar o ancestral comum mais específico (MICA) e usar seu IC como similaridade de Resnik.  
+
+* Para dois termos MP, calcular o índice de Jaccard dos seus conjuntos de ancestrais.  
+
+* Definir a similaridade de pares de termos MP como `sqrt(Resnik * Jaccard)`.
+
+### 2. Ponderação por concordância de metadados fenotípicos
+
+* Aplicar pesos conforme metadados fenotípicos: genótipo, estágio de vida e sexo.
+
+* Para cada par de genes, construir uma matriz de similaridade termo MP × termo MP.  
+
+* Multiplicar por pesos 0.2, 0.5, 0.75, 1.0 para 0, 1, 2, 3 correspondências de genótipo/estágio de vida/sexo.
+
+### 3. Escalonamento Phenodigm
+
+* Aplicar escalonamento tipo Phenodigm para normalizar a similaridade fenotípica de cada camundongo KO em 0–100:  
+   Calcular o máximo/a média observados e normalizar pelo máximo/pela média teóricos.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   Se o denominador for 0, a pontuação será 0.
+
+---
 
 # ✉️ Contato
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

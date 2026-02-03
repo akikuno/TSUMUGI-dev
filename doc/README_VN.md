@@ -421,30 +421,53 @@ CLI hỗ trợ STDIN/STDOUT, vì vậy bạn có thể nối lệnh:
 # 🔍 Cách tính nhóm gen tương đồng kiểu hình
 
 ## Nguồn dữ liệu
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Trường thông tin: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+Chúng tôi dùng bộ dữ liệu IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Thông tin cột dữ liệu: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Tiền xử lý
-Chọn cặp gen–kiểu hình có P ≤ 0.0001 (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`).  
-- Zygosity: `homo`, `hetero`, `hemi`  
-- Giới tính: `female`, `male`
+
+Trích xuất các cặp gene–kiểu hình có P-value ở chuột KO (`p_value`, `female_ko_effect_p_value` hoặc `male_ko_effect_p_value`) ≤ 0.0001.  
+- Gắn nhãn kiểu hình đặc hiệu kiểu gen là `homo`, `hetero` hoặc `hemi`.  
+- Gắn nhãn kiểu hình đặc hiệu giới tính là `female` hoặc `male`.
 
 ## Độ tương đồng kiểu hình
-TSUMUGI hiện theo cách tiếp cận gần với Phenodigm. Chúng tôi tính độ tương đồng **Resnik** giữa các thuật ngữ MP và độ tương đồng **Jaccard** giữa các tập tổ tiên, rồi kết hợp bằng **trung bình hình học**. Khác biệt chính so với Phenodigm gốc là thêm trọng số metadata (zygosity, life stage, sexual dimorphism) khi tổng hợp.
 
-1. Xây dựng ontology MP và tính IC:  
+TSUMUGI áp dụng cách tiếp cận kiểu Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> Các khác biệt so với Phenodigm gốc như sau.  
+> 1. **Các thuật ngữ dưới phân vị IC thứ 5 được đặt IC=0, để không đánh giá các kiểu hình quá chung (ví dụ: embryo phenotype).**
+> 2. **Chúng tôi áp dụng trọng số dựa trên mức khớp metadata: kiểu gen, giai đoạn sống và giới tính.**
+
+### 1. Định nghĩa độ tương đồng cặp thuật ngữ MP
+
+* Xây dựng ontology MP và tính Information Content (IC) cho từng thuật ngữ:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Các thuật ngữ dưới phân vị 5 của IC được đặt về 0.
-2. Với mỗi cặp thuật ngữ MP, tìm tổ tiên chung cụ thể nhất (MICA) và dùng IC của nó làm Resnik.  
-   Tính chỉ số Jaccard trên các tập tổ tiên.  
-   Độ tương đồng thuật ngữ = `sqrt(Resnik * Jaccard)`.
-3. Với mỗi cặp gen, xây dựng ma trận thuật ngữ×thuật ngữ và áp dụng trọng số metadata.  
-   Mức khớp zygosity/giai đoạn sống/dị hình giới tính cho trọng số 0.25/0.5/0.75/1.0 ứng với 0/1/2/3 khớp.
-4. Áp dụng chuẩn hóa kiểu Phenodigm về 0–100:  
-   Dùng max theo hàng/cột để lấy max và mean thực tế.  
-   Chuẩn hóa theo max/mean lý thuyết dựa trên IC và tính  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   Nếu mẫu số lý thuyết bằng 0, đặt về 0.
+   Các thuật ngữ dưới phân vị IC thứ 5 được đặt IC=0.
+
+* Với mỗi cặp thuật ngữ MP, tìm tổ tiên chung đặc hiệu nhất (MICA) và dùng IC của nó làm độ tương đồng Resnik.  
+
+* Với hai thuật ngữ MP, tính chỉ số Jaccard của các tập tổ tiên.  
+
+* Định nghĩa độ tương đồng cặp thuật ngữ MP là `sqrt(Resnik * Jaccard)`.
+
+### 2. Trọng số theo mức độ khớp metadata kiểu hình
+
+* Áp dụng trọng số theo metadata kiểu hình: kiểu gen, giai đoạn sống và giới tính.
+
+* Với mỗi cặp gene, tạo ma trận độ tương đồng thuật ngữ MP × thuật ngữ MP.  
+
+* Nhân với trọng số 0.2, 0.5, 0.75, 1.0 cho 0, 1, 2, 3 mức khớp kiểu gen/giai đoạn sống/giới tính.
+
+### 3. Chuẩn hóa Phenodigm
+
+* Áp dụng chuẩn hóa kiểu Phenodigm để đưa độ tương đồng kiểu hình của từng chuột KO về 0–100:  
+   Tính giá trị tối đa/trung bình quan sát được, rồi chuẩn hóa theo tối đa/trung bình lý thuyết.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   Nếu mẫu số bằng 0, điểm được đặt về 0.
+
+---
 
 # ✉️ Liên hệ
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

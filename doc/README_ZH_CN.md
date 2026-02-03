@@ -421,31 +421,54 @@ CLI支持STDIN/STDOUT，可串联命令:
 
 # 🔍 表型相似基因群的计算方法
 
-## 数据源
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) 的 `statistical-results-ALL.csv.gz`  
-字段说明: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+## 数据来源
+
+使用IMPC数据集[Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`。  
+数据列信息：[Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## 预处理
-提取 KO 小鼠 P 值(`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`) ≤ 0.0001 的基因–表型。  
-- Zygosity: `homo`, `hetero`, `hemi`  
-- 性别: `female`, `male`
+
+提取KO小鼠P-value（`p_value`、`female_ko_effect_p_value`或`male_ko_effect_p_value`）≤ 0.0001的基因–表型对。  
+- 基因型特异表型标注为`homo`、`hetero`或`hemi`。  
+- 性别特异表型标注为`female`或`male`。
 
 ## 表型相似度
-TSUMUGI目前采用类似Phenodigm的方法。我们计算MP术语之间的**Resnik相似度**与祖先集合的**Jaccard相似度**，并用**几何平均**进行合并。与原始Phenodigm的主要差异是加入元数据加权（zygosity、life stage、sexual dimorphism）来汇总相似度。
 
-1. 构建MP本体并计算信息量(IC)：  
+TSUMUGI采用类Phenodigm方法（[Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)）。  
+
+> [!NOTE]
+> 与原始Phenodigm的差异如下。  
+> 1. **IC低于第5百分位的术语设置为IC=0，从而不评估过于一般的表型（例如embryo phenotype）。**
+> 2. **根据基因型、生命阶段和性别的元数据匹配进行加权。**
+
+### 1. MP术语对相似度定义
+
+* 构建MP本体并计算每个术语的信息量（IC）：  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   IC低于第5百分位的术语设为0。
-2. 对每个MP术语对，找到最具体的公共祖先(MICA)并用其IC作为Resnik。  
-   计算祖先集合的Jaccard指数。  
-   术语对相似度 = `sqrt(Resnik * Jaccard)`。
-3. 对每个基因对构建术语×术语相似度矩阵并应用元数据加权。  
-   zygosity/生命阶段/性别二态性的匹配数为0/1/2/3时，权重分别为0.25/0.5/0.75/1.0。
-4. 采用Phenodigm式缩放到0–100：  
-   使用行/列最大值获得实际max/mean。  
-   用IC得到的理论max/mean进行归一化并计算  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`。  
-   若理论分母为0，则设为0。
+   IC低于第5百分位的术语设置为IC=0。
+
+* 对每个MP术语对，找到最特异的共同祖先（MICA），并以其IC作为Resnik相似度。  
+
+* 对两个MP术语，计算其祖先集合的Jaccard指数。  
+
+* 将MP术语对相似度定义为`sqrt(Resnik * Jaccard)`。
+
+### 2. 按表型元数据一致性加权
+
+* 根据表型元数据（基因型、生命阶段、性别）进行加权。
+
+* 对每个基因对构建MP术语×MP术语相似度矩阵。  
+
+* 对基因型/生命阶段/性别匹配数为0、1、2、3时，分别乘以0.2、0.5、0.75、1.0的权重。
+
+### 3. Phenodigm缩放
+
+* 采用Phenodigm式缩放，将每个KO小鼠的表型相似度归一化到0–100：  
+   计算观测的最大值/均值，并用理论最大值/均值进行归一化。  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   若分母为0，则得分为0。
+
+---
 
 # ✉️ 联系
 - Google 表单: https://forms.gle/ME8EJZZHaRNgKZ979  

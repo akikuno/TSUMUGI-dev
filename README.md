@@ -477,31 +477,53 @@ CLI supports STDIN/STDOUT, so you can chain commands:
 # 🔍 How We Calculate Phenotypically Similar Genes
 
 ## Data source
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Columns: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+We use the IMPC dataset [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+See dataset columns: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Preprocessing
-Extract gene–phenotype pairs with KO mouse P-value (`p_value`, `female_ko_effect_p_value`, or `male_ko_effect_p_value`) ≤ 0.0001.  
-- Annotate genotype-specific phenotypes: `homo`, `hetero`, `hemi`  
-- Annotate sex-specific phenotypes: `female`, `male`
+
+Extract gene–phenotype pairs whose KO mouse P-values (`p_value`, `female_ko_effect_p_value`, or `male_ko_effect_p_value`) are ≤ 0.0001.  
+- Annotate genotype-specific phenotypes as `homo`, `hetero`, or `hemi`.  
+- Annotate sex-specific phenotypes as `female` or `male`.
 
 ## Phenotypic similarity
-TSUMUGI currently follows a **Phenodigm-like** approach ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)). We compute **Resnik similarity** between MP terms and **Jaccard similarity** between term sets, then combine them by the **geometric mean**. The key difference from the original Phenodigm is that TSUMUGI adds **metadata weighting** (zygosity, life stage, sexual dimorphism) when aggregating similarities.
 
-1. Build the MP ontology and compute Information Content(IC) for each term:  
+TSUMUGI adopts a Phenodigm-like approach ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> Differences from the original Phenodigm are as follows.  
+> 1. **Terms below the 5th percentile of IC are set to IC=0, so overly general phenotypes (e.g., embryo phenotype) are not evaluated.**
+> 2. **We apply weighting based on metadata matches in genotype, life stage, and sex.**
+
+### 1. Definition of MP term-pair similarity
+
+* Build the MP ontology and compute Information Content (IC) for each term:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Terms below the 5th percentile of IC are set to 0.
-2. For each MP term pair, find the most specific common ancestor and compute Resnik similarity as its IC.  
-   Compute Jaccard index over the ancestor sets.  
-   Pairwise term similarity = `sqrt(Resnik * Jaccard)`.
-3. For each gene pair, build a term-by-term similarity matrix and apply metadata weighting.  
-   Zygosity, life stage, and sexual dimorphism matches contribute weights of 0.25/0.5/0.75/1.0 for 0/1/2/3 matches.
-4. Apply Phenodigm-style scaling to 0–100:  
-   Use row/column maxima to get actual max and mean similarity.  
-   Normalize by theoretical max/mean based on IC, then compute  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   If a theoretical denominator is 0, that term is set to 0.
+   Terms below the 5th percentile of IC are set to IC=0.
 
+* For each MP term pair, find the most specific common ancestor (MICA) and use its IC as Resnik similarity.  
+
+* For two MP terms, compute the Jaccard index of their ancestor sets.  
+
+* Define MP term-pair similarity as `sqrt(Resnik * Jaccard)`.
+
+### 2. Weighting by phenotype metadata agreement
+
+* Apply weights based on phenotype metadata: genotype, life stage, and sex.
+
+* For each gene pair, build an MP-term × MP-term similarity matrix.  
+
+* Multiply by weights 0.2, 0.5, 0.75, 1.0 for 0, 1, 2, 3 matches of genotype/life stage/sex.
+
+### 3. Phenodigm scaling
+
+* Apply Phenodigm-style scaling to normalize each KO mouse phenotype similarity to 0–100:  
+   Compute observed max/mean, then normalize by theoretical max/mean.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   If the denominator is 0, the score is set to 0.
+
+---
 
 # ✉️ Contact
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

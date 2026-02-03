@@ -421,30 +421,53 @@ CLI mendukung STDIN/STDOUT, sehingga Anda bisa merangkai perintah:
 # 🔍 Cara kami menghitung kesamaan fenotipe
 
 ## Sumber data
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Kolom: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+Kami menggunakan dataset IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Kolom dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Pra-pemrosesan
-Ambil pasangan gen–fenotipe dengan P ≤ 0.0001 (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`).  
-- Zigositas: `homo`, `hetero`, `hemi`  
-- Jenis kelamin: `female`, `male`
 
-## Kesamaan fenotipik
-TSUMUGI saat ini mengikuti pendekatan mirip Phenodigm. Kami menghitung kemiripan **Resnik** antar istilah MP dan kemiripan **Jaccard** antar himpunan leluhur, lalu menggabungkannya dengan **rata-rata geometrik**. Perbedaan utama dari Phenodigm asli adalah penambahan pembobotan metadata (zygosity, life stage, sexual dimorphism) saat mengagregasi kemiripan.
+Ekstrak pasangan gen–fenotipe dengan P-value pada tikus KO (`p_value`, `female_ko_effect_p_value`, atau `male_ko_effect_p_value`) ≤ 0.0001.  
+- Anotasikan fenotipe spesifik genotipe sebagai `homo`, `hetero`, atau `hemi`.  
+- Anotasikan fenotipe spesifik jenis kelamin sebagai `female` atau `male`.
 
-1. Bangun ontologi MP dan hitung IC:  
+## Kesamaan fenotipe
+
+TSUMUGI mengadopsi pendekatan mirip Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> Perbedaan dengan Phenodigm asli adalah sebagai berikut.  
+> 1. **Istilah di bawah persentil IC ke-5 ditetapkan ke IC=0, sehingga fenotipe yang terlalu umum (misalnya embryo phenotype) tidak dievaluasi.**
+> 2. **Kami menerapkan pembobotan berdasarkan kecocokan metadata: genotipe, tahap kehidupan, dan jenis kelamin.**
+
+### 1. Definisi kesamaan pasangan istilah MP
+
+* Bangun ontologi MP dan hitung Information Content (IC) untuk setiap istilah:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Istilah di bawah persentil ke-5 IC diset ke 0.
-2. Untuk tiap pasangan istilah MP, temukan leluhur bersama paling spesifik (MICA) dan gunakan IC-nya sebagai Resnik.  
-   Hitung indeks Jaccard pada himpunan leluhur.  
-   Kemiripan istilah = `sqrt(Resnik * Jaccard)`.
-3. Untuk setiap pasangan gen, buat matriks istilah×istilah dan terapkan bobot metadata.  
-   Kecocokan zigositas/tahap hidup/dimorfisme seksual memberi bobot 0.25/0.5/0.75/1.0 untuk 0/1/2/3 kecocokan.
-4. Terapkan penskalaan ala Phenodigm ke 0–100:  
-   Gunakan maksimum baris/kolom untuk mendapatkan max dan mean aktual.  
-   Normalisasi dengan max/mean teoretis berbasis IC lalu hitung  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   Jika penyebut teoretis 0, nilainya diset 0.
+   Istilah di bawah persentil IC ke-5 ditetapkan ke IC=0.
+
+* Untuk setiap pasangan istilah MP, temukan nenek moyang umum paling spesifik (MICA) dan gunakan IC-nya sebagai kesamaan Resnik.  
+
+* Untuk dua istilah MP, hitung indeks Jaccard dari himpunan nenek moyangnya.  
+
+* Definisikan kesamaan pasangan istilah MP sebagai `sqrt(Resnik * Jaccard)`.
+
+### 2. Pembobotan berdasarkan kesesuaian metadata fenotipe
+
+* Terapkan bobot berdasarkan metadata fenotipe: genotipe, tahap kehidupan, dan jenis kelamin.
+
+* Untuk setiap pasangan gen, buat matriks kesamaan istilah MP × istilah MP.  
+
+* Kalikan dengan bobot 0.2, 0.5, 0.75, 1.0 untuk 0, 1, 2, 3 kecocokan genotipe/tahap kehidupan/jenis kelamin.
+
+### 3. Penskalaan Phenodigm
+
+* Terapkan penskalaan tipe Phenodigm untuk menormalkan kesamaan fenotipe tiap tikus KO ke 0–100:  
+   Hitung maksimum/rata-rata teramati, lalu normalisasi dengan maksimum/rata-rata teoretis.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   Jika penyebut 0, skor ditetapkan ke 0.
+
+---
 
 # ✉️ Kontak
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  

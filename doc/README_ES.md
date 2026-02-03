@@ -421,30 +421,53 @@ El CLI admite STDIN/STDOUT, así que puedes encadenar comandos:
 # 🔍 Cómo calculamos los genes con fenotipos similares
 
 ## Fuente de datos
-[IMPC Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`  
-Campos: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)
+
+Usamos el conjunto de datos IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Columnas del dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Preprocesamiento
-Extraer pares gen–fenotipo con P (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`) ≤ 0.0001.  
-- Cigocidad: `homo`, `hetero`, `hemi`  
-- Sexo: `female`, `male`
+
+Extraemos pares gen–fenotipo cuyos P-values en ratón KO (`p_value`, `female_ko_effect_p_value` o `male_ko_effect_p_value`) son ≤ 0.0001.  
+- Anotamos los fenotipos específicos por genotipo como `homo`, `hetero` o `hemi`.  
+- Anotamos los fenotipos específicos por sexo como `female` o `male`.
 
 ## Similitud fenotípica
-TSUMUGI sigue un enfoque similar a Phenodigm. Calculamos la similitud de **Resnik** entre términos MP y la similitud de **Jaccard** entre conjuntos de ancestros, y las combinamos mediante la **media geométrica**. La diferencia clave con Phenodigm original es la ponderación por metadatos (cigocidad, etapa de vida, dimorfismo sexual) al agregar similitudes.
 
-1. Construir la ontología MP y calcular IC:  
+TSUMUGI adopta un enfoque tipo Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+
+> [!NOTE]
+> Las diferencias con el Phenodigm original son las siguientes.  
+> 1. **Los términos por debajo del percentil 5 de IC se fijan en IC=0, para no evaluar fenotipos demasiado generales (p. ej., embryo phenotype).**
+> 2. **Aplicamos una ponderación basada en coincidencias de metadatos: genotipo, etapa de vida y sexo.**
+
+### 1. Definición de la similitud de pares de términos MP
+
+* Construir la ontología MP y calcular el Information Content (IC) para cada término:  
    `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Los términos por debajo del percentil 5 de IC se ponen a 0.
-2. Para cada par de términos MP, encontrar el ancestro común más específico (MICA) y usar su IC como Resnik.  
-   Calcular el índice de Jaccard sobre los conjuntos de ancestros.  
-   Similitud de términos = `sqrt(Resnik * Jaccard)`.
-3. Para cada par de genes, construir una matriz término×término y aplicar ponderación por metadatos.  
-   Coincidencias de cigocidad/etapa de vida/dimorfismo sexual aportan pesos 0.25/0.5/0.75/1.0 para 0/1/2/3 coincidencias.
-4. Escalado tipo Phenodigm a 0–100:  
-   Usar máximos de filas/columnas para obtener el máximo y la media reales.  
-   Normalizar por máximo/media teóricos basados en IC y calcular  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`.  
-   Si un denominador teórico es 0, ese término se fija en 0.
+   Los términos por debajo del percentil 5 de IC se fijan en IC=0.
+
+* Para cada par de términos MP, encontrar el ancestro común más específico (MICA) y usar su IC como similitud de Resnik.  
+
+* Para dos términos MP, calcular el índice de Jaccard de sus conjuntos de ancestros.  
+
+* Definir la similitud de pares de términos MP como `sqrt(Resnik * Jaccard)`.
+
+### 2. Ponderación por concordancia de metadatos fenotípicos
+
+* Aplicar pesos según los metadatos fenotípicos: genotipo, etapa de vida y sexo.
+
+* Para cada par de genes, construir una matriz de similitud término MP × término MP.  
+
+* Multiplicar por pesos 0.2, 0.5, 0.75, 1.0 para 0, 1, 2, 3 coincidencias de genotipo/etapa de vida/sexo.
+
+### 3. Escalado Phenodigm
+
+* Aplicar un escalado tipo Phenodigm para normalizar la similitud fenotípica de cada ratón KO a 0–100:  
+   Calcular el máximo/la media observados y normalizar por el máximo/la media teóricos.  
+   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+   Si el denominador es 0, la puntuación es 0.
+
+---
 
 # ✉️ Contacto
 - Google Form: https://forms.gle/ME8EJZZHaRNgKZ979  
