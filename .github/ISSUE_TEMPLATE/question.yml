@@ -1,6 +1,6 @@
 name: ❓ Question
 description: Report your question here
-labels: ["question❓️"]
+labels: ["question❓"]
 
 body:
     - type: textarea
