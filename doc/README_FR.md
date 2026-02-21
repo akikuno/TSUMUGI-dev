@@ -11,6 +11,7 @@
 [![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/pytest.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
 [![PyPI](https://img.shields.io/pypi/v/tsumugi.svg?label=PyPI&color=orange)](https://pypi.org/project/tsumugi/)
 [![Bioconda](https://img.shields.io/conda/v/bioconda/tsumugi?label=Bioconda&color=orange)](https://anaconda.org/bioconda/tsumugi)
+[![Preprint](https://img.shields.io/badge/bioRxiv-10.64898/2026.02.18.706720-red)](https://doi.org/10.64898/2026.02.18.706720)
 [![DOI](https://zenodo.org/badge/441025227.svg)](https://doi.org/10.5281/zenodo.14957711)
 [![Contact](https://img.shields.io/badge/Contact-923DE2)](https://forms.gle/ME8EJZZHaRNgKZ979)
 
@@ -472,3 +473,12 @@ TSUMUGI adopte une approche de type Phenodigm ([Smedley D, et al. (2013)](https:
 # ✉️ Contact
 - Formulaire : https://forms.gle/ME8EJZZHaRNgKZ979  
 - GitHub Issues : https://github.com/akikuno/TSUMUGI-dev/issues/new/choose
+
+
+---
+
+# 📄 Citation
+
+Kuno A, Matsumoto K, Taki T, Takahashi S, and Mizuno S  
+**TSUMUGI: a platform for phenotype-driven gene network identification from comprehensive knockout mouse phenotyping data**  
+*bioRxiv*. (2026) https://doi.org/10.64898/2026.02.18.706720  
