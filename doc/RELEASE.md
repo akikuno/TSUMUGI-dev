@@ -13,14 +13,30 @@
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 -->
 
-<!-- = TODO ====
-- [x] 遺伝子aが検索リストに出てこない #86
-- [x] Enable the exclusion or extraction of specific phenotypes from the network #36
--->
+
+## v1.0.3 (2026-mm-dd)
+
+### 🐛 Bug Fixes
+
+- Align Phenodigm calculation with the original paper  
+  Issue: [#170](https://github.com/akikuno/TSUMUGI-dev/issues/170)  
+
 
 <!-- ############################################################ # -->
 
-## v1.0.2 (2026-02-03)
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+<details>
+<summary> v1.0.2 (2026-02-03) </summary>
 
 #### 🐛 Bug Fixes
 
@@ -48,16 +64,8 @@
 - Require explicit --genewise or --pairwise option for tsumugi genes and mp commands.  
   Issue: [#155](https://github.com/akikuno/TSUMUGI-dev/issues/155)  
 
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
 </details>
-============================================================= -->
+<summary> v1.0.1 (2026-01-27) </summary>
 
 
 <details>

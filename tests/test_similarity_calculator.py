@@ -1,13 +1,16 @@
 import math
+
 import numpy as np
 import pytest
+
 from TSUMUGI.ontology_handler import build_term_hierarchy
 from TSUMUGI.similarity_calculator import (
     _apply_phenodigm_scaling,
+    _calculate_pair_jaccard,
     _calculate_pair_mica_and_resnik,
     _calculate_pair_msca_score_map,
+    _calculate_similarity_matrix,
     _calculate_term_ic_map,
-    _calculate_weighted_similarity_matrix,
     _delete_parent_terms_from_ancestors,
     annotate_phenotype_ancestors,
     calculate_all_pairwise_similarities,
@@ -38,10 +41,17 @@ def sample_ontology():
         "F": {"id": "F", "name": "Term F", "is_a": ["E"]},
     }
     parent_map, child_map = build_term_hierarchy(ontology_terms)
+    annotation_records = [
+        {"mp_term_id": "D"},
+        {"mp_term_id": "E"},
+        {"mp_term_id": "F"},
+        {"mp_term_id": "C"},
+    ]
     return {
         "ontology_terms": ontology_terms,
         "parent_map": parent_map,
         "child_map": child_map,
+        "annotation_records": annotation_records,
         "total_term_count": len(ontology_terms),
     }
 
@@ -58,9 +68,9 @@ def sample_ontology():
 def test_calculate_pair_mica_and_resnik(sample_ontology, term1, term2, expected_mica):
     ontology_terms = sample_ontology["ontology_terms"]
     parent_map = sample_ontology["parent_map"]
-    child_map = sample_ontology["child_map"]
+    annotation_records = sample_ontology["annotation_records"]
 
-    ic_map = _calculate_term_ic_map(ontology_terms, child_map)
+    ic_map = _calculate_term_ic_map(ontology_terms, parent_map, annotation_records)
 
     mica, sim = _calculate_pair_mica_and_resnik(term1, term2, parent_map, ic_map)
 
@@ -72,7 +82,7 @@ def test_calculate_pair_mica_and_resnik(sample_ontology, term1, term2, expected_
     "term1, term2, parent_map_override, term_ic_map_override, expected_msca, expected_jaccard, expected_score",
     [
         ("D", "D", None, None, "D", 1.0, None),
-        ("D", "E", None, None, "B", 1 / 2, None),
+        ("D", "E", None, None, "B", 2 / 5, None),
         ("X", "Y", {}, {}, None, 0.0, 0.0),
     ],
 )
@@ -88,7 +98,9 @@ def test_calculate_pair_msca_score_map(
 ):
     if parent_map_override is None:
         parent_map = sample_ontology["parent_map"]
-        term_ic_map = _calculate_term_ic_map(sample_ontology["ontology_terms"], sample_ontology["child_map"])
+        term_ic_map = _calculate_term_ic_map(
+            sample_ontology["ontology_terms"], parent_map, sample_ontology["annotation_records"]
+        )
     else:
         parent_map = parent_map_override
         term_ic_map = term_ic_map_override
@@ -104,6 +116,24 @@ def test_calculate_pair_msca_score_map(
         expected_score = math.sqrt(resnik * expected_jaccard)
 
     assert msca_score_map[expected_msca] == pytest.approx(expected_score)
+
+
+def test_calculate_term_ic_map_uses_annotation_frequency_with_ancestor_propagation(sample_ontology):
+    ontology_terms = sample_ontology["ontology_terms"]
+    parent_map = sample_ontology["parent_map"]
+    annotation_records = sample_ontology["annotation_records"]
+
+    ic_map = _calculate_term_ic_map(ontology_terms, parent_map, annotation_records)
+
+    assert ic_map["A"] == pytest.approx(0.0)
+    assert ic_map["B"] == pytest.approx(-math.log2(3 / 4))
+    assert ic_map["D"] == pytest.approx(-math.log2(1 / 4))
+
+
+def test_calculate_pair_jaccard_uses_self_and_all_ancestors(sample_ontology):
+    parent_map = sample_ontology["parent_map"]
+
+    assert _calculate_pair_jaccard("D", "E", parent_map) == pytest.approx(2 / 5)
 
 
 def test_apply_phenodigm_scaling_identical_phenotypes():
@@ -129,12 +159,10 @@ def test_apply_phenodigm_scaling_identical_phenotypes():
     }
     gene2_record = gene1_record
 
-    weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
-        gene1_record, gene2_record, terms_similarity_map
-    )
+    similarity_matrix = _calculate_similarity_matrix(gene1_record, gene2_record, terms_similarity_map)
 
     result = _apply_phenodigm_scaling(
-        weighted_similarity_matrix,
+        similarity_matrix,
         gene1_record,
         gene2_record,
     )
@@ -167,10 +195,10 @@ def test_apply_phenodigm_scaling_disjoint_phenotypes():
         "similarity_max": float(gene2_similarity_score.max()),
     }
 
-    weighted_similarity_matrix = np.array([[0.0, 0.0], [0.0, 0.0]])
+    similarity_matrix = np.array([[0.0, 0.0], [0.0, 0.0]])
 
     result = _apply_phenodigm_scaling(
-        weighted_similarity_matrix,
+        similarity_matrix,
         gene1_data,
         gene2_data,
     )
@@ -207,12 +235,10 @@ def test_apply_phenodigm_scaling_average_score_50():
         "similarity_max": float(similarity_scores.max()),
     }
 
-    weighted_similarity_matrix = _calculate_weighted_similarity_matrix(
-        gene1_record, gene2_record, terms_similarity_map
-    )
+    similarity_matrix = _calculate_similarity_matrix(gene1_record, gene2_record, terms_similarity_map)
 
     result = _apply_phenodigm_scaling(
-        weighted_similarity_matrix,
+        similarity_matrix,
         gene1_record,
         gene2_record,
     )
@@ -220,7 +246,7 @@ def test_apply_phenodigm_scaling_average_score_50():
     assert result == 50
 
 
-def test_calculate_weighted_similarity_matrix_metadata_weights():
+def test_calculate_similarity_matrix_ignores_metadata_mismatches():
     gene1_data = {
         "terms": np.array(["T1", "T2"], dtype=object),
         "zygosity": np.array(["Homo", "Hetero"], dtype=object),
@@ -240,28 +266,34 @@ def test_calculate_weighted_similarity_matrix_metadata_weights():
         ("T2", "T3"): {"T2": 2.0},
     }
 
-    weighted = _calculate_weighted_similarity_matrix(gene1_data, gene2_data, terms_similarity_map)
+    similarity_matrix = _calculate_similarity_matrix(gene1_data, gene2_data, terms_similarity_map)
 
     expected = np.array(
         [
-            [4.0, 0.75],  # full match -> 1.0, two-of-three match -> 0.75
-            [1.5, 1.5],  # one-of-three -> 0.5 * 3.0, two-of-three -> 0.75 * 2.0
+            [4.0, 1.0],
+            [3.0, 2.0],
         ]
     )
-    np.testing.assert_allclose(weighted, expected)
+    np.testing.assert_allclose(similarity_matrix, expected)
 
 
 def test_calculate_all_pairwise_similarities_single_thread(sample_ontology):
     ontology_terms = sample_ontology["ontology_terms"]
-    child_map = sample_ontology["child_map"]
     term_ids = set(ontology_terms.keys())
 
-    result = calculate_all_pairwise_similarities(ontology_terms, term_ids, threads=1)
+    result = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        annotation_records=sample_ontology["annotation_records"],
+        threads=1,
+    )
     if isinstance(result, tuple):
         pair_map, ic_map = result
     else:
         pair_map = result
-        ic_map = _calculate_term_ic_map(ontology_terms, child_map)
+        ic_map = _calculate_term_ic_map(
+            ontology_terms, sample_ontology["parent_map"], sample_ontology["annotation_records"]
+        )
 
     assert ("B", "E") in pair_map
     assert pair_map[("D", "E")]  # similarity map exists for each pair
@@ -310,7 +342,12 @@ def test_annotate_phenotype_ancestors_basic(sample_ontology):
     ontology_terms = sample_ontology["ontology_terms"]
     term_ids = set(ontology_terms.keys())
 
-    result = calculate_all_pairwise_similarities(ontology_terms, term_ids, threads=1)
+    result = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        annotation_records=sample_ontology["annotation_records"],
+        threads=1,
+    )
     term_pair_map = result[0] if isinstance(result, tuple) else result
 
     records = [
@@ -346,6 +383,48 @@ def test_annotate_phenotype_ancestors_basic(sample_ontology):
     ]
 
 
+def test_annotate_phenotype_ancestors_keeps_metadata_mismatched_matches(sample_ontology):
+    ontology_terms = sample_ontology["ontology_terms"]
+    term_ids = set(ontology_terms.keys())
+
+    result = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        annotation_records=sample_ontology["annotation_records"],
+        threads=1,
+    )
+    term_pair_map = result[0] if isinstance(result, tuple) else result
+
+    records = [
+        {
+            "marker_symbol": "Gene1",
+            "mp_term_id": "D",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "None",
+        },
+        {
+            "marker_symbol": "Gene2",
+            "mp_term_id": "E",
+            "zygosity": "Hetero",
+            "life_stage": "Late",
+            "sexual_dimorphism": "Male",
+        },
+    ]
+
+    ancestors = list(
+        annotate_phenotype_ancestors(
+            genewise_phenotype_significants=records,
+            terms_similarity_map=term_pair_map,
+            ontology_terms=ontology_terms,
+        )
+    )
+
+    assert ancestors[0]["phenotype_shared_annotations"] == [
+        {"mp_term_name": "B", "zygosity": "Mixed", "life_stage": "Mixed", "sexual_dimorphism": "Mixed"}
+    ]
+
+
 def test_calculate_phenodigm_score_identical_gene_sets():
     records = [
         {
@@ -368,7 +447,7 @@ def test_calculate_phenodigm_score_identical_gene_sets():
 
     scores = list(calculate_phenodigm_score(records, terms_similarity_map, term_ic_map))
 
-    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 100}]
+    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 100.0}]
 
 
 def test_summarize_similarity_annotations_translates_names():
@@ -413,10 +492,9 @@ def test_summarize_similarity_annotations_translates_names():
         ],
         "phenotype_similarity_score": 80,
     }
-    # When no ancestors exist, the score should be zeroed out
     assert summary[1] == {
         "gene1_symbol": "GeneA",
         "gene2_symbol": "GeneC",
         "phenotype_shared_annotations": [],
-        "phenotype_similarity_score": 0,
+        "phenotype_similarity_score": 50,
     }

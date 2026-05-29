@@ -490,38 +490,35 @@ Extract gene–phenotype pairs whose KO mouse P-values (`p_value`, `female_ko_ef
 
 ## Phenotypic similarity
 
-TSUMUGI adopts a Phenodigm-like approach ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+TSUMUGI adapts the original PhenoDigm scoring formula ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)) to compare KO mouse gene phenotype profiles within the Mammalian Phenotype Ontology.
 
 > [!NOTE]
-> Differences from the original Phenodigm are as follows.  
-> 1. **Terms below the 5th percentile of IC are set to IC=0, so overly general phenotypes (e.g., embryo phenotype) are not evaluated.**
-> 2. **We apply weighting based on metadata matches in genotype, life stage, and sex.**
+> TSUMUGI keeps the PhenoDigm scoring formula but does not run the original cross-species HPO-MP/ZP OWLSim pipeline.
+> It compares MP annotations from IMPC KO mouse genes.
 
 ### 1. Definition of MP term-pair similarity
 
-* Build the MP ontology and compute Information Content (IC) for each term:  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Terms below the 5th percentile of IC are set to IC=0.
+* Build the MP ontology and compute Information Content (IC) from significant IMPC annotations:
+   `IC(term) = -log2(|annotations propagated to term| / |all significant annotations|)`
+   Each direct annotation is propagated to the annotated MP term and all of its ancestors.
 
-* For each MP term pair, find the most specific common ancestor (MICA) and use its IC as Resnik similarity.  
+* For each MP term pair, find the common ancestor with the highest IC and use its IC as Resnik similarity.
 
-* For two MP terms, compute the Jaccard index of their ancestor sets.  
+* For two MP terms, compute the Jaccard index of their inferred attribute sets, defined as each term itself plus all ancestors.
 
 * Define MP term-pair similarity as `sqrt(Resnik * Jaccard)`.
 
-### 2. Weighting by phenotype metadata agreement
+### 2. Gene-pair similarity matrix
 
-* Apply weights based on phenotype metadata: genotype, life stage, and sex.
+* For each gene pair, build an MP-term × MP-term similarity matrix from the term-pair scores.
 
-* For each gene pair, build an MP-term × MP-term similarity matrix.  
+* Genotype, life stage, and sex metadata are preserved in shared-phenotype annotations, but they do not weight the PhenoDigm score.
 
-* Multiply by weights 0.2, 0.5, 0.75, 1.0 for 0, 1, 2, 3 matches of genotype/life stage/sex.
+### 3. PhenoDigm scaling
 
-### 3. Phenodigm scaling
-
-* Apply Phenodigm-style scaling to normalize each KO mouse phenotype similarity to 0–100:  
-   Compute observed max/mean, then normalize by theoretical max/mean.  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+* Apply PhenoDigm max/average scaling to normalize each KO mouse gene-pair similarity to 0–100:
+   Compute observed best-match max/mean, then normalize by the symmetric optimal self-match score for the two genes.
+   `Score = 100 * (normalized_max + normalized_mean) / 2`
    If the denominator is 0, the score is set to 0.
 
 ---
@@ -542,4 +539,3 @@ If you have a GitHub account:
 Kuno A, Matsumoto K, Taki T, Takahashi S, and Mizuno S  
 **TSUMUGI: a platform for phenotype-driven gene network identification from comprehensive knockout mouse phenotyping data**  
 *bioRxiv*. (2026) https://doi.org/10.64898/2026.02.18.706720  
-
