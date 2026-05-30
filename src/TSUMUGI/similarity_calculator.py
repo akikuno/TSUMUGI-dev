@@ -542,7 +542,7 @@ def summarize_similarity_annotations(
                     renamed_ancestor[k] = v
             ancestors_renamed.append(renamed_ancestor)
 
-        phenodigm_score = phenodigm_score["phenotype_similarity_score"]
+        phenodigm_score = phenodigm_score["phenotype_similarity_score"] if ancestors_renamed else 0
 
         annotations = {
             "gene1_symbol": gene1_symbol,

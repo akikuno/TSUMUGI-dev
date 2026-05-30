@@ -612,5 +612,28 @@ def test_summarize_similarity_annotations_translates_names():
         "gene1_symbol": "GeneA",
         "gene2_symbol": "GeneC",
         "phenotype_shared_annotations": [],
-        "phenotype_similarity_score": 50,
+        "phenotype_similarity_score": 0,
     }
+
+
+def test_summarize_similarity_annotations_zeroes_score_without_shared_annotations():
+    ontology_terms = {"MP:1": {"id": "MP:1", "name": "Term One"}}
+    phenotype_ancestors = [
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_shared_annotations": []},
+    ]
+    phenodigm_scores = [
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_similarity_score": 27},
+    ]
+
+    summary = list(
+        summarize_similarity_annotations(ontology_terms, phenotype_ancestors, phenodigm_scores, total_pairs=1)
+    )
+
+    assert summary == [
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": [],
+            "phenotype_similarity_score": 0,
+        }
+    ]
