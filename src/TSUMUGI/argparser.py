@@ -101,6 +101,17 @@ def build_parser() -> argparse.ArgumentParser:
         default=1,
         help=("Number of threads to use for TSUMUGI pipeline.\nIf not specified, defaults to 1.\n"),
     )
+    run.add_argument(
+        "--gzip-compresslevel",
+        type=int,
+        choices=range(1, 10),
+        default=9,
+        metavar="{1..9}",
+        help=(
+            "Compression level for gzip JSONL outputs.\n"
+            "Lower values write faster and produce larger files. Defaults to 9.\n"
+        ),
+    )
 
     # Debug options (hidden) to retain temporary files
     run.add_argument(

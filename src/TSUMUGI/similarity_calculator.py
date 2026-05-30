@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import defaultdict
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from concurrent.futures import ProcessPoolExecutor
 from itertools import combinations, combinations_with_replacement
 
@@ -35,7 +35,7 @@ def _calculate_inferred_attribute_map(term_ids: set[str], parent_term_map: dict[
 def _calculate_term_ic_map(
     ontology_terms: dict[str, dict],
     parent_term_map: dict[str, set[str]],
-    annotation_records: list[dict[str, str | float]],
+    genewise_phenotype_significants: list[dict[str, str | float]],
 ) -> dict[str, float]:
     """
     Calculate PhenoDigm-style information content from annotation frequency.
@@ -45,7 +45,7 @@ def _calculate_term_ic_map(
     annotation_counts: dict[str, int] = defaultdict(int)
     total_annotation_count = 0
 
-    for record in annotation_records:
+    for record in genewise_phenotype_significants:
         term_id = record["mp_term_id"]
         if term_id not in ontology_terms:
             continue
@@ -184,15 +184,18 @@ def _calculate_pair_worker(term_pair: tuple[str, str]) -> tuple[tuple[str], dict
 def calculate_all_pairwise_similarities(
     ontology_terms: dict[str, dict],
     all_term_ids: set[str],
-    annotation_records: list[dict[str, str | float]] | None = None,
+    genewise_phenotype_significants: list[dict[str, str | float]] | None = None,
     threads: int = 1,
+    annotation_records: list[dict[str, str | float]] | None = None,
 ) -> tuple[dict[tuple[str], dict[str | None, float]], dict[str, float]]:
     """Calculate pairwise term similarities for all term IDs."""
-    if annotation_records is None:
-        raise ValueError("annotation_records is required for PhenoDigm annotation-frequency IC.")
+    if genewise_phenotype_significants is None:
+        if annotation_records is None:
+            raise ValueError("genewise_phenotype_significants is required for annotation-frequency IC.")
+        genewise_phenotype_significants = annotation_records
 
     parent_term_map, _ = build_term_hierarchy(ontology_terms)
-    term_ic_map = _calculate_term_ic_map(ontology_terms, parent_term_map, annotation_records)
+    term_ic_map = _calculate_term_ic_map(ontology_terms, parent_term_map, genewise_phenotype_significants)
     term_list = sorted(all_term_ids)
     inferred_attribute_map = _calculate_inferred_attribute_map(set(term_list), parent_term_map)
 
@@ -211,8 +214,12 @@ def calculate_all_pairwise_similarities(
         initializer=_init_worker,
         initargs=(parent_term_map, inferred_attribute_map, term_ic_map),
     ) as executor:
+        term_pairs_iterable = combinations_with_replacement(term_list, 2)
+        chunksize = max(1, len(term_list) * (len(term_list) + 1) // (threads * 16))
         for term_pairs, msca_score_map in executor.map(
-            _calculate_pair_worker, combinations_with_replacement(term_list, 2)
+            _calculate_pair_worker,
+            term_pairs_iterable,
+            chunksize=chunksize,
         ):
             terms_similarity_map[term_pairs] = msca_score_map
 
@@ -226,35 +233,38 @@ def calculate_all_pairwise_similarities(
 
 def _delete_parent_terms_from_ancestors(
     candidate_ancestors: list[dict[str, str]],
-    child_term_map: dict[str, set[str]],
+    term_ancestor_map: dict[str, set[str]],
 ) -> list[dict[str, str]]:
     """
     Remove parent terms from the common ancestors.
     Keep only the most specific terms among candidates with identical metadata.
     """
     to_delete: set[int] = set()
-    phenotype_to_meta = defaultdict(list)
-
-    for ancestor in candidate_ancestors:
-        phenotype_to_meta[ancestor["mp_term_name"]].append({k: v for k, v in ancestor.items() if k != "mp_term_name"})
+    grouped_candidates: dict[tuple[str, str, str], list[tuple[int, str]]] = defaultdict(list)
 
     for idx, ancestor in enumerate(candidate_ancestors):
-        term_id = ancestor["mp_term_name"]
-        term_meta = {k: v for k, v in ancestor.items() if k != "mp_term_name"}
+        meta_signature = (
+            ancestor["zygosity"],
+            ancestor["life_stage"],
+            ancestor["sexual_dimorphism"],
+        )
+        grouped_candidates[meta_signature].append((idx, ancestor["mp_term_name"]))
 
-        if idx in to_delete:
-            continue
-
-        stack = list(child_term_map.get(term_id, ()))
-        while stack:
-            child_id = stack.pop()
-            child_metas = phenotype_to_meta.get(child_id, [])
-            if any(child_meta == term_meta for child_meta in child_metas):
-                to_delete.add(idx)
-                break
-            stack.extend(child_term_map.get(child_id, ()))
+    for candidates in grouped_candidates.values():
+        index_by_term = {term_id: idx for idx, term_id in candidates}
+        candidate_terms = set(index_by_term)
+        for _, term_id in candidates:
+            for parent_term_id in term_ancestor_map.get(term_id, set()).intersection(candidate_terms):
+                to_delete.add(index_by_term[parent_term_id])
 
     return [ancestor for i, ancestor in enumerate(candidate_ancestors) if i not in to_delete]
+
+
+def _calculate_term_ancestor_map(
+    term_ids: Iterable[str], parent_term_map: dict[str, set[str]]
+) -> dict[str, set[str]]:
+    """Precompute ancestor sets used to prune parent phenotype annotations."""
+    return {term_id: find_all_ancestor_terms(term_id, parent_term_map) for term_id in term_ids}
 
 
 # ---------------------------------------------------------
@@ -296,8 +306,7 @@ def _merge_meta_signatures(
 ) -> tuple[str, str, str]:
     """Merge two metadata signatures without requiring metadata agreement."""
     return tuple(
-        value1 if value1 == value2 else "Mixed"
-        for value1, value2 in zip(meta_signature1, meta_signature2, strict=True)
+        value1 if value1 == value2 else "Mixed" for value1, value2 in zip(meta_signature1, meta_signature2, strict=True)
     )
 
 
@@ -315,7 +324,7 @@ def _annotate_ancestors(
     gene1_meta_map: dict,
     gene2_meta_map: dict,
     terms_similarity_map: dict[tuple[str, str], dict[str, float]],
-    child_term_map: dict[str, set[str]],
+    term_ancestor_map: dict[str, set[str]],
 ) -> list[dict[str, str]]:
     """Annotate phenotype ancestors for a single gene pair."""
 
@@ -348,7 +357,7 @@ def _annotate_ancestors(
                     added_keys.add(current_key)
 
     # Remove parent terms from candidate ancestors
-    ancestors = _delete_parent_terms_from_ancestors(candidate_ancestors, child_term_map)
+    ancestors = _delete_parent_terms_from_ancestors(candidate_ancestors, term_ancestor_map)
 
     return ancestors
 
@@ -367,7 +376,8 @@ def annotate_phenotype_ancestors(
         gene_records_map[record["marker_symbol"]].append(record)
 
     # Build hierarchy and IC-based filters
-    _, child_term_map = build_term_hierarchy(ontology_terms)
+    parent_term_map, _ = build_term_hierarchy(ontology_terms)
+    term_ancestor_map = _calculate_term_ancestor_map(ontology_terms, parent_term_map)
     annotations: set[str] = {"zygosity", "life_stage", "sexual_dimorphism"}
     gene_metadata_map, _ = _build_gene_metadata_maps(gene_records_map, annotations)
 
@@ -376,7 +386,7 @@ def annotate_phenotype_ancestors(
             gene1_meta_map=gene1_meta_map,
             gene2_meta_map=gene2_meta_map,
             terms_similarity_map=terms_similarity_map,
-            child_term_map=child_term_map,
+            term_ancestor_map=term_ancestor_map,
         )
         yield {
             "gene1_symbol": gene1_symbol,

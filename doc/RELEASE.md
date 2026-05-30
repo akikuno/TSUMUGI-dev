@@ -16,6 +16,11 @@
 
 ## v1.0.3 (2026-mm-dd)
 
+### 🚀 Performance
+
+- Speed up pairwise phenotype ancestor pruning  
+  Issue: [#171](https://github.com/akikuno/TSUMUGI-dev/issues/171)  
+
 ### 🐛 Bug Fixes
 
 - Align Phenodigm calculation with the original paper  

@@ -10,13 +10,13 @@ from TSUMUGI import similarity_calculator
 
 def build_pairwise_similarity(
     genewise_phenotype_significants: list[dict], ontology_terms: dict, args
-) -> dict[tuple[str], dict[str, dict[str, str] | float]]:
+) -> Iterator[dict[str, dict[str, str] | int]]:
     mp_term_ids = {r["mp_term_id"] for r in genewise_phenotype_significants}
 
     terms_similarity_map, term_ic_map = similarity_calculator.calculate_all_pairwise_similarities(
         ontology_terms,
         mp_term_ids,
-        annotation_records=genewise_phenotype_significants,
+        genewise_phenotype_significants=genewise_phenotype_significants,
         threads=args.threads,
     )
 

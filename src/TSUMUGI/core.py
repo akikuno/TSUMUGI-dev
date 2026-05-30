@@ -75,7 +75,11 @@ def run_pipeline(args) -> None:
         )
 
         path_pairwise_similarity_annotations = ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz"
-        io_handler.write_jsonl(pairwise_similarity_annotations, path_pairwise_similarity_annotations)
+        io_handler.write_jsonl(
+            pairwise_similarity_annotations,
+            path_pairwise_similarity_annotations,
+            compresslevel=args.gzip_compresslevel,
+        )
 
         ###########################################################
         # Generate network

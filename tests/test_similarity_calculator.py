@@ -10,6 +10,7 @@ from TSUMUGI.similarity_calculator import (
     _calculate_pair_mica_and_resnik,
     _calculate_pair_msca_score_map,
     _calculate_similarity_matrix,
+    _calculate_term_ancestor_map,
     _calculate_term_ic_map,
     _delete_parent_terms_from_ancestors,
     annotate_phenotype_ancestors,
@@ -284,7 +285,7 @@ def test_calculate_all_pairwise_similarities_single_thread(sample_ontology):
     result = calculate_all_pairwise_similarities(
         ontology_terms,
         term_ids,
-        annotation_records=sample_ontology["annotation_records"],
+        genewise_phenotype_significants=sample_ontology["annotation_records"],
         threads=1,
     )
     if isinstance(result, tuple):
@@ -300,8 +301,23 @@ def test_calculate_all_pairwise_similarities_single_thread(sample_ontology):
     assert len(ic_map) == len(term_ids)
 
 
+def test_calculate_all_pairwise_similarities_accepts_annotation_records_alias(sample_ontology):
+    ontology_terms = sample_ontology["ontology_terms"]
+    term_ids = set(ontology_terms.keys())
+
+    pair_map, ic_map = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        annotation_records=sample_ontology["annotation_records"],
+        threads=1,
+    )
+
+    assert ("D", "E") in pair_map
+    assert len(ic_map) == len(term_ids)
+
+
 def test_delete_parent_terms_from_ancestors_removes_parent_with_same_meta(sample_ontology):
-    child_map = sample_ontology["child_map"]
+    ancestor_map = _calculate_term_ancestor_map(sample_ontology["ontology_terms"], sample_ontology["parent_map"])
     meta = {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
     candidate_ancestors = [
         {"mp_term_name": "B", **meta},
@@ -309,7 +325,7 @@ def test_delete_parent_terms_from_ancestors_removes_parent_with_same_meta(sample
         {"mp_term_name": "E", "zygosity": "Homo", "life_stage": "Late", "sexual_dimorphism": "None"},
     ]
 
-    result = _delete_parent_terms_from_ancestors(candidate_ancestors, child_map)
+    result = _delete_parent_terms_from_ancestors(candidate_ancestors, ancestor_map)
 
     expected = [
         {"mp_term_name": "D", **meta},
@@ -321,13 +337,13 @@ def test_delete_parent_terms_from_ancestors_removes_parent_with_same_meta(sample
 
 
 def test_delete_parent_terms_from_ancestors_keeps_parent_with_different_meta(sample_ontology):
-    child_map = sample_ontology["child_map"]
+    ancestor_map = _calculate_term_ancestor_map(sample_ontology["ontology_terms"], sample_ontology["parent_map"])
     candidate_ancestors = [
         {"mp_term_name": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
         {"mp_term_name": "D", "zygosity": "Hetero", "life_stage": "Early", "sexual_dimorphism": "None"},
     ]
 
-    result = _delete_parent_terms_from_ancestors(candidate_ancestors, child_map)
+    result = _delete_parent_terms_from_ancestors(candidate_ancestors, ancestor_map)
 
     expected = [
         {"mp_term_name": "B", "zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"},
@@ -338,6 +354,41 @@ def test_delete_parent_terms_from_ancestors_keeps_parent_with_different_meta(sam
     )
 
 
+def test_delete_parent_terms_from_ancestors_handles_multiple_parent_dag(sample_ontology):
+    ancestor_map = _calculate_term_ancestor_map(sample_ontology["ontology_terms"], sample_ontology["parent_map"])
+    meta = {"zygosity": "Homo", "life_stage": "Early", "sexual_dimorphism": "None"}
+    candidate_ancestors = [
+        {"mp_term_name": "B", **meta},
+        {"mp_term_name": "C", **meta},
+        {"mp_term_name": "E", **meta},
+    ]
+
+    result = _delete_parent_terms_from_ancestors(candidate_ancestors, ancestor_map)
+
+    assert result == [{"mp_term_name": "E", **meta}]
+
+
+def test_calculate_all_pairwise_similarities_multiprocessing_matches_single_thread(sample_ontology):
+    ontology_terms = sample_ontology["ontology_terms"]
+    term_ids = set(ontology_terms.keys())
+
+    single_thread_pair_map, single_thread_ic_map = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        genewise_phenotype_significants=sample_ontology["annotation_records"],
+        threads=1,
+    )
+    multiprocessing_pair_map, multiprocessing_ic_map = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        genewise_phenotype_significants=sample_ontology["annotation_records"],
+        threads=2,
+    )
+
+    assert multiprocessing_pair_map == single_thread_pair_map
+    assert multiprocessing_ic_map == single_thread_ic_map
+
+
 def test_annotate_phenotype_ancestors_basic(sample_ontology):
     ontology_terms = sample_ontology["ontology_terms"]
     term_ids = set(ontology_terms.keys())
@@ -345,7 +396,7 @@ def test_annotate_phenotype_ancestors_basic(sample_ontology):
     result = calculate_all_pairwise_similarities(
         ontology_terms,
         term_ids,
-        annotation_records=sample_ontology["annotation_records"],
+        genewise_phenotype_significants=sample_ontology["annotation_records"],
         threads=1,
     )
     term_pair_map = result[0] if isinstance(result, tuple) else result
@@ -390,7 +441,7 @@ def test_annotate_phenotype_ancestors_keeps_metadata_mismatched_matches(sample_o
     result = calculate_all_pairwise_similarities(
         ontology_terms,
         term_ids,
-        annotation_records=sample_ontology["annotation_records"],
+        genewise_phenotype_significants=sample_ontology["annotation_records"],
         threads=1,
     )
     term_pair_map = result[0] if isinstance(result, tuple) else result
