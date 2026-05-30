@@ -17,7 +17,6 @@ from TSUMUGI import (
     web_deployer,
 )
 
-
 WEB_MIN_SHARED_ANNOTATIONS = 3
 WEB_MIN_PHENOTYPE_SIMILARITY_SCORE = 1
 

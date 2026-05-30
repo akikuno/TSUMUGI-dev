@@ -275,9 +275,7 @@ def _delete_parent_terms_from_ancestors(
     return [ancestor for i, ancestor in enumerate(candidate_ancestors) if i not in to_delete]
 
 
-def _calculate_term_ancestor_map(
-    term_ids: Iterable[str], parent_term_map: dict[str, set[str]]
-) -> dict[str, set[str]]:
+def _calculate_term_ancestor_map(term_ids: Iterable[str], parent_term_map: dict[str, set[str]]) -> dict[str, set[str]]:
     """Precompute ancestor sets used to prune parent phenotype annotations."""
     return {term_id: find_all_ancestor_terms(term_id, parent_term_map) for term_id in term_ids}
 
