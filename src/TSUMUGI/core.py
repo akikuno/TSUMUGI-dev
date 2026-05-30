@@ -18,6 +18,28 @@ from TSUMUGI import (
 )
 
 
+WEB_MIN_SHARED_ANNOTATIONS = 3
+WEB_MIN_PHENOTYPE_SIMILARITY_SCORE = 1
+
+
+def _filter_pairwise_similarity_annotations_for_web(
+    pairwise_similarity_annotations: Iterator[dict[str, object]],
+    min_shared_annotations: int,
+    min_phenotype_similarity_score: int,
+) -> list[dict[str, object]]:
+    """Filter pairwise annotations before building web network JSON files."""
+    selected_records: list[dict[str, object]] = []
+    for record in pairwise_similarity_annotations:
+        shared_annotations = record.get("phenotype_shared_annotations", [])
+        phenotype_similarity_score = int(record.get("phenotype_similarity_score", 0))
+        if (
+            len(shared_annotations) >= min_shared_annotations
+            and phenotype_similarity_score >= min_phenotype_similarity_score
+        ):
+            selected_records.append(record)
+    return selected_records
+
+
 def run_pipeline(args) -> None:
     ROOT_DIR = Path(args.output_dir)
     TEMPDIR = Path(ROOT_DIR / ".tempdir")
@@ -78,7 +100,7 @@ def run_pipeline(args) -> None:
         io_handler.write_jsonl(
             pairwise_similarity_annotations,
             path_pairwise_similarity_annotations,
-            compresslevel=args.gzip_compresslevel,
+            compresslevel=9,
         )
 
         ###########################################################
@@ -86,13 +108,20 @@ def run_pipeline(args) -> None:
         ###########################################################
         logging.info("Generating phenotype and gene networks...")
 
-        MIN_NUM_PHENOTYPES = 3
-
         pairwise_similarity_annotations = io_handler.read_jsonl(path_pairwise_similarity_annotations)
 
-        pairwise_similarity_annotations_with_shared_phenotype = [
-            r for r in pairwise_similarity_annotations if len(r["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
-        ]
+        pairwise_similarity_annotations_with_shared_phenotype = _filter_pairwise_similarity_annotations_for_web(
+            pairwise_similarity_annotations,
+            min_shared_annotations=WEB_MIN_SHARED_ANNOTATIONS,
+            min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+        )
+        logging.info(
+            "Selected %d pairwise records for web networks with shared_annotations >= %d and "
+            "phenotype_similarity_score >= %d",
+            len(pairwise_similarity_annotations_with_shared_phenotype),
+            WEB_MIN_SHARED_ANNOTATIONS,
+            WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+        )
 
         logging.info("Building phenotype network JSON files...")
 

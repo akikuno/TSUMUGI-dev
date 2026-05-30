@@ -10,7 +10,24 @@ def test_genes_pairwise_requires_file_path():
     assert excinfo.value.code == 2
 
 
-def test_run_accepts_gzip_compresslevel():
+def test_run_rejects_gzip_compresslevel():
+    with pytest.raises(SystemExit) as excinfo:
+        argparser.parse_args(
+            [
+                "run",
+                "--output_dir",
+                "out",
+                "--statistical_results",
+                "statistical-results.csv.gz",
+                "--gzip-compresslevel",
+                "1",
+            ]
+        )
+
+    assert excinfo.value.code == 2
+
+
+def test_run_has_no_gzip_compresslevel_attribute():
     args = argparser.parse_args(
         [
             "run",
@@ -18,9 +35,7 @@ def test_run_accepts_gzip_compresslevel():
             "out",
             "--statistical_results",
             "statistical-results.csv.gz",
-            "--gzip-compresslevel",
-            "1",
         ]
     )
 
-    assert args.gzip_compresslevel == 1
+    assert not hasattr(args, "gzip_compresslevel")
