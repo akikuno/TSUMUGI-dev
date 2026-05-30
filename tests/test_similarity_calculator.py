@@ -536,7 +536,34 @@ def test_calculate_phenodigm_score_identical_gene_sets():
 
     scores = list(calculate_phenodigm_score(records, terms_similarity_map, term_ic_map))
 
-    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 100.0}]
+    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 100}]
+
+
+def test_calculate_phenodigm_score_rounds_output_to_int():
+    records = [
+        {
+            "marker_symbol": "Gene1",
+            "mp_term_id": "MP:1",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "None",
+        },
+        {
+            "marker_symbol": "Gene2",
+            "mp_term_id": "MP:2",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "None",
+        },
+    ]
+    terms_similarity_map = {
+        ("MP:1", "MP:2"): {"MP:1": 0.335},
+    }
+    term_ic_map = {"MP:1": 1.0, "MP:2": 1.0}
+
+    scores = list(calculate_phenodigm_score(records, terms_similarity_map, term_ic_map))
+
+    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 34}]
 
 
 def test_summarize_similarity_annotations_translates_names():

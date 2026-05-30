@@ -488,7 +488,7 @@ def calculate_phenodigm_score(
     genewise_phenotype_significants: list[dict[str, str | float]],
     terms_similarity_map: dict[tuple[str, str], dict[str, float]],
     term_ic_map: dict[str, float],
-) -> Iterator[dict[str, str | float]]:
+) -> Iterator[dict[str, str | int]]:
     """
     Calculate Phenodigm score between gene pairs.
     """
@@ -505,7 +505,8 @@ def calculate_phenodigm_score(
             gene2_record=gene2_record,
             terms_similarity_map=terms_similarity_map,
         )
-        yield {"gene1_symbol": gene1_symbol, "gene2_symbol": gene2_symbol, "phenotype_similarity_score": score}
+        score_int = int(round(score))
+        yield {"gene1_symbol": gene1_symbol, "gene2_symbol": gene2_symbol, "phenotype_similarity_score": score_int}
 
 
 ###########################################################
@@ -516,9 +517,9 @@ def calculate_phenodigm_score(
 def summarize_similarity_annotations(
     ontology_terms: dict[str, dict[str, str]],
     phenotype_ancestors: Iterator[dict[str, str | list[dict[str, str]]]],
-    phenodigm_scores: Iterator[dict[str, str | float]],
+    phenodigm_scores: Iterator[dict[str, str | int]],
     total_pairs: int,
-) -> Iterator[dict[str, list[dict[str, str]] | float]]:
+) -> Iterator[dict[str, list[dict[str, str]] | int]]:
     """Summarize similarity annotations including common ancestors and Phenodigm scores."""
 
     id_name_map = {v["id"]: v["name"] for v in ontology_terms.values()}
