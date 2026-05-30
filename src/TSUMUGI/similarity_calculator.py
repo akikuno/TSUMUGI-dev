@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import math
+import multiprocessing as mp
+import threading
 from collections import defaultdict
 from collections.abc import Iterable, Iterator
 from concurrent.futures import ProcessPoolExecutor
 from itertools import combinations, combinations_with_replacement
+from multiprocessing.context import BaseContext
 
 import numpy as np
 from tqdm import tqdm
@@ -74,6 +77,17 @@ def _calculate_term_ic_map(
 _worker_parent_term_map: dict[str, set[str]] | None = None
 _worker_inferred_attribute_map: dict[str, set[str]] | None = None
 _worker_term_ic_map: dict[str, float] | None = None
+
+
+def _get_process_pool_context() -> BaseContext:
+    """Return a process context that avoids forking from a multithreaded process."""
+    if threading.active_count() <= 1:
+        return mp.get_context()
+
+    for start_method in ("spawn", "forkserver"):
+        if start_method in mp.get_all_start_methods():
+            return mp.get_context(start_method)
+    return mp.get_context()
 
 
 def _init_worker(
@@ -211,6 +225,7 @@ def calculate_all_pairwise_similarities(
 
     with ProcessPoolExecutor(
         max_workers=threads,
+        mp_context=_get_process_pool_context(),
         initializer=_init_worker,
         initargs=(parent_term_map, inferred_attribute_map, term_ic_map),
     ) as executor:

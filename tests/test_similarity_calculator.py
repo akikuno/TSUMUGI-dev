@@ -1,4 +1,5 @@
 import math
+import multiprocessing as mp
 
 import numpy as np
 import pytest
@@ -13,6 +14,7 @@ from TSUMUGI.similarity_calculator import (
     _calculate_term_ancestor_map,
     _calculate_term_ic_map,
     _delete_parent_terms_from_ancestors,
+    _get_process_pool_context,
     annotate_phenotype_ancestors,
     calculate_all_pairwise_similarities,
     calculate_phenodigm_score,
@@ -387,6 +389,17 @@ def test_calculate_all_pairwise_similarities_multiprocessing_matches_single_thre
 
     assert multiprocessing_pair_map == single_thread_pair_map
     assert multiprocessing_ic_map == single_thread_ic_map
+
+
+def test_process_pool_context_avoids_fork_when_multithreaded(monkeypatch):
+    monkeypatch.setattr("TSUMUGI.similarity_calculator.threading.active_count", lambda: 2)
+
+    context = _get_process_pool_context()
+
+    if any(start_method in mp.get_all_start_methods() for start_method in ("spawn", "forkserver")):
+        assert context.get_start_method() in {"spawn", "forkserver"}
+    else:
+        assert context.get_start_method() == mp.get_context().get_start_method()
 
 
 def test_annotate_phenotype_ancestors_basic(sample_ontology):
