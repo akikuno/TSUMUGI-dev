@@ -301,15 +301,6 @@ def _build_gene_metadata_maps(
     return gene_metadata_map, meta_dict_cache
 
 
-def _merge_meta_signatures(
-    meta_signature1: tuple[str, str, str], meta_signature2: tuple[str, str, str]
-) -> tuple[str, str, str]:
-    """Merge two metadata signatures without requiring metadata agreement."""
-    return tuple(
-        value1 if value1 == value2 else "Mixed" for value1, value2 in zip(meta_signature1, meta_signature2, strict=True)
-    )
-
-
 def _meta_signature_to_dict(meta_signature: tuple[str, str, str]) -> dict[str, str]:
     """Convert the compact metadata signature into the pairwise annotation schema."""
     zygosity, life_stage, sexual_dimorphism = meta_signature
@@ -331,30 +322,31 @@ def _annotate_ancestors(
     candidate_ancestors: list[dict[str, str]] = []
     added_keys: set[tuple[str, tuple[str, str, str]]] = set()
 
-    for meta_signature1, gene1_terms in gene1_meta_map.items():
-        for meta_signature2, gene2_terms in gene2_meta_map.items():
-            merged_meta_signature = _merge_meta_signatures(meta_signature1, meta_signature2)
-            meta_dict = _meta_signature_to_dict(merged_meta_signature)
+    shared_meta_signatures = set(gene1_meta_map.keys()) & set(gene2_meta_map.keys())
+    for meta_signature in shared_meta_signatures:
+        gene1_terms = gene1_meta_map[meta_signature]
+        gene2_terms = gene2_meta_map[meta_signature]
+        meta_dict = _meta_signature_to_dict(meta_signature)
 
-            for gene1_mp_term_id in gene1_terms:
-                for gene2_mp_term_id in gene2_terms:
-                    pair_key = tuple(sorted([gene1_mp_term_id, gene2_mp_term_id]))
-                    mapping = terms_similarity_map.get(pair_key)
-                    if not mapping:
-                        continue
+        for gene1_mp_term_id in gene1_terms:
+            for gene2_mp_term_id in gene2_terms:
+                pair_key = tuple(sorted([gene1_mp_term_id, gene2_mp_term_id]))
+                mapping = terms_similarity_map.get(pair_key)
+                if not mapping:
+                    continue
 
-                    common_ancestor, similarity = next(iter(mapping.items()))
+                common_ancestor, similarity = next(iter(mapping.items()))
 
-                    if not common_ancestor or similarity == 0.0:
-                        continue
+                if not common_ancestor or similarity == 0.0:
+                    continue
 
-                    current_key = (common_ancestor, merged_meta_signature)
+                current_key = (common_ancestor, meta_signature)
 
-                    if current_key in added_keys:
-                        continue
+                if current_key in added_keys:
+                    continue
 
-                    candidate_ancestors.append({"mp_term_name": common_ancestor, **meta_dict})
-                    added_keys.add(current_key)
+                candidate_ancestors.append({"mp_term_name": common_ancestor, **meta_dict})
+                added_keys.add(current_key)
 
     # Remove parent terms from candidate ancestors
     ancestors = _delete_parent_terms_from_ancestors(candidate_ancestors, term_ancestor_map)

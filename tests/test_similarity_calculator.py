@@ -434,7 +434,7 @@ def test_annotate_phenotype_ancestors_basic(sample_ontology):
     ]
 
 
-def test_annotate_phenotype_ancestors_keeps_metadata_mismatched_matches(sample_ontology):
+def test_annotate_phenotype_ancestors_excludes_metadata_mismatched_matches(sample_ontology):
     ontology_terms = sample_ontology["ontology_terms"]
     term_ids = set(ontology_terms.keys())
 
@@ -471,9 +471,47 @@ def test_annotate_phenotype_ancestors_keeps_metadata_mismatched_matches(sample_o
         )
     )
 
-    assert ancestors[0]["phenotype_shared_annotations"] == [
-        {"mp_term_name": "B", "zygosity": "Mixed", "life_stage": "Mixed", "sexual_dimorphism": "Mixed"}
+    assert ancestors[0]["phenotype_shared_annotations"] == []
+
+
+def test_annotate_phenotype_ancestors_requires_all_metadata_fields_to_match(sample_ontology):
+    ontology_terms = sample_ontology["ontology_terms"]
+    term_ids = set(ontology_terms.keys())
+
+    result = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        genewise_phenotype_significants=sample_ontology["annotation_records"],
+        threads=1,
+    )
+    term_pair_map = result[0] if isinstance(result, tuple) else result
+
+    records = [
+        {
+            "marker_symbol": "Gene1",
+            "mp_term_id": "D",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "None",
+        },
+        {
+            "marker_symbol": "Gene2",
+            "mp_term_id": "E",
+            "zygosity": "Homo",
+            "life_stage": "Late",
+            "sexual_dimorphism": "None",
+        },
     ]
+
+    ancestors = list(
+        annotate_phenotype_ancestors(
+            genewise_phenotype_significants=records,
+            terms_similarity_map=term_pair_map,
+            ontology_terms=ontology_terms,
+        )
+    )
+
+    assert ancestors[0]["phenotype_shared_annotations"] == []
 
 
 def test_calculate_phenodigm_score_identical_gene_sets():
