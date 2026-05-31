@@ -24,6 +24,9 @@
 - Add soft/fuzzy phenotype modules to the Gene page
   Issue: [#173](https://github.com/akikuno/TSUMUGI-dev/issues/173)  
 
+- Fix layout selection and prevent excessive node spacing  
+  Issue: [#174](https://github.com/akikuno/TSUMUGI-dev/issues/174)  
+
 
 ### 🚀 Performance
 
