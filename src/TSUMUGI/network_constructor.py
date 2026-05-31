@@ -37,6 +37,55 @@ def _create_annotation_string(*parts: str) -> str:
     return ", ".join(part for part in parts if part)
 
 
+def _normalize_sexual_dimorphism(sexual_dimorphism) -> str:
+    """Normalize missing sexual dimorphism values used in phenotype labels."""
+    if sexual_dimorphism in (None, "None"):
+        return ""
+    return sexual_dimorphism
+
+
+def _create_phenotype_annotation_string(
+    mp_term_name,
+    zygosity,
+    life_stage="",
+    sexual_dimorphism="",
+) -> str:
+    """Create the display label used for phenotype annotations."""
+    annotation_str = _create_annotation_string(
+        zygosity,
+        life_stage,
+        _normalize_sexual_dimorphism(sexual_dimorphism),
+    )
+    return f"{mp_term_name} ({annotation_str})"
+
+
+def _build_target_phenotype_annotations(
+    records,
+    mp_term_name,
+) -> set[str]:
+    """Build exact phenotype labels required for phenotype network edges."""
+    return {
+        _create_phenotype_annotation_string(
+            record["mp_term_name"],
+            record["zygosity"],
+            record.get("life_stage", ""),
+            record.get("sexual_dimorphism", ""),
+        )
+        for record in records
+        if record["mp_term_name"] == mp_term_name
+    }
+
+
+def _has_required_shared_annotation(
+    pair_annotations,
+    required_shared_annotations=None,
+) -> bool:
+    """Return whether a pair has a required shared phenotype annotation."""
+    if not required_shared_annotations:
+        return True
+    return bool(required_shared_annotations.intersection(pair_annotations["phenotype_shared_annotations"]))
+
+
 # ----------------------------------------------------------
 # Compose genewise_phenotype_significants
 # ----------------------------------------------------------
@@ -47,13 +96,12 @@ def _compose_genewise_phenotype_significants(
 
     gene_records_map = defaultdict(list)
     for record in genewise_phenotype_significants:
-        zygosity = record["zygosity"]
-        life_stage = record.get("life_stage", "")
-        sexual_dimorphism = record.get("sexual_dimorphism", "")
-        sexual_dimorphism = "" if sexual_dimorphism == "None" else sexual_dimorphism
-
-        annotation_str = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
-        mp_term_name_with_metadata = f"{record['mp_term_name']} ({annotation_str})"
+        mp_term_name_with_metadata = _create_phenotype_annotation_string(
+            record["mp_term_name"],
+            record["zygosity"],
+            record.get("life_stage", ""),
+            record.get("sexual_dimorphism", ""),
+        )
 
         effect_size = record["effect_size"]
 
@@ -81,14 +129,14 @@ def _compose_pairwise_similarity_annotations(
     for record in pairwise_similarity_annotations:
         pair_annotations_composed = set()
         for annotation in record["phenotype_shared_annotations"]:
-            mp_term_name = annotation["mp_term_name"]
-            zygosity = annotation["zygosity"]
-            life_stage = annotation.get("life_stage", "")
-            sexual_dimorphism = annotation.get("sexual_dimorphism", "")
-            sexual_dimorphism = "" if sexual_dimorphism == "None" else sexual_dimorphism
-
-            annotation_str = _create_annotation_string(zygosity, life_stage, sexual_dimorphism)
-            pair_annotations_composed.add(f"{mp_term_name} ({annotation_str})")
+            pair_annotations_composed.add(
+                _create_phenotype_annotation_string(
+                    annotation["mp_term_name"],
+                    annotation["zygosity"],
+                    annotation.get("life_stage", ""),
+                    annotation.get("sexual_dimorphism", ""),
+                )
+            )
 
         gene_pair = (record["gene1_symbol"], record["gene2_symbol"])
 
@@ -208,6 +256,7 @@ def _find_optimal_scores(
     sorted_scores,
     related_genes,
     pairwise_similarity_annotations_composed,
+    required_shared_annotations: set[str] | None = None,
     low_threshold=GENE_COUNT_LOWER_BOUND,
     high_threshold=GENE_COUNT_UPPER_BOUND,
 ):
@@ -222,6 +271,8 @@ def _find_optimal_scores(
             if gene_pair not in pairwise_similarity_annotations_composed:
                 continue
             pair_annotations = pairwise_similarity_annotations_composed[gene_pair]
+            if not _has_required_shared_annotation(pair_annotations, required_shared_annotations):
+                continue
             if pair_annotations["phenotype_similarity_score"] >= sorted_scores[mid]:
                 count_genes.add(gene1)
                 count_genes.add(gene2)
@@ -242,6 +293,7 @@ def _filter_related_genes(
     related_genes: set[str],
     pairwise_similarity_annotations_composed: dict[tuple[str], dict[str, list[str] | int]],
     is_gene_network: bool = False,
+    required_shared_annotations: set[str] | None = None,
 ) -> set[str]:
     """
     Strategy:
@@ -268,6 +320,8 @@ def _filter_related_genes(
             continue
 
         pair_annotations = pairwise_similarity_annotations_composed[gene_pair]
+        if not _has_required_shared_annotation(pair_annotations, required_shared_annotations):
+            continue
         score = pair_annotations["phenotype_similarity_score"]
         num_shared_phenotypes = len(pair_annotations["phenotype_shared_annotations"])
 
@@ -283,14 +337,18 @@ def _filter_related_genes(
 
     # 1. Filter genes by phenotype similarity score
     unique_phenotype_similarity_scores = sorted(set(phenotype_similarity_scores))
+    candidate_related_genes = set(gene_max_score.keys()) if required_shared_annotations else related_genes
 
-    optimal_score = _find_optimal_scores(
-        unique_phenotype_similarity_scores,
-        related_genes,
-        pairwise_similarity_annotations_composed,
-        low_threshold=GENE_COUNT_LOWER_BOUND,
-        high_threshold=GENE_COUNT_UPPER_BOUND,
-    )
+    optimal_score = -1
+    if unique_phenotype_similarity_scores:
+        optimal_score = _find_optimal_scores(
+            unique_phenotype_similarity_scores,
+            related_genes,
+            pairwise_similarity_annotations_composed,
+            required_shared_annotations=required_shared_annotations,
+            low_threshold=GENE_COUNT_LOWER_BOUND,
+            high_threshold=GENE_COUNT_UPPER_BOUND,
+        )
     if optimal_score > -1:
         return {gene for gene, max_score in gene_max_score.items() if max_score >= optimal_score}
 
@@ -301,12 +359,12 @@ def _filter_related_genes(
         gene_max_effect_sizes = defaultdict(float)
         for record in records:
             gene = record["marker_symbol"]
-            if gene in related_genes:
+            if gene in candidate_related_genes:
                 effect_size = record["effect_size"] if not math.isnan(record["effect_size"]) else 0.0
                 gene_max_effect_sizes[gene] = max(gene_max_effect_sizes[gene], effect_size)
 
         # 2. Filter genes by effect size
-        filtered_effect_sizes = {g: s for g, s in gene_max_effect_sizes.items() if g in related_genes}
+        filtered_effect_sizes = {g: s for g, s in gene_max_effect_sizes.items() if g in candidate_related_genes}
         gene_max_effect_sizes_sorted = sorted(filtered_effect_sizes.items(), key=lambda x: x[1], reverse=True)
 
         # If the top MAX_GENE_COUNT entries have different effect sizes, return them
@@ -314,7 +372,7 @@ def _filter_related_genes(
             return {gene for gene, _ in gene_max_effect_sizes_sorted[:MAX_GENE_COUNT]}
 
     # 3. Filter genes by number of shared phenotypes
-    filtered_shared_phenotypes = {g: s for g, s in gene_max_shared_phenotype.items() if g in related_genes}
+    filtered_shared_phenotypes = {g: s for g, s in gene_max_shared_phenotype.items() if g in candidate_related_genes}
     gene_max_shared_phenotype_sorted = sorted(filtered_shared_phenotypes.items(), key=lambda x: x[1], reverse=True)
     return {gene for gene, _ in gene_max_shared_phenotype_sorted[:MAX_GENE_COUNT]}
 
@@ -363,6 +421,7 @@ def _convert_to_nodes_json(
 def _convert_to_edges_json(
     related_genes: set[str],
     pairwise_similarity_annotations_composed: dict[tuple[str], dict[str, list[str] | int]],
+    required_shared_annotations: set[str] | None = None,
 ) -> list[dict[str, dict[str, str | list[str] | float]]]:
     edges_json = []
     pairwise_similarity_annotations_filtered = {}
@@ -370,7 +429,10 @@ def _convert_to_edges_json(
         gene_pairs = tuple(sorted([gene1, gene2]))
         if gene_pairs not in pairwise_similarity_annotations_composed:
             continue
-        pairwise_similarity_annotations_filtered[gene_pairs] = pairwise_similarity_annotations_composed[gene_pairs]
+        pair_annotations = pairwise_similarity_annotations_composed[gene_pairs]
+        if not _has_required_shared_annotation(pair_annotations, required_shared_annotations):
+            continue
+        pairwise_similarity_annotations_filtered[gene_pairs] = pair_annotations
 
     if not pairwise_similarity_annotations_filtered:
         return []
@@ -422,18 +484,28 @@ def build_phenotype_network_json(
     for mp_term_name in tqdm(phenotype_records_map.keys(), total=len(phenotype_records_map)):
         records = phenotype_records_map[mp_term_name]
         related_genes = {r["marker_symbol"] for r in records if r["marker_symbol"] in gene_lists}
+        target_phenotype_annotations = _build_target_phenotype_annotations(records, mp_term_name)
 
         if len(related_genes) < 2:
             continue
 
         if len(related_genes) > MAX_GENE_COUNT:
-            related_genes = _filter_related_genes(records, related_genes, pairwise_similarity_annotations_composed)
+            related_genes = _filter_related_genes(
+                records,
+                related_genes,
+                pairwise_similarity_annotations_composed,
+                required_shared_annotations=target_phenotype_annotations,
+            )
 
         is_binary = False
         if binary_phenotypes:
             is_binary = mp_term_name in binary_phenotypes
 
-        edges_json = _convert_to_edges_json(related_genes, pairwise_similarity_annotations_composed)
+        edges_json = _convert_to_edges_json(
+            related_genes,
+            pairwise_similarity_annotations_composed,
+            required_shared_annotations=target_phenotype_annotations,
+        )
 
         if not edges_json:
             continue

@@ -15,7 +15,7 @@ const REPULSION_RADIAL_MAX = 0.12;
 
 export function createLayoutController({ isGeneSymbolPage, defaultNodeRepulsion }) {
     let cy = null;
-    let currentLayout = "cose";
+    let currentLayout = isGeneSymbolPage ? "grid" : "cose";
     let nodeRepulsionScale = defaultNodeRepulsion;
     let nodeRepulsionValue = scaleToOriginalRange(defaultNodeRepulsion, NODE_REPULSION_MIN, NODE_REPULSION_MAX);
     let componentSpacingValue = scaleToOriginalRange(defaultNodeRepulsion, COMPONENT_SPACING_MIN, COMPONENT_SPACING_MAX);
@@ -50,14 +50,13 @@ export function createLayoutController({ isGeneSymbolPage, defaultNodeRepulsion 
             if (isGeneSymbolPage) {
                 return {
                     ...baseOptions,
-                    animate: true,
-                    animationDuration: 500,
-                    gravity: -1.2,
-                    numIter: 1500,
-                    initialTemp: 200,
-                    coolingFactor: 0.95,
+                    animate: false,
+                    gravity: -0.6,
+                    numIter: 400,
+                    initialTemp: 120,
+                    coolingFactor: 0.9,
                     minTemp: 1.0,
-                    edgeElasticity: 100,
+                    edgeElasticity: 32,
                 };
             }
 

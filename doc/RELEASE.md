@@ -21,6 +21,9 @@
 - Speed up pairwise phenotype ancestor pruning  
   Issue: [#171](https://github.com/akikuno/TSUMUGI-dev/issues/171)  
 
+- Optimize large Gene page network rendering without reducing graph data  
+  Issue: [#172](https://github.com/akikuno/TSUMUGI-dev/issues/172)  
+
 ### 🐛 Bug Fixes
 
 - Align Phenodigm calculation with the original paper  

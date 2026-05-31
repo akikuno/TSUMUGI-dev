@@ -152,7 +152,8 @@ const cy = cytoscape({
         {
             selector: "edge",
             style: {
-                "curve-style": "bezier",
+                "curve-style": isGeneSymbolPage ? "haystack" : "bezier",
+                "haystack-radius": 0,
                 "text-rotation": "autorotate",
                 width: function (ele) {
                     return mapEdgeSizeToWidth(ele.data("edge_size"));
@@ -208,6 +209,10 @@ const cy = cytoscape({
     layout: layoutController.getLayoutOptions(),
     userZoomingEnabled: true,
     zoomingEnabled: true,
+    textureOnViewport: isGeneSymbolPage,
+    hideEdgesOnViewport: isGeneSymbolPage,
+    hideLabelsOnViewport: isGeneSymbolPage,
+    pixelRatio: isGeneSymbolPage ? 1 : "auto",
     wheelSensitivity: 0.2,
 });
 
@@ -301,6 +306,7 @@ subnetworkOverlay = createSubnetworkOverlay();
 let subnetworkMeta = [];
 let isFrameUpdateQueued = false;
 let subnetworkDragState = null;
+let subnetworkSummaryVersion = 0;
 const COMPONENT_PADDING = 16;
 const COMPONENT_MAX_ITER = 30;
 const COMPONENT_FIT_PADDING = 40;
@@ -335,6 +341,18 @@ function summarizeEdgePhenotypes(component) {
         }
         return b[1] - a[1];
     });
+}
+
+function invalidateSubnetworkSummaryCache() {
+    subnetworkSummaryVersion += 1;
+}
+
+function ensureSubnetworkPhenotypeSummary(componentMeta) {
+    if (!componentMeta) return;
+    if (!componentMeta.component) return;
+    if (componentMeta.phenotypeSummaryVersion === subnetworkSummaryVersion && componentMeta.phenotypes) return;
+    componentMeta.phenotypes = summarizeEdgePhenotypes(componentMeta.component);
+    componentMeta.phenotypeSummaryVersion = subnetworkSummaryVersion;
 }
 
 function updateSubnetworkFrames() {
@@ -395,11 +413,12 @@ function updateSubnetworkFrames() {
         subnetworkOverlay.appendChild(frame);
         attachFrameDragHandlers(frame, label);
 
-        const summary = summarizeEdgePhenotypes(component);
         subnetworkMeta.push({
             id: idx + 1,
             bbox: { x1: visibleLeft, y1: visibleTop, x2: visibleLeft + width, y2: visibleTop + height },
-            phenotypes: summary,
+            component,
+            phenotypes: null,
+            phenotypeSummaryVersion: -1,
             nodes: component.nodes(),
         });
     });
@@ -611,6 +630,7 @@ function attachFrameDragHandlers(frame, handleElement = frame) {
         const component = subnetworkMeta.find((c) => c.id === compId);
         if (!component) return;
         const renderedPos = pointerToRenderedPos(evt);
+        ensureSubnetworkPhenotypeSummary(component);
         showSubnetworkTooltip({ component, renderedPos, cyInstance: cy });
     });
 }
@@ -896,8 +916,28 @@ if (isPhenotypePage && nodeSlider && !isBinaryPhenotype) {
 
 let filterByNodeColorAndEdgeSize = () => { };
 
+function finishFilterUpdate({ runLayout = false, refreshCentrality = false } = {}) {
+    invalidateSubnetworkSummaryCache();
+
+    if (runLayout) {
+        layoutController.runLayoutWithRepulsion();
+    } else {
+        scheduleSubnetworkFrameUpdate();
+    }
+
+    checkEmptyState();
+
+    if (window.refreshPhenotypeList) {
+        window.refreshPhenotypeList();
+    }
+
+    if (refreshCentrality && typeof window.recalculateCentrality === "function") {
+        window.recalculateCentrality();
+    }
+}
+
 if (isPhenotypePage) {
-    filterByNodeColorAndEdgeSize = function () {
+    filterByNodeColorAndEdgeSize = function (options = {}) {
         const hasNodeSlider = nodeSlider && nodeSlider.noUiSlider;
         const nodeSliderValues = hasNodeSlider
             ? nodeSlider.noUiSlider.get().map(Number)
@@ -936,50 +976,62 @@ if (isPhenotypePage) {
             edgeMaxValue = edgeMax;
         }
 
+        const nodeDisplay = new Map();
+        const visibleEdgeCounts = new Map();
+        const edgeDisplay = new Map();
+        const lowerNodeValue = Math.min(nodeMinValue, nodeMaxValue);
+        const upperNodeValue = Math.max(nodeMinValue, nodeMaxValue);
+        const lowerEdgeValue = Math.min(edgeMinValue, edgeMaxValue);
+        const upperEdgeValue = Math.max(edgeMinValue, edgeMaxValue);
+
         cy.nodes().forEach((node) => {
             const nodeColorForFilter = node.data("node_color_for_filter") || node.data("node_color");
             const isVisible =
-                nodeColorForFilter >= Math.min(nodeMinValue, nodeMaxValue) &&
-                nodeColorForFilter <= Math.max(nodeMinValue, nodeMaxValue);
-            node.style("display", isVisible ? "element" : "none");
+                nodeColorForFilter >= lowerNodeValue &&
+                nodeColorForFilter <= upperNodeValue;
+            nodeDisplay.set(node.id(), isVisible);
+            if (isVisible) {
+                visibleEdgeCounts.set(node.id(), 0);
+            }
         });
 
         cy.edges().forEach((edge) => {
             const edgeSize = edge.data("edge_size");
             const sharedPhenotypes = edge.data("phenotype") || [];
-            const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
-            const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
+            const source = edge.data("source");
+            const target = edge.data("target");
+            const sourceVisible = nodeDisplay.get(source) === true;
+            const targetVisible = nodeDisplay.get(target) === true;
 
             const isVisible =
                 sourceVisible &&
                 targetVisible &&
-                edgeSize >= Math.min(edgeMinValue, edgeMaxValue) &&
-                edgeSize <= Math.max(edgeMinValue, edgeMaxValue) &&
+                edgeSize >= lowerEdgeValue &&
+                edgeSize <= upperEdgeValue &&
                 sharedPhenotypes.length >= 2;
 
-            edge.style("display", isVisible ? "element" : "none");
-        });
-
-        cy.nodes().forEach((node) => {
-            const visibleEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
-            if (visibleEdges.length === 0) {
-                node.style("display", "none");
+            edgeDisplay.set(edge, isVisible);
+            if (isVisible) {
+                visibleEdgeCounts.set(source, (visibleEdgeCounts.get(source) || 0) + 1);
+                visibleEdgeCounts.set(target, (visibleEdgeCounts.get(target) || 0) + 1);
             }
         });
 
-        layoutController.runLayoutWithRepulsion();
-        checkEmptyState();
+        cy.batch(() => {
+            cy.nodes().forEach((node) => {
+                const shouldShow = nodeDisplay.get(node.id()) === true && (visibleEdgeCounts.get(node.id()) || 0) > 0;
+                node.style("display", shouldShow ? "element" : "none");
+            });
 
-        if (window.refreshPhenotypeList) {
-            window.refreshPhenotypeList();
-        }
+            cy.edges().forEach((edge) => {
+                edge.style("display", edgeDisplay.get(edge) === true ? "element" : "none");
+            });
+        });
 
-        if (typeof window.recalculateCentrality === "function") {
-            window.recalculateCentrality();
-        }
+        finishFilterUpdate(options);
     };
 } else if (isGeneSymbolPage) {
-    filterByNodeColorAndEdgeSize = function () {
+    filterByNodeColorAndEdgeSize = function (options = {}) {
         const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
 
         let selectedMin = Math.min(...edgeSliderValues);
@@ -992,20 +1044,6 @@ if (isPhenotypePage) {
 
         const edgeMinValue = Math.max(edgeMin, selectedMin);
         const edgeMaxValue = Math.min(edgeMax, selectedMax);
-
-        cy.elements().forEach((ele) => ele.style("display", "none"));
-
-        cy.edges().forEach((edge) => {
-            const edgeSize = edge.data("edge_size");
-            const isVisible =
-                edgeSize >= Math.min(edgeMinValue, edgeMaxValue) && edgeSize <= Math.max(edgeMinValue, edgeMaxValue);
-            edge.style("display", isVisible ? "element" : "none");
-        });
-
-        const visibleEdges = cy.edges().filter((edge) => edge.style("display") === "element");
-        const candidateElements = visibleEdges.union(visibleEdges.connectedNodes());
-        const components = candidateElements.components();
-
         const targetGene = pageConfig.name;
         const targetNode = cy.getElementById(targetGene);
 
@@ -1014,74 +1052,64 @@ if (isPhenotypePage) {
             return;
         }
 
-        targetNode.style("display", "element");
-
         const directlyConnectedNodes = new Set([targetGene]);
+        const edgeWithinScoreRange = new Map();
+        const lowerEdgeValue = Math.min(edgeMinValue, edgeMaxValue);
+        const upperEdgeValue = Math.max(edgeMinValue, edgeMaxValue);
 
         cy.edges().forEach((edge) => {
-            if (edge.style("display") === "element") {
+            const edgeSize = edge.data("edge_size");
+            const source = edge.data("source");
+            const target = edge.data("target");
+            const isInRange = edgeSize >= lowerEdgeValue && edgeSize <= upperEdgeValue;
+            edgeWithinScoreRange.set(edge, isInRange);
+
+            if (!isInRange) {
+                return;
+            }
+            if (source === targetGene) {
+                directlyConnectedNodes.add(target);
+            } else if (target === targetGene) {
+                directlyConnectedNodes.add(source);
+            }
+        });
+
+        cy.batch(() => {
+            cy.nodes().forEach((node) => {
+                const nodeId = node.data("id");
+                node.style("display", directlyConnectedNodes.has(nodeId) ? "element" : "none");
+            });
+
+            cy.edges().forEach((edge) => {
                 const source = edge.data("source");
                 const target = edge.data("target");
+                const isVisible =
+                    edgeWithinScoreRange.get(edge) === true &&
+                    directlyConnectedNodes.has(source) &&
+                    directlyConnectedNodes.has(target);
 
-                if (source === targetGene) {
-                    directlyConnectedNodes.add(target);
-                } else if (target === targetGene) {
-                    directlyConnectedNodes.add(source);
-                }
-            }
+                edge.style("display", isVisible ? "element" : "none");
+            });
         });
 
-        cy.edges().forEach((edge) => {
-            if (edge.style("display") === "element") {
-                const source = edge.data("source");
-                const target = edge.data("target");
-
-                if (directlyConnectedNodes.has(source) && directlyConnectedNodes.has(target)) {
-                    edge.style("display", "element");
-                } else {
-                    edge.style("display", "none");
-                }
-            }
-        });
-
-        cy.nodes().forEach((node) => {
-            const nodeId = node.data("id");
-            if (directlyConnectedNodes.has(nodeId)) {
-                node.style("display", "element");
-            } else {
-                node.style("display", "none");
-            }
-        });
-
-        layoutController.runLayoutWithRepulsion();
-        checkEmptyState();
-
-        if (window.refreshPhenotypeList) {
-            window.refreshPhenotypeList();
-        }
-
-        if (typeof window.recalculateCentrality === "function") {
-            window.recalculateCentrality();
-        }
+        finishFilterUpdate(options);
     };
 } else {
-    filterByNodeColorAndEdgeSize = function () {
+    filterByNodeColorAndEdgeSize = function (options = {}) {
         const edgeSliderValues = edgeSlider.noUiSlider.get().map(Number);
         const edgeMinValue = scaleToOriginalRange(edgeSliderValues[0], edgeMin, edgeMax, 1, 100);
         const edgeMaxValue = scaleToOriginalRange(edgeSliderValues[1], edgeMin, edgeMax, 1, 100);
 
-        cy.nodes().forEach((node) => node.style("display", "element"));
+        cy.batch(() => {
+            cy.nodes().forEach((node) => node.style("display", "element"));
 
-        cy.edges().forEach((edge) => {
-            const edgeSize = edge.data("edge_size");
-            const sourceVisible = cy.getElementById(edge.data("source")).style("display") === "element";
-            const targetVisible = cy.getElementById(edge.data("target")).style("display") === "element";
-            const isVisible =
-                sourceVisible &&
-                targetVisible &&
-                edgeSize >= Math.min(edgeMinValue, edgeMaxValue) &&
-                edgeSize <= Math.max(edgeMinValue, edgeMaxValue);
-            edge.style("display", isVisible ? "element" : "none");
+            cy.edges().forEach((edge) => {
+                const edgeSize = edge.data("edge_size");
+                const isVisible =
+                    edgeSize >= Math.min(edgeMinValue, edgeMaxValue) &&
+                    edgeSize <= Math.max(edgeMinValue, edgeMaxValue);
+                edge.style("display", isVisible ? "element" : "none");
+            });
         });
 
         const components = calculateConnectedComponents(cy);
@@ -1108,40 +1136,33 @@ if (isPhenotypePage) {
             });
         });
 
-        cy.nodes().forEach((node) => {
-            const visibleEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
-            if (visibleEdges.length === 0) {
-                node.style("display", "none");
-            }
+        cy.batch(() => {
+            cy.nodes().forEach((node) => {
+                const visibleEdges = node.connectedEdges().filter((edge) => edge.style("display") === "element");
+                node.style("display", visibleEdges.length > 0 ? "element" : "none");
+            });
         });
 
-        layoutController.runLayoutWithRepulsion();
-        checkEmptyState();
-
-        if (window.refreshPhenotypeList) {
-            window.refreshPhenotypeList();
-        }
-
-        if (typeof window.recalculateCentrality === "function") {
-            window.recalculateCentrality();
-        }
+        finishFilterUpdate(options);
     };
 }
 
 if (edgeSlider && edgeSlider.noUiSlider) {
     edgeSlider.noUiSlider.on("update", function (values) {
-        filterByNodeColorAndEdgeSize();
+        filterByNodeColorAndEdgeSize({ runLayout: false, refreshCentrality: false });
     });
     edgeSlider.noUiSlider.on("set", function () {
+        filterByNodeColorAndEdgeSize({ runLayout: false, refreshCentrality: true });
         queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
     });
 }
 
 if (isPhenotypePage && nodeSlider && nodeSlider.noUiSlider) {
     nodeSlider.noUiSlider.on("update", function (values) {
-        filterByNodeColorAndEdgeSize();
+        filterByNodeColorAndEdgeSize({ runLayout: false, refreshCentrality: false });
     });
     nodeSlider.noUiSlider.on("set", function () {
+        filterByNodeColorAndEdgeSize({ runLayout: false, refreshCentrality: true });
         queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
     });
 }
@@ -1158,12 +1179,14 @@ function isGenotypeAllSelected() {
 }
 
 function applyFiltering() {
-    queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
     const sourceElements = isGenotypeAllSelected() ? baseElements : elements;
-    filterElementsByGenotypeAndSex(sourceElements, cy, targetPhenotype, filterByNodeColorAndEdgeSize);
+    filterElementsByGenotypeAndSex(sourceElements, cy, targetPhenotype, () => {
+        filterByNodeColorAndEdgeSize({ runLayout: false, refreshCentrality: false });
+    });
     if (typeof window.recalculateCentrality === "function") {
         window.recalculateCentrality();
     }
+    queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
 }
 
 function setupAllToggle(formId) {
@@ -1264,6 +1287,9 @@ const edgeWidthSliderInstance = createSlider("edge-width-slider", 5, 1, 10, 1, (
 const layoutDropdown = document.getElementById("layout-dropdown");
 const nodeRepulsionContainer = document.getElementById("node-repulsion-container");
 const nodeRepulsionBox = document.getElementById("node-repulsion-box");
+if (layoutDropdown) {
+    layoutDropdown.value = layoutController.getLayout();
+}
 
 function updateNodeRepulsionVisibility() {
     const displayValue = "block";
@@ -1411,6 +1437,7 @@ cy.on("tap", function (event) {
     const renderedPos = event.renderedPosition || event.position || { x: 0, y: 0 };
     const component = findComponentByPosition(renderedPos);
     if (component) {
+        ensureSubnetworkPhenotypeSummary(component);
         showSubnetworkTooltip({ component, renderedPos, cyInstance: cy });
     } else {
         removeTooltips();
