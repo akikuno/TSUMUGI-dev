@@ -199,6 +199,14 @@ def _scale_to_1_100(x: int, min_val: int, max_val: int) -> int:
     return int(scaled_score)
 
 
+def _finite_float_or_default(value, default: float) -> float:
+    try:
+        value_float = float(value)
+    except (TypeError, ValueError):
+        return default
+    return value_float if math.isfinite(value_float) else default
+
+
 def _scale_phenotype_similarity_scores(pairwise_similarity_annotations_filtered, target_gene: str | None = None):
     if target_gene:
         scores = [
@@ -227,28 +235,39 @@ def _scale_phenotype_similarity_scores(pairwise_similarity_annotations_filtered,
 
 
 def _scale_effect_sizes(gene_records_map_filtered, mp_term_name):
-    effect_sizes = []
+    target_records = []
     for records in gene_records_map_filtered.values():
         for record in records:
             if record["mp_term_name"] == mp_term_name:
-                effect_sizes.append(record["effect_size"])
+                target_records.append(record)
+
+    effect_sizes = [
+        _finite_float_or_default(record.get("effect_size"), float("nan")) for record in target_records
+    ]
+    effect_sizes = [effect_size for effect_size in effect_sizes if math.isfinite(effect_size)]
+
+    if not effect_sizes:
+        for record in target_records:
+            record["effect_size"] = 1
+        return gene_records_map_filtered
 
     # For binary effect sizes (0 or 1), set 1 to 100 directly
     if all(es == 1 for es in effect_sizes):
-        for records in gene_records_map_filtered.values():
-            for record in records:
-                if record["mp_term_name"] == mp_term_name:
-                    record["effect_size"] = 100
+        for record in target_records:
+            effect_size = _finite_float_or_default(record.get("effect_size"), float("nan"))
+            record["effect_size"] = 100 if effect_size == 1 else 1
         return gene_records_map_filtered
 
     effect_sizes_log1p = [math.log1p(es) for es in effect_sizes]
     min_val = min(effect_sizes_log1p)
     max_val = max(effect_sizes_log1p)
-    for records in gene_records_map_filtered.values():
-        for record in records:
-            if record["mp_term_name"] == mp_term_name:
-                effect_size_scaled = _scale_to_1_100(math.log1p(record["effect_size"]), min_val, max_val)
-                record["effect_size"] = effect_size_scaled
+    for record in target_records:
+        effect_size = _finite_float_or_default(record.get("effect_size"), float("nan"))
+        if not math.isfinite(effect_size):
+            record["effect_size"] = 1
+            continue
+        effect_size_scaled = _scale_to_1_100(math.log1p(effect_size), min_val, max_val)
+        record["effect_size"] = effect_size_scaled
     return gene_records_map_filtered
 
 
@@ -305,7 +324,7 @@ def _filter_related_genes(
          - then gene symbol (asc, for stability),
          and take the top MAX_GENE_COUNT.
     Notes:
-      - NaN effect sizes are treated as 1.
+      - NaN effect sizes are treated as 0 for ranking.
       - For speed, pair stats are computed in a single pass over unique gene pairs.
     """
 
@@ -360,7 +379,7 @@ def _filter_related_genes(
         for record in records:
             gene = record["marker_symbol"]
             if gene in candidate_related_genes:
-                effect_size = record["effect_size"] if not math.isnan(record["effect_size"]) else 0.0
+                effect_size = _finite_float_or_default(record.get("effect_size"), 0.0)
                 gene_max_effect_sizes[gene] = max(gene_max_effect_sizes[gene], effect_size)
 
         # 2. Filter genes by effect size

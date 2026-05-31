@@ -1,4 +1,7 @@
+import math
+
 import pytest
+
 from TSUMUGI.filterer import distinct_records_with_max_effect
 
 
@@ -81,3 +84,18 @@ def test_distinct_records_with_max_effect(records, unique_keys, expected):
     """
     result = list(distinct_records_with_max_effect(records, unique_keys))
     assert result == expected
+
+
+def test_distinct_records_with_max_effect_treats_nan_as_missing():
+    records = [
+        {"gene": "A", "effect_size": float("nan"), "id": "missing"},
+        {"gene": "A", "effect_size": 0.0, "id": "zero"},
+        {"gene": "B", "effect_size": float("nan"), "id": "missing-only"},
+    ]
+
+    result = list(distinct_records_with_max_effect(records, ["gene"]))
+
+    assert result[0] == {"gene": "A", "effect_size": 0.0, "id": "zero"}
+    assert result[1]["gene"] == "B"
+    assert result[1]["id"] == "missing-only"
+    assert math.isnan(result[1]["effect_size"])

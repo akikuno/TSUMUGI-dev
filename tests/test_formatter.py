@@ -6,7 +6,9 @@ from TSUMUGI.formatter import _to_float, abs_effect_size, floatinize_columns
 def test_to_float():
     assert _to_float("3.14") == 3.14
     assert math.isnan(_to_float(""))
+    assert math.isnan(_to_float(" "))
     assert math.isnan(_to_float(None))
+    assert math.isnan(_to_float("not available"))
 
 
 def test_floatinize_columns():
@@ -30,3 +32,11 @@ def test_abs_effect_size():
     columns = ["effect_size"]
     assert list(abs_effect_size([record_plus], columns))[0] == {"effect_size": 1}
     assert list(abs_effect_size([record_minus], columns))[0] == {"effect_size": 1}
+
+
+def test_abs_effect_size_preserves_nan():
+    record = {"effect_size": float("nan")}
+
+    result = list(abs_effect_size([record], ["effect_size"]))[0]
+
+    assert math.isnan(result["effect_size"])

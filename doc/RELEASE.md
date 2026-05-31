@@ -47,6 +47,11 @@
   Issue: [#170](https://github.com/akikuno/TSUMUGI-dev/issues/170)  
 
 
+### 🔧 Maintenance
+
+- Handle missing IMPC effect_size values as NaN instead of 0 in TSUMUGI records
+  Issue: [#165](https://github.com/akikuno/TSUMUGI-dev/issues/165)  
+
 <!-- ############################################################ # -->
 
 -------------------------------------------------------------

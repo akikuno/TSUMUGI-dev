@@ -1,6 +1,7 @@
 import copy
 import gzip
 import json
+import math
 
 from TSUMUGI import network_constructor
 
@@ -97,6 +98,34 @@ def test_convert_to_nodes_json():
     expected.sort(key=lambda x: x["data"]["id"])
 
     assert nodes_json == expected
+
+
+def test_convert_to_nodes_json_uses_min_color_for_nan_effect_size():
+    connected_node_ids = {"GeneA", "GeneB"}
+    mp_term_name = "increased circulating creatinine level"
+    gene_records_map = {
+        "GeneA": [
+            {
+                "mp_term_name": mp_term_name,
+                "effect_size": float("nan"),
+                "mp_term_name_with_metadata": f"{mp_term_name} (Homo, Early)",
+            }
+        ],
+        "GeneB": [
+            {
+                "mp_term_name": mp_term_name,
+                "effect_size": 43.5261880802177,
+                "mp_term_name_with_metadata": f"{mp_term_name} (Homo, Early)",
+            }
+        ],
+    }
+
+    nodes_json = network_constructor._convert_to_nodes_json(connected_node_ids, mp_term_name, gene_records_map, {})
+    node_colors = {node["data"]["id"]: node["data"]["node_color"] for node in nodes_json}
+
+    assert node_colors["GeneA"] == 1
+    assert node_colors["GeneB"] == 100
+    assert all(math.isfinite(color) for color in node_colors.values())
 
 
 def test_compose_genewise_phenotype_significants():

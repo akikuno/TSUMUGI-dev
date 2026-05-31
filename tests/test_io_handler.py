@@ -1,5 +1,6 @@
 import gzip
 import json
+import math
 
 import pytest
 
@@ -116,3 +117,15 @@ def test_write_jsonl_accepts_gzip_compresslevel(tmp_path):
 
     with gzip.open(output_path, "rt", encoding="utf-8") as f:
         assert [json.loads(line) for line in f] == records
+
+
+def test_write_jsonl_round_trips_nan(tmp_path):
+    output_path = tmp_path / "records.jsonl.gz"
+    records = [{"effect_size": float("nan")}]
+
+    write_jsonl(records, output_path, compresslevel=1)
+
+    with gzip.open(output_path, "rt", encoding="utf-8") as f:
+        loaded = [json.loads(line) for line in f]
+
+    assert math.isnan(loaded[0]["effect_size"])

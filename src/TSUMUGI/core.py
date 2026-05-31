@@ -129,7 +129,7 @@ def run_pipeline(args) -> None:
         binary_phenotypes = set()
         phenotype_effects = defaultdict(set)
         for rec in genewise_phenotype_significants:
-            phenotype_effects[rec["mp_term_name"]].add(rec.get("effect_size", 0))
+            phenotype_effects[rec["mp_term_name"]].add(rec.get("effect_size", float("nan")))
         for mp_term_name, effects in phenotype_effects.items():
             if effects and all(es in (0, 1) for es in effects):
                 binary_phenotypes.add(mp_term_name)
