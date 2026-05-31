@@ -27,10 +27,10 @@ export function isBinaryPhenotypeElements(elements) {
         return false;
     }
 
-    const hideSeverityFlags = nodeElements
-        .map((ele) => ele.data.hide_severity)
+    const hideEffectSizeFlags = nodeElements
+        .map((ele) => ele.data.hide_effect_size ?? ele.data.hide_severity)
         .filter((value) => value !== undefined);
-    if (hideSeverityFlags.length && hideSeverityFlags.every(Boolean)) {
+    if (hideEffectSizeFlags.length && hideEffectSizeFlags.every(Boolean)) {
         return true;
     }
 

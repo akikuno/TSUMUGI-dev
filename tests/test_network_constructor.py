@@ -66,7 +66,7 @@ def test_convert_to_nodes_json():
         mp_term_name,
         gene_records_map,
         disease_annotations_composed,
-        hide_severity=False,
+        hide_effect_size=False,
     )
     expected = [
         {

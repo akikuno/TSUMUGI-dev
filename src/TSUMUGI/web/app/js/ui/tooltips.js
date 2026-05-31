@@ -70,19 +70,19 @@ function buildModuleSection(modules) {
 function buildNodeTooltipContent({ data, mapSymbolToId, targetPhenotype, nodeColorValues }) {
     const geneId = mapSymbolToId[data.id] || "UNKNOWN";
     const urlImpc = `https://www.mousephenotype.org/data/genes/${geneId}`;
-    const shouldHideSeverity = Boolean(data.hide_severity);
-    const rawSeverity = Number.isFinite(data.original_node_color) ? data.original_node_color : data.node_color;
+    const shouldHideEffectSize = Boolean(data.hide_effect_size ?? data.hide_severity);
+    const rawEffectSize = Number.isFinite(data.original_node_color) ? data.original_node_color : data.node_color;
     const nodeColorSet = Array.isArray(nodeColorValues) ? new Set(nodeColorValues) : new Set();
     const uniqueValues = [...nodeColorSet];
     const isBinary =
         uniqueValues.length === 1 &&
         ["0", "1", "100"].includes(String(Math.round(Number(uniqueValues[0]))));
-    const severityValue =
-        !shouldHideSeverity && !isBinary && Number.isFinite(rawSeverity) ? Math.round(rawSeverity) : null;
-    const severityText = data.effect_size_missing
-        ? " (Severity: N/A)"
-        : severityValue !== null
-            ? ` (Severity: ${severityValue})`
+    const effectSizeValue =
+        !shouldHideEffectSize && !isBinary && Number.isFinite(rawEffectSize) ? Math.round(rawEffectSize) : null;
+    const effectSizeText = data.effect_size_missing
+        ? " (Effect size: N/A)"
+        : effectSizeValue !== null
+            ? ` (Effect size: ${effectSizeValue})`
             : "";
 
     const phenotypes = Array.isArray(data.phenotype)
@@ -99,7 +99,7 @@ function buildNodeTooltipContent({ data, mapSymbolToId, targetPhenotype, nodeCol
     const phenotypeSection = `
         <div class="cy-tooltip__section cy-tooltip__section--phenotypes" data-section="phenotypes">
             <div class="cy-tooltip__section-title">
-                <b>Phenotypes of <a href="${urlImpc}" target="_blank">${data.id} KO mice</a>${severityText}</b>
+                <b>Phenotypes of <a href="${urlImpc}" target="_blank">${data.id} KO mice</a>${effectSizeText}</b>
             </div>
             <div class="cy-tooltip__section-body">${phenotypesHtml}</div>
         </div>

@@ -140,13 +140,12 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 > 表現型類似度についての詳細は、以下を御覧ください  
 > 👉 [🔍 表現型類似遺伝子群の算出方法](https://github.com/akikuno/TSUMUGI-dev/blob/main/doc/README_JP.md#-%E8%A1%A8%E7%8F%BE%E5%9E%8B%E9%A1%9E%E4%BC%BC%E9%81%BA%E4%BC%9D%E5%AD%90%E7%BE%A4%E3%81%AE%E7%AE%97%E5%87%BA%E6%96%B9%E6%B3%95)
 
-#### 表現型重症度によるフィルター
+#### 効果量によるフィルター
 
-`Phenotype severity`のスライダーでは、**KOマウスにおける表現型の重症度**（効果量）に基づいて、ノードの表示を調整できます。  
-効果量が高いほど、表現型の影響が強く現れていることを示します。  
+`Effect size`のスライダーでは、IMPC由来の効果量に基づいて、ノードの表示を調整できます。
 
 > [!NOTE]
-> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Phenotypes severity`のスライダーはありません。
+> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Effect size`のスライダーはありません。
 
 #### 遺伝型を指定
 
@@ -582,4 +581,3 @@ TSUMUGIはPhenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database
 Kuno A, Matsumoto K, Taki T, Takahashi S, and Mizuno S.  
 **TSUMUGI: a platform for phenotype-driven gene network identification from comprehensive knockout mouse phenotyping data**  
 *bioRxiv*. (2026) https://doi.org/10.64898/2026.02.18.706720
-

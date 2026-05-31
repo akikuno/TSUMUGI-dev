@@ -89,8 +89,8 @@ Ajusta la visualización desde el panel izquierdo.
 `Phenotypes similarity` ajusta el umbral de aristas según Resnik→Phenodigm.  
 > Detalles: 👉 [🔍 Cómo calculamos los genes con fenotipos similares](#-cómo-calculamos-los-genes-con-fenotipos-similares)
 
-#### Filtro por severidad fenotípica
-`Phenotype severity` filtra nodos por effect size en KO; valores mayores indican más impacto.  
+#### Filtro por effect size
+`Effect size` filtra nodos por la magnitud del effect size derivado de IMPC cuando está disponible.
 > Oculto para fenotipos binarios (p. ej., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); lista binaria [aquí](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) o entrada de un solo gen.
 
 #### Especificar genotipo

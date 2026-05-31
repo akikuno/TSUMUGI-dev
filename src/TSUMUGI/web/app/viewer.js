@@ -1623,7 +1623,7 @@ setupRangeInputs({
 });
 
 // --------------------------------------------------------
-// Phenotype severity slider (Phenotype pages only)
+// Effect size slider (Phenotype pages only)
 // --------------------------------------------------------
 
 const nodeSlider = document.getElementById("filter-node-slider");

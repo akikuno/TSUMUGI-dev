@@ -89,8 +89,8 @@ TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
 `Phenotypes similarity` 슬라이더로 Resnik→Phenodigm 점수를 기준으로 엣지 표시 임계를 설정합니다.  
 > 자세한 계산 방법: 👉 [🔍 표현형 유사 유전자군 계산](#-표현형-유사-유전자군-계산)
 
-#### 표현형 중증도 필터
-`Phenotype severity` 슬라이더로 KO 마우스의 효과량(중증도)에 따라 노드를 필터링합니다. 값이 클수록 영향이 큽니다.  
+#### Effect size 필터
+`Effect size` 슬라이더로 사용 가능한 경우 IMPC-derived effect size의 크기에 따라 노드를 필터링합니다.
 > 이진 표현형(예: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 이진 목록은 [여기](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt))나 단일 유전자 입력 시에는 표시되지 않습니다.
 
 #### Genotype 지정

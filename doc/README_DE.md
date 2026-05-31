@@ -89,8 +89,8 @@ Anzeige im linken Panel anpassen.
 `Phenotypes similarity` setzt den Schwellenwert für Kanten via Resnik→Phenodigm.  
 > Details: 👉 [🔍 Berechnung ähnlicher Gen-Gruppen](#-berechnung-ähnlicher-gen-gruppen)
 
-#### Nach Schweregrad filtern
-`Phenotype severity` filtert Knoten nach Effect size (Schwere in KO). Höhere Werte = stärkere Ausprägung.  
+#### Nach Effect size filtern
+`Effect size` filtert Knoten nach der Größe des IMPC-derived effect size, sofern verfügbar.
 > Ausgeblendet bei binären Phänotypen (z. B. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binäre Liste [hier](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) oder Single-Gene-Eingabe.
 
 #### Genotyp festlegen

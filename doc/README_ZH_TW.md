@@ -89,8 +89,8 @@ TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
 `Phenotypes similarity` 滑桿依 Resnik→Phenodigm 分數設定邊的門檻。  
 > 計算詳情：👉 [🔍 表現型相似基因群的計算方法](#-表現型相似基因群的計算方法)
 
-#### 依表現型嚴重度過濾
-`Phenotype severity` 滑桿依 effect size（KO 小鼠中的嚴重度）過濾節點，值越大影響越強。  
+#### 依 effect size 過濾
+`Effect size` 滑桿依 IMPC-derived effect size 的大小過濾節點（若有資料）。
 > 對二值表現型（如 [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 二值列表見[此處](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或單一基因輸入時，此控制隱藏。
 
 #### 指定接合型

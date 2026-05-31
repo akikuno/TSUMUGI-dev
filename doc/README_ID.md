@@ -89,8 +89,8 @@ Menyesuaikan tampilan jaringan di panel kiri.
 `Phenotypes similarity` mengatur ambang edge berdasar skor Resnik→Phenodigm.  
 > Cara hitung: 👉 [🔍 Cara kami menghitung kesamaan fenotipe](#-how-we-calculate-phenotypically-similar-genes)
 
-#### Filter keparahan fenotipe
-`Phenotype severity` memfilter node berdasar effect size pada KO. Nilai lebih besar berarti dampak lebih kuat.  
+#### Filter effect size
+`Effect size` memfilter node berdasarkan besar kecilnya effect size turunan IMPC jika tersedia.
 > Disembunyikan untuk fenotipe biner (mis. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); daftar biner [di sini](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) atau input satu gen.
 
 #### Tentukan genotype

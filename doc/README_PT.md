@@ -89,8 +89,8 @@ Ajuste de exibição no painel esquerdo.
 `Phenotypes similarity` define o limiar das arestas pelo score Resnik→Phenodigm.  
 > Detalhes: 👉 [🔍 Cálculo de grupos de genes com fenótipos similares](#-cálculo-de-grupos-de-genes-com-fenótipos-similares)
 
-#### Filtrar por severidade fenotípica
-`Phenotype severity` filtra nós por effect size em KO; valores maiores indicam impacto maior.  
+#### Filtrar por effect size
+`Effect size` filtra nós pela magnitude do effect size derivado do IMPC quando disponível.
 > Oculto para fenótipos binários (ex.: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); lista binária [aqui](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou entrada de um gene.
 
 #### Especificar genótipo

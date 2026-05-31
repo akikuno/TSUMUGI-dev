@@ -98,8 +98,8 @@ Adjust network display from the left panel.
 > [!NOTE]
 > For how we compute similarity, see: 👉 [🔍 How We Calculate Phenotypically Similar Genes](#-how-we-calculate-phenotypically-similar-genes)
 
-#### Filter by phenotype severity
-`Phenotype severity` slider filters nodes by effect size (severity in KO mice). Higher values mean stronger impact.  
+#### Filter by effect size
+`Effect size` slider filters nodes by the magnitude of the IMPC-derived effect size when available.
 
 > [!NOTE]
 > Hidden for binary phenotypes (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binary list: 👉 [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or gene(s) input.

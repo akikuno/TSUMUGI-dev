@@ -89,8 +89,8 @@ Réglez l’affichage réseau dans le panneau de gauche.
 `Phenotypes similarity` fixe le seuil des arêtes via le score Resnik→Phenodigm.  
 > Détails : 👉 [🔍 Calcul des groupes de gènes phénotypiquement similaires](#-calcul-des-groupes-de-gènes-phénotypiquement-similaires)
 
-#### Filtre par sévérité phénotypique
-`Phenotype severity` filtre les nœuds par effect size en KO; plus grand = impact plus fort.  
+#### Filtre par effect size
+`Effect size` filtre les nœuds selon la magnitude de l'effect size dérivé de l'IMPC lorsqu'il est disponible.
 > Masqué pour les phénotypes binaires (ex. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); liste binaire [ici](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou l’entrée d’un seul gène.
 
 #### Spécifier le génotype

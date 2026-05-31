@@ -89,8 +89,8 @@ Trang chuyển và vẽ mạng tự động theo đầu vào.
 `Phenotypes similarity` đặt ngưỡng cạnh dựa trên điểm Resnik→Phenodigm.  
 > Cách tính: 👉 [🔍 Cách tính nhóm gen tương đồng kiểu hình](#-cách-tính-nhóm-gen-tương-đồng-kiểu-hình)
 
-#### Lọc theo mức độ nghiêm trọng
-`Phenotype severity` lọc nút theo effect size (mức độ nghiêm trọng ở KO). Giá trị lớn hơn = ảnh hưởng mạnh hơn.  
+#### Lọc theo effect size
+`Effect size` lọc nút theo độ lớn của effect size từ IMPC khi có dữ liệu.
 > Ẩn cho kiểu hình nhị phân (ví dụ [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); danh sách nhị phân [tại đây](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) hoặc khi nhập một gen.
 
 #### Chỉ định kiểu gen

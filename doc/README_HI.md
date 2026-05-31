@@ -89,8 +89,8 @@ TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित कर�
 `Phenotypes similarity` स्लाइडर Resnik→Phenodigm स्कोर के आधार पर edges का threshold सेट करता है。  
 > गणना विधि: 👉 [🔍 समान फेनोटाइप वाले जीन समूह की गणना](#-समान-फेनोटाइप-वाले-जीन-समूह-की-गणना)
 
-#### फेनोटाइप गंभीरता से फ़िल्टर
-`Phenotype severity` स्लाइडर KO माउस में प्रभाव आकार (severity) के आधार पर नोड्स को फ़िल्टर करता है。 मान जितना बड़ा होगा, प्रभाव उतना अधिक होगा。  
+#### Effect size से फ़िल्टर
+`Effect size` स्लाइडर उपलब्ध होने पर IMPC-derived effect size के परिमाण के आधार पर नोड्स को फ़िल्टर करता है。
 > द्विआधारी फेनोटाइप (उदाहरण: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); द्विआधारी सूची: [यहाँ](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) या एकल जीन इनपुट पर यह छिपा रहता है。
 
 #### Genotype निर्दिष्ट करें
