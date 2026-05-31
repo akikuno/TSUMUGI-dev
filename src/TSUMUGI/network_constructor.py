@@ -207,6 +207,15 @@ def _finite_float_or_default(value, default: float) -> float:
     return value_float if math.isfinite(value_float) else default
 
 
+def _target_effect_size_is_missing(records, mp_term_name) -> bool:
+    target_effect_sizes = [
+        _finite_float_or_default(record.get("effect_size"), float("nan"))
+        for record in records
+        if record["mp_term_name"] == mp_term_name
+    ]
+    return bool(target_effect_sizes) and not any(math.isfinite(value) for value in target_effect_sizes)
+
+
 def _scale_phenotype_similarity_scores(pairwise_similarity_annotations_filtered, target_gene: str | None = None):
     if target_gene:
         scores = [
@@ -410,6 +419,10 @@ def _convert_to_nodes_json(
 ) -> list[dict[str, dict[str, str | list[str] | int]]]:
     nodes_json = []
     gene_records_map_filtered = {gene: gene_records_map[gene] for gene in related_genes}
+    missing_effect_size_by_gene = {
+        gene: _target_effect_size_is_missing(records, mp_term_name)
+        for gene, records in gene_records_map_filtered.items()
+    }
 
     # Scale effect sizes to 1-100
     gene_records_map_filtered = _scale_effect_sizes(gene_records_map_filtered, mp_term_name)
@@ -417,7 +430,10 @@ def _convert_to_nodes_json(
     for gene, records in gene_records_map_filtered.items():
         phenotypes: list[str] = [r["mp_term_name_with_metadata"] for r in records]
         diseases: set[str] = disease_annotations_composed.get(gene, set())
-        node_color: int = next((r["effect_size"] for r in records if r["mp_term_name"] == mp_term_name), 1)
+        target_node_colors = [
+            _finite_float_or_default(r.get("effect_size"), 1) for r in records if r["mp_term_name"] == mp_term_name
+        ]
+        node_color = max(target_node_colors, default=1)
 
         node = {
             "data": {
@@ -428,6 +444,8 @@ def _convert_to_nodes_json(
                 "node_color": node_color,
             }
         }
+        if missing_effect_size_by_gene.get(gene, False):
+            node["data"]["effect_size_missing"] = True
         if hide_severity:
             node["data"]["hide_severity"] = True
         nodes_json.append(node)

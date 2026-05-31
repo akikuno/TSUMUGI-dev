@@ -79,7 +79,11 @@ function buildNodeTooltipContent({ data, mapSymbolToId, targetPhenotype, nodeCol
         ["0", "1", "100"].includes(String(Math.round(Number(uniqueValues[0]))));
     const severityValue =
         !shouldHideSeverity && !isBinary && Number.isFinite(rawSeverity) ? Math.round(rawSeverity) : null;
-    const severityText = severityValue !== null ? ` (Severity: ${severityValue})` : "";
+    const severityText = data.effect_size_missing
+        ? " (Severity: N/A)"
+        : severityValue !== null
+            ? ` (Severity: ${severityValue})`
+            : "";
 
     const phenotypes = Array.isArray(data.phenotype)
         ? data.phenotype

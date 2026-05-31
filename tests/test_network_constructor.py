@@ -100,7 +100,7 @@ def test_convert_to_nodes_json():
     assert nodes_json == expected
 
 
-def test_convert_to_nodes_json_uses_min_color_for_nan_effect_size():
+def test_convert_to_nodes_json_marks_nan_effect_size_for_white_display():
     connected_node_ids = {"GeneA", "GeneB"}
     mp_term_name = "increased circulating creatinine level"
     gene_records_map = {
@@ -122,9 +122,12 @@ def test_convert_to_nodes_json_uses_min_color_for_nan_effect_size():
 
     nodes_json = network_constructor._convert_to_nodes_json(connected_node_ids, mp_term_name, gene_records_map, {})
     node_colors = {node["data"]["id"]: node["data"]["node_color"] for node in nodes_json}
+    missing_effect_size = {node["data"]["id"]: node["data"].get("effect_size_missing", False) for node in nodes_json}
 
     assert node_colors["GeneA"] == 1
     assert node_colors["GeneB"] == 100
+    assert missing_effect_size["GeneA"] is True
+    assert missing_effect_size["GeneB"] is False
     assert all(math.isfinite(color) for color in node_colors.values())
 
 

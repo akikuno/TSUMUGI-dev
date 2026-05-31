@@ -269,9 +269,16 @@ const cy = cytoscape({
                 width: 15,
                 height: 15,
                 "background-color": function (ele) {
+                    if (ele.data("effect_size_missing")) {
+                        return "#ffffff";
+                    }
                     const originalColor = ele.data("original_node_color") || ele.data("node_color");
                     return getColorForValue(originalColor, nodeColorMin, nodeColorMax);
                 },
+                "border-width": function (ele) {
+                    return ele.data("effect_size_missing") ? 1.5 : 0;
+                },
+                "border-color": "#666666",
             },
         },
         {
