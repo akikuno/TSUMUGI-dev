@@ -23,9 +23,7 @@ def _build_top_level_module_index(
     root_id: str = MP_ONTOLOGY_ROOT_ID,
 ) -> tuple[dict[str, dict[str, str]], dict[str, list[dict[str, str]]]]:
     top_level_ids = {
-        term_id
-        for term_id, term_data in ontology_terms.items()
-        if root_id in set(term_data.get("is_a", []))
+        term_id for term_id, term_data in ontology_terms.items() if root_id in set(term_data.get("is_a", []))
     }
     modules_by_id = {
         term_id: {"id": term_id, "name": ontology_terms[term_id]["name"], "label": ontology_terms[term_id]["name"]}

@@ -159,9 +159,5 @@ def test_write_mp_top_level_module_lookup_json(tmp_path):
     with output_path.open(encoding="utf-8") as f:
         lookup = json.load(f)
 
-    assert lookup["decreased bone mineral density"] == [
-        {"id": "MP:0005390", "label": "skeleton phenotype"}
-    ]
-    assert lookup["abnormal behavior"] == [
-        {"id": "MP:0005386", "label": "behavior/neurological phenotype"}
-    ]
+    assert lookup["decreased bone mineral density"] == [{"id": "MP:0005390", "label": "skeleton phenotype"}]
+    assert lookup["abnormal behavior"] == [{"id": "MP:0005386", "label": "behavior/neurological phenotype"}]
