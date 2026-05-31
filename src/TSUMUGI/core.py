@@ -9,6 +9,7 @@ from datetime import date
 from pathlib import Path
 
 from TSUMUGI import (
+    gene_phenotype_module_builder,
     genewise_annotation_builder,
     io_handler,
     network_constructor,
@@ -154,6 +155,15 @@ def run_pipeline(args) -> None:
             output_dir,
         )
 
+        logging.info("Building gene phenotype module JSON files...")
+        gene_phenotype_module_builder.build_gene_phenotype_module_json(
+            pairwise_similarity_annotations_with_shared_phenotype,
+            ontology_terms,
+            Path(TEMPDIR / "network" / "genesymbol"),
+            Path(TEMPDIR / "network" / "genesymbol_modules"),
+            Path(ROOT_DIR / "gene_phenotype_module_summary.csv"),
+        )
+
         del pairwise_similarity_annotations_with_shared_phenotype
         del disease_annotations_by_gene
 
@@ -167,6 +177,26 @@ def run_pipeline(args) -> None:
 
         with open(TEMPDIR / "preprocessed" / "genewise_phenotype_significants.pkl", "rb") as f:
             genewise_phenotype_significants = pickle.load(f)
+
+        gene_network_dir = Path(TEMPDIR / "network" / "genesymbol")
+        gene_module_dir = Path(TEMPDIR / "network" / "genesymbol_modules")
+        path_pairwise_similarity_annotations = ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz"
+        has_gene_modules = gene_module_dir.exists() and any(gene_module_dir.glob("*.json.gz"))
+        if gene_network_dir.exists() and path_pairwise_similarity_annotations.exists() and not has_gene_modules:
+            logging.info("Building gene phenotype module JSON files for debug web...")
+            pairwise_similarity_annotations = io_handler.read_jsonl(path_pairwise_similarity_annotations)
+            pairwise_similarity_annotations_with_shared_phenotype = _filter_pairwise_similarity_annotations_for_web(
+                pairwise_similarity_annotations,
+                min_shared_annotations=WEB_MIN_SHARED_ANNOTATIONS,
+                min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+            )
+            gene_phenotype_module_builder.build_gene_phenotype_module_json(
+                pairwise_similarity_annotations_with_shared_phenotype,
+                ontology_terms,
+                gene_network_dir,
+                gene_module_dir,
+                Path(ROOT_DIR / "gene_phenotype_module_summary.csv"),
+            )
 
     output_dir = Path(TEMPDIR, "webapp")
     output_dir.mkdir(parents=True, exist_ok=True)

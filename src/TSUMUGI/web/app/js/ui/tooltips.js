@@ -42,6 +42,31 @@ function formatPhenotypesWithHighlight(phenotypes, targetPhenotype) {
         .join("<br>");
 }
 
+function formatModuleMemberships(modules) {
+    const safeModules = Array.isArray(modules) ? modules : [];
+    return safeModules
+        .filter((module) => module && module.label)
+        .map((module) => {
+            const weight = Number(module.weight);
+            const supportCount = Number(module.support_count) || 0;
+            const weightText = Number.isFinite(weight) ? `${Math.round(weight * 100)}%` : "-";
+            return `・ ${module.label} (${weightText}, ${supportCount})`;
+        })
+        .join("<br>");
+}
+
+function buildModuleSection(modules) {
+    const modulesHtml = formatModuleMemberships(modules);
+    if (!modulesHtml) return "";
+
+    return `
+        <div class="cy-tooltip__section cy-tooltip__section--modules" data-section="modules">
+            <div class="cy-tooltip__section-title"><b>Phenotype modules</b></div>
+            <div class="cy-tooltip__section-body">${modulesHtml}</div>
+        </div>
+    `;
+}
+
 function buildNodeTooltipContent({ data, mapSymbolToId, targetPhenotype, nodeColorValues }) {
     const geneId = mapSymbolToId[data.id] || "UNKNOWN";
     const urlImpc = `https://www.mousephenotype.org/data/genes/${geneId}`;
@@ -88,7 +113,7 @@ function buildNodeTooltipContent({ data, mapSymbolToId, targetPhenotype, nodeCol
         `;
     }
 
-    return `${phenotypeSection}${diseaseSection}`;
+    return `${phenotypeSection}${diseaseSection}${buildModuleSection(data.module_memberships)}`;
 }
 
 function buildEdgeTooltipContent({ data, cy, targetPhenotype }) {
@@ -105,6 +130,7 @@ function buildEdgeTooltipContent({ data, cy, targetPhenotype }) {
     let tooltipText = `<div><b>Shared phenotypes of ${sourceNode} and ${targetNode} KOs${similarityText}</b><br>`;
     tooltipText += formatPhenotypesWithHighlight(phenotypes, targetPhenotype);
     tooltipText += "</div>";
+    tooltipText += buildModuleSection(data.module_memberships);
 
     const sourcePos = cy.getElementById(data.source).renderedPosition();
     const targetPos = cy.getElementById(data.target).renderedPosition();

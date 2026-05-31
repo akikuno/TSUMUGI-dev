@@ -4,7 +4,7 @@ import { initInfoTooltips, removeTooltips, showSubnetworkTooltip, showTooltip } 
 import { getOrderedComponents, calculateConnectedComponents } from "./js/graph/components.js";
 import { createSlider } from "./js/ui/slider.js";
 import { filterElementsByGenotypeAndSex } from "./js/graph/filters.js";
-import { loadJSON } from "./js/data/dataLoader.js";
+import { loadJSON, loadJSONGz } from "./js/data/dataLoader.js";
 import {
     applyNodeMinMax,
     getPageConfig,
@@ -37,6 +37,10 @@ const AUTO_ARRANGE_REPULSION_TIMEOUT_MS = 2000;
 const INITIAL_AUTO_ARRANGE_TIMEOUT_MS = 15000;
 const INITIAL_ARRANGE_CLICK_DELAY_MS = 500;
 const REPULSION_FINISH_EVENT = "tsumugi:repulsion:finish";
+const MODULE_DIM_NODE_CLASS = "module-dim-node";
+const MODULE_DIM_EDGE_CLASS = "module-dim-edge";
+const MODULE_FOCUS_NODE_CLASS = "module-focus-node";
+const MODULE_FOCUS_EDGE_CLASS = "module-focus-edge";
 
 // Initialize UI helpers that only depend on DOM availability.
 initInfoTooltips();
@@ -111,6 +115,9 @@ const edgeMin = edgeSizes.length ? Math.min(...edgeSizes) : 0;
 const edgeMax = edgeSizes.length ? Math.max(...edgeSizes) : 1;
 
 const baseElements = JSON.parse(JSON.stringify(elements));
+const genePhenotypeModules = loadGenePhenotypeModules(pageConfig);
+const genePhenotypeModuleState = createGenePhenotypeModuleState(genePhenotypeModules);
+let syncedGenePhenotypeModuleId = null;
 
 function mapEdgeSizeToWidth(edgeSize) {
     if (edgeMax === edgeMin) {
@@ -118,6 +125,50 @@ function mapEdgeSizeToWidth(edgeSize) {
     }
     const normalized = (edgeSize - edgeMin) / (edgeMax - edgeMin);
     return 0.5 + normalized * 1.5;
+}
+
+function loadGenePhenotypeModules(config) {
+    if (config.mode !== "genesymbol" || !config.name) {
+        return null;
+    }
+    return loadJSONGz(`../data/genesymbol_modules/${config.name}.json.gz`);
+}
+
+function createGenePhenotypeModuleState(data) {
+    if (!data || !Array.isArray(data.modules)) {
+        return {
+            modules: [],
+            modulesById: new Map(),
+            edgeMemberships: new Map(),
+            nodeMemberships: new Map(),
+        };
+    }
+
+    const modulesById = new Map(data.modules.map((module) => [module.id, module]));
+    const edgeMemberships = new Map();
+    Object.entries(data.edges || {}).forEach(([key, value]) => {
+        const modules = new Map();
+        (value.modules || []).forEach((module) => {
+            modules.set(module.id, module);
+        });
+        edgeMemberships.set(key, modules);
+    });
+
+    const nodeMemberships = new Map();
+    Object.entries(data.nodes || {}).forEach(([nodeId, value]) => {
+        const modules = new Map();
+        (value.modules || []).forEach((module) => {
+            modules.set(module.id, module);
+        });
+        nodeMemberships.set(nodeId, modules);
+    });
+
+    return {
+        modules: data.modules,
+        modulesById,
+        edgeMemberships,
+        nodeMemberships,
+    };
 }
 
 // ############################################################################
@@ -158,6 +209,35 @@ const cy = cytoscape({
                 width: function (ele) {
                     return mapEdgeSizeToWidth(ele.data("edge_size"));
                 },
+            },
+        },
+        {
+            selector: `node.${MODULE_DIM_NODE_CLASS}`,
+            style: {
+                opacity: 0.12,
+            },
+        },
+        {
+            selector: `edge.${MODULE_DIM_EDGE_CLASS}`,
+            style: {
+                opacity: 0.08,
+            },
+        },
+        {
+            selector: `node.${MODULE_FOCUS_NODE_CLASS}`,
+            style: {
+                opacity: 1,
+                "border-width": 4,
+                "border-color": "#2f7ed8",
+            },
+        },
+        {
+            selector: `edge.${MODULE_FOCUS_EDGE_CLASS}`,
+            style: {
+                opacity: 0.95,
+                "line-color": "#2f7ed8",
+                "target-arrow-color": "#2f7ed8",
+                "source-arrow-color": "#2f7ed8",
             },
         },
         {
@@ -223,6 +303,179 @@ setupInitialAutoArrange();
 cy.one("render", () => {
     checkEmptyState();
 });
+
+function getEdgeModuleKey(edge) {
+    const source = edge.data("source");
+    const target = edge.data("target");
+    return [source, target].sort((a, b) => a.localeCompare(b)).join("||");
+}
+
+function getSelectedPhenotypeModuleId() {
+    const dropdown = document.getElementById("phenotype-module-dropdown");
+    return dropdown ? dropdown.value : "";
+}
+
+function normalizeModuleMembership(module) {
+    if (!module) return null;
+    const weight = Number(module.weight);
+    const supportCount = Number(module.support_count ?? module.count) || 0;
+    const label = module.label || module.name;
+    if (!module.id || !label) return null;
+    return {
+        id: module.id,
+        name: module.name || label,
+        label,
+        support_count: supportCount,
+        weight: Number.isFinite(weight) ? weight : 0,
+    };
+}
+
+function getVisibleModuleMemberships(membershipMap, moduleId = "") {
+    if (!membershipMap) return [];
+    return [...membershipMap.values()]
+        .filter((module) => !moduleId || module.id === moduleId)
+        .map((module) => normalizeModuleMembership(module))
+        .filter(Boolean)
+        .sort((a, b) => {
+            if (b.weight !== a.weight) return b.weight - a.weight;
+            if (b.support_count !== a.support_count) return b.support_count - a.support_count;
+            return a.label.localeCompare(b.label);
+        });
+}
+
+function setModuleMembershipData(ele, memberships) {
+    ele.removeData("module_memberships primary_module primary_module_label");
+    if (!memberships || memberships.length === 0) return;
+    const primary = memberships[0];
+    ele.data("module_memberships", memberships);
+    ele.data("primary_module", primary.id);
+    ele.data("primary_module_label", primary.label);
+}
+
+function syncGenePhenotypeModuleTooltipData(moduleId = "") {
+    if (syncedGenePhenotypeModuleId === moduleId) {
+        return;
+    }
+
+    cy.edges().forEach((edge) => {
+        const memberships = genePhenotypeModuleState.edgeMemberships.get(getEdgeModuleKey(edge));
+        setModuleMembershipData(edge, getVisibleModuleMemberships(memberships, moduleId));
+    });
+
+    cy.nodes().forEach((node) => {
+        const memberships = genePhenotypeModuleState.nodeMemberships.get(node.id());
+        setModuleMembershipData(node, getVisibleModuleMemberships(memberships, moduleId));
+    });
+
+    syncedGenePhenotypeModuleId = moduleId;
+}
+
+function clearPhenotypeModuleOverlay() {
+    cy.nodes().removeClass(MODULE_DIM_NODE_CLASS);
+    cy.nodes().removeClass(MODULE_FOCUS_NODE_CLASS);
+    cy.edges().removeClass(MODULE_DIM_EDGE_CLASS);
+    cy.edges().removeClass(MODULE_FOCUS_EDGE_CLASS);
+}
+
+function getEdgeModuleWeight(edge, moduleId) {
+    const memberships = genePhenotypeModuleState.edgeMemberships.get(getEdgeModuleKey(edge));
+    const module = memberships ? memberships.get(moduleId) : null;
+    return module ? Number(module.weight) || 0 : 0;
+}
+
+function getNodeModuleWeight(node, moduleId) {
+    const memberships = genePhenotypeModuleState.nodeMemberships.get(node.id());
+    const module = memberships ? memberships.get(moduleId) : null;
+    return module ? Number(module.weight) || 0 : 0;
+}
+
+function applyPhenotypeModuleOverlay() {
+    if (!isGeneSymbolPage || genePhenotypeModuleState.modules.length === 0) {
+        return;
+    }
+
+    const moduleId = getSelectedPhenotypeModuleId();
+    const focusedNodeIds = new Set();
+
+    cy.batch(() => {
+        clearPhenotypeModuleOverlay();
+        syncGenePhenotypeModuleTooltipData(moduleId);
+
+        if (!moduleId) {
+            return;
+        }
+
+        cy.edges().forEach((edge) => {
+            if (!edge.visible()) {
+                return;
+            }
+            const weight = getEdgeModuleWeight(edge, moduleId);
+            if (weight > 0) {
+                edge.addClass(MODULE_FOCUS_EDGE_CLASS);
+                focusedNodeIds.add(edge.source().id());
+                focusedNodeIds.add(edge.target().id());
+            } else {
+                edge.addClass(MODULE_DIM_EDGE_CLASS);
+            }
+        });
+
+        cy.nodes().forEach((node) => {
+            if (!node.visible()) {
+                return;
+            }
+            const weight = getNodeModuleWeight(node, moduleId);
+            if (weight > 0 || focusedNodeIds.has(node.id())) {
+                node.addClass(MODULE_FOCUS_NODE_CLASS);
+            } else {
+                node.addClass(MODULE_DIM_NODE_CLASS);
+            }
+        });
+    });
+}
+
+function refreshPhenotypeModuleOptions() {
+    const container = document.getElementById("phenotype-module-controls");
+    const dropdown = document.getElementById("phenotype-module-dropdown");
+    if (!container || !dropdown) return;
+
+    if (!isGeneSymbolPage || genePhenotypeModuleState.modules.length === 0) {
+        container.style.display = "none";
+        return;
+    }
+
+    container.style.display = "";
+    const previousValue = dropdown.value;
+    dropdown.innerHTML = "";
+
+    const allOption = document.createElement("option");
+    allOption.value = "";
+    allOption.textContent = "All modules";
+    dropdown.appendChild(allOption);
+
+    genePhenotypeModuleState.modules.forEach((module) => {
+        const option = document.createElement("option");
+        option.value = module.id;
+        option.textContent = `${module.name || module.label} (${module.target_edge_count})`;
+        dropdown.appendChild(option);
+    });
+
+    dropdown.value = [...dropdown.options].some((option) => option.value === previousValue) ? previousValue : "";
+}
+
+function setupPhenotypeModuleControls() {
+    const dropdown = document.getElementById("phenotype-module-dropdown");
+    if (!dropdown) return;
+
+    refreshPhenotypeModuleOptions();
+    applyPhenotypeModuleOverlay();
+
+    dropdown.addEventListener("change", () => {
+        applyPhenotypeModuleOverlay();
+        queueAutoArrange({ afterLayout: false, delayMs: AUTO_ARRANGE_DELAY_MS });
+    });
+}
+
+setupPhenotypeModuleControls();
 
 const bodyContainer = document.querySelector(".body-container");
 const leftPanelToggleButton = document.getElementById("toggle-left-panel");
@@ -918,6 +1171,7 @@ let filterByNodeColorAndEdgeSize = () => { };
 
 function finishFilterUpdate({ runLayout = false, refreshCentrality = false } = {}) {
     invalidateSubnetworkSummaryCache();
+    applyPhenotypeModuleOverlay();
 
     if (runLayout) {
         layoutController.runLayoutWithRepulsion();

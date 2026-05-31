@@ -16,13 +16,20 @@
 
 ## v1.0.3 (2026-mm-dd)
 
+### 🖼️ User Interface
+
+- Optimize large Gene page network rendering without reducing graph data  
+  Issue: [#172](https://github.com/akikuno/TSUMUGI-dev/issues/172)  
+
+- Add soft/fuzzy phenotype modules to the Gene page
+  Issue: [#173](https://github.com/akikuno/TSUMUGI-dev/issues/173)  
+
+
 ### 🚀 Performance
 
 - Speed up pairwise phenotype ancestor pruning  
   Issue: [#171](https://github.com/akikuno/TSUMUGI-dev/issues/171)  
 
-- Optimize large Gene page network rendering without reducing graph data  
-  Issue: [#172](https://github.com/akikuno/TSUMUGI-dev/issues/172)  
 
 ### 🐛 Bug Fixes
 
