@@ -126,3 +126,42 @@ def test_build_gene_phenotype_module_json(tmp_path):
             "missing_term_items": "0",
         }
     ]
+
+
+def test_write_mp_top_level_module_lookup_json(tmp_path):
+    ontology_terms = {
+        "MP:0000001": {"id": "MP:0000001", "name": "mammalian phenotype"},
+        "MP:0005390": {
+            "id": "MP:0005390",
+            "name": "skeleton phenotype",
+            "is_a": ["MP:0000001"],
+        },
+        "MP:0005386": {
+            "id": "MP:0005386",
+            "name": "behavior/neurological phenotype",
+            "is_a": ["MP:0000001"],
+        },
+        "MP:0000063": {
+            "id": "MP:0000063",
+            "name": "decreased bone mineral density",
+            "is_a": ["MP:0005390"],
+        },
+        "MP:0001392": {
+            "id": "MP:0001392",
+            "name": "abnormal behavior",
+            "is_a": ["MP:0005386"],
+        },
+    }
+    output_path = tmp_path / "mp_top_level_module_lookup.json"
+
+    gene_phenotype_module_builder.write_mp_top_level_module_lookup_json(ontology_terms, output_path)
+
+    with output_path.open(encoding="utf-8") as f:
+        lookup = json.load(f)
+
+    assert lookup["decreased bone mineral density"] == [
+        {"id": "MP:0005390", "label": "skeleton phenotype"}
+    ]
+    assert lookup["abnormal behavior"] == [
+        {"id": "MP:0005386", "label": "behavior/neurological phenotype"}
+    ]

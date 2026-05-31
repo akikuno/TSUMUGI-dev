@@ -242,8 +242,18 @@
                             <label for="phenotype-module-dropdown" class="control-label">Module group:</label>
                             <div class="info-tooltip-container">
                                 <div class="info-tooltip-icon">i</div>
-                                <div class="info-tooltip-content">Select a visible phenotype module group.</div>
+                                <div class="info-tooltip-content">Select a visible module group. Phenotype and Gene List pages can switch between similarity modules and top-level MP terms.</div>
                             </div>
+                        </div>
+                        <div class="module-mode-toggle" id="phenotype-module-mode-toggle" hidden>
+                            <label class="module-mode-option">
+                                <input type="radio" name="phenotype-module-mode" value="similarity" checked />
+                                <span>Similarity</span>
+                            </label>
+                            <label class="module-mode-option">
+                                <input type="radio" name="phenotype-module-mode" value="top-level-mp" />
+                                <span>Top-level MP</span>
+                            </label>
                         </div>
                         <div>
                             <select class="exporter" id="phenotype-module-dropdown">

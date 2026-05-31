@@ -21,6 +21,23 @@ function triggerDownloadFromBlob(blob, fileName) {
     URL.revokeObjectURL(url);
 }
 
+function serializeModuleMemberships(modules) {
+    if (!Array.isArray(modules)) return "";
+    return modules
+        .filter((module) => module && module.label)
+        .map((module) => {
+            const weight = Number(module.weight);
+            const weightText = Number.isFinite(weight) ? weight.toFixed(3) : "";
+            return `${module.label}:${weightText}:${module.support_count || 0}`;
+        })
+        .join(";");
+}
+
+function escapeCsv(value) {
+    const text = String(value ?? "");
+    return `"${text.replace(/"/g, '""')}"`;
+}
+
 // --------------------------------------------------------
 // PNG Exporter
 // --------------------------------------------------------
@@ -86,7 +103,7 @@ export function exportGraphAsCSV(cy, fileName) {
     const connectedComponents = calculateConnectedComponents(cy);
 
     // CSV header row
-    let csvContent = "module,gene,phenotypes\n";
+    let csvContent = "module,gene,phenotypes,phenotype_axis_modules\n";
 
     // Assign module numbers and format the data as CSV rows
     connectedComponents.forEach((component, moduleIndex) => {
@@ -94,9 +111,11 @@ export function exportGraphAsCSV(cy, fileName) {
 
         Object.keys(component).forEach((gene) => {
             const phenotypes = component[gene].join(";"); // Join phenotypes with semicolons
+            const node = cy.nodes().filter((candidate) => (candidate.data("label") || candidate.id()) === gene)[0];
+            const modules = node ? serializeModuleMemberships(node.data("module_memberships")) : "";
 
             // Append each CSV row
-            csvContent += `${moduleNumber},${gene},"${phenotypes}"\n`;
+            csvContent += `${moduleNumber},${escapeCsv(gene)},${escapeCsv(phenotypes)},${escapeCsv(modules)}\n`;
         });
     });
 
@@ -131,12 +150,16 @@ export function exportGraphAsGraphML(cy, fileName) {
   <key id="n1" for="node" attr.name="label" attr.type="string"/>
   <key id="n2" for="node" attr.name="color" attr.type="double"/>
   <key id="n3" for="node" attr.name="phenotypes" attr.type="string"/>
+  <key id="n4" for="node" attr.name="primary_module" attr.type="string"/>
+  <key id="n5" for="node" attr.name="phenotype_axis_modules" attr.type="string"/>
   
   <!-- Edge attributes -->
   <key id="e0" for="edge" attr.name="interaction" attr.type="string"/>
   <key id="e1" for="edge" attr.name="width" attr.type="double"/>
   <key id="e2" for="edge" attr.name="shared_phenotypes" attr.type="string"/>
   <key id="e3" for="edge" attr.name="similarity" attr.type="double"/>
+  <key id="e4" for="edge" attr.name="primary_module" attr.type="string"/>
+  <key id="e5" for="edge" attr.name="phenotype_axis_modules" attr.type="string"/>
 
   <graph id="TSUMUGI_Network" edgedefault="undirected">
 `;
@@ -148,12 +171,16 @@ export function exportGraphAsGraphML(cy, fileName) {
         const label = data.label || id;
         const color = data.node_color || 0;
         const phenotypes = Array.isArray(data.phenotype) ? data.phenotype.join(";") : data.phenotype || "";
+        const primaryModule = data.primary_module_label || data.primary_module || "";
+        const moduleMemberships = serializeModuleMemberships(data.module_memberships);
 
         graphmlContent += `    <node id="${escapeXml(id)}">
       <data key="n0">${escapeXml(id)}</data>
       <data key="n1">${escapeXml(label)}</data>
       <data key="n2">${color}</data>
       <data key="n3">${escapeXml(phenotypes)}</data>
+      <data key="n4">${escapeXml(primaryModule)}</data>
+      <data key="n5">${escapeXml(moduleMemberships)}</data>
     </node>
 `;
     });
@@ -166,12 +193,16 @@ export function exportGraphAsGraphML(cy, fileName) {
         const width = data.edge_size || 1;
         const sharedPhenotypes = Array.isArray(data.phenotype) ? data.phenotype.join(";") : data.phenotype || "";
         const similarity = data.similarity || 0;
+        const primaryModule = data.primary_module_label || data.primary_module || "";
+        const moduleMemberships = serializeModuleMemberships(data.module_memberships);
 
         graphmlContent += `    <edge id="e${index}" source="${escapeXml(source)}" target="${escapeXml(target)}">
       <data key="e0">interaction</data>
       <data key="e1">${width}</data>
       <data key="e2">${escapeXml(sharedPhenotypes)}</data>
       <data key="e3">${similarity}</data>
+      <data key="e4">${escapeXml(primaryModule)}</data>
+      <data key="e5">${escapeXml(moduleMemberships)}</data>
     </edge>
 `;
     });
@@ -197,7 +228,7 @@ export function exportGraphAsGraphML(cy, fileName) {
 // --------------------------------------------------------
 
 function escapeXml(unsafe) {
-    return unsafe.replace(/[<>&'"]/g, function (c) {
+    return String(unsafe ?? "").replace(/[<>&'"]/g, function (c) {
         switch (c) {
             case "<":
                 return "&lt;";

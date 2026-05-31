@@ -208,6 +208,10 @@ def run_pipeline(args) -> None:
     report_generator.write_mp_term_id_lookup(
         genewise_phenotype_significants, available_mp_terms_json, Path(output_dir / "mp_term_id_lookup.json")
     )
+    gene_phenotype_module_builder.write_mp_top_level_module_lookup_json(
+        ontology_terms,
+        Path(output_dir / "mp_top_level_module_lookup.json"),
+    )
 
     # binary phenotypes
     report_generator.write_binary_phenotypes_txt(

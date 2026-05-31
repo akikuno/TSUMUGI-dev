@@ -27,6 +27,10 @@
 - Fix layout selection and prevent excessive node spacing  
   Issue: [#174](https://github.com/akikuno/TSUMUGI-dev/issues/174)  
 
+- Add module display switching to Phenotype and Gene List pages  
+  Issue: [#175](https://github.com/akikuno/TSUMUGI-dev/issues/175)  
+
+
 
 ### 🚀 Performance
 

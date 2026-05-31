@@ -2,6 +2,7 @@ import gzip
 import json
 
 import pytest
+
 from TSUMUGI.subcommands import webapp_builder
 
 
@@ -183,9 +184,11 @@ def test_build_and_save_webapp_network_writes_outputs(tmp_path, monkeypatch):
     data_dir = tmp_path / "data"
     network_path = data_dir / "network.json.gz"
     symbol_path = data_dir / "marker_symbol_accession_id.json"
+    module_lookup_path = data_dir / "mp_top_level_module_lookup.json"
 
     assert network_path.exists()
     assert symbol_path.exists()
+    assert module_lookup_path.exists()
     assert calls == [(tmp_path, "data/network.json.gz", "Gene List")]
 
     with gzip.open(network_path, "rt", encoding="utf-8") as fh:

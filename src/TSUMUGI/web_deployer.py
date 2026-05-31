@@ -127,6 +127,8 @@ def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
         Path(TEMPDIR, "webapp", "marker_symbol_accession_id.json"): data_dir / "marker_symbol_accession_id.json",
         Path(TEMPDIR, "webapp", "binary_phenotypes.txt"): data_dir / "binary_phenotypes.txt",
         Path(TEMPDIR, "webapp", "mp_term_id_lookup.json"): data_dir / "mp_term_id_lookup.json",
+        Path(TEMPDIR, "webapp", "mp_top_level_module_lookup.json"): data_dir
+        / "mp_top_level_module_lookup.json",
         Path(ROOT_DIR / "genewise_phenotype_annotations.jsonl.gz"): data_dir
         / "genewise_phenotype_annotations.jsonl.gz",
         Path(ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz"): data_dir

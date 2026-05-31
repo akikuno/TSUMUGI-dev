@@ -7,7 +7,7 @@ from collections import defaultdict
 from collections.abc import Iterator
 from pathlib import Path
 
-from TSUMUGI import io_handler
+from TSUMUGI import gene_phenotype_module_builder, io_handler
 
 MAX_NODE_COUNT = 150
 
@@ -203,6 +203,13 @@ def build_and_save_webapp_network(genewise_path, pairwise_path, output_dir):
     symmap_path = data_dir / "marker_symbol_accession_id.json"
     with open(symmap_path, "w", encoding="utf-8") as fh:
         json.dump(symbol_to_id, fh, ensure_ascii=False, indent=2)
+
+    with as_file(files("TSUMUGI") / "data" / "mp.obo") as mp_obo_path:
+        ontology_terms = io_handler.parse_obo_file(mp_obo_path)
+    gene_phenotype_module_builder.write_mp_top_level_module_lookup_json(
+        ontology_terms,
+        data_dir / "mp_top_level_module_lookup.json",
+    )
 
     _create_webapp_bundle(
         output_dir=output_dir,

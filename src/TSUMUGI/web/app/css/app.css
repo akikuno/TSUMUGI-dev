@@ -578,6 +578,40 @@ ul.suggestions li:hover {
     left: 6px;
 }
 
+.module-mode-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin: 8px 0;
+    padding: 3px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    background: #f4f4f4;
+}
+
+.module-mode-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    line-height: 1.1;
+    text-align: center;
+}
+
+.module-mode-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.module-mode-option:has(input:checked) {
+    background: #222;
+    color: #fff;
+}
+
 /* ======================================================== */
 /* Exporter */
 /* ======================================================== */

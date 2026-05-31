@@ -341,6 +341,22 @@ def _write_summary_csv(path_csv: Path, rows: list[dict[str, Any]], missing_terms
             )
 
 
+def write_mp_top_level_module_lookup_json(
+    ontology_terms: dict[str, dict[str, Any]],
+    output_path: str | Path,
+) -> None:
+    """Write phenotype term name to top-level MP module mappings for the web viewer."""
+    output_path = Path(output_path)
+    _, modules_by_term_name = _build_top_level_module_index(ontology_terms)
+    lookup = {
+        term_name: [{"id": module["id"], "label": module["label"]} for module in modules]
+        for term_name, modules in sorted(modules_by_term_name.items())
+    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(lookup, f, ensure_ascii=False, indent=2)
+
+
 def build_gene_phenotype_module_json(
     pairwise_similarity_annotations: Iterable[dict[str, Any]],
     ontology_terms: dict[str, dict[str, Any]],
