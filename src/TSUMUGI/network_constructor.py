@@ -459,6 +459,11 @@ def _convert_to_edges_json(
     return edges_json
 
 
+def _write_network_json_gz(network_json, output_json: Path) -> None:
+    with gzip.open(output_json, "wt", encoding="utf-8") as f:
+        json.dump(network_json, f, indent=4)
+
+
 def build_phenotype_network_json(
     genewise_phenotype_significants: list[dict[str, str | float]],
     pairwise_similarity_annotations: dict[tuple[str], dict[str, dict[str, dict[str, str] | int]]],
@@ -485,6 +490,8 @@ def build_phenotype_network_json(
         records = phenotype_records_map[mp_term_name]
         related_genes = {r["marker_symbol"] for r in records if r["marker_symbol"] in gene_lists}
         target_phenotype_annotations = _build_target_phenotype_annotations(records, mp_term_name)
+        mp_term_name_underscore = mp_term_name.replace(" ", "_").replace("/", "_")
+        output_json = Path(output_dir / f"{mp_term_name_underscore}.json.gz")
 
         if len(related_genes) < 2:
             continue
@@ -508,6 +515,7 @@ def build_phenotype_network_json(
         )
 
         if not edges_json:
+            _write_network_json_gz([], output_json)
             continue
 
         # Remove unconnected nodes
@@ -517,6 +525,7 @@ def build_phenotype_network_json(
             connected_node_ids.add(edge["data"]["target"])
 
         if not connected_node_ids:
+            _write_network_json_gz([], output_json)
             continue
 
         nodes_json = _convert_to_nodes_json(
@@ -529,10 +538,7 @@ def build_phenotype_network_json(
 
         network_json = nodes_json + edges_json
 
-        mp_term_name_underscore = mp_term_name.replace(" ", "_").replace("/", "_")
-        output_json = Path(output_dir / f"{mp_term_name_underscore}.json.gz")
-        with gzip.open(output_json, "wt", encoding="utf-8") as f:
-            json.dump(network_json, f, indent=4)
+        _write_network_json_gz(network_json, output_json)
 
 
 ###############################################################################

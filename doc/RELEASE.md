@@ -31,6 +31,9 @@
   Issue: [#175](https://github.com/akikuno/TSUMUGI-dev/issues/175)  
 
 
+- Filter Phenotype page edges by exact target phenotype annotation  
+  Issue: [#176](https://github.com/akikuno/TSUMUGI-dev/issues/176)  
+
 
 ### 🚀 Performance
 

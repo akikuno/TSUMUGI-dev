@@ -438,3 +438,50 @@ def test_build_phenotype_network_json_requires_target_metadata_match(tmp_path):
 
     assert [(edge["data"]["source"], edge["data"]["target"]) for edge in edge_items] == [("GeneA", "GeneB")]
     assert {node["data"]["id"] for node in node_items} == {"GeneA", "GeneB"}
+
+
+def test_build_phenotype_network_json_writes_empty_json_when_no_target_metadata_match(tmp_path):
+    genewise_phenotype_significants = [
+        {
+            "mp_term_name": "target phenotype",
+            "marker_symbol": "GeneA",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Female",
+            "effect_size": 1.0,
+        },
+        {
+            "mp_term_name": "target phenotype",
+            "marker_symbol": "GeneB",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Female",
+            "effect_size": 2.0,
+        },
+    ]
+    pairwise_similarity_annotations = [
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": [
+                _phenotype_annotation("target phenotype", sexual_dimorphism="Male"),
+                _phenotype_annotation("similar phenotype", sexual_dimorphism="None"),
+            ],
+            "phenotype_similarity_score": 100,
+        }
+    ]
+
+    network_constructor.build_phenotype_network_json(
+        genewise_phenotype_significants,
+        pairwise_similarity_annotations,
+        {},
+        tmp_path,
+    )
+
+    output_file = tmp_path / "target_phenotype.json.gz"
+    assert output_file.exists()
+
+    with gzip.open(output_file, "rt", encoding="utf-8") as f:
+        network_json = json.load(f)
+
+    assert network_json == []
