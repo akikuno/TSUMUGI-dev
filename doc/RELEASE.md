@@ -35,6 +35,9 @@
   Issue: [#176](https://github.com/akikuno/TSUMUGI-dev/issues/176)  
 
 
+- Reduce raster export scale and guard large module frame exports  
+  Issue: [#179](https://github.com/akikuno/TSUMUGI-dev/issues/179)  
+
 ### 🚀 Performance
 
 - Speed up pairwise phenotype ancestor pruning  

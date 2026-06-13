@@ -1,6 +1,10 @@
 import { calculateConnectedComponents } from "../graph/components.js";
 
-export const DEFAULT_EXPORT_SCALE = 6.25;
+export const DEFAULT_EXPORT_SCALE = 2;
+
+const MAX_RASTER_EXPORT_SIDE = 14000;
+const MAX_RASTER_EXPORT_PIXELS = 96000000;
+const MIN_RASTER_EXPORT_SCALE = 0.2;
 
 function normalizeExportOptions(scaleOrOptions, maybeOptions = {}) {
     if (scaleOrOptions && typeof scaleOrOptions === "object") {
@@ -32,7 +36,44 @@ function normalizeScale(scale) {
     return parsed;
 }
 
+function fitScaleToRasterLimits(bounds, requestedScale) {
+    if (!bounds || !Number.isFinite(bounds.w) || !Number.isFinite(bounds.h) || bounds.w <= 0 || bounds.h <= 0) {
+        return requestedScale;
+    }
+
+    const maxSideScale = MAX_RASTER_EXPORT_SIDE / Math.max(bounds.w, bounds.h);
+    const maxPixelScale = Math.sqrt(MAX_RASTER_EXPORT_PIXELS / (bounds.w * bounds.h));
+    const maxSafeScale = Math.min(maxSideScale, maxPixelScale);
+    const fittedScale = Math.min(requestedScale, maxSafeScale);
+
+    if (!Number.isFinite(fittedScale) || fittedScale <= 0) {
+        return MIN_RASTER_EXPORT_SCALE;
+    }
+
+    const minimumScale = Math.min(MIN_RASTER_EXPORT_SCALE, maxSafeScale);
+    return Math.max(minimumScale, fittedScale);
+}
+
+function getSafeRasterExportScale(cy, frames, requestedScale) {
+    const safeFrames = Array.isArray(frames) ? frames : [];
+    const baseBounds = getVisibleExportBounds(cy);
+    const exportBounds = safeFrames.length > 0 ? combineBounds(baseBounds, safeFrames) : baseBounds;
+    const safeScale = fitScaleToRasterLimits(exportBounds, requestedScale);
+
+    if (safeScale < requestedScale) {
+        console.warn(
+            `Reduced raster export scale from ${requestedScale.toFixed(2)} to ${safeScale.toFixed(2)} to avoid browser canvas limits.`,
+        );
+    }
+    return safeScale;
+}
+
 function triggerDownloadFromBlob(blob, fileName) {
+    if (!blob || blob.size === 0) {
+        console.error(`Skipped empty export for ${fileName}.`);
+        return false;
+    }
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -41,6 +82,22 @@ function triggerDownloadFromBlob(blob, fileName) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    return true;
+}
+
+function triggerDownloadFromDataUrl(dataUrl, fileName) {
+    if (!dataUrl || dataUrl === "data:,") {
+        console.error(`Skipped empty export for ${fileName}.`);
+        return false;
+    }
+
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    return true;
 }
 
 function serializeModuleMemberships(modules) {
@@ -224,9 +281,14 @@ async function composeRasterExportWithFrames(dataUrl, cy, frames, mimeType, qual
     const combinedBounds = combineBounds(baseBounds, safeFrames);
     const scaleX = image.width / baseBounds.w;
     const scaleY = image.height / baseBounds.h;
+    const desiredWidth = Math.ceil(combinedBounds.w * scaleX);
+    const desiredHeight = Math.ceil(combinedBounds.h * scaleY);
+    const outputScale = fitScaleToRasterLimits({ w: desiredWidth, h: desiredHeight }, 1);
+    const finalScaleX = scaleX * outputScale;
+    const finalScaleY = scaleY * outputScale;
     const canvas = document.createElement("canvas");
-    canvas.width = Math.ceil(combinedBounds.w * scaleX);
-    canvas.height = Math.ceil(combinedBounds.h * scaleY);
+    canvas.width = Math.max(1, Math.floor(desiredWidth * outputScale));
+    canvas.height = Math.max(1, Math.floor(desiredHeight * outputScale));
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
@@ -237,13 +299,19 @@ async function composeRasterExportWithFrames(dataUrl, cy, frames, mimeType, qual
 
     ctx.drawImage(
         image,
-        (baseBounds.x1 - combinedBounds.x1) * scaleX,
-        (baseBounds.y1 - combinedBounds.y1) * scaleY,
-        image.width,
-        image.height,
+        (baseBounds.x1 - combinedBounds.x1) * finalScaleX,
+        (baseBounds.y1 - combinedBounds.y1) * finalScaleY,
+        image.width * outputScale,
+        image.height * outputScale,
     );
-    drawFramesOnCanvas(ctx, safeFrames, combinedBounds, scaleX, scaleY);
-    return canvasToBlob(canvas, mimeType, quality);
+    drawFramesOnCanvas(ctx, safeFrames, combinedBounds, finalScaleX, finalScaleY);
+
+    const blob = await canvasToBlob(canvas, mimeType, quality);
+    if (!blob || blob.size === 0) {
+        console.warn("Browser returned an empty raster export after composing module frames.");
+        return null;
+    }
+    return blob;
 }
 
 function parseSvgViewBox(svg) {
@@ -350,27 +418,23 @@ function appendSvgFrames(svgContent, cy, frames) {
 
 export async function exportGraphAsPNG(cy, fileName, scaleOrOptions = DEFAULT_EXPORT_SCALE, maybeOptions = {}) {
     const options = normalizeExportOptions(scaleOrOptions, maybeOptions);
+    const requestedScale = normalizeScale(options.scale);
+    const rasterScale = getSafeRasterExportScale(cy, options.frames, requestedScale);
     const pngContent = withTemporaryElements(cy, options.frameElements, () => cy.png({
-        scale: normalizeScale(options.scale), // Scale to achieve desired DPI
+        scale: rasterScale, // Scale to achieve desired DPI
         full: true, // Set to true to include the entire graph, even the offscreen parts
     }));
 
     try {
         const framedBlob = await composeRasterExportWithFrames(pngContent, cy, options.frames, "image/png");
-        if (framedBlob) {
-            triggerDownloadFromBlob(framedBlob, `${fileName}.png`);
+        if (framedBlob && triggerDownloadFromBlob(framedBlob, `${fileName}.png`)) {
             return;
         }
     } catch (error) {
         console.warn("Failed to compose module frames into PNG export.", error);
     }
 
-    const a = document.createElement("a");
-    a.href = pngContent;
-    a.download = `${fileName}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    triggerDownloadFromDataUrl(pngContent, `${fileName}.png`);
 }
 
 // --------------------------------------------------------
@@ -379,28 +443,24 @@ export async function exportGraphAsPNG(cy, fileName, scaleOrOptions = DEFAULT_EX
 
 export async function exportGraphAsJPG(cy, fileName, scaleOrOptions = DEFAULT_EXPORT_SCALE, maybeOptions = {}) {
     const options = normalizeExportOptions(scaleOrOptions, maybeOptions);
+    const requestedScale = normalizeScale(options.scale);
+    const rasterScale = getSafeRasterExportScale(cy, options.frames, requestedScale);
     const jpgContent = withTemporaryElements(cy, options.frameElements, () => cy.jpg({
-        scale: normalizeScale(options.scale),
+        scale: rasterScale,
         full: true,
         quality: 0.95,
     }));
 
     try {
         const framedBlob = await composeRasterExportWithFrames(jpgContent, cy, options.frames, "image/jpeg", 0.95);
-        if (framedBlob) {
-            triggerDownloadFromBlob(framedBlob, `${fileName}.jpg`);
+        if (framedBlob && triggerDownloadFromBlob(framedBlob, `${fileName}.jpg`)) {
             return;
         }
     } catch (error) {
         console.warn("Failed to compose module frames into JPG export.", error);
     }
 
-    const a = document.createElement("a");
-    a.href = jpgContent;
-    a.download = `${fileName}.jpg`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    triggerDownloadFromDataUrl(jpgContent, `${fileName}.jpg`);
 }
 
 // --------------------------------------------------------

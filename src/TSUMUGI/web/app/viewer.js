@@ -1,4 +1,4 @@
-import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML, exportGraphAsSVG } from "./js/export/graphExporter.js?v=20260611-export-frames-v4";
+import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML, exportGraphAsSVG } from "./js/export/graphExporter.js?v=20260613-safe-export";
 import { scaleToOriginalRange, getColorForValue } from "./js/graph/valueScaler.js";
 import { initInfoTooltips, removeTooltips, showSubnetworkTooltip, showTooltip } from "./js/ui/tooltips.js";
 import { getOrderedComponents, calculateConnectedComponents } from "./js/graph/components.js";
