@@ -55,6 +55,13 @@ export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, fi
     const allSexes = ["Female", "Male"];
     const allGenotypes = ["Homo", "Hetero", "Hemi"];
     const allLifeStages = ["Embryo", "Early", "Interval", "Late"];
+    const nodePositions = new Map();
+
+    cy.nodes().forEach((node) => {
+        const position = node.position();
+        if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) return;
+        nodePositions.set(node.id(), { x: position.x, y: position.y });
+    });
 
     const checkedSexes = getActiveFilterValues("#sex-filter-form", allSexes);
     const checkedGenotypes = getActiveFilterValues("#genotype-filter-form", allGenotypes);
@@ -152,6 +159,12 @@ export function filterElementsByGenotypeAndSex(elements, cy, targetPhenotype, fi
     // Replace the Cytoscape elements and apply the filter-specific adjustments
     cy.elements().remove();
     cy.add(filteredElements);
+    cy.nodes().forEach((node) => {
+        const position = nodePositions.get(node.id());
+        if (position) {
+            node.position(position);
+        }
+    });
     filterElements();
 
     restoreHighlightStates(cy);

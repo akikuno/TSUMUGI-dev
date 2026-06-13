@@ -15,6 +15,7 @@ export async function fetchGzippedJson(url) {
 
 export function filterJson(jsonDataList, geneKeys) {
     const elementsMap = new Map();
+    const geneKeySet = new Set(geneKeys);
 
     const serializePhenotypes = (phenotype) => {
         if (Array.isArray(phenotype)) {
@@ -53,19 +54,17 @@ export function filterJson(jsonDataList, geneKeys) {
         jsonData.forEach((item) => {
             const data = item.data;
 
-            if ("node_color" in data && data.node_color !== 1) return;
-
             const isEdge = "source" in data && "target" in data;
 
             if (isEdge) {
-                if (!geneKeys.includes(data.source) || !geneKeys.includes(data.target)) return;
+                if (!geneKeySet.has(data.source) || !geneKeySet.has(data.target)) return;
                 const edgeKey = buildEdgeKey(data);
                 if (!edgeKey) return;
                 upsertEdge(edgeKey, item);
                 return;
             }
 
-            if ("id" in data && !geneKeys.includes(data.id)) return;
+            if ("id" in data && !geneKeySet.has(data.id)) return;
 
             const nodeKey = buildNodeKey(data);
             if (!nodeKey) return;
@@ -75,7 +74,18 @@ export function filterJson(jsonDataList, geneKeys) {
         });
     });
 
-    return Array.from(elementsMap.values());
+    const nodeIds = new Set();
+    elementsMap.forEach((item) => {
+        if (item.data.id !== undefined) {
+            nodeIds.add(item.data.id);
+        }
+    });
+
+    return Array.from(elementsMap.values()).filter((item) => {
+        const data = item.data;
+        if (!("source" in data) || !("target" in data)) return true;
+        return nodeIds.has(data.source) && nodeIds.has(data.target);
+    });
 }
 
 export async function fetchGeneData() {
@@ -116,8 +126,3 @@ export async function fetchGeneData() {
 
 // Expose for form submission handler
 window.fetchGeneData = fetchGeneData;
-
-// Assign event listener to button
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("submitBtn_List").addEventListener("click", fetchGeneData);
-});

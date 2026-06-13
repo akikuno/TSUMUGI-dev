@@ -209,15 +209,25 @@ a {
 
 .subnetwork-frame__label {
     position: absolute;
-    top: -18px;
     left: 0;
-    padding: 2px 8px;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.65);
+    max-width: min(360px, 90vw);
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.72);
     color: #fff;
     font-size: 12px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
     pointer-events: auto;
     cursor: move;
+}
+
+.subnetwork-frame__label--top {
+    bottom: calc(100% + 6px);
+}
+
+.subnetwork-frame__label--bottom {
+    top: calc(100% + 6px);
 }
 
 /* ======================================================== */
@@ -589,6 +599,10 @@ ul.suggestions li:hover {
     background: #f4f4f4;
 }
 
+.module-mode-toggle[hidden] {
+    display: none !important;
+}
+
 .module-mode-option {
     display: flex;
     align-items: center;
@@ -631,6 +645,18 @@ ul.suggestions li:hover {
     gap: 10px;
     flex-wrap: wrap;
     margin-top: 10px;
+}
+
+.export-options {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.export-frame-option {
+    display: inline-block;
+    margin: 0;
+    font-size: 14px;
 }
 
 .mobile-exporter {
@@ -899,6 +925,11 @@ button.menu-toggle-icon {
         align-items: center;
         margin: 12px 0;
         flex-wrap: wrap;
+    }
+
+    .export-options--mobile {
+        width: 100%;
+        justify-content: center;
     }
 
     .panel-toggle-button {

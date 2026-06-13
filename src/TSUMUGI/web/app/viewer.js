@@ -1,4 +1,4 @@
-import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML, exportGraphAsSVG } from "./js/export/graphExporter.js";
+import { exportGraphAsPNG, exportGraphAsJPG, exportGraphAsCSV, exportGraphAsGraphML, exportGraphAsSVG } from "./js/export/graphExporter.js?v=20260611-export-frames-v4";
 import { scaleToOriginalRange, getColorForValue } from "./js/graph/valueScaler.js";
 import { initInfoTooltips, removeTooltips, showSubnetworkTooltip, showTooltip } from "./js/ui/tooltips.js";
 import { getOrderedComponents, calculateConnectedComponents } from "./js/graph/components.js";
@@ -41,14 +41,19 @@ const MODULE_MODE_SIMILARITY = "similarity";
 const MODULE_MODE_TOP_LEVEL_MP = "top-level-mp";
 const MODULE_BASE_VISIBLE_SCRATCH = "moduleBaseVisible";
 const TOP_LEVEL_MODULE_DATA_KEY = "top_level_module_memberships";
-const MODULE_GROUP_NODE_SPACING = 42;
+const MODULE_GROUP_NODE_SPACING = 110;
 const MODULE_GROUP_COMPACT_SPAN = 420;
-const MODULE_GROUP_MIN_RADIUS = 180;
-const MODULE_GROUP_MAX_RADIUS = 560;
+const TOP_LEVEL_MODULE_TILE_PADDING = 96;
+const SUBNETWORK_LABEL_HEIGHT = 26;
+const EXPORT_FRAME_PADDING = 20;
+const EXPORT_FRAME_LABEL_OFFSET = 18;
 const MODULE_DIM_NODE_CLASS = "module-dim-node";
 const MODULE_DIM_EDGE_CLASS = "module-dim-edge";
 const MODULE_FOCUS_NODE_CLASS = "module-focus-node";
 const MODULE_FOCUS_EDGE_CLASS = "module-focus-edge";
+const TARGET_GENE_NODE_CLASS = "target-gene-node";
+const TARGET_GENE_NODE_SIZE = 56;
+const GENE_SYMBOL_FONT_SIZE = 16;
 
 // Initialize UI helpers that only depend on DOM availability.
 initInfoTooltips();
@@ -60,6 +65,8 @@ const pageConfig = getPageConfig();
 const isPhenotypePage = pageConfig.mode === "phenotype";
 const isGeneSymbolPage = pageConfig.mode === "genesymbol";
 const isGeneListPage = pageConfig.mode === "genelist";
+const DEFAULT_FONT_SIZE = isGeneSymbolPage ? GENE_SYMBOL_FONT_SIZE : 20;
+const DEFAULT_LINE_WIDTH = isGeneSymbolPage ? 1 : 5;
 
 let subnetworkOverlay = null;
 
@@ -265,7 +272,7 @@ const cy = cytoscape({
                 label: "data(label)",
                 "text-valign": "center",
                 "text-halign": "center",
-                "font-size": isGeneSymbolPage ? "10px" : "20px",
+                "font-size": DEFAULT_FONT_SIZE + "px",
                 width: 15,
                 height: 15,
                 "background-color": function (ele) {
@@ -322,6 +329,18 @@ const cy = cytoscape({
             },
         },
         {
+            selector: `node.${TARGET_GENE_NODE_CLASS}`,
+            style: {
+                width: TARGET_GENE_NODE_SIZE,
+                height: TARGET_GENE_NODE_SIZE,
+                "font-size": GENE_SYMBOL_FONT_SIZE + "px",
+                "font-weight": "bold",
+                "background-color": "#ff8c00",
+                "border-width": 3,
+                "border-color": "#b85a00",
+            },
+        },
+        {
             selector: "node.dim-node",
             style: {
                 opacity: 0.05,
@@ -366,6 +385,37 @@ const cy = cytoscape({
                 "border-color": "#3FA7D6",
             },
         },
+        {
+            selector: ".export-module-frame-box",
+            style: {
+                shape: "rectangle",
+                width: (ele) => ele.data("width") || 1,
+                height: (ele) => ele.data("height") || 1,
+                "background-opacity": 0,
+                "border-width": 2,
+                "border-color": "#888888",
+                "border-opacity": 0.9,
+                "border-style": "dashed",
+                label: "",
+            },
+        },
+        {
+            selector: ".export-module-frame-label",
+            style: {
+                label: "data(label)",
+                width: 1,
+                height: 1,
+                "background-opacity": 0,
+                color: "#ffffff",
+                "font-size": "12px",
+                "font-weight": "bold",
+                "text-background-color": "#333333",
+                "text-background-opacity": 0.85,
+                "text-background-padding": 5,
+                "text-valign": "center",
+                "text-halign": "center",
+            },
+        },
     ],
     layout: layoutController.getLayoutOptions(),
     userZoomingEnabled: true,
@@ -380,6 +430,9 @@ const cy = cytoscape({
 window.cy = cy;
 layoutController.attachCy(cy);
 layoutController.registerInitialLayoutStop();
+if (isGeneSymbolPage && pageConfig.name) {
+    cy.getElementById(pageConfig.name).addClass(TARGET_GENE_NODE_CLASS);
+}
 initializeTopLevelModuleData();
 setupInitialAutoArrange();
 cy.one("render", () => {
@@ -492,7 +545,18 @@ function initializeTopLevelModuleData() {
     });
 }
 
+function restoreElementStateAfterReset() {
+    if (isGeneSymbolPage && pageConfig.name) {
+        cy.getElementById(pageConfig.name).addClass(TARGET_GENE_NODE_CLASS);
+        syncedGenePhenotypeModuleId = null;
+    }
+    initializeTopLevelModuleData();
+}
+
 function isTopLevelModuleModeActive() {
+    if (isGeneSymbolPage) {
+        return genePhenotypeModuleState.modules.length > 0;
+    }
     return isNonGeneModulePage() && getSelectedModuleMode() === MODULE_MODE_TOP_LEVEL_MP;
 }
 
@@ -644,7 +708,7 @@ function refreshPhenotypeModuleOptions() {
 
         const allOption = document.createElement("option");
         allOption.value = "";
-        allOption.textContent = "All modules";
+        allOption.textContent = "All top-level MP modules";
         dropdown.appendChild(allOption);
 
         genePhenotypeModuleState.modules.forEach((module) => {
@@ -692,7 +756,9 @@ function setupPhenotypeModuleControls() {
     if (!container || !dropdown) return;
 
     if (modeToggle) {
-        modeToggle.hidden = !isNonGeneModulePage();
+        const showModeToggle = isNonGeneModulePage();
+        modeToggle.hidden = !showModeToggle;
+        modeToggle.style.display = showModeToggle ? "" : "none";
     }
 
     refreshPhenotypeModuleOptions();
@@ -700,7 +766,9 @@ function setupPhenotypeModuleControls() {
 
     dropdown.addEventListener("change", () => {
         if (isGeneSymbolPage) {
+            invalidateSubnetworkSummaryCache();
             applyPhenotypeModuleOverlay();
+            queueAutoArrange({ afterLayout: false, delayMs: AUTO_ARRANGE_DELAY_MS });
             return;
         }
         filterByNodeColorAndEdgeSize({ runLayout: false, refreshCentrality: true });
@@ -711,8 +779,9 @@ function setupPhenotypeModuleControls() {
         input.addEventListener("change", () => {
             dropdown.value = "";
             refreshPhenotypeModuleOptions();
-            filterByNodeColorAndEdgeSize({ runLayout: false, refreshCentrality: true });
-            queueAutoArrange({ afterLayout: false, delayMs: AUTO_ARRANGE_DELAY_MS });
+            const shouldRunSelectedLayout = !isTopLevelModuleModeActive();
+            filterByNodeColorAndEdgeSize({ runLayout: shouldRunSelectedLayout, refreshCentrality: true });
+            queueAutoArrange({ afterLayout: shouldRunSelectedLayout, delayMs: AUTO_ARRANGE_DELAY_MS });
         });
     });
 }
@@ -1048,6 +1117,7 @@ function updateSubnetworkFrames() {
 
         const label = document.createElement("div");
         label.classList.add("subnetwork-frame__label");
+        label.classList.add(visibleTop >= SUBNETWORK_LABEL_HEIGHT ? "subnetwork-frame__label--top" : "subnetwork-frame__label--bottom");
         label.textContent = group.label;
         label.dataset.componentId = String(idx + 1);
         frame.appendChild(label);
@@ -1094,6 +1164,13 @@ function scheduleSubnetworkFrameUpdate(options = {}) {
 
 function translateComponent(comp, dx, dy) {
     comp.nodes().positions((node) => {
+        const pos = node.position();
+        return { x: pos.x + dx, y: pos.y + dy };
+    });
+}
+
+function translateNodes(nodes, dx, dy) {
+    nodes.positions((node) => {
         const pos = node.position();
         return { x: pos.x + dx, y: pos.y + dy };
     });
@@ -1245,31 +1322,31 @@ function arrangeTopLevelModuleGroups() {
     const groups = getVisibleTopLevelModuleGroups();
     if (groups.length === 0) return false;
 
-    const layoutName = layoutController.getLayout();
-    const maxSpan = MODULE_GROUP_COMPACT_SPAN;
-    const radius = Math.min(
-        MODULE_GROUP_MAX_RADIUS,
-        Math.max(MODULE_GROUP_MIN_RADIUS, maxSpan * (groups.length > 6 ? 1.25 : 1.05)),
-    );
+    groups.forEach((group) => {
+        placeNodesInGrid(group.nodes, { x: 0, y: 0 });
+    });
+
+    const bboxes = groups.map((group) => group.nodes.boundingBox({ includeLabels: true, includeOverlays: false }));
+    const maxW = Math.max(MODULE_GROUP_COMPACT_SPAN, ...bboxes.map((bbox) => bbox.w || 0));
+    const maxH = Math.max(MODULE_GROUP_COMPACT_SPAN, ...bboxes.map((bbox) => bbox.h || 0));
+    const tileW = maxW + TOP_LEVEL_MODULE_TILE_PADDING * 2;
+    const tileH = maxH + TOP_LEVEL_MODULE_TILE_PADDING * 2;
+    const cols = Math.max(1, Math.ceil(Math.sqrt(groups.length)));
 
     groups.forEach((group, index) => {
-        const angle = groups.length === 1 ? 0 : -Math.PI / 2 + (2 * Math.PI * index) / groups.length;
-        const center =
-            layoutName === "grid"
-                ? {
-                    x: (index % Math.ceil(Math.sqrt(groups.length))) * (maxSpan + COMPONENT_PADDING * 4),
-                    y: Math.floor(index / Math.ceil(Math.sqrt(groups.length))) * (maxSpan + COMPONENT_PADDING * 4),
-                }
-                : {
-                    x: Math.cos(angle) * radius,
-                    y: Math.sin(angle) * radius,
-                };
+        const col = index % cols;
+        const row = Math.floor(index / cols);
+        const targetCenter = {
+            x: col * tileW + tileW / 2,
+            y: row * tileH + tileH / 2,
+        };
+        const bbox = bboxes[index];
+        const currentCenter = {
+            x: (bbox.x1 + bbox.x2) / 2,
+            y: (bbox.y1 + bbox.y2) / 2,
+        };
 
-        if (layoutName === "grid") {
-            placeNodesInGrid(group.nodes, center);
-        } else {
-            normalizeNodesToSpan(group.nodes, center, maxSpan);
-        }
+        translateNodes(group.nodes, targetCenter.x - currentCenter.x, targetCenter.y - currentCenter.y);
     });
 
     fitVisibleComponents();
@@ -1929,12 +2006,13 @@ function isGenotypeAllSelected() {
 function applyFiltering() {
     const sourceElements = isGenotypeAllSelected() ? baseElements : elements;
     filterElementsByGenotypeAndSex(sourceElements, cy, targetPhenotype, () => {
-        filterByNodeColorAndEdgeSize({ runLayout: false, refreshCentrality: false });
+        restoreElementStateAfterReset();
+        filterByNodeColorAndEdgeSize({ runLayout: !isGeneSymbolPage, refreshCentrality: false });
     });
     if (typeof window.recalculateCentrality === "function") {
         window.recalculateCentrality();
     }
-    queueAutoArrange({ afterLayout: true, delayMs: AUTO_ARRANGE_DELAY_MS });
+    queueAutoArrange({ afterLayout: !isGeneSymbolPage, delayMs: AUTO_ARRANGE_DELAY_MS });
 }
 
 function setupAllToggle(formId) {
@@ -2008,7 +2086,7 @@ setupGeneSearch({ cy });
 setupPhenotypeSearch({ cy, elements });
 
 const fontSizeInput = document.getElementById("font-size-input");
-const fontSizeSliderInstance = createSlider("font-size-slider", isGeneSymbolPage ? 10 : 20, 1, 50, 1, (intValues) => {
+const fontSizeSliderInstance = createSlider("font-size-slider", DEFAULT_FONT_SIZE, 1, 50, 1, (intValues) => {
     if (fontSizeInput) {
         fontSizeInput.value = intValues;
     }
@@ -2019,7 +2097,7 @@ const fontSizeSliderInstance = createSlider("font-size-slider", isGeneSymbolPage
 });
 
 const edgeWidthInput = document.getElementById("edge-width-input");
-const edgeWidthSliderInstance = createSlider("edge-width-slider", 5, 1, 10, 1, (intValues) => {
+const edgeWidthSliderInstance = createSlider("edge-width-slider", DEFAULT_LINE_WIDTH, 1, 10, 1, (intValues) => {
     if (edgeWidthInput) {
         edgeWidthInput.value = intValues;
     }
@@ -2205,16 +2283,108 @@ function attachExportHandler(elementId, handler) {
     button.addEventListener("click", handler);
 }
 
-attachExportHandler("export-png", () => exportGraphAsPNG(cy, fileName));
-attachExportHandler("export-jpg", () => exportGraphAsJPG(cy, fileName));
-attachExportHandler("export-svg", () => exportGraphAsSVG(cy, fileName));
-attachExportHandler("export-csv", () => exportGraphAsCSV(cy, fileName));
+function getExportModuleFrameToggles() {
+    return [
+        document.getElementById("export-module-frames"),
+        document.getElementById("export-module-frames-mobile"),
+    ].filter(Boolean);
+}
+
+function syncExportModuleFrameToggles() {
+    const toggles = getExportModuleFrameToggles();
+    toggles.forEach((toggle) => {
+        toggle.addEventListener("change", () => {
+            toggles.forEach((otherToggle) => {
+                if (otherToggle !== toggle) {
+                    otherToggle.checked = toggle.checked;
+                }
+            });
+        });
+    });
+}
+
+function shouldIncludeModuleFramesInImageExport() {
+    const toggles = getExportModuleFrameToggles();
+    if (toggles.length === 0) return true;
+    return toggles.some((toggle) => toggle.checked);
+}
+
+function buildModuleFrameExportFrames() {
+    if (!shouldIncludeModuleFramesInImageExport()) return [];
+
+    return getSubnetworkFrameGroups().flatMap((group, index) => {
+        if (!group.nodes || group.nodes.length === 0) return [];
+
+        const bbox = group.nodes.boundingBox({ includeOverlays: false, includeLabels: true });
+        if (!bbox || !Number.isFinite(bbox.x1) || !Number.isFinite(bbox.y1)) {
+            return [];
+        }
+
+        const x1 = bbox.x1 - EXPORT_FRAME_PADDING;
+        const y1 = bbox.y1 - EXPORT_FRAME_PADDING;
+        const x2 = bbox.x2 + EXPORT_FRAME_PADDING;
+        const y2 = bbox.y2 + EXPORT_FRAME_PADDING;
+        const width = x2 - x1;
+        const height = y2 - y1;
+        if (width <= 0 || height <= 0) return [];
+
+        return [{
+            label: group.label || `Module ${index + 1}`,
+            x1,
+            y1,
+            x2,
+            y2,
+            labelX: x1,
+            labelY: y1 - EXPORT_FRAME_LABEL_OFFSET,
+        }];
+    });
+}
+
+function getImageExportOptions() {
+    return {
+        frames: buildModuleFrameExportFrames(),
+    };
+}
+
+function getCurrentCsvExportMode() {
+    if (isTopLevelModuleModeActive()) {
+        return "top-level-mp";
+    }
+
+    const selectedTopLevelInput = document.querySelector('input[name="phenotype-module-mode"][value="top-level-mp"]');
+    if (selectedTopLevelInput && selectedTopLevelInput.checked) {
+        return "top-level-mp";
+    }
+
+    const dropdown = document.getElementById("phenotype-module-dropdown");
+    const firstOption = dropdown && dropdown.options.length > 0 ? dropdown.options[0].textContent || "" : "";
+    return firstOption.toLowerCase().includes("top-level") ? "top-level-mp" : "similarity";
+}
+
+function getCsvExportOptions() {
+    const csvMode = getCurrentCsvExportMode();
+    if (csvMode === "top-level-mp") {
+        refreshVisibleTopLevelModuleData();
+    }
+
+    return {
+        csvMode,
+        topLevelModuleDataKey: TOP_LEVEL_MODULE_DATA_KEY,
+    };
+}
+
+syncExportModuleFrameToggles();
+
+attachExportHandler("export-png", () => exportGraphAsPNG(cy, fileName, getImageExportOptions()));
+attachExportHandler("export-jpg", () => exportGraphAsJPG(cy, fileName, getImageExportOptions()));
+attachExportHandler("export-svg", () => exportGraphAsSVG(cy, fileName, getImageExportOptions()));
+attachExportHandler("export-csv", () => exportGraphAsCSV(cy, fileName, getCsvExportOptions()));
 attachExportHandler("export-graphml", () => exportGraphAsGraphML(cy, fileName));
 
-attachExportHandler("export-png-mobile", () => exportGraphAsPNG(cy, fileName));
-attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, fileName));
-attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, fileName));
-attachExportHandler("export-csv-mobile", () => exportGraphAsCSV(cy, fileName));
+attachExportHandler("export-png-mobile", () => exportGraphAsPNG(cy, fileName, getImageExportOptions()));
+attachExportHandler("export-jpg-mobile", () => exportGraphAsJPG(cy, fileName, getImageExportOptions()));
+attachExportHandler("export-svg-mobile", () => exportGraphAsSVG(cy, fileName, getImageExportOptions()));
+attachExportHandler("export-csv-mobile", () => exportGraphAsCSV(cy, fileName, getCsvExportOptions()));
 attachExportHandler("export-graphml-mobile", () => exportGraphAsGraphML(cy, fileName));
 
 // ############################################################################
@@ -2253,7 +2423,7 @@ function autoArrangeModules() {
     cy.startBatch();
     if (isTopLevelModuleModeActive()) {
         arrangeTopLevelModuleGroups();
-    } else {
+    } else if (layoutController.getLayout() === "grid") {
         tileComponents();
     }
     resolveComponentOverlaps();

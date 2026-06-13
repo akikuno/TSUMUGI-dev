@@ -23,7 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/cytoscape-svg@0.4.0/cytoscape-svg.min.js" defer></script>
 
     <!-- Custom JS -->
-    <script type="module" src="./viewer.js"></script>
+    <script type="module" src="./viewer.js?v=20260611-export-frames-v4"></script>
 
     <!-- ============================= -->
     <!-- CSS -->
@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./css/app.css" />
+    <link rel="stylesheet" href="./css/app.css?v=20260611-export-frames-v4" />
 </head>
 
 <body>
@@ -242,7 +242,7 @@
                             <label for="phenotype-module-dropdown" class="control-label">Module group:</label>
                             <div class="info-tooltip-container">
                                 <div class="info-tooltip-icon">i</div>
-                                <div class="info-tooltip-content">Select a visible module group. Phenotype and Gene List pages can switch between similarity modules and top-level MP terms.</div>
+                                <div class="info-tooltip-content">Select a visible module group. Gene Symbol pages use top-level MP modules; Phenotype and Gene List pages can switch between similarity modules and top-level MP terms.</div>
                             </div>
                         </div>
                         <div class="module-mode-toggle" id="phenotype-module-mode-toggle" hidden>
@@ -407,6 +407,10 @@
                             <span class="control-label">Line width:</span>
                             <input type="number" id="edge-width-input" class="range-input" min="1" max="10" step="1"
                                 aria-label="Line width" />
+                            <div class="info-tooltip-container">
+                                <div class="info-tooltip-icon">i</div>
+                                <div class="info-tooltip-content">Default is 1 for Gene Symbol and 5 for Phenotype or Gene List. Increase this value to make network edges thicker.</div>
+                            </div>
                         </div>
                         <div class="slider-element" id="edge-width-slider"></div>
                     </div>
@@ -469,6 +473,12 @@
             <i class="fa-solid fa-project-diagram"></i>
             GraphML
         </button>
+        <div class="export-options export-options--mobile">
+            <div class="round-checkbox export-frame-option">
+                <input type="checkbox" id="export-module-frames-mobile" checked />
+                <label for="export-module-frames-mobile">Include module frames in PNG, JPG, and SVG</label>
+            </div>
+        </div>
     </div>
 
     <!-- ===================================== -->
@@ -506,6 +516,12 @@
                 <i class="fa-solid fa-project-diagram"></i>
                 GraphML
             </button>
+        </div>
+        <div class="export-options">
+            <div class="round-checkbox export-frame-option">
+                <input type="checkbox" id="export-module-frames" checked />
+                <label for="export-module-frames">Include module frames in PNG, JPG, and SVG</label>
+            </div>
         </div>
     </div>
 

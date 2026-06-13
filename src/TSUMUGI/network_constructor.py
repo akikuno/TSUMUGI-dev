@@ -250,9 +250,7 @@ def _scale_effect_sizes(gene_records_map_filtered, mp_term_name):
             if record["mp_term_name"] == mp_term_name:
                 target_records.append(record)
 
-    effect_sizes = [
-        _finite_float_or_default(record.get("effect_size"), float("nan")) for record in target_records
-    ]
+    effect_sizes = [_finite_float_or_default(record.get("effect_size"), float("nan")) for record in target_records]
     effect_sizes = [effect_size for effect_size in effect_sizes if math.isfinite(effect_size)]
 
     if not effect_sizes:
