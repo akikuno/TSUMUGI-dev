@@ -138,7 +138,7 @@ def _compose_pairwise_similarity_annotations(
                 )
             )
 
-        gene_pair = (record["gene1_symbol"], record["gene2_symbol"])
+        gene_pair = tuple(sorted([record["gene1_symbol"], record["gene2_symbol"]]))
 
         pairwise_similarity_annotations_composed[gene_pair] = {
             "phenotype_shared_annotations": sorted(pair_annotations_composed),
@@ -278,6 +278,68 @@ def _scale_effect_sizes(gene_records_map_filtered, mp_term_name):
     return gene_records_map_filtered
 
 
+def _normalize_gene_pair(gene1: str, gene2: str) -> tuple[str, str]:
+    return tuple(sorted([gene1, gene2]))
+
+
+def _build_pairwise_adjacency_index(
+    pairwise_similarity_annotations_composed: dict[tuple[str, str], dict[str, list[str] | int]],
+) -> dict[str, list[tuple[str, str]]]:
+    adjacency_index = defaultdict(list)
+    for gene1, gene2 in pairwise_similarity_annotations_composed.keys():
+        pair = _normalize_gene_pair(gene1, gene2)
+        pair_key = pair if pair in pairwise_similarity_annotations_composed else (gene1, gene2)
+        adjacency_index[pair[0]].append(pair_key)
+        adjacency_index[pair[1]].append(pair_key)
+    return {gene: sorted(set(pairs)) for gene, pairs in adjacency_index.items()}
+
+
+def _iter_existing_gene_pairs(
+    related_genes: set[str],
+    pairwise_similarity_annotations_composed: dict[tuple[str, str], dict[str, list[str] | int]],
+    candidate_pairs: list[tuple[str, str]] | None = None,
+):
+    if candidate_pairs is None:
+        for gene1, gene2 in combinations(sorted(related_genes), 2):
+            gene_pair = _normalize_gene_pair(gene1, gene2)
+            if gene_pair in pairwise_similarity_annotations_composed:
+                yield gene_pair
+        return
+
+    seen_pairs = set()
+    for gene1, gene2 in candidate_pairs:
+        if gene1 not in related_genes or gene2 not in related_genes:
+            continue
+        gene_pair = _normalize_gene_pair(gene1, gene2)
+        if gene_pair not in pairwise_similarity_annotations_composed and (
+            gene1,
+            gene2,
+        ) in pairwise_similarity_annotations_composed:
+            gene_pair = (gene1, gene2)
+        elif gene_pair not in pairwise_similarity_annotations_composed and (
+            gene2,
+            gene1,
+        ) in pairwise_similarity_annotations_composed:
+            gene_pair = (gene2, gene1)
+        if gene_pair in seen_pairs or gene_pair not in pairwise_similarity_annotations_composed:
+            continue
+        seen_pairs.add(gene_pair)
+        yield gene_pair
+
+
+def _collect_induced_gene_pairs(
+    related_genes: set[str],
+    pairwise_adjacency_index: dict[str, list[tuple[str, str]]],
+) -> list[tuple[str, str]]:
+    related_pairs = set()
+    for gene in related_genes:
+        for gene_pair in pairwise_adjacency_index.get(gene, []):
+            gene1, gene2 = gene_pair
+            if gene1 in related_genes and gene2 in related_genes:
+                related_pairs.add(gene_pair)
+    return sorted(related_pairs)
+
+
 def _find_optimal_scores(
     sorted_scores,
     related_genes,
@@ -285,6 +347,7 @@ def _find_optimal_scores(
     required_shared_annotations: set[str] | None = None,
     low_threshold=GENE_COUNT_LOWER_BOUND,
     high_threshold=GENE_COUNT_UPPER_BOUND,
+    candidate_pairs: list[tuple[str, str]] | None = None,
 ):
     low = 0
     high = len(sorted_scores) - 1
@@ -292,10 +355,12 @@ def _find_optimal_scores(
         mid = (low + high) // 2
 
         count_genes = set()
-        for gene1, gene2 in combinations(sorted(related_genes), 2):
-            gene_pair = tuple(sorted([gene1, gene2]))
-            if gene_pair not in pairwise_similarity_annotations_composed:
-                continue
+        for gene_pair in _iter_existing_gene_pairs(
+            related_genes,
+            pairwise_similarity_annotations_composed,
+            candidate_pairs=candidate_pairs,
+        ):
+            gene1, gene2 = gene_pair
             pair_annotations = pairwise_similarity_annotations_composed[gene_pair]
             if not _has_required_shared_annotation(pair_annotations, required_shared_annotations):
                 continue
@@ -317,9 +382,10 @@ def _find_optimal_scores(
 def _filter_related_genes(
     records: list[dict[str, str | float]],
     related_genes: set[str],
-    pairwise_similarity_annotations_composed: dict[tuple[str], dict[str, list[str] | int]],
+    pairwise_similarity_annotations_composed: dict[tuple[str, str], dict[str, list[str] | int]],
     is_gene_network: bool = False,
     required_shared_annotations: set[str] | None = None,
+    candidate_pairs: list[tuple[str, str]] | None = None,
 ) -> set[str]:
     """
     Strategy:
@@ -339,15 +405,18 @@ def _filter_related_genes(
     phenotype_similarity_scores = []
     gene_max_score = defaultdict(float)
     gene_max_shared_phenotype = defaultdict(int)
+    matching_pairs = []
 
-    for gene1, gene2 in combinations(sorted(related_genes), 2):
-        gene_pair = tuple(sorted([gene1, gene2]))
-        if gene_pair not in pairwise_similarity_annotations_composed:
-            continue
-
+    for gene_pair in _iter_existing_gene_pairs(
+        related_genes,
+        pairwise_similarity_annotations_composed,
+        candidate_pairs=candidate_pairs,
+    ):
+        gene1, gene2 = gene_pair
         pair_annotations = pairwise_similarity_annotations_composed[gene_pair]
         if not _has_required_shared_annotation(pair_annotations, required_shared_annotations):
             continue
+        matching_pairs.append(gene_pair)
         score = pair_annotations["phenotype_similarity_score"]
         num_shared_phenotypes = len(pair_annotations["phenotype_shared_annotations"])
 
@@ -371,9 +440,10 @@ def _filter_related_genes(
             unique_phenotype_similarity_scores,
             related_genes,
             pairwise_similarity_annotations_composed,
-            required_shared_annotations=required_shared_annotations,
+            required_shared_annotations=None,
             low_threshold=GENE_COUNT_LOWER_BOUND,
             high_threshold=GENE_COUNT_UPPER_BOUND,
+            candidate_pairs=matching_pairs,
         )
     if optimal_score > -1:
         return {gene for gene, max_score in gene_max_score.items() if max_score >= optimal_score}
@@ -617,19 +687,12 @@ def build_gene_network_json(
         genewise_phenotype_significants, pairwise_similarity_annotations, disease_annotations_by_gene
     )
 
-    gene_sets = set()
-    for pair in pairwise_similarity_annotations_composed.keys():
-        for gene in pair:
-            gene_sets.add(gene)
+    pairwise_adjacency_index = _build_pairwise_adjacency_index(pairwise_similarity_annotations_composed)
+    gene_sets = set(pairwise_adjacency_index.keys())
 
     for target_gene in tqdm(gene_sets, total=len(gene_sets)):
-        related_pairs_with_target_gene = []
-        for pair in pairwise_similarity_annotations_composed.keys():
-            if target_gene not in pair:
-                continue
-            related_pairs_with_target_gene.append(pair)
-
-        related_genes = set()
+        related_pairs_with_target_gene = pairwise_adjacency_index.get(target_gene, [])
+        related_genes = {target_gene}
         for genes in related_pairs_with_target_gene:
             gene1, gene2 = genes
             related_genes.add(gene1)
@@ -639,20 +702,22 @@ def build_gene_network_json(
         if len(related_genes) < 2:
             continue
 
-        related_pairs = []
-        for gene1, gene2 in combinations(related_genes, 2):
-            gene_pair = tuple(sorted([gene1, gene2]))
-            if gene_pair not in pairwise_similarity_annotations_composed:
-                continue
-            related_pairs.append(gene_pair)
+        related_pairs = _collect_induced_gene_pairs(related_genes, pairwise_adjacency_index)
 
         # Filter genes if more than MAX_GENE_COUNT
         if len(related_genes) > MAX_GENE_COUNT:
             related_genes_filtered = _filter_related_genes(
-                genewise_phenotype_significants, related_genes, pairwise_similarity_annotations_composed
+                genewise_phenotype_significants,
+                related_genes,
+                pairwise_similarity_annotations_composed,
+                candidate_pairs=related_pairs,
             )
             related_genes_filtered.add(target_gene)
-            related_pairs = [pairs for pairs in related_pairs if all(gene in related_genes_filtered for gene in pairs)]
+            related_pairs = [
+                pairs
+                for pairs in related_pairs
+                if pairs[0] in related_genes_filtered and pairs[1] in related_genes_filtered
+            ]
 
         # ---------------------------------------
         # Nodes
