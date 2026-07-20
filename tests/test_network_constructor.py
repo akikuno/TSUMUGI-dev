@@ -383,7 +383,10 @@ def test_filter_related_genes_with_candidate_pairs_matches_full_scan(monkeypatch
         ("GeneA", "GeneB"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 10},
         ("GeneA", "GeneC"): {"phenotype_shared_annotations": ["P1", "P2", "P3"], "phenotype_similarity_score": 30},
         ("GeneB", "GeneC"): {"phenotype_shared_annotations": ["P1", "P2"], "phenotype_similarity_score": 20},
-        ("GeneC", "GeneD"): {"phenotype_shared_annotations": ["P1", "P2", "P3", "P4"], "phenotype_similarity_score": 40},
+        ("GeneC", "GeneD"): {
+            "phenotype_shared_annotations": ["P1", "P2", "P3", "P4"],
+            "phenotype_similarity_score": 40,
+        },
     }
 
     full_scan_genes = network_constructor._filter_related_genes(

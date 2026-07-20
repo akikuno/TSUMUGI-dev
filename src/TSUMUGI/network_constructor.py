@@ -311,15 +311,23 @@ def _iter_existing_gene_pairs(
         if gene1 not in related_genes or gene2 not in related_genes:
             continue
         gene_pair = _normalize_gene_pair(gene1, gene2)
-        if gene_pair not in pairwise_similarity_annotations_composed and (
-            gene1,
-            gene2,
-        ) in pairwise_similarity_annotations_composed:
+        if (
+            gene_pair not in pairwise_similarity_annotations_composed
+            and (
+                gene1,
+                gene2,
+            )
+            in pairwise_similarity_annotations_composed
+        ):
             gene_pair = (gene1, gene2)
-        elif gene_pair not in pairwise_similarity_annotations_composed and (
-            gene2,
-            gene1,
-        ) in pairwise_similarity_annotations_composed:
+        elif (
+            gene_pair not in pairwise_similarity_annotations_composed
+            and (
+                gene2,
+                gene1,
+            )
+            in pairwise_similarity_annotations_composed
+        ):
             gene_pair = (gene2, gene1)
         if gene_pair in seen_pairs or gene_pair not in pairwise_similarity_annotations_composed:
             continue
