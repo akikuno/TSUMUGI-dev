@@ -14,9 +14,13 @@
 -->
 
 
-## v1.1.0 (2026-mm-dd)
+## v1.1.0 (2026-07-22)
 
 ### 🖼️ User Interface
+
+- Add a toggle to show or hide module borders in visualizations  
+  Issue: [#168](https://github.com/akikuno/TSUMUGI-dev/issues/168)  
+
 
 - Optimize large Gene page network rendering without reducing graph data  
   Issue: [#172](https://github.com/akikuno/TSUMUGI-dev/issues/172)  
@@ -37,6 +41,8 @@
 
 - Reduce raster export scale and guard large module frame exports  
   Issue: [#179](https://github.com/akikuno/TSUMUGI-dev/issues/179)  
+
+
 
 ### 🚀 Performance
 
