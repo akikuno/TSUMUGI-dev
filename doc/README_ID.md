@@ -19,6 +19,8 @@
 Alat ini terbuka untuk semua pengguna secara daring 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
+Dokumentasi ini menjelaskan perilaku **TSUMUGI v1.1.0** saat ini. Aplikasi web publik menggunakan data IMPC **Release 24.0**.
+
 **TSUMUGI (紡ぎ)** berarti “menyulam kelompok gen pembentuk fenotipe”.
 
 # 📖 Cara menggunakan TSUMUGI
@@ -39,7 +41,7 @@ Simbol mengikuti [MGI](http://www.informatics.jax.org/).
 Tempel beberapa gen (satu per baris) untuk mencari **di dalam daftar itu**.  
 > [!CAUTION]  
 > Jika tidak ada yang mirip: `No similar phenotypes were found among the entered genes.`  
-> Jika lebih dari 200: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> Jika jaringan yang dihasilkan memuat 200 gen atau lebih: `Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 Unduh data mentah
 TSUMUGI menyediakan file JSONL terkompresi gzip.
@@ -81,6 +83,7 @@ Halaman berpindah dan menggambar jaringan secara otomatis sesuai input.
 **Node** mewakili gen. Klik untuk melihat daftar fenotipe abnormal; seret untuk memindahkan.  
 **Edge** klik untuk melihat detail fenotipe bersama.  
 **Module** menggambarkan sub-jaringan gen. Klik modul untuk melihat fenotipe gen di dalamnya; seret modul agar tidak saling tumpang tindih.
+Halaman Gene menggunakan modul Top-level MP soft/fuzzy, sehingga satu gen dapat berada dalam beberapa modul. Halaman Phenotype dan Gene List dapat beralih antara modul `Similarity` berbasis komponen terhubung dan modul `Top-level MP`.
 
 ### Panel kontrol
 Menyesuaikan tampilan jaringan di panel kiri.
@@ -91,6 +94,7 @@ Menyesuaikan tampilan jaringan di panel kiri.
 
 #### Filter effect size
 `Effect size` memfilter node berdasarkan besar kecilnya effect size turunan IMPC jika tersedia.
+Effect size yang hilang tetap diperlakukan sebagai nilai hilang, tidak diubah menjadi nol, dan node terkait ditampilkan berwarna putih.
 > Disembunyikan untuk fenotipe biner (mis. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); daftar biner [di sini](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) atau input satu gen.
 
 #### Tentukan genotype
@@ -109,6 +113,9 @@ Menyesuaikan tampilan jaringan di panel kiri.
 - `Late` (49+ minggu)
 
 ### Panel markup
+#### Tampilan modul
+Definisi modul dan modul yang terlihat dapat dipilih di panel kanan. Batas modul dapat disembunyikan tanpa menghapus gen atau edge dari jaringan.
+
 #### Highlight: Human Disease
 Sorot gen terkait penyakit (data IMPC Disease Models Portal).
 
@@ -119,7 +126,7 @@ Cari nama gen dalam jaringan.
 Atur tata letak, ukuran font, ketebalan edge, repulsi node (Cose).
 
 #### Export
-Ekspor PNG/CSV/GraphML. CSV memuat ID modul dan daftar fenotipe; GraphML kompatibel dengan Cytoscape.
+Ekspor PNG, JPG, SVG, CSV, atau GraphML. Bingkai modul dapat disertakan dalam PNG, JPG, dan SVG. CSV memuat penetapan modul Similarity atau Top-level MP yang aktif beserta daftar fenotipe; GraphML kompatibel dengan Cytoscape.
 
 # 🛠 Antarmuka Baris Perintah
 
@@ -434,37 +441,33 @@ Ekstrak pasangan gen–fenotipe dengan P-value pada tikus KO (`p_value`, `female
 
 ## Kesamaan fenotipe
 
-TSUMUGI mengadopsi pendekatan mirip Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+TSUMUGI menerapkan rumus skor asli PhenoDigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)) untuk membandingkan profil fenotipe gen tikus KO IMPC di dalam Mammalian Phenotype Ontology.
 
 > [!NOTE]
-> Perbedaan dengan Phenodigm asli adalah sebagai berikut.  
-> 1. **Istilah di bawah persentil IC ke-5 ditetapkan ke IC=0, sehingga fenotipe yang terlalu umum (misalnya embryo phenotype) tidak dievaluasi.**
-> 2. **Kami menerapkan pembobotan berdasarkan kecocokan metadata: genotipe, tahap kehidupan, dan jenis kelamin.**
+> TSUMUGI menggunakan rumus skor PhenoDigm, tetapi tidak menjalankan pipeline lintas spesies HPO-MP/ZP OWLSim asli. TSUMUGI membandingkan anotasi MP dari gen tikus KO IMPC.
 
 ### 1. Definisi kesamaan pasangan istilah MP
 
-* Bangun ontologi MP dan hitung Information Content (IC) untuk setiap istilah:  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Istilah di bawah persentil IC ke-5 ditetapkan ke IC=0.
+* Bangun ontologi MP dan hitung Information Content (IC) dari anotasi IMPC yang signifikan:
+   `IC(term) = -log2(|anotasi yang dipropagasikan ke istilah| / |semua anotasi signifikan|)`
+   Setiap anotasi langsung dipropagasikan ke istilah MP yang dianotasi dan seluruh leluhurnya.
 
-* Untuk setiap pasangan istilah MP, temukan nenek moyang umum paling spesifik (MICA) dan gunakan IC-nya sebagai kesamaan Resnik.  
+* Untuk setiap pasangan istilah MP, cari leluhur bersama dengan IC berbasis anotasi tertinggi. Jika seri, pilih secara deterministik kandidat dengan keturunan transitif paling sedikit dalam ontologi MP, lalu ID istilah MP yang paling kecil secara leksikografis. IC MICA yang dipilih menjadi kesamaan Resnik. Tie-break ini tidak mengubah skor kesamaan atau skema output.
 
-* Untuk dua istilah MP, hitung indeks Jaccard dari himpunan nenek moyangnya.  
+* Untuk dua istilah MP, hitung indeks Jaccard dari himpunan atribut terinferensi, yang terdiri dari istilah itu sendiri dan semua leluhurnya.
 
 * Definisikan kesamaan pasangan istilah MP sebagai `sqrt(Resnik * Jaccard)`.
 
-### 2. Pembobotan berdasarkan kesesuaian metadata fenotipe
+### 2. Matriks kesamaan pasangan gen
 
-* Terapkan bobot berdasarkan metadata fenotipe: genotipe, tahap kehidupan, dan jenis kelamin.
+* Untuk setiap pasangan gen, buat matriks kesamaan istilah MP × istilah MP dari skor pasangan istilah.
 
-* Untuk setiap pasangan gen, buat matriks kesamaan istilah MP × istilah MP.  
-
-* Kalikan dengan bobot 0.2, 0.5, 0.75, 1.0 untuk 0, 1, 2, 3 kecocokan genotipe/tahap kehidupan/jenis kelamin.
+* Metadata genotipe, tahap kehidupan, dan jenis kelamin dipertahankan dalam anotasi fenotipe bersama, tetapi tidak membobot skor PhenoDigm.
 
 ### 3. Penskalaan Phenodigm
 
-* Terapkan penskalaan tipe Phenodigm untuk menormalkan kesamaan fenotipe tiap tikus KO ke 0–100:  
-   Hitung maksimum/rata-rata teramati, lalu normalisasi dengan maksimum/rata-rata teoretis.  
+* Terapkan penskalaan maksimum/rata-rata PhenoDigm untuk menormalkan kesamaan setiap pasangan gen tikus KO ke 0–100:
+   Hitung maksimum dan rata-rata best match yang teramati, lalu normalisasi dengan skor optimal self match simetris dari kedua gen.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    Jika penyebut 0, skor ditetapkan ke 0.
 

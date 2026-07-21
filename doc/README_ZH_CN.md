@@ -19,6 +19,8 @@
 该工具面向所有人公开使用👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
+本文档说明**TSUMUGI v1.1.0**的当前功能。公开Web应用使用IMPC **Release 24.0**数据。
+
 **TSUMUGI(紡ぎ)** 意为“把形成表型的基因群像纺丝一样编织起来”。
 
 # 📖 TSUMUGI 的使用方法
@@ -39,7 +41,7 @@ TSUMUGI 支持三种输入。
 支持多个基因（每行一个），在列表内部提取**表型相似的基因**。  
 > [!CAUTION]  
 > 若找不到相似基因：`No similar phenotypes were found among the entered genes.`  
-> 若超过 200 个：`Too many genes submitted. Please limit the number to 200 or fewer.`
+> 若生成的网络包含200个或更多基因：`Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 下载原始数据
 TSUMUGI 发布 gzip 压缩的 JSONL 文件。
@@ -81,6 +83,7 @@ TSUMUGI 发布 gzip 压缩的 JSONL 文件。
 **节点**代表基因。点击可查看该 KO 小鼠的异常表型列表，拖拽可调整位置。  
 **边**点击可查看共享表型的详情。  
 **模块**以多边形圈出基因子网络。点击模块可列出其中基因涉及的表型；可拖拽模块以重新摆放并避免重叠。
+Gene页面使用soft/fuzzy Top-level MP模块，因此一个基因可以属于多个模块。Phenotype和Gene List页面可在基于连通分量的`Similarity`模块与`Top-level MP`模块之间切换。
 
 ### 控制面板
 在左侧面板调整网络显示。
@@ -91,6 +94,7 @@ TSUMUGI 发布 gzip 压缩的 JSONL 文件。
 
 #### 按 effect size 过滤
 `Effect size` 滑块按可用的 IMPC-derived effect size 大小过滤节点。
+缺失的effect size保持为缺失值，不会转换为0；相应节点显示为白色。
 > 对于二值表型（如 [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 二值列表见[此处](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或单基因输入，此控件隐藏。
 
 #### 指定接合型
@@ -109,6 +113,9 @@ TSUMUGI 发布 gzip 压缩的 JSONL 文件。
 - `Late`（49 周以上）
 
 ### 标记面板
+#### 模块显示
+可在右侧面板选择模块定义和当前显示的模块。隐藏模块边框不会从网络中移除基因或边。
+
 #### Highlight: Human Disease
 基于 IMPC Disease Models Portal 数据，高亮与人类疾病相关的基因。
 
@@ -119,8 +126,7 @@ TSUMUGI 发布 gzip 压缩的 JSONL 文件。
 调整布局、字体大小、边宽、节点斥力（Cose 布局）。
 
 #### Export
-导出 PNG/CSV/GraphML。  
-CSV 含模块ID及每个基因的表型列表；GraphML 与 Cytoscape 兼容。
+可导出PNG、JPG、SVG、CSV或GraphML。PNG、JPG和SVG可选择包含模块边框。CSV记录当前Similarity或Top-level MP模块分配及表型列表；GraphML与Cytoscape兼容。
 
 # 🛠 命令行版
 
@@ -435,37 +441,33 @@ CLI支持STDIN/STDOUT，可串联命令:
 
 ## 表型相似度
 
-TSUMUGI采用类Phenodigm方法（[Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)）。  
+TSUMUGI使用PhenoDigm原始评分公式（[Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)），在Mammalian Phenotype Ontology内比较IMPC KO小鼠基因的表型谱。
 
 > [!NOTE]
-> 与原始Phenodigm的差异如下。  
-> 1. **IC低于第5百分位的术语设置为IC=0，从而不评估过于一般的表型（例如embryo phenotype）。**
-> 2. **根据基因型、生命阶段和性别的元数据匹配进行加权。**
+> TSUMUGI使用PhenoDigm评分公式，但不运行原始的跨物种HPO-MP/ZP OWLSim pipeline。它比较IMPC KO小鼠基因的MP annotation。
 
 ### 1. MP术语对相似度定义
 
-* 构建MP本体并计算每个术语的信息量（IC）：  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   IC低于第5百分位的术语设置为IC=0。
+* 构建MP本体，并根据显著IMPC annotation计算Information Content（IC）：
+   `IC(term) = -log2(|传播到该术语的annotation| / |全部显著annotation|)`
+   每个直接annotation都会传播到被注释的MP术语及其全部ancestor。
 
-* 对每个MP术语对，找到最特异的共同祖先（MICA），并以其IC作为Resnik相似度。  
+* 对每个MP术语对，查找annotation-derived IC最高的共同ancestor。若候选同分，则依次确定性选择MP本体中transitive descendant较少的候选，以及字典序较小的MP term ID。所选MICA的IC作为Resnik相似度。该tie-break不改变相似度得分或输出schema。
 
-* 对两个MP术语，计算其祖先集合的Jaccard指数。  
+* 对两个MP术语，计算其inferred attribute集合的Jaccard指数；该集合定义为术语本身及其全部ancestor。
 
 * 将MP术语对相似度定义为`sqrt(Resnik * Jaccard)`。
 
-### 2. 按表型元数据一致性加权
+### 2. 基因对相似度矩阵
 
-* 根据表型元数据（基因型、生命阶段、性别）进行加权。
+* 对每个基因对，根据术语对得分构建MP术语×MP术语相似度矩阵。
 
-* 对每个基因对构建MP术语×MP术语相似度矩阵。  
-
-* 对基因型/生命阶段/性别匹配数为0、1、2、3时，分别乘以0.2、0.5、0.75、1.0的权重。
+* 基因型、生命阶段和性别metadata保留在共享表型annotation中，但不用于PhenoDigm得分加权。
 
 ### 3. Phenodigm缩放
 
-* 采用Phenodigm式缩放，将每个KO小鼠的表型相似度归一化到0–100：  
-   计算观测的最大值/均值，并用理论最大值/均值进行归一化。  
+* 使用PhenoDigm maximum/average scaling，将每个KO小鼠基因对的相似度归一化到0–100：
+   计算观测best match的maximum/mean，然后使用两个基因对称的optimal self-match score进行归一化。
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    若分母为0，则得分为0。
 

@@ -19,6 +19,8 @@
 Mở cho mọi người sử dụng trực tuyến 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
+Tài liệu này mô tả hoạt động hiện tại của **TSUMUGI v1.1.0**. Ứng dụng web công khai sử dụng dữ liệu IMPC **Release 24.0**.
+
 **TSUMUGI (紡ぎ)** mang ý nghĩa “dệt các nhóm gen tạo nên kiểu hình”.
 
 # 📖 Cách dùng TSUMUGI
@@ -39,7 +41,7 @@ Theo ký hiệu [MGI](http://www.informatics.jax.org/).
 Nhiều gen (mỗi dòng một gen) để tìm **trong danh sách đó**.  
 > [!CAUTION]  
 > Không tìm thấy: `No similar phenotypes were found among the entered genes.`  
-> Trên 200: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> Nếu mạng được tạo có từ 200 gen trở lên: `Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 Tải dữ liệu thô
 TSUMUGI cung cấp file JSONL nén gzip.
@@ -81,6 +83,7 @@ Trang chuyển và vẽ mạng tự động theo đầu vào.
 **Nút**: gen. Nhấp để xem danh sách kiểu hình bất thường; kéo để sắp xếp.  
 **Cạnh**: nhấp để xem chi tiết kiểu hình chung.  
 **Module** bao quanh các mạng con gen. Nhấp để liệt kê kiểu hình của các gen trong module; kéo module để di chuyển và tránh chồng lấp.
+Trang Gene sử dụng module Top-level MP soft/fuzzy, vì vậy một gen có thể thuộc nhiều module. Trang Phenotype và Gene List có thể chuyển giữa module `Similarity` dựa trên thành phần liên thông và module `Top-level MP`.
 
 ### Bảng điều khiển
 Điều chỉnh hiển thị mạng ở bảng trái.
@@ -91,6 +94,7 @@ Trang chuyển và vẽ mạng tự động theo đầu vào.
 
 #### Lọc theo effect size
 `Effect size` lọc nút theo độ lớn của effect size từ IMPC khi có dữ liệu.
+Effect size bị thiếu được giữ là giá trị thiếu thay vì chuyển thành 0, và các nút tương ứng được hiển thị màu trắng.
 > Ẩn cho kiểu hình nhị phân (ví dụ [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); danh sách nhị phân [tại đây](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) hoặc khi nhập một gen.
 
 #### Chỉ định kiểu gen
@@ -109,6 +113,9 @@ Trang chuyển và vẽ mạng tự động theo đầu vào.
 - `Late` (49+ tuần)
 
 ### Bảng đánh dấu
+#### Hiển thị module
+Chọn định nghĩa module và module hiển thị trong bảng bên phải. Có thể ẩn đường viền module mà không loại bỏ gen hoặc cạnh khỏi mạng.
+
 #### Highlight: Human Disease
 Tô sáng gen liên quan bệnh (dữ liệu IMPC Disease Models Portal).
 
@@ -119,7 +126,7 @@ Tìm tên gen trong mạng.
 Điều chỉnh bố cục, cỡ chữ, độ dày cạnh, lực đẩy nút (Cose).
 
 #### Export
-Xuất PNG/CSV/GraphML. CSV có ID mô-đun và danh sách kiểu hình; GraphML tương thích Cytoscape.
+Xuất PNG, JPG, SVG, CSV hoặc GraphML. Có thể đưa khung module vào PNG, JPG và SVG. CSV ghi nhận phép gán module Similarity hoặc Top-level MP đang hoạt động cùng danh sách kiểu hình; GraphML tương thích Cytoscape.
 
 # 🛠 Giao diện dòng lệnh
 
@@ -434,37 +441,33 @@ Trích xuất các cặp gene–kiểu hình có P-value ở chuột KO (`p_valu
 
 ## Độ tương đồng kiểu hình
 
-TSUMUGI áp dụng cách tiếp cận kiểu Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+TSUMUGI áp dụng công thức chấm điểm gốc của PhenoDigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)) để so sánh hồ sơ kiểu hình của gen chuột KO IMPC trong Mammalian Phenotype Ontology.
 
 > [!NOTE]
-> Các khác biệt so với Phenodigm gốc như sau.  
-> 1. **Các thuật ngữ dưới phân vị IC thứ 5 được đặt IC=0, để không đánh giá các kiểu hình quá chung (ví dụ: embryo phenotype).**
-> 2. **Chúng tôi áp dụng trọng số dựa trên mức khớp metadata: kiểu gen, giai đoạn sống và giới tính.**
+> TSUMUGI dùng công thức chấm điểm PhenoDigm nhưng không chạy pipeline HPO-MP/ZP OWLSim liên loài gốc. Công cụ so sánh annotation MP của các gen chuột KO IMPC.
 
 ### 1. Định nghĩa độ tương đồng cặp thuật ngữ MP
 
-* Xây dựng ontology MP và tính Information Content (IC) cho từng thuật ngữ:  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Các thuật ngữ dưới phân vị IC thứ 5 được đặt IC=0.
+* Xây dựng ontology MP và tính Information Content (IC) từ các annotation IMPC có ý nghĩa:
+   `IC(term) = -log2(|annotation được lan truyền tới thuật ngữ| / |tất cả annotation có ý nghĩa|)`
+   Mỗi annotation trực tiếp được lan truyền tới thuật ngữ MP được gán và tất cả tổ tiên của nó.
 
-* Với mỗi cặp thuật ngữ MP, tìm tổ tiên chung đặc hiệu nhất (MICA) và dùng IC của nó làm độ tương đồng Resnik.  
+* Với mỗi cặp thuật ngữ MP, tìm các tổ tiên chung có IC dựa trên annotation cao nhất. Nếu đồng hạng, chọn xác định ứng viên có ít hậu duệ bắc cầu nhất trong ontology MP, sau đó chọn ID thuật ngữ MP nhỏ nhất theo thứ tự từ điển. IC của MICA được chọn là độ tương đồng Resnik. Cách phá hòa này không thay đổi điểm tương đồng hoặc schema đầu ra.
 
-* Với hai thuật ngữ MP, tính chỉ số Jaccard của các tập tổ tiên.  
+* Với hai thuật ngữ MP, tính chỉ số Jaccard của các tập thuộc tính suy ra, được định nghĩa là chính thuật ngữ đó cùng tất cả tổ tiên.
 
 * Định nghĩa độ tương đồng cặp thuật ngữ MP là `sqrt(Resnik * Jaccard)`.
 
-### 2. Trọng số theo mức độ khớp metadata kiểu hình
+### 2. Ma trận độ tương đồng cặp gen
 
-* Áp dụng trọng số theo metadata kiểu hình: kiểu gen, giai đoạn sống và giới tính.
+* Với mỗi cặp gen, tạo ma trận độ tương đồng thuật ngữ MP × thuật ngữ MP từ điểm của các cặp thuật ngữ.
 
-* Với mỗi cặp gene, tạo ma trận độ tương đồng thuật ngữ MP × thuật ngữ MP.  
-
-* Nhân với trọng số 0.2, 0.5, 0.75, 1.0 cho 0, 1, 2, 3 mức khớp kiểu gen/giai đoạn sống/giới tính.
+* Metadata kiểu gen, giai đoạn sống và giới tính được giữ trong annotation kiểu hình chung nhưng không dùng để đặt trọng số cho điểm PhenoDigm.
 
 ### 3. Chuẩn hóa Phenodigm
 
-* Áp dụng chuẩn hóa kiểu Phenodigm để đưa độ tương đồng kiểu hình của từng chuột KO về 0–100:  
-   Tính giá trị tối đa/trung bình quan sát được, rồi chuẩn hóa theo tối đa/trung bình lý thuyết.  
+* Áp dụng chuẩn hóa maximum/average của PhenoDigm để đưa độ tương đồng của từng cặp gen chuột KO về 0–100:
+   Tính maximum và mean của best match quan sát được, rồi chuẩn hóa bằng điểm optimal self match đối xứng của hai gen.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    Nếu mẫu số bằng 0, điểm được đặt về 0.
 

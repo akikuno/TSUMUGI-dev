@@ -19,6 +19,8 @@
 웹에서 누구나 사용할 수 있는 공개 도구입니다👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
+이 문서는 **TSUMUGI v1.1.0**의 현재 동작을 설명합니다. 공개 웹 앱은 IMPC **Release 24.0** 데이터를 사용합니다.
+
 **TSUMUGI(紡ぎ)**는 “표현형을 이루는 유전자 군을 실잣듯 엮는다”는 뜻에서 유래했습니다.
 
 # 📖 TSUMUGI 사용법
@@ -39,7 +41,7 @@ TSUMUGI는 세 가지 입력을 지원합니다.
 여러 유전자를 줄바꿈으로 입력합니다. **리스트 내부의 유전자들 간** 표현형 유사 유전자를 추출합니다.  
 > [!CAUTION]  
 > 유사 유전자를 하나도 찾지 못하면 `No similar phenotypes were found among the entered genes.` 경고 후 중단합니다.  
-> 200개를 초과하면 `Too many genes submitted. Please limit the number to 200 or fewer.` 경고 후 중단합니다.
+> 생성된network에200개 이상의 유전자가 포함되면`Too many genes submitted. Please limit the number to 200 or fewer.` 경고 후 중단합니다.
 
 ### 📥 원시 데이터 다운로드
 TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
@@ -81,6 +83,7 @@ TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
 **노드**는 유전자를 나타냅니다. 클릭하면 KO 마우스에서 관찰된 이상 표현형 리스트를 표시하며, 드래그로 위치를 조정할 수 있습니다.  
 **엣지**를 클릭하면 공유 표현형의 상세를 볼 수 있습니다.  
 **모듈**은 유전자 서브네트워크를 다각형으로 둘러싸 표시합니다. 모듈을 클릭하면 포함된 유전자의 관련 표현형을 보여주며, 드래그로 이동시켜 겹치지 않게 배치할 수 있습니다.
+Gene 페이지는soft/fuzzy Top-level MP module을 사용하므로 하나의 유전자가 여러module에 속할 수 있습니다. Phenotype 및Gene List 페이지에서는 연결 성분 기반`Similarity` module과`Top-level MP` module을 전환할 수 있습니다.
 
 ### 컨트롤 패널
 좌측 패널에서 네트워크 표시를 조정할 수 있습니다.
@@ -91,6 +94,7 @@ TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
 
 #### Effect size 필터
 `Effect size` 슬라이더로 사용 가능한 경우 IMPC-derived effect size의 크기에 따라 노드를 필터링합니다.
+누락된effect size는0으로 변환하지 않고 결측값으로 유지하며, 해당node는 흰색으로 표시합니다.
 > 이진 표현형(예: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 이진 목록은 [여기](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt))나 단일 유전자 입력 시에는 표시되지 않습니다.
 
 #### Genotype 지정
@@ -110,6 +114,9 @@ TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
 - `Late`(49주 이상)
 
 ### 마크업 패널
+#### Module 표시
+오른쪽panel에서module 정의와 표시할module을 선택할 수 있습니다. Module 경계를 숨겨도network의 유전자나edge는 제거되지 않습니다.
+
 #### Highlight: Human Disease
 IMPC Disease Models Portal 데이터를 사용해 질병 관련 유전자를 하이라이트합니다.
 
@@ -120,8 +127,7 @@ IMPC Disease Models Portal 데이터를 사용해 질병 관련 유전자를 하
 레이아웃, 폰트 크기, 엣지 두께, 노드 반발력(Cose 레이아웃)을 조정합니다.
 
 #### Export
-PNG/CSV/GraphML로 내보낼 수 있습니다.  
-CSV에는 모듈ID와各 유전자의 표현형 리스트가 포함되며, GraphML은 Cytoscape 호환입니다.
+PNG, JPG, SVG, CSV 또는GraphML로 내보낼 수 있습니다. PNG, JPG, SVG에는module frame을 포함할 수 있습니다. CSV에는현재 선택된Similarity 또는Top-level MP module 할당과표현형 목록이 포함되며, GraphML은Cytoscape와 호환됩니다.
 
 # 🛠 커맨드라인 인터페이스
 
@@ -436,37 +442,33 @@ KO 마우스의 P-value (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_
 
 ## 표현형 유사도
 
-TSUMUGI는 Phenodigm 유사 접근법을 채택합니다([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+TSUMUGI는Mammalian Phenotype Ontology 내에서IMPC KO 마우스 유전자의표현형profile을 비교하기 위해original PhenoDigm score 계산식([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025))을 적용합니다.
 
 > [!NOTE]
-> 원본 Phenodigm과의 차이는 다음과 같습니다.  
-> 1. **IC 5퍼센타일 미만의 용어는 IC=0으로 설정하여 지나치게 일반적인 표현형(예: embryo phenotype)을 평가하지 않습니다.**
-> 2. **유전형, 생애 단계, 성별 메타데이터 일치에 기반한 가중치를 적용합니다.**
+> TSUMUGI는PhenoDigm score 계산식을 사용하지만original cross-species HPO-MP/ZP OWLSim pipeline은 실행하지 않습니다. IMPC KO 마우스 유전자의MP annotation을 비교합니다.
 
 ### 1. MP 용어 쌍 유사도 정의
 
-* MP 온톨로지를 구축하고 각 용어의 Information Content (IC)를 계산합니다:  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   IC 5퍼센타일 미만의 용어는 IC=0으로 설정합니다.
+* MP ontology를 구축하고유의한IMPC annotation으로Information Content(IC)를 계산합니다:
+   `IC(term) = -log2(|term으로 전파된annotation| / |전체 유의annotation|)`
+   각direct annotation을annotated MP term과 모든ancestor로 전파합니다.
 
-* 각 MP 용어 쌍에 대해 가장 특이적인 공통 조상(MICA)을 찾고, 그 IC를 Resnik 유사도로 사용합니다.  
+* 각MP term pair에서annotation-derived IC가 가장 높은common ancestor를 찾습니다. 동률이면MP ontology에서transitive descendant가 가장 적은 후보를 먼저 선택하고, 그다음lexicographical order가 가장 작은MP term ID를 결정적으로 선택합니다. 선택한MICA의IC를Resnik similarity로 사용합니다. 이tie-break는similarity score와output schema를 변경하지 않습니다.
 
-* 두 MP 용어의 조상 집합에 대해 Jaccard 지수를 계산합니다.  
+* 두MP term에 대해term 자체와 모든ancestor로 정의된inferred attribute set의Jaccard index를 계산합니다.
 
 * MP 용어 쌍 유사도를 `sqrt(Resnik * Jaccard)`로 정의합니다.
 
-### 2. 표현형 메타데이터 일치에 따른 가중치
+### 2. 유전자 쌍 유사도 행렬
 
-* 유전형, 생애 단계, 성별 메타데이터에 따라 가중치를 적용합니다.
+* 각유전자 쌍에 대해term-pair score로MP term × MP term similarity matrix를 만듭니다.
 
-* 각 유전자 쌍에 대해 MP 용어 × MP 용어 유사도 행렬을 만듭니다.  
-
-* 유전형/생애 단계/성별의 일치 수가 0, 1, 2, 3일 때 가중치 0.2, 0.5, 0.75, 1.0을 곱합니다.
+* Genotype, life stage, sex metadata는shared-phenotype annotation에 유지되지만PhenoDigm score의 가중치로 사용하지 않습니다.
 
 ### 3. Phenodigm 스케일링
 
-* Phenodigm형 스케일링으로 각 KO 마우스의 표현형 유사도를 0–100으로 정규화합니다:  
-   관측된 최대/평균을 계산하고 이론적 최대/평균으로 정규화합니다.  
+* PhenoDigm maximum/average scaling으로각KO mouse gene-pair similarity를0–100으로 정규화합니다:
+   관측된best-match maximum/mean을 계산한 다음두유전자의symmetric optimal self-match score로 정규화합니다.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    분모가 0이면 점수는 0입니다.
 

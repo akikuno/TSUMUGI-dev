@@ -19,6 +19,8 @@
 Está disponible para cualquiera en la web👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
+Esta documentación describe el funcionamiento actual de **TSUMUGI v1.1.0**. La aplicación web pública utiliza datos de IMPC **Release 24.0**.
+
 **TSUMUGI (紡ぎ)** procede de “tejer los grupos génicos que forman los fenotipos”.
 
 # 📖 Cómo usar TSUMUGI
@@ -39,7 +41,7 @@ Símbolos según [MGI](http://www.informatics.jax.org/).
 Varios genes (uno por línea) para buscar **dentro de la lista**.  
 > [!CAUTION]  
 > Si no se encuentra ninguno: `No similar phenotypes were found among the entered genes.`  
-> Si hay más de 200: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> Si la red generada contiene 200 genes o más: `Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 Descarga de datos brutos
 TSUMUGI publica ficheros JSONL comprimidos con gzip.
@@ -81,6 +83,7 @@ La red se dibuja automáticamente según la entrada.
 **Nodos**: genes. Clic para ver fenotipos anómalos; arrastra para reubicar.  
 **Aristas**: clic para ver fenotipos compartidos.  
 **Módulos** delinean subredes génicas. Clic para listar fenotipos de los genes del módulo; arrastra para moverlos y evitar solaparse.
+Las páginas de genes usan módulos Top-level MP soft/fuzzy, por lo que un gen puede pertenecer a varios módulos. Las páginas de fenotipo y Gene List pueden alternar entre módulos `Similarity` basados en componentes conectados y módulos `Top-level MP`.
 
 ### Panel de control
 Ajusta la visualización desde el panel izquierdo.
@@ -91,6 +94,7 @@ Ajusta la visualización desde el panel izquierdo.
 
 #### Filtro por effect size
 `Effect size` filtra nodos por la magnitud del effect size derivado de IMPC cuando está disponible.
+Los effect sizes ausentes se mantienen como ausentes, no se convierten en cero, y sus nodos se muestran en blanco.
 > Oculto para fenotipos binarios (p. ej., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); lista binaria [aquí](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) o entrada de un solo gen.
 
 #### Especificar genotipo
@@ -109,6 +113,9 @@ Ajusta la visualización desde el panel izquierdo.
 - `Late` (49+ semanas)
 
 ### Panel de marcado
+#### Visualización de módulos
+En el panel derecho se pueden elegir la definición y el módulo visible. Los bordes de los módulos pueden ocultarse sin eliminar genes ni aristas de la red.
+
 #### Highlight: Human Disease
 Resalta genes ligados a enfermedad humana (IMPC Disease Models Portal).
 
@@ -119,7 +126,7 @@ Busca nombres de genes en la red.
 Ajusta layout, tamaño de fuente, grosor de aristas, repulsión de nodos (Cose).
 
 #### Export
-Exporta PNG/CSV/GraphML. CSV incluye IDs de módulo y listas de fenotipos; GraphML es compatible con Cytoscape.
+Exporta PNG, JPG, SVG, CSV o GraphML. Los marcos de módulo pueden incluirse en PNG, JPG y SVG. CSV registra la asignación activa de módulos Similarity o Top-level MP y las listas de fenotipos; GraphML es compatible con Cytoscape.
 
 # 🛠 Interfaz de línea de comandos
 
@@ -434,37 +441,33 @@ Extraemos pares gen–fenotipo cuyos P-values en ratón KO (`p_value`, `female_k
 
 ## Similitud fenotípica
 
-TSUMUGI adopta un enfoque tipo Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+TSUMUGI aplica la fórmula de puntuación original de PhenoDigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)) para comparar perfiles fenotípicos de genes de ratón KO de IMPC dentro de Mammalian Phenotype Ontology.
 
 > [!NOTE]
-> Las diferencias con el Phenodigm original son las siguientes.  
-> 1. **Los términos por debajo del percentil 5 de IC se fijan en IC=0, para no evaluar fenotipos demasiado generales (p. ej., embryo phenotype).**
-> 2. **Aplicamos una ponderación basada en coincidencias de metadatos: genotipo, etapa de vida y sexo.**
+> TSUMUGI utiliza la fórmula de puntuación de PhenoDigm, pero no ejecuta el pipeline original entre especies HPO-MP/ZP OWLSim. Compara anotaciones MP de genes de ratón KO de IMPC.
 
 ### 1. Definición de la similitud de pares de términos MP
 
-* Construir la ontología MP y calcular el Information Content (IC) para cada término:  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Los términos por debajo del percentil 5 de IC se fijan en IC=0.
+* Construir la ontología MP y calcular el Information Content (IC) a partir de anotaciones significativas de IMPC:
+   `IC(term) = -log2(|anotaciones propagadas al término| / |todas las anotaciones significativas|)`
+   Cada anotación directa se propaga al término MP anotado y a todos sus ancestros.
 
-* Para cada par de términos MP, encontrar el ancestro común más específico (MICA) y usar su IC como similitud de Resnik.  
+* Para cada par de términos MP, encontrar los ancestros comunes con el IC derivado de anotaciones más alto. Si hay empate, seleccionar de forma determinista el candidato con menos descendientes transitivos en la ontología MP y después el ID de término MP lexicográficamente menor. El IC del MICA seleccionado es la similitud de Resnik. Este desempate no cambia la puntuación de similitud ni el esquema de salida.
 
-* Para dos términos MP, calcular el índice de Jaccard de sus conjuntos de ancestros.  
+* Para dos términos MP, calcular el índice de Jaccard de sus conjuntos de atributos inferidos, definidos como cada término más todos sus ancestros.
 
 * Definir la similitud de pares de términos MP como `sqrt(Resnik * Jaccard)`.
 
-### 2. Ponderación por concordancia de metadatos fenotípicos
+### 2. Matriz de similitud de pares de genes
 
-* Aplicar pesos según los metadatos fenotípicos: genotipo, etapa de vida y sexo.
+* Para cada par de genes, construir una matriz de similitud término MP × término MP a partir de las puntuaciones de pares de términos.
 
-* Para cada par de genes, construir una matriz de similitud término MP × término MP.  
-
-* Multiplicar por pesos 0.2, 0.5, 0.75, 1.0 para 0, 1, 2, 3 coincidencias de genotipo/etapa de vida/sexo.
+* Los metadatos de genotipo, etapa de vida y sexo se conservan en las anotaciones de fenotipos compartidos, pero no ponderan la puntuación PhenoDigm.
 
 ### 3. Escalado Phenodigm
 
-* Aplicar un escalado tipo Phenodigm para normalizar la similitud fenotípica de cada ratón KO a 0–100:  
-   Calcular el máximo/la media observados y normalizar por el máximo/la media teóricos.  
+* Aplicar el escalado máximo/promedio de PhenoDigm para normalizar la similitud de cada par de genes de ratón KO a 0–100:
+   Calcular el máximo y la media de best match observados y normalizar por la puntuación óptima simétrica de self match de los dos genes.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    Si el denominador es 0, la puntuación es 0.
 

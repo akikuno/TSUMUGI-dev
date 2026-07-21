@@ -22,6 +22,8 @@ This web app is available to everyone online👇️
 
 🔗 https://larc-tsukuba.github.io/tsumugi/
 
+This documentation describes **TSUMUGI v1.1.0**. The public web app uses IMPC **Release 24.0** data.
+
 # 📖 How to Use TSUMUGI
 
 TSUMUGI supports three kinds of input.
@@ -43,7 +45,7 @@ Paste multiple genes (one per line). This extracts phenotypically similar genes 
 
 > [!CAUTION]  
 > If no similar genes are found: `No similar phenotypes were found among the entered genes.`  
-> If more than 200 similar genes are found: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> If the generated network contains 200 or more genes: `Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 Download data
 
@@ -87,7 +89,7 @@ The page transitions and draws the network automatically.
 ### Network panel
 **Nodes** represent genes. Click to see the list of abnormal phenotypes observed in that KO mouse; drag to rearrange positions.  
 **Edges** show shared phenotypes; click to view details.
-**Modules** outline subnetworks of genes. Click a module to list phenotypes involving its member genes; drag modules to reposition them and avoid overlap.
+**Modules** outline subnetworks of genes. Gene pages use soft/fuzzy Top-level MP modules, so one gene can belong to multiple modules. Phenotype and Gene List pages can switch between connected-component-based `Similarity` modules and `Top-level MP` modules. Click a module to list phenotypes involving its member genes; drag modules to reposition them and avoid overlap.
 
 ### Control panel
 Adjust network display from the left panel.
@@ -100,6 +102,8 @@ Adjust network display from the left panel.
 
 #### Filter by effect size
 `Effect size` slider filters nodes by the magnitude of the IMPC-derived effect size when available.
+
+Missing effect sizes remain missing rather than being converted to zero, and those nodes are shown in white.
 
 > [!NOTE]
 > Hidden for binary phenotypes (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binary list: 👉 [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or gene(s) input.
@@ -124,6 +128,9 @@ Filter by life stage in which phenotypes appear:
 
 ### Markup panel
 
+#### Module display
+Select the module definition and visible module from the right panel. Module borders can be shown or hidden without removing genes or edges from the network.
+
 #### Highlight: Human Disease
 Highlight genes linked to human disease (IMPC Disease Models Portal data).
 
@@ -134,8 +141,7 @@ Search gene names within the network.
 Adjust layout, font size, edge width, and node repulsion (Cose layout).
 
 #### Export
-Export the current network as PNG/CSV/GraphML.  
-CSV includes connected-component (module) IDs and phenotype lists per gene; GraphML is Cytoscape-compatible.
+Export the current network as PNG, JPG, SVG, CSV, or GraphML. Module frames can be included in PNG, JPG, and SVG files. CSV records the active similarity-module or Top-level MP-module assignments together with phenotype lists; GraphML is Cytoscape-compatible.
 
 # 🛠 Command-Line Interface (CLI)
 
