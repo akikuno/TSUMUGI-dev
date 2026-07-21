@@ -29,6 +29,7 @@ def select_targetted_genes(TEMPDIR: Path) -> set[str]:
 
 
 def _prepare_directories(output_dir: str | Path) -> None:
+    output_dir = Path(output_dir)
     Path(output_dir / "data" / "phenotype").mkdir(parents=True, exist_ok=True)
     Path(output_dir / "data" / "genesymbol").mkdir(parents=True, exist_ok=True)
     Path(output_dir / "data" / "genesymbol_modules").mkdir(parents=True, exist_ok=True)
@@ -92,6 +93,7 @@ def _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, outpu
     src_gene_dir = Path(TEMPDIR, "network", "genesymbol")
     src_gene_module_dir = Path(TEMPDIR, "network", "genesymbol_modules")
 
+    output_dir = Path(output_dir)
     dst_phenotype_dir = output_dir / "data" / "phenotype"
     dst_gene_dir = output_dir / "data" / "genesymbol"
     dst_gene_module_dir = output_dir / "data" / "genesymbol_modules"

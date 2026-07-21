@@ -112,7 +112,6 @@
   Issue: [#155](https://github.com/akikuno/TSUMUGI-dev/issues/155)  
 
 </details>
-<summary> v1.0.1 (2026-01-27) </summary>
 
 
 <details>
