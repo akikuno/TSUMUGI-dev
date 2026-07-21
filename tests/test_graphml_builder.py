@@ -1,4 +1,5 @@
 import pytest
+
 from TSUMUGI.subcommands import graphml_builder
 
 ###############################################################################

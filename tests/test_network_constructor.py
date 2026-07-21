@@ -581,7 +581,7 @@ def test_build_phenotype_network_json_requires_target_metadata_match(tmp_path):
     assert {node["data"]["id"] for node in node_items} == {"GeneA", "GeneB"}
 
 
-def test_build_phenotype_network_json_writes_empty_json_when_no_target_metadata_match(tmp_path):
+def test_build_phenotype_network_json_omits_file_when_no_target_metadata_match(tmp_path):
     genewise_phenotype_significants = [
         {
             "mp_term_name": "target phenotype",
@@ -612,6 +612,13 @@ def test_build_phenotype_network_json_writes_empty_json_when_no_target_metadata_
         }
     ]
 
+    output_file = tmp_path / "target_phenotype.json.gz"
+    with gzip.open(output_file, "wt", encoding="utf-8") as f:
+        json.dump([], f)
+    obsolete_file = tmp_path / "obsolete_phenotype.json.gz"
+    with gzip.open(obsolete_file, "wt", encoding="utf-8") as f:
+        json.dump([{"data": {"id": "ObsoleteGene"}}], f)
+
     network_constructor.build_phenotype_network_json(
         genewise_phenotype_significants,
         pairwise_similarity_annotations,
@@ -619,10 +626,5 @@ def test_build_phenotype_network_json_writes_empty_json_when_no_target_metadata_
         tmp_path,
     )
 
-    output_file = tmp_path / "target_phenotype.json.gz"
-    assert output_file.exists()
-
-    with gzip.open(output_file, "rt", encoding="utf-8") as f:
-        network_json = json.load(f)
-
-    assert network_json == []
+    assert not output_file.exists()
+    assert not obsolete_file.exists()

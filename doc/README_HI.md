@@ -424,7 +424,7 @@ CLI STDIN/STDOUT सपोर्ट करता है, इसलिए आप 
 
 ## डेटा स्रोत
 
-हम IMPC डेटासेट [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz` का उपयोग करते हैं।  
+हम IMPC डेटासेट [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz` का उपयोग करते हैं।
 डेटासेट कॉलम जानकारी: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## प्रीप्रोसेसिंग

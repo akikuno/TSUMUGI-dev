@@ -425,7 +425,7 @@ CLI는 STDIN/STDOUT을 지원하므로 파이프로 연결할 수 있습니다:
 
 ## 데이터 소스
 
-IMPC 데이터셋 [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`를 사용합니다.  
+IMPC 데이터셋 [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`를 사용합니다.
 데이터셋 컬럼 정보: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## 전처리

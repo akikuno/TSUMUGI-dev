@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import pytest
+
 from TSUMUGI.subcommands.sex_filterer import _filter_annotations_by_sex
 
 

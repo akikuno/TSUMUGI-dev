@@ -423,7 +423,7 @@ Die CLI unterstützt STDIN/STDOUT, sodass du Befehle verketten kannst:
 
 ## Datenquelle
 
-Wir verwenden den IMPC-Datensatz [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Wir verwenden den IMPC-Datensatz [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`.
 Spalten des Datensatzes: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Vorverarbeitung

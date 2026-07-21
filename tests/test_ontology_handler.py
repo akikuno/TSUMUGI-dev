@@ -1,4 +1,5 @@
 import pytest
+
 from TSUMUGI.ontology_handler import (
     build_term_hierarchy,
     find_all_ancestor_terms,

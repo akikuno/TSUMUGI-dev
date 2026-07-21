@@ -423,7 +423,7 @@ El CLI admite STDIN/STDOUT, así que puedes encadenar comandos:
 
 ## Fuente de datos
 
-Usamos el conjunto de datos IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Usamos el conjunto de datos IMPC [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`.
 Columnas del dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Preprocesamiento

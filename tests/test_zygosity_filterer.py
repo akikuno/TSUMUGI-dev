@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import pytest
+
 from TSUMUGI.subcommands.zygosity_filterer import _filter_annotations_by_zygosity
 
 

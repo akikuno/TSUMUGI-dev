@@ -517,7 +517,7 @@ tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewis
 
 ## データソース
 
-IMPCのデータセットは[Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results)の`statistical-results-ALL.csv.gz`を使用しています。  
+IMPCのデータセットは[Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results)の`statistical-results-ALL.csv.gz`を使用しています。
 データセットに含まれる列の情報はこちらです：[Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## 前処理

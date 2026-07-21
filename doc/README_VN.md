@@ -423,7 +423,7 @@ CLI hỗ trợ STDIN/STDOUT, vì vậy bạn có thể nối lệnh:
 
 ## Nguồn dữ liệu
 
-Chúng tôi dùng bộ dữ liệu IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Chúng tôi dùng bộ dữ liệu IMPC [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`.
 Thông tin cột dữ liệu: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Tiền xử lý

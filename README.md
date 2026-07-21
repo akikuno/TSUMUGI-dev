@@ -479,7 +479,7 @@ CLI supports STDIN/STDOUT, so you can chain commands:
 
 ## Data source
 
-We use the IMPC dataset [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+We use the IMPC dataset [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`.
 See dataset columns: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Preprocessing

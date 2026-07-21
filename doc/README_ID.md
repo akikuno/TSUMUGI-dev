@@ -423,7 +423,7 @@ CLI mendukung STDIN/STDOUT, sehingga Anda bisa merangkai perintah:
 
 ## Sumber data
 
-Kami menggunakan dataset IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Kami menggunakan dataset IMPC [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`.
 Kolom dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Pra-pemrosesan

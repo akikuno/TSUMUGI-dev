@@ -4,6 +4,7 @@ from io import StringIO
 from unittest.mock import patch
 
 import pytest
+
 from TSUMUGI.subcommands.mp_filterer import exclude_specific_phenotype, include_specific_phenotype
 
 

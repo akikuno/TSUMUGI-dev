@@ -585,6 +585,11 @@ def build_phenotype_network_json(
     binary_phenotypes: set[str] | None = None,
     hide_effect_size: bool = False,
 ) -> None:
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for existing_network in output_dir.glob("*.json.gz"):
+        existing_network.unlink()
+
     gene_records_map, pairwise_similarity_annotations_composed, disease_annotations_composed = _compose_dataset(
         genewise_phenotype_significants, pairwise_similarity_annotations, disease_annotations_by_gene
     )
@@ -628,7 +633,6 @@ def build_phenotype_network_json(
         )
 
         if not edges_json:
-            _write_network_json_gz([], output_json)
             continue
 
         # Remove unconnected nodes
@@ -638,7 +642,6 @@ def build_phenotype_network_json(
             connected_node_ids.add(edge["data"]["target"])
 
         if not connected_node_ids:
-            _write_network_json_gz([], output_json)
             continue
 
         nodes_json = _convert_to_nodes_json(

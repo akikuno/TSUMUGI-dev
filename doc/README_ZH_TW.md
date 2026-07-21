@@ -424,7 +424,7 @@ CLI支援STDIN/STDOUT，可串聯命令：
 
 ## 資料來源
 
-使用IMPC資料集[Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`。  
+使用IMPC資料集[Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`。
 資料欄位資訊：[Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## 前處理
