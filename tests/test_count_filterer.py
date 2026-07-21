@@ -1,5 +1,3 @@
-import pytest
-
 from TSUMUGI import argparser
 from TSUMUGI.subcommands import count_filterer
 

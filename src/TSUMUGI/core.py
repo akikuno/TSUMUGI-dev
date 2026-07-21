@@ -9,6 +9,7 @@ from datetime import date
 from pathlib import Path
 
 from TSUMUGI import (
+    gene_phenotype_module_builder,
     genewise_annotation_builder,
     io_handler,
     network_constructor,
@@ -16,6 +17,27 @@ from TSUMUGI import (
     report_generator,
     web_deployer,
 )
+
+WEB_MIN_SHARED_ANNOTATIONS = 3
+WEB_MIN_PHENOTYPE_SIMILARITY_SCORE = 1
+
+
+def _filter_pairwise_similarity_annotations_for_web(
+    pairwise_similarity_annotations: Iterator[dict[str, object]],
+    min_shared_annotations: int,
+    min_phenotype_similarity_score: int,
+) -> list[dict[str, object]]:
+    """Filter pairwise annotations before building web network JSON files."""
+    selected_records: list[dict[str, object]] = []
+    for record in pairwise_similarity_annotations:
+        shared_annotations = record.get("phenotype_shared_annotations", [])
+        phenotype_similarity_score = int(record.get("phenotype_similarity_score", 0))
+        if (
+            len(shared_annotations) >= min_shared_annotations
+            and phenotype_similarity_score >= min_phenotype_similarity_score
+        ):
+            selected_records.append(record)
+    return selected_records
 
 
 def run_pipeline(args) -> None:
@@ -75,20 +97,31 @@ def run_pipeline(args) -> None:
         )
 
         path_pairwise_similarity_annotations = ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz"
-        io_handler.write_jsonl(pairwise_similarity_annotations, path_pairwise_similarity_annotations)
+        io_handler.write_jsonl(
+            pairwise_similarity_annotations,
+            path_pairwise_similarity_annotations,
+            compresslevel=9,
+        )
 
         ###########################################################
         # Generate network
         ###########################################################
         logging.info("Generating phenotype and gene networks...")
 
-        MIN_NUM_PHENOTYPES = 3
-
         pairwise_similarity_annotations = io_handler.read_jsonl(path_pairwise_similarity_annotations)
 
-        pairwise_similarity_annotations_with_shared_phenotype = [
-            r for r in pairwise_similarity_annotations if len(r["phenotype_shared_annotations"]) >= MIN_NUM_PHENOTYPES
-        ]
+        pairwise_similarity_annotations_with_shared_phenotype = _filter_pairwise_similarity_annotations_for_web(
+            pairwise_similarity_annotations,
+            min_shared_annotations=WEB_MIN_SHARED_ANNOTATIONS,
+            min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+        )
+        logging.info(
+            "Selected %d pairwise records for web networks with shared_annotations >= %d and "
+            "phenotype_similarity_score >= %d",
+            len(pairwise_similarity_annotations_with_shared_phenotype),
+            WEB_MIN_SHARED_ANNOTATIONS,
+            WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+        )
 
         logging.info("Building phenotype network JSON files...")
 
@@ -96,7 +129,7 @@ def run_pipeline(args) -> None:
         binary_phenotypes = set()
         phenotype_effects = defaultdict(set)
         for rec in genewise_phenotype_significants:
-            phenotype_effects[rec["mp_term_name"]].add(rec.get("effect_size", 0))
+            phenotype_effects[rec["mp_term_name"]].add(rec.get("effect_size", float("nan")))
         for mp_term_name, effects in phenotype_effects.items():
             if effects and all(es in (0, 1) for es in effects):
                 binary_phenotypes.add(mp_term_name)
@@ -122,6 +155,15 @@ def run_pipeline(args) -> None:
             output_dir,
         )
 
+        logging.info("Building gene phenotype module JSON files...")
+        gene_phenotype_module_builder.build_gene_phenotype_module_json(
+            pairwise_similarity_annotations_with_shared_phenotype,
+            ontology_terms,
+            Path(TEMPDIR / "network" / "genesymbol"),
+            Path(TEMPDIR / "network" / "genesymbol_modules"),
+            Path(ROOT_DIR / "gene_phenotype_module_summary.csv"),
+        )
+
         del pairwise_similarity_annotations_with_shared_phenotype
         del disease_annotations_by_gene
 
@@ -136,6 +178,26 @@ def run_pipeline(args) -> None:
         with open(TEMPDIR / "preprocessed" / "genewise_phenotype_significants.pkl", "rb") as f:
             genewise_phenotype_significants = pickle.load(f)
 
+        gene_network_dir = Path(TEMPDIR / "network" / "genesymbol")
+        gene_module_dir = Path(TEMPDIR / "network" / "genesymbol_modules")
+        path_pairwise_similarity_annotations = ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz"
+        has_gene_modules = gene_module_dir.exists() and any(gene_module_dir.glob("*.json.gz"))
+        if gene_network_dir.exists() and path_pairwise_similarity_annotations.exists() and not has_gene_modules:
+            logging.info("Building gene phenotype module JSON files for debug web...")
+            pairwise_similarity_annotations = io_handler.read_jsonl(path_pairwise_similarity_annotations)
+            pairwise_similarity_annotations_with_shared_phenotype = _filter_pairwise_similarity_annotations_for_web(
+                pairwise_similarity_annotations,
+                min_shared_annotations=WEB_MIN_SHARED_ANNOTATIONS,
+                min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+            )
+            gene_phenotype_module_builder.build_gene_phenotype_module_json(
+                pairwise_similarity_annotations_with_shared_phenotype,
+                ontology_terms,
+                gene_network_dir,
+                gene_module_dir,
+                Path(ROOT_DIR / "gene_phenotype_module_summary.csv"),
+            )
+
     output_dir = Path(TEMPDIR, "webapp")
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -145,6 +207,10 @@ def run_pipeline(args) -> None:
     report_generator.write_available_mp_terms_json(TEMPDIR, available_mp_terms_json)
     report_generator.write_mp_term_id_lookup(
         genewise_phenotype_significants, available_mp_terms_json, Path(output_dir / "mp_term_id_lookup.json")
+    )
+    gene_phenotype_module_builder.write_mp_top_level_module_lookup_json(
+        ontology_terms,
+        Path(output_dir / "mp_top_level_module_lookup.json"),
     )
 
     # binary phenotypes

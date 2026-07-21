@@ -153,11 +153,11 @@ def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
                 yield json.loads(line)
 
 
-def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None) -> None:
+def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None, compresslevel: int = 9) -> None:
     """
     Write an iterable of records as JSONL (.jsonl or .jsonl.gz).
 
-    If the filename ends with .gz, use gzip compression (level=9).
+    If the filename ends with .gz, use gzip compression.
     """
     p = Path(path_jsonl)
 
@@ -165,7 +165,7 @@ def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None) -> None:
         return open(path, mode, encoding=encoding)
 
     def open_gzip_file(path: Path, mode: str, encoding: str):
-        return gzip.open(path, mode, encoding=encoding, compresslevel=9)
+        return gzip.open(path, mode, encoding=encoding, compresslevel=compresslevel)
 
     open_func = open_gzip_file if p.suffix == ".gz" else open_text_file
 

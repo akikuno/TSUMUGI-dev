@@ -29,8 +29,10 @@ def select_targetted_genes(TEMPDIR: Path) -> set[str]:
 
 
 def _prepare_directories(output_dir: str | Path) -> None:
+    output_dir = Path(output_dir)
     Path(output_dir / "data" / "phenotype").mkdir(parents=True, exist_ok=True)
     Path(output_dir / "data" / "genesymbol").mkdir(parents=True, exist_ok=True)
+    Path(output_dir / "data" / "genesymbol_modules").mkdir(parents=True, exist_ok=True)
 
 
 def _generate_index_html(output_dir: str | Path, TSUMUGI_VERSION: str) -> None:
@@ -89,12 +91,16 @@ def _copy_directories(output_dir: str | Path) -> None:
 def _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, output_dir: str | Path) -> None:
     src_phenotype_dir = Path(TEMPDIR, "network", "phenotype")
     src_gene_dir = Path(TEMPDIR, "network", "genesymbol")
+    src_gene_module_dir = Path(TEMPDIR, "network", "genesymbol_modules")
 
+    output_dir = Path(output_dir)
     dst_phenotype_dir = output_dir / "data" / "phenotype"
     dst_gene_dir = output_dir / "data" / "genesymbol"
+    dst_gene_module_dir = output_dir / "data" / "genesymbol_modules"
 
     dst_phenotype_dir.mkdir(parents=True, exist_ok=True)
     dst_gene_dir.mkdir(parents=True, exist_ok=True)
+    dst_gene_module_dir.mkdir(parents=True, exist_ok=True)
 
     for pheno in targetted_phenotypes:
         pheno = pheno.replace(" ", "_")
@@ -106,6 +112,10 @@ def _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, outpu
         src_file = src_gene_dir / f"{gene}.json.gz"
         if src_file.exists():
             shutil.copy(src_file, dst_gene_dir / src_file.name)
+
+        module_file = src_gene_module_dir / f"{gene}.json.gz"
+        if module_file.exists():
+            shutil.copy(module_file, dst_gene_module_dir / module_file.name)
 
 
 def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
@@ -119,6 +129,7 @@ def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
         Path(TEMPDIR, "webapp", "marker_symbol_accession_id.json"): data_dir / "marker_symbol_accession_id.json",
         Path(TEMPDIR, "webapp", "binary_phenotypes.txt"): data_dir / "binary_phenotypes.txt",
         Path(TEMPDIR, "webapp", "mp_term_id_lookup.json"): data_dir / "mp_term_id_lookup.json",
+        Path(TEMPDIR, "webapp", "mp_top_level_module_lookup.json"): data_dir / "mp_top_level_module_lookup.json",
         Path(ROOT_DIR / "genewise_phenotype_annotations.jsonl.gz"): data_dir
         / "genewise_phenotype_annotations.jsonl.gz",
         Path(ROOT_DIR / "pairwise_similarity_annotations.jsonl.gz"): data_dir

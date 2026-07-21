@@ -60,11 +60,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         required=True,
         help=(
-            "Path to IMPC statistical_results_ALL.csv file.\n"
+            "Path to the IMPC Release 24.0 statistical-results-ALL.csv or statistical-results-ALL.csv.gz file.\n"
             "This file contains statistical test results (effect sizes, p-values, etc.) "
             "for all IMPC phenotyping experiments.\n"
             "If not available, download 'statistical-results-ALL.csv.gz' manually from:\n"
-            "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/latest/TSUMUGI-results/"
+            "https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/"
+            "release-24.0/results/statistical-results-ALL.csv.gz"
         ),
     )
 
@@ -101,7 +102,6 @@ def build_parser() -> argparse.ArgumentParser:
         default=1,
         help=("Number of threads to use for TSUMUGI pipeline.\nIf not specified, defaults to 1.\n"),
     )
-
     # Debug options (hidden) to retain temporary files
     run.add_argument(
         "--debug",

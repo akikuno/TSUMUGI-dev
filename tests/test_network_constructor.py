@@ -1,6 +1,23 @@
 import copy
+import gzip
+import json
+import math
 
 from TSUMUGI import network_constructor
+
+
+def _phenotype_annotation(
+    mp_term_name,
+    zygosity="Homo",
+    life_stage="Early",
+    sexual_dimorphism="Female",
+):
+    return {
+        "mp_term_name": mp_term_name,
+        "zygosity": zygosity,
+        "life_stage": life_stage,
+        "sexual_dimorphism": sexual_dimorphism,
+    }
 
 
 def test_convert_to_nodes_json():
@@ -49,7 +66,7 @@ def test_convert_to_nodes_json():
         mp_term_name,
         gene_records_map,
         disease_annotations_composed,
-        hide_severity=False,
+        hide_effect_size=False,
     )
     expected = [
         {
@@ -81,6 +98,37 @@ def test_convert_to_nodes_json():
     expected.sort(key=lambda x: x["data"]["id"])
 
     assert nodes_json == expected
+
+
+def test_convert_to_nodes_json_marks_nan_effect_size_for_white_display():
+    connected_node_ids = {"GeneA", "GeneB"}
+    mp_term_name = "increased circulating creatinine level"
+    gene_records_map = {
+        "GeneA": [
+            {
+                "mp_term_name": mp_term_name,
+                "effect_size": float("nan"),
+                "mp_term_name_with_metadata": f"{mp_term_name} (Homo, Early)",
+            }
+        ],
+        "GeneB": [
+            {
+                "mp_term_name": mp_term_name,
+                "effect_size": 43.5261880802177,
+                "mp_term_name_with_metadata": f"{mp_term_name} (Homo, Early)",
+            }
+        ],
+    }
+
+    nodes_json = network_constructor._convert_to_nodes_json(connected_node_ids, mp_term_name, gene_records_map, {})
+    node_colors = {node["data"]["id"]: node["data"]["node_color"] for node in nodes_json}
+    missing_effect_size = {node["data"]["id"]: node["data"].get("effect_size_missing", False) for node in nodes_json}
+
+    assert node_colors["GeneA"] == 1
+    assert node_colors["GeneB"] == 100
+    assert missing_effect_size["GeneA"] is True
+    assert missing_effect_size["GeneB"] is False
+    assert all(math.isfinite(color) for color in node_colors.values())
 
 
 def test_compose_genewise_phenotype_significants():
@@ -206,3 +254,377 @@ def test_scale_phenotype_similarity_scores_target_gene_only():
 
     assert scaled[("GeneA", "GeneB")]["phenotype_similarity_score"] == 1
     assert scaled[("GeneA", "GeneC")]["phenotype_similarity_score"] == 100
+
+
+def test_convert_to_edges_json_requires_target_metadata_match():
+    related_genes = {"GeneA", "GeneB", "GeneC", "GeneD"}
+    required_shared_annotations = {"target phenotype (Homo, Early, Female)"}
+    pairwise_similarity_annotations = {
+        ("GeneA", "GeneB"): {
+            "phenotype_shared_annotations": [
+                "similar phenotype (Homo, Early)",
+                "target phenotype (Homo, Early, Female)",
+            ],
+            "phenotype_similarity_score": 10,
+        },
+        ("GeneA", "GeneC"): {
+            "phenotype_shared_annotations": [
+                "similar phenotype (Homo, Early)",
+                "target phenotype (Homo, Early, Male)",
+            ],
+            "phenotype_similarity_score": 100,
+        },
+        ("GeneA", "GeneD"): {
+            "phenotype_shared_annotations": [
+                "similar phenotype (Homo, Early)",
+            ],
+            "phenotype_similarity_score": 100,
+        },
+    }
+
+    edges_json = network_constructor._convert_to_edges_json(
+        related_genes,
+        pairwise_similarity_annotations,
+        required_shared_annotations=required_shared_annotations,
+    )
+
+    assert len(edges_json) == 1
+    assert edges_json[0]["data"]["source"] == "GeneA"
+    assert edges_json[0]["data"]["target"] == "GeneB"
+    assert edges_json[0]["data"]["edge_size"] == 100
+    assert edges_json[0]["data"]["phenotype"] == [
+        "similar phenotype (Homo, Early)",
+        "target phenotype (Homo, Early, Female)",
+    ]
+
+
+def test_convert_to_edges_json_allows_any_target_metadata_variant():
+    related_genes = {"GeneA", "GeneB", "GeneC", "GeneD"}
+    required_shared_annotations = {
+        "target phenotype (Homo, Early, Female)",
+        "target phenotype (Hetero, Late)",
+    }
+    pairwise_similarity_annotations = {
+        ("GeneA", "GeneB"): {
+            "phenotype_shared_annotations": ["target phenotype (Homo, Early, Female)"],
+            "phenotype_similarity_score": 10,
+        },
+        ("GeneC", "GeneD"): {
+            "phenotype_shared_annotations": ["target phenotype (Hetero, Late)"],
+            "phenotype_similarity_score": 20,
+        },
+        ("GeneA", "GeneC"): {
+            "phenotype_shared_annotations": ["target phenotype (Homo, Early, Male)"],
+            "phenotype_similarity_score": 100,
+        },
+    }
+
+    edges_json = network_constructor._convert_to_edges_json(
+        related_genes,
+        pairwise_similarity_annotations,
+        required_shared_annotations=required_shared_annotations,
+    )
+
+    assert [(edge["data"]["source"], edge["data"]["target"]) for edge in edges_json] == [
+        ("GeneA", "GeneB"),
+        ("GeneC", "GeneD"),
+    ]
+
+
+def test_find_optimal_scores_ignores_non_target_metadata_pairs():
+    related_genes = {"GeneA", "GeneB", "GeneC", "GeneD"}
+    required_shared_annotations = {"target phenotype (Homo, Early, Female)"}
+    pairwise_similarity_annotations = {
+        ("GeneA", "GeneB"): {
+            "phenotype_shared_annotations": ["target phenotype (Homo, Early, Female)"],
+            "phenotype_similarity_score": 10,
+        },
+        ("GeneC", "GeneD"): {
+            "phenotype_shared_annotations": ["target phenotype (Homo, Early, Male)"],
+            "phenotype_similarity_score": 100,
+        },
+    }
+
+    optimal_score = network_constructor._find_optimal_scores(
+        [10, 100],
+        related_genes,
+        pairwise_similarity_annotations,
+        required_shared_annotations=required_shared_annotations,
+        low_threshold=2,
+        high_threshold=2,
+    )
+
+    assert optimal_score == 10
+
+
+def test_build_pairwise_adjacency_index_indexes_both_genes():
+    pairwise_similarity_annotations = {
+        ("GeneA", "GeneB"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 10},
+        ("GeneA", "GeneC"): {"phenotype_shared_annotations": ["P2"], "phenotype_similarity_score": 20},
+    }
+
+    adjacency_index = network_constructor._build_pairwise_adjacency_index(pairwise_similarity_annotations)
+
+    assert adjacency_index["GeneA"] == [("GeneA", "GeneB"), ("GeneA", "GeneC")]
+    assert adjacency_index["GeneB"] == [("GeneA", "GeneB")]
+    assert adjacency_index["GeneC"] == [("GeneA", "GeneC")]
+
+
+def test_filter_related_genes_with_candidate_pairs_matches_full_scan(monkeypatch):
+    monkeypatch.setattr(network_constructor, "MAX_GENE_COUNT", 2)
+    records = [
+        {"marker_symbol": "GeneA", "effect_size": 1.0},
+        {"marker_symbol": "GeneB", "effect_size": 1.0},
+        {"marker_symbol": "GeneC", "effect_size": 1.0},
+        {"marker_symbol": "GeneD", "effect_size": 1.0},
+    ]
+    related_genes = {"GeneA", "GeneB", "GeneC", "GeneD"}
+    pairwise_similarity_annotations = {
+        ("GeneA", "GeneB"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 10},
+        ("GeneA", "GeneC"): {"phenotype_shared_annotations": ["P1", "P2", "P3"], "phenotype_similarity_score": 30},
+        ("GeneB", "GeneC"): {"phenotype_shared_annotations": ["P1", "P2"], "phenotype_similarity_score": 20},
+        ("GeneC", "GeneD"): {
+            "phenotype_shared_annotations": ["P1", "P2", "P3", "P4"],
+            "phenotype_similarity_score": 40,
+        },
+    }
+
+    full_scan_genes = network_constructor._filter_related_genes(
+        records,
+        related_genes,
+        pairwise_similarity_annotations,
+        is_gene_network=True,
+    )
+    candidate_pair_genes = network_constructor._filter_related_genes(
+        records,
+        related_genes,
+        pairwise_similarity_annotations,
+        is_gene_network=True,
+        candidate_pairs=list(pairwise_similarity_annotations.keys()),
+    )
+
+    assert candidate_pair_genes == full_scan_genes
+
+
+def test_filter_related_genes_ranks_only_target_metadata_matching_pairs(monkeypatch):
+    monkeypatch.setattr(network_constructor, "MAX_GENE_COUNT", 2)
+    records = [
+        {"marker_symbol": "GeneA", "effect_size": 1.0},
+        {"marker_symbol": "GeneB", "effect_size": 2.0},
+        {"marker_symbol": "GeneC", "effect_size": 100.0},
+        {"marker_symbol": "GeneD", "effect_size": 200.0},
+    ]
+    related_genes = {"GeneA", "GeneB", "GeneC", "GeneD"}
+    required_shared_annotations = {"target phenotype (Homo, Early, Female)"}
+    pairwise_similarity_annotations = {
+        ("GeneA", "GeneB"): {
+            "phenotype_shared_annotations": ["target phenotype (Homo, Early, Female)"],
+            "phenotype_similarity_score": 10,
+        },
+        ("GeneC", "GeneD"): {
+            "phenotype_shared_annotations": ["target phenotype (Homo, Early, Male)"],
+            "phenotype_similarity_score": 100,
+        },
+    }
+
+    filtered_genes = network_constructor._filter_related_genes(
+        records,
+        related_genes,
+        pairwise_similarity_annotations,
+        required_shared_annotations=required_shared_annotations,
+    )
+    filtered_genes_with_candidates = network_constructor._filter_related_genes(
+        records,
+        related_genes,
+        pairwise_similarity_annotations,
+        required_shared_annotations=required_shared_annotations,
+        candidate_pairs=list(pairwise_similarity_annotations.keys()),
+    )
+
+    assert filtered_genes == {"GeneA", "GeneB"}
+    assert filtered_genes_with_candidates == {"GeneA", "GeneB"}
+
+
+def test_build_gene_network_json_uses_indexed_induced_pairs(tmp_path):
+    genewise_phenotype_significants = [
+        {
+            "mp_term_name": "phenotype 1",
+            "marker_symbol": gene,
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "None",
+            "effect_size": 1.0,
+        }
+        for gene in ["GeneA", "GeneB", "GeneC"]
+    ]
+    pairwise_similarity_annotations = [
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": [_phenotype_annotation("phenotype 1", sexual_dimorphism="None")],
+            "phenotype_similarity_score": 10,
+        },
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneC",
+            "phenotype_shared_annotations": [_phenotype_annotation("phenotype 1", sexual_dimorphism="None")],
+            "phenotype_similarity_score": 20,
+        },
+        {
+            "gene1_symbol": "GeneB",
+            "gene2_symbol": "GeneC",
+            "phenotype_shared_annotations": [_phenotype_annotation("phenotype 1", sexual_dimorphism="None")],
+            "phenotype_similarity_score": 30,
+        },
+    ]
+
+    network_constructor.build_gene_network_json(
+        genewise_phenotype_significants,
+        pairwise_similarity_annotations,
+        {},
+        tmp_path,
+    )
+
+    with gzip.open(tmp_path / "GeneA.json.gz", "rt", encoding="utf-8") as f:
+        network_json = json.load(f)
+
+    edge_pairs = {
+        (element["data"]["source"], element["data"]["target"])
+        for element in network_json
+        if "source" in element["data"]
+    }
+
+    assert edge_pairs == {("GeneA", "GeneB"), ("GeneA", "GeneC"), ("GeneB", "GeneC")}
+
+
+def test_build_phenotype_network_json_requires_target_metadata_match(tmp_path):
+    genewise_phenotype_significants = [
+        {
+            "mp_term_name": "target phenotype",
+            "marker_symbol": "GeneA",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Female",
+            "effect_size": 1.0,
+        },
+        {
+            "mp_term_name": "target phenotype",
+            "marker_symbol": "GeneB",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Female",
+            "effect_size": 2.0,
+        },
+        {
+            "mp_term_name": "target phenotype",
+            "marker_symbol": "GeneC",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Female",
+            "effect_size": 3.0,
+        },
+        {
+            "mp_term_name": "target phenotype",
+            "marker_symbol": "GeneD",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Female",
+            "effect_size": 4.0,
+        },
+    ]
+    pairwise_similarity_annotations = [
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": [
+                _phenotype_annotation("target phenotype", sexual_dimorphism="Female"),
+                _phenotype_annotation("similar phenotype", sexual_dimorphism="None"),
+            ],
+            "phenotype_similarity_score": 10,
+        },
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneC",
+            "phenotype_shared_annotations": [
+                _phenotype_annotation("target phenotype", sexual_dimorphism="Male"),
+                _phenotype_annotation("similar phenotype", sexual_dimorphism="None"),
+            ],
+            "phenotype_similarity_score": 100,
+        },
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneD",
+            "phenotype_shared_annotations": [
+                _phenotype_annotation("similar phenotype", sexual_dimorphism="None"),
+            ],
+            "phenotype_similarity_score": 100,
+        },
+    ]
+
+    network_constructor.build_phenotype_network_json(
+        genewise_phenotype_significants,
+        pairwise_similarity_annotations,
+        {},
+        tmp_path,
+    )
+
+    output_file = tmp_path / "target_phenotype.json.gz"
+    assert output_file.exists()
+
+    with gzip.open(output_file, "rt", encoding="utf-8") as f:
+        network_json = json.load(f)
+
+    edge_items = [item for item in network_json if "source" in item["data"]]
+    node_items = [item for item in network_json if "source" not in item["data"]]
+
+    assert [(edge["data"]["source"], edge["data"]["target"]) for edge in edge_items] == [("GeneA", "GeneB")]
+    assert {node["data"]["id"] for node in node_items} == {"GeneA", "GeneB"}
+
+
+def test_build_phenotype_network_json_omits_file_when_no_target_metadata_match(tmp_path):
+    genewise_phenotype_significants = [
+        {
+            "mp_term_name": "target phenotype",
+            "marker_symbol": "GeneA",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Female",
+            "effect_size": 1.0,
+        },
+        {
+            "mp_term_name": "target phenotype",
+            "marker_symbol": "GeneB",
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "Female",
+            "effect_size": 2.0,
+        },
+    ]
+    pairwise_similarity_annotations = [
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": [
+                _phenotype_annotation("target phenotype", sexual_dimorphism="Male"),
+                _phenotype_annotation("similar phenotype", sexual_dimorphism="None"),
+            ],
+            "phenotype_similarity_score": 100,
+        }
+    ]
+
+    output_file = tmp_path / "target_phenotype.json.gz"
+    with gzip.open(output_file, "wt", encoding="utf-8") as f:
+        json.dump([], f)
+    obsolete_file = tmp_path / "obsolete_phenotype.json.gz"
+    with gzip.open(obsolete_file, "wt", encoding="utf-8") as f:
+        json.dump([{"data": {"id": "ObsoleteGene"}}], f)
+
+    network_constructor.build_phenotype_network_json(
+        genewise_phenotype_significants,
+        pairwise_similarity_annotations,
+        {},
+        tmp_path,
+    )
+
+    assert not output_file.exists()
+    assert not obsolete_file.exists()

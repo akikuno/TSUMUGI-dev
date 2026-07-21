@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from collections.abc import Generator, Iterable, Iterator
 from itertools import groupby
 from operator import itemgetter
@@ -13,6 +14,15 @@ def subset_columns(records: Iterator[dict[str, str]], columns: set[str]) -> Gene
 ###########################################################
 # Others
 ###########################################################
+
+
+def _effect_size_sort_key(record: dict[str, str | float]) -> float:
+    value = record.get("effect_size")
+    try:
+        effect_size = float(value)
+    except (TypeError, ValueError):
+        return float("-inf")
+    return effect_size if math.isfinite(effect_size) else float("-inf")
 
 
 def distinct_records_with_max_effect(
@@ -30,7 +40,5 @@ def distinct_records_with_max_effect(
     records_sorted = sorted(records, key=record_key_getter)
 
     for _, group in groupby(records_sorted, key=record_key_getter):
-        # Find the record with the maximum effect_size within the group.
-        # Use .get() to safely handle cases where the 'effect_size' key might be missing.
-        record_with_max_effect = max(group, key=lambda r: r.get("effect_size", -1))
+        record_with_max_effect = max(group, key=_effect_size_sort_key)
         yield record_with_max_effect

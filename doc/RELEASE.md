@@ -13,14 +13,77 @@
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 -->
 
-<!-- = TODO ====
-- [x] 遺伝子aが検索リストに出てこない #86
-- [x] Enable the exclusion or extraction of specific phenotypes from the network #36
--->
+
+## v1.1.0 (2026-07-22)
+
+### 🖼️ User Interface
+
+- Add a toggle to show or hide module borders in visualizations  
+  Issue: [#168](https://github.com/akikuno/TSUMUGI-dev/issues/168)  
+
+
+- Optimize large Gene page network rendering without reducing graph data  
+  Issue: [#172](https://github.com/akikuno/TSUMUGI-dev/issues/172)  
+
+- Add soft/fuzzy phenotype modules to the Gene page
+  Issue: [#173](https://github.com/akikuno/TSUMUGI-dev/issues/173)  
+
+- Fix layout selection and prevent excessive node spacing  
+  Issue: [#174](https://github.com/akikuno/TSUMUGI-dev/issues/174)  
+
+- Add module display switching to Phenotype and Gene List pages  
+  Issue: [#175](https://github.com/akikuno/TSUMUGI-dev/issues/175)  
+
+
+- Filter Phenotype page edges by exact target phenotype annotation  
+  Issue: [#176](https://github.com/akikuno/TSUMUGI-dev/issues/176)  
+
+
+- Reduce raster export scale and guard large module frame exports  
+  Issue: [#179](https://github.com/akikuno/TSUMUGI-dev/issues/179)  
+
+
+
+### 🚀 Performance
+
+- Speed up pairwise phenotype ancestor pruning  
+  Issue: [#171](https://github.com/akikuno/TSUMUGI-dev/issues/171)  
+
+
+### 🐛 Bug Fixes
+
+- Align Phenodigm calculation with the original paper  
+  Issue: [#170](https://github.com/akikuno/TSUMUGI-dev/issues/170)  
+
+- Make MICA tie-breaking deterministic using ontology descendant counts  
+  Issue: [#180](https://github.com/akikuno/TSUMUGI-dev/issues/180)  
+
+
+### 🔧 Maintenance
+
+- Handle missing IMPC effect_size values as NaN instead of 0 in TSUMUGI records
+  Issue: [#165](https://github.com/akikuno/TSUMUGI-dev/issues/165)  
+
+### 📝 Documentation
+
+- Standardize “Severity” terminology to “Effect size” in TSUMUGI  
+  Issue: [#177](https://github.com/akikuno/TSUMUGI-dev/issues/177)  
 
 <!-- ############################################################ # -->
 
-## v1.0.2 (2026-02-03)
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+<details>
+<summary> v1.0.2 (2026-02-03) </summary>
 
 #### 🐛 Bug Fixes
 
@@ -48,16 +111,7 @@
 - Require explicit --genewise or --pairwise option for tsumugi genes and mp commands.  
   Issue: [#155](https://github.com/akikuno/TSUMUGI-dev/issues/155)  
 
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
 </details>
-============================================================= -->
 
 
 <details>
@@ -135,7 +189,7 @@
   Issue: [#137](https://github.com/akikuno/TSUMUGI-dev/issues/137)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/aa2d430)]  
 
-- Hide phenotype severity scale and legend for binary phenotypes.  
+- Hide the effect-size scale and legend for binary phenotypes.
   Issue: [#138](https://github.com/akikuno/TSUMUGI-dev/issues/138)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/dd2bfc3)]  
 
@@ -234,7 +288,7 @@
 
 ### 🌟 New Features
 
-- Expanded the phenotype similarity and severity scales from 0–10 to 1–100 so users get Phenodigm-level precision when scoring networks.  
+- Expanded the phenotype similarity and effect-size scales from 0–10 to 1–100 so users get Phenodigm-level precision when scoring networks.
   Issue: [#119](https://github.com/akikuno/TSUMUGI-dev/issues/119)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/91309d636ecaf285aeaaeca9320408b23bb1a3db)]  
 
@@ -262,7 +316,7 @@
 
 ### 🖼️ User Interface
 
-- Add Phenotype Severity and Similarity Scores to Network Tooltips  
+- Add Effect Size and Similarity Scores to Network Tooltips
   Issue: [#107](https://github.com/akikuno/TSUMUGI-dev/issues/107)  
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/pull/107)]  
 
@@ -451,7 +505,7 @@
 
 ### 🐛 Bug Fixes
 
-- Adjust the severity slider behavior to always keep at least one gene pair visible, even at minimum or maximum values.  
+- Adjust the effect-size slider behavior to always keep at least one gene pair visible, even at minimum or maximum values.
   Issue: [#72](https://github.com/akikuno/TSUMUGI-dev/issues/72)  
   [Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/ce38b815c65db3a7e4c80191160fdd0aaa980944)
 
@@ -526,7 +580,7 @@
 
 ### 🐛 Bug Fixes
 
-- Fix to show sliders for phenotype severity. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/311a708d9da6fe8947bda1e4ca1fba29dc0df428)]
+- Fix to show sliders for effect size. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/311a708d9da6fe8947bda1e4ca1fba29dc0df428)]
 
 ### 🔧 Maintenance
 
@@ -556,7 +610,7 @@
 
 - Modify the slider text and numbers to be displayed in a single column. [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/f08ddd42691819dd28b821f4b9dc836c5184c066)]
 
-- Hide the Phenotype severity slider if the phenotype is binary (all effect sizes are 1). Issue [#46](https://github.com/akikuno/TSUMUGI-dev/issues/46) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/5d5d6a9ba7462fcb31ed746e01de503917577089)]
+- Hide the Effect size slider if the phenotype is binary (all effect sizes are 1). Issue [#46](https://github.com/akikuno/TSUMUGI-dev/issues/46) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/5d5d6a9ba7462fcb31ed746e01de503917577089)]
 
 ### 🔧 Maintenanc
 
@@ -602,7 +656,7 @@
 
 - Change the placeholder of TSUMUGI. Issue: #32 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/5a1bc947321d5ccb781598fa2ec14731709536e8)]
 
-- Change "Similarity of accessory phenotypes" and "Severity of target phenotype" to "Phenotypes similarity" and "Phenotype severity". Issue: #35 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/48ffcb470c2ab6d77b9b5074ef3cbbb2a1726abd)]
+- Change "Similarity of accessory phenotypes" and "Effect size of target phenotype" to "Phenotypes similarity" and "Effect size". Issue: #35 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/48ffcb470c2ab6d77b9b5074ef3cbbb2a1726abd)]
 
 ### 🔧 Maintenance
 

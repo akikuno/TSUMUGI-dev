@@ -19,6 +19,8 @@
 यह वेब पर सभी के लिए उपलब्ध है👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
+यह दस्तावेज़ **TSUMUGI v1.1.0** के वर्तमान व्यवहार का वर्णन करता है। सार्वजनिक वेब ऐप IMPC **Release 24.0** डेटा का उपयोग करता है।
+
 **TSUMUGI(紡ぎ)** का अर्थ है “फेनोटाइप बनाने वाले जीन समूह को धागे की तरह बुनना”।
 
 # 📖 TSUMUGI कैसे उपयोग करें
@@ -39,7 +41,7 @@ TSUMUGI तीन तरह के इनपुट का समर्थन क
 एकाधिक जीन (प्रति पंक्ति एक) दें और **सूची के भीतर** समान फेनोटाइप खोजें।  
 > [!CAUTION]  
 > यदि कोई समान जीन नहीं मिला: `No similar phenotypes were found among the entered genes.`  
-> यदि 200 से अधिक मिले: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> यदि generated network में 200 या अधिक genes हों: `Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 कच्चा डेटा डाउनलोड
 TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित करता है।
@@ -81,6 +83,7 @@ TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित कर�
 **नोड** जीन दर्शाते हैं। क्लिक पर KO माउस में देखे गए असामान्य फेनोटाइप सूची दिखती है; ड्रैग से स्थान समायोजित करें।  
 **एज** क्लिक पर साझा फेनोटाइप का विवरण दिखता है।
 **Modules** outline gene subnetworks. Click a module to list phenotypes of its genes; drag modules to reposition and avoid overlap.
+Gene पेज soft/fuzzy Top-level MP modules का उपयोग करते हैं, इसलिए एक gene एक से अधिक module में हो सकता है। Phenotype और Gene List पेज connected components पर आधारित `Similarity` modules और `Top-level MP` modules के बीच बदल सकते हैं।
 
 ### कंट्रोल पैनल
 बाएँ पैनल से नेटवर्क का प्रदर्शन समायोजित करें।
@@ -89,8 +92,9 @@ TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित कर�
 `Phenotypes similarity` स्लाइडर Resnik→Phenodigm स्कोर के आधार पर edges का threshold सेट करता है。  
 > गणना विधि: 👉 [🔍 समान फेनोटाइप वाले जीन समूह की गणना](#-समान-फेनोटाइप-वाले-जीन-समूह-की-गणना)
 
-#### फेनोटाइप गंभीरता से फ़िल्टर
-`Phenotype severity` स्लाइडर KO माउस में प्रभाव आकार (severity) के आधार पर नोड्स को फ़िल्टर करता है。 मान जितना बड़ा होगा, प्रभाव उतना अधिक होगा。  
+#### Effect size से फ़िल्टर
+`Effect size` स्लाइडर उपलब्ध होने पर IMPC-derived effect size के परिमाण के आधार पर नोड्स को फ़िल्टर करता है。
+Missing effect sizes को zero में नहीं बदला जाता; वे missing रहते हैं और संबंधित nodes सफेद दिखते हैं।
 > द्विआधारी फेनोटाइप (उदाहरण: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); द्विआधारी सूची: [यहाँ](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) या एकल जीन इनपुट पर यह छिपा रहता है。
 
 #### Genotype निर्दिष्ट करें
@@ -109,6 +113,9 @@ TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित कर�
 - `Late`(49 सप्ताह से अधिक)
 
 ### मार्कअप पैनल
+#### Module display
+दाएँ panel में module definition और दिखाई देने वाला module चुनें। Module borders छिपाने पर network से genes या edges नहीं हटते।
+
 #### Highlight: Human Disease
 IMPC Disease Models Portal डेटा से रोग-संबंधित जीन को हाइलाइट करता है。
 
@@ -119,8 +126,7 @@ IMPC Disease Models Portal डेटा से रोग-संबंधित �
 लेआउट, फ़ॉन्ट आकार, एज की मोटाई, और नोड प्रतिकर्षण (Cose लेआउट) समायोजित करें。
 
 #### Export
-PNG/CSV/GraphML में निर्यात कर सकते हैं。  
-CSV में मॉड्यूल ID और प्रत्येक जीन की फेनोटाइप सूची शामिल होती है, और GraphML Cytoscape संगत है。
+PNG, JPG, SVG, CSV या GraphML में निर्यात कर सकते हैं। PNG, JPG और SVG में module frames शामिल किए जा सकते हैं। CSV active Similarity या Top-level MP module assignment और phenotype lists को रखता है; GraphML Cytoscape संगत है।
 
 # 🛠 कमांड-लाइन इंटरफ़ेस
 
@@ -424,7 +430,7 @@ CLI STDIN/STDOUT सपोर्ट करता है, इसलिए आप 
 
 ## डेटा स्रोत
 
-हम IMPC डेटासेट [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz` का उपयोग करते हैं।  
+हम IMPC डेटासेट [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz` का उपयोग करते हैं।
 डेटासेट कॉलम जानकारी: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## प्रीप्रोसेसिंग
@@ -435,37 +441,33 @@ KO माउस P-value (`p_value`, `female_ko_effect_p_value` या `male_ko_e
 
 ## Phenotypic similarity
 
-TSUMUGI Phenodigm-जैसी पद्धति अपनाता है ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+TSUMUGI Mammalian Phenotype Ontology के भीतर IMPC KO mouse gene phenotype profiles की तुलना के लिए मूल PhenoDigm scoring formula ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)) लागू करता है।
 
 > [!NOTE]
-> मूल Phenodigm से अंतर निम्न हैं।  
-> 1. **IC के 5वें परसेंटाइल से नीचे के terms को IC=0 पर सेट किया जाता है, ताकि बहुत सामान्य phenotypes (उदाहरण: embryo phenotype) का मूल्यांकन न हो।**
-> 2. **genotype, life stage और sex के metadata matches पर आधारित weighting लागू किया जाता है।**
+> TSUMUGI PhenoDigm scoring formula का उपयोग करता है, लेकिन मूल cross-species HPO-MP/ZP OWLSim pipeline नहीं चलाता। यह IMPC KO mouse genes की MP annotations की तुलना करता है।
 
 ### 1. MP term-pair similarity की परिभाषा
 
-* MP ontology बनाकर हर term का Information Content (IC) निकाला जाता है:  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   IC के 5वें परसेंटाइल से नीचे के terms को IC=0 पर सेट किया जाता है।
+* MP ontology बनाकर significant IMPC annotations से Information Content (IC) निकाला जाता है:
+   `IC(term) = -log2(|term तक propagated annotations| / |सभी significant annotations|)`
+   हर direct annotation को annotated MP term और उसके सभी ancestors तक propagate किया जाता है।
 
-* प्रत्येक MP term pair के लिए सबसे विशिष्ट common ancestor (MICA) निकाला जाता है और उसका IC Resnik similarity माना जाता है।  
+* प्रत्येक MP term pair के लिए सबसे अधिक annotation-derived IC वाले common ancestors खोजे जाते हैं। Tie होने पर MP ontology में सबसे कम transitive descendants वाला candidate, फिर lexicographically सबसे छोटा MP term ID deterministically चुना जाता है। चुने गए MICA का IC Resnik similarity होता है। यह tie-break similarity score या output schema नहीं बदलता।
 
-* दो MP terms के ancestor सेट का Jaccard index निकाला जाता है।  
+* दो MP terms के inferred attribute sets का Jaccard index निकाला जाता है; प्रत्येक set में term स्वयं और उसके सभी ancestors होते हैं।
 
 * MP term-pair similarity को `sqrt(Resnik * Jaccard)` के रूप में परिभाषित किया जाता है।
 
-### 2. phenotype metadata match के आधार पर weighting
+### 2. Gene-pair similarity matrix
 
-* genotype, life stage और sex जैसे phenotype metadata के अनुसार weights लागू किए जाते हैं।
+* हर gene pair के लिए term-pair scores से MP term × MP term similarity matrix बनाया जाता है।
 
-* हर gene pair के लिए MP term × MP term similarity matrix बनाया जाता है।  
-
-* genotype/life stage/sex के 0, 1, 2, 3 matches के लिए weights 0.2, 0.5, 0.75, 1.0 लगाए जाते हैं।
+* Genotype, life stage और sex metadata shared-phenotype annotations में सुरक्षित रहते हैं, लेकिन PhenoDigm score को weight नहीं करते।
 
 ### 3. Phenodigm scaling
 
-* Phenodigm-टाइप scaling से प्रत्येक KO माउस की phenotypic similarity को 0–100 में normalize किया जाता है:  
-   observed max/mean निकालकर theoretical max/mean से normalize किया जाता है।  
+* PhenoDigm maximum/average scaling से प्रत्येक KO mouse gene-pair similarity को 0–100 में normalize किया जाता है:
+   Observed best-match max/mean निकालकर दोनों genes के symmetric optimal self-match score से normalize किया जाता है।
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    यदि denominator 0 हो, तो score 0 सेट किया जाता है।
 

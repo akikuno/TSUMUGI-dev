@@ -3,25 +3,35 @@ from __future__ import annotations
 import gzip
 import json
 from collections import defaultdict
+from collections.abc import Iterator
 from pathlib import Path
+
+
+def _iter_nonempty_phenotype_network_paths(TEMPDIR: Path) -> Iterator[Path]:
+    """Yield phenotype network files that contain at least one element."""
+    phenotype_dir = Path(TEMPDIR, "network", "phenotype")
+    for path_phenotype in sorted(phenotype_dir.glob("*.json.gz")):
+        with gzip.open(path_phenotype, "rt", encoding="utf-8") as f:
+            if json.load(f):
+                yield path_phenotype
 
 
 # available mp terms
 def write_available_mp_terms_txt(TEMPDIR: Path, output_file: Path) -> None:
-    with open(output_file, "w") as f:
-        for path_phenotype in Path(TEMPDIR, "network", "phenotype").glob("*.json.gz"):
+    with open(output_file, "w", encoding="utf-8") as f:
+        for path_phenotype in _iter_nonempty_phenotype_network_paths(TEMPDIR):
             mp_term_name = path_phenotype.name.replace(".json.gz", "").replace("_", " ")
             f.write(f"{mp_term_name}\n")
 
 
 def write_available_mp_terms_json(TEMPDIR: Path, output_file: Path) -> None:
     mp_term_name_json = {}
-    for path_phenotype in Path(TEMPDIR, "network", "phenotype").glob("*.json.gz"):
+    for path_phenotype in _iter_nonempty_phenotype_network_paths(TEMPDIR):
         mp_term_name_underscore = path_phenotype.name.replace(".json.gz", "")
         mp_term_name = mp_term_name_underscore.replace("_", " ")
         mp_term_name_json[mp_term_name] = mp_term_name_underscore
     # Save as a JSON file
-    with open(output_file, "w") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(mp_term_name_json, f, ensure_ascii=False, indent=2)
 
 
@@ -53,8 +63,10 @@ def write_mp_term_id_lookup(records_significants, available_mp_terms_file: Path,
 
 # binary phenotypes
 def write_binary_phenotypes_txt(records_significants, TEMPDIR: Path, output_file: Path) -> None:
-    paths_available_mp_terms = Path(TEMPDIR, "network", "phenotype").glob("*.json.gz")
-    available_mp_terms = {p.name.replace(".json.gz", "").replace("_", " ") for p in paths_available_mp_terms}
+    available_mp_terms = {
+        path.name.replace(".json.gz", "").replace("_", " ")
+        for path in _iter_nonempty_phenotype_network_paths(TEMPDIR)
+    }
 
     mp_term_names_effect_size = defaultdict(set)
     for record in records_significants:

@@ -19,6 +19,8 @@
 此工具開放給所有人使用👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
+本文件說明**TSUMUGI v1.1.0**的現行功能。公開Web應用程式使用IMPC **Release 24.0**資料。
+
 **TSUMUGI(紡ぎ)** 源自「將形成表型的基因群像紡線一樣編織」的概念。
 
 # 📖 TSUMUGI 的使用方式
@@ -39,7 +41,7 @@ TSUMUGI 支援三種輸入。
 可輸入多個基因（每行一個），在列表內提取**表型相似的基因**。  
 > [!CAUTION]  
 > 找不到相似基因時：`No similar phenotypes were found among the entered genes.`  
-> 超過 200 個時：`Too many genes submitted. Please limit the number to 200 or fewer.`
+> 若生成的網路包含200個或更多基因：`Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 下載原始資料
 TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
@@ -81,6 +83,7 @@ TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
 **節點**代表基因。點擊可查看該 KO 小鼠的異常表現型清單，拖曳可調整位置。  
 **邊**點擊可查看共享表現型的詳細。  
 **模組**以多邊形圈出基因子網絡。點擊模組可列出其中基因涉及的表現型；可拖曳模組重新擺放並避免重疊。
+Gene頁面使用soft/fuzzy Top-level MP模組，因此一個基因可以屬於多個模組。Phenotype與Gene List頁面可在基於連通分量的`Similarity`模組與`Top-level MP`模組之間切換。
 
 ### 控制面板
 可於左側調整網路顯示。
@@ -89,8 +92,9 @@ TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
 `Phenotypes similarity` 滑桿依 Resnik→Phenodigm 分數設定邊的門檻。  
 > 計算詳情：👉 [🔍 表現型相似基因群的計算方法](#-表現型相似基因群的計算方法)
 
-#### 依表現型嚴重度過濾
-`Phenotype severity` 滑桿依 effect size（KO 小鼠中的嚴重度）過濾節點，值越大影響越強。  
+#### 依 effect size 過濾
+`Effect size` 滑桿依 IMPC-derived effect size 的大小過濾節點（若有資料）。
+缺失的effect size會保留為缺失值，不會轉換為0；相應節點顯示為白色。
 > 對二值表現型（如 [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 二值列表見[此處](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或單一基因輸入時，此控制隱藏。
 
 #### 指定接合型
@@ -109,6 +113,9 @@ TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
 - `Late`（49 週以上）
 
 ### 標記面板
+#### 模組顯示
+可在右側面板選擇模組定義與目前顯示的模組。隱藏模組邊框不會從網路中移除基因或邊。
+
 #### Highlight: Human Disease
 使用 IMPC Disease Models Portal 資料，高亮與人類疾病相關的基因。
 
@@ -119,8 +126,7 @@ TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
 調整布局、字體大小、邊線粗細、節點斥力（Cose 布局）。
 
 #### Export
-可匯出 PNG/CSV/GraphML。  
-CSV 含模組ID與每個基因的表現型列表；GraphML 與 Cytoscape 相容。
+可匯出PNG、JPG、SVG、CSV或GraphML。PNG、JPG與SVG可選擇包含模組邊框。CSV記錄目前Similarity或Top-level MP模組分配與表現型列表；GraphML與Cytoscape相容。
 
 # 🛠 命令列版
 
@@ -424,7 +430,7 @@ CLI支援STDIN/STDOUT，可串聯命令：
 
 ## 資料來源
 
-使用IMPC資料集[Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`。  
+使用IMPC資料集[Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`。
 資料欄位資訊：[Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## 前處理
@@ -435,37 +441,33 @@ CLI支援STDIN/STDOUT，可串聯命令：
 
 ## 表現型相似度
 
-TSUMUGI採用類Phenodigm方法（[Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)）。  
+TSUMUGI使用PhenoDigm原始評分公式（[Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)），在Mammalian Phenotype Ontology內比較IMPC KO小鼠基因的表現型譜。
 
 > [!NOTE]
-> 與原始Phenodigm的差異如下。  
-> 1. **IC低於第5百分位的術語設定為IC=0，以避免評估過於一般的表現型（例如embryo phenotype）。**
-> 2. **根據基因型、生命階段與性別的中繼資料匹配進行加權。**
+> TSUMUGI使用PhenoDigm評分公式，但不執行原始的跨物種HPO-MP/ZP OWLSim pipeline。它比較IMPC KO小鼠基因的MP annotation。
 
 ### 1. MP術語對相似度定義
 
-* 建立MP本體並計算每個術語的資訊量（IC）：  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   IC低於第5百分位的術語設定為IC=0。
+* 建立MP本體，並依據顯著IMPC annotation計算Information Content（IC）：
+   `IC(term) = -log2(|傳播到該術語的annotation| / |全部顯著annotation|)`
+   每個直接annotation都會傳播到被註解的MP術語及其全部ancestor。
 
-* 對每個MP術語對，找出最特異的共同祖先（MICA），並以其IC作為Resnik相似度。  
+* 對每個MP術語對，尋找annotation-derived IC最高的共同ancestor。若候選同分，則依序確定性選擇MP本體中transitive descendant較少的候選，以及字典序較小的MP term ID。所選MICA的IC作為Resnik相似度。此tie-break不改變相似度分數或輸出schema。
 
-* 對兩個MP術語，計算其祖先集合的Jaccard指數。  
+* 對兩個MP術語，計算其inferred attribute集合的Jaccard指數；此集合定義為術語本身及其全部ancestor。
 
 * 將MP術語對相似度定義為`sqrt(Resnik * Jaccard)`。
 
-### 2. 依表現型中繼資料一致性加權
+### 2. 基因對相似度矩陣
 
-* 根據表現型中繼資料（基因型、生命階段、性別）進行加權。
+* 對每個基因對，依據術語對分數建立MP術語×MP術語相似度矩陣。
 
-* 對每個基因對建立MP術語×MP術語相似度矩陣。  
-
-* 對基因型/生命階段/性別匹配數為0、1、2、3時，分別乘以0.2、0.5、0.75、1.0的權重。
+* 基因型、生命階段與性別metadata保留於共享表現型annotation中，但不作為PhenoDigm分數的加權依據。
 
 ### 3. Phenodigm縮放
 
-* 使用Phenodigm式縮放，將每個KO小鼠的表現型相似度正規化為0–100：  
-   計算觀測的最大值/平均值，並用理論最大值/平均值正規化。  
+* 使用PhenoDigm maximum/average scaling，將每個KO小鼠基因對的相似度正規化為0–100：
+   計算觀測best match的maximum/mean，再使用兩個基因對稱的optimal self-match score進行正規化。
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    若分母為0，分數為0。
 

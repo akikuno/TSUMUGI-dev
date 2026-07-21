@@ -9,9 +9,19 @@ from collections.abc import Generator, Iterable
 ###########################################################
 
 
-def _to_float(x: str | None) -> float:
-    """Convert a string to float; empty/None becomes NaN."""
-    return float(x) if x not in (None, "") else float("nan")
+def _to_float(x: str | int | float | None) -> float:
+    """Convert a value to float; missing or invalid values become NaN."""
+    if x is None:
+        return float("nan")
+    if isinstance(x, str):
+        x = x.strip()
+        if not x:
+            return float("nan")
+    try:
+        value = float(x)
+    except (TypeError, ValueError):
+        return float("nan")
+    return value if math.isfinite(value) else float("nan")
 
 
 def floatinize_columns(records: Iterable[dict[str, str]], columns: list[str]) -> Generator[dict[str, str | float]]:
@@ -25,12 +35,14 @@ def floatinize_columns(records: Iterable[dict[str, str]], columns: list[str]) ->
 def abs_effect_size(
     records: Iterable[dict[str, str | float]], effect_size_columns: list[str]
 ) -> Generator[dict[str, str | float]]:
-    """Return a record with the absolute effect size and NaN replaced with 0."""
+    """Return a record with absolute effect sizes while preserving NaN."""
     for record in records:
         for col in effect_size_columns:
-            if math.isnan(record[col]):
-                record[col] = 0.0
-            record[col] = abs(record[col])
+            value = _to_float(record.get(col))
+            if math.isnan(value):
+                record[col] = float("nan")
+                continue
+            record[col] = abs(value)
         yield record
 
 

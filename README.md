@@ -22,6 +22,8 @@ This web app is available to everyone online👇️
 
 🔗 https://larc-tsukuba.github.io/tsumugi/
 
+This documentation describes **TSUMUGI v1.1.0**. The public web app uses IMPC **Release 24.0** data.
+
 # 📖 How to Use TSUMUGI
 
 TSUMUGI supports three kinds of input.
@@ -43,7 +45,7 @@ Paste multiple genes (one per line). This extracts phenotypically similar genes 
 
 > [!CAUTION]  
 > If no similar genes are found: `No similar phenotypes were found among the entered genes.`  
-> If more than 200 similar genes are found: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> If the generated network contains 200 or more genes: `Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 Download data
 
@@ -87,7 +89,7 @@ The page transitions and draws the network automatically.
 ### Network panel
 **Nodes** represent genes. Click to see the list of abnormal phenotypes observed in that KO mouse; drag to rearrange positions.  
 **Edges** show shared phenotypes; click to view details.
-**Modules** outline subnetworks of genes. Click a module to list phenotypes involving its member genes; drag modules to reposition them and avoid overlap.
+**Modules** outline subnetworks of genes. Gene pages use soft/fuzzy Top-level MP modules, so one gene can belong to multiple modules. Phenotype and Gene List pages can switch between connected-component-based `Similarity` modules and `Top-level MP` modules. Click a module to list phenotypes involving its member genes; drag modules to reposition them and avoid overlap.
 
 ### Control panel
 Adjust network display from the left panel.
@@ -98,8 +100,10 @@ Adjust network display from the left panel.
 > [!NOTE]
 > For how we compute similarity, see: 👉 [🔍 How We Calculate Phenotypically Similar Genes](#-how-we-calculate-phenotypically-similar-genes)
 
-#### Filter by phenotype severity
-`Phenotype severity` slider filters nodes by effect size (severity in KO mice). Higher values mean stronger impact.  
+#### Filter by effect size
+`Effect size` slider filters nodes by the magnitude of the IMPC-derived effect size when available.
+
+Missing effect sizes remain missing rather than being converted to zero, and those nodes are shown in white.
 
 > [!NOTE]
 > Hidden for binary phenotypes (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binary list: 👉 [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or gene(s) input.
@@ -124,6 +128,9 @@ Filter by life stage in which phenotypes appear:
 
 ### Markup panel
 
+#### Module display
+Select the module definition and visible module from the right panel. Module borders can be shown or hidden without removing genes or edges from the network.
+
 #### Highlight: Human Disease
 Highlight genes linked to human disease (IMPC Disease Models Portal data).
 
@@ -134,8 +141,7 @@ Search gene names within the network.
 Adjust layout, font size, edge width, and node repulsion (Cose layout).
 
 #### Export
-Export the current network as PNG/CSV/GraphML.  
-CSV includes connected-component (module) IDs and phenotype lists per gene; GraphML is Cytoscape-compatible.
+Export the current network as PNG, JPG, SVG, CSV, or GraphML. Module frames can be included in PNG, JPG, and SVG files. CSV records the active similarity-module or Top-level MP-module assignments together with phenotype lists; GraphML is Cytoscape-compatible.
 
 # 🛠 Command-Line Interface (CLI)
 
@@ -479,7 +485,7 @@ CLI supports STDIN/STDOUT, so you can chain commands:
 
 ## Data source
 
-We use the IMPC dataset [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+We use the IMPC dataset [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`.
 See dataset columns: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Preprocessing
@@ -490,38 +496,35 @@ Extract gene–phenotype pairs whose KO mouse P-values (`p_value`, `female_ko_ef
 
 ## Phenotypic similarity
 
-TSUMUGI adopts a Phenodigm-like approach ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+TSUMUGI adapts the original PhenoDigm scoring formula ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)) to compare KO mouse gene phenotype profiles within the Mammalian Phenotype Ontology.
 
 > [!NOTE]
-> Differences from the original Phenodigm are as follows.  
-> 1. **Terms below the 5th percentile of IC are set to IC=0, so overly general phenotypes (e.g., embryo phenotype) are not evaluated.**
-> 2. **We apply weighting based on metadata matches in genotype, life stage, and sex.**
+> TSUMUGI keeps the PhenoDigm scoring formula but does not run the original cross-species HPO-MP/ZP OWLSim pipeline.
+> It compares MP annotations from IMPC KO mouse genes.
 
 ### 1. Definition of MP term-pair similarity
 
-* Build the MP ontology and compute Information Content (IC) for each term:  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Terms below the 5th percentile of IC are set to IC=0.
+* Build the MP ontology and compute Information Content (IC) from significant IMPC annotations:
+   `IC(term) = -log2(|annotations propagated to term| / |all significant annotations|)`
+   Each direct annotation is propagated to the annotated MP term and all of its ancestors.
 
-* For each MP term pair, find the most specific common ancestor (MICA) and use its IC as Resnik similarity.  
+* For each MP term pair, find the common ancestors with the highest annotation-derived IC. If multiple candidates tie, select one deterministically by the fewest transitive descendants in the MP ontology (not only direct children), then by the lexicographically smallest MP term ID. Use the selected MICA's IC as Resnik similarity. This tie-break changes neither the similarity score nor the output schema.
 
-* For two MP terms, compute the Jaccard index of their ancestor sets.  
+* For two MP terms, compute the Jaccard index of their inferred attribute sets, defined as each term itself plus all ancestors.
 
 * Define MP term-pair similarity as `sqrt(Resnik * Jaccard)`.
 
-### 2. Weighting by phenotype metadata agreement
+### 2. Gene-pair similarity matrix
 
-* Apply weights based on phenotype metadata: genotype, life stage, and sex.
+* For each gene pair, build an MP-term × MP-term similarity matrix from the term-pair scores.
 
-* For each gene pair, build an MP-term × MP-term similarity matrix.  
+* Genotype, life stage, and sex metadata are preserved in shared-phenotype annotations, but they do not weight the PhenoDigm score.
 
-* Multiply by weights 0.2, 0.5, 0.75, 1.0 for 0, 1, 2, 3 matches of genotype/life stage/sex.
+### 3. PhenoDigm scaling
 
-### 3. Phenodigm scaling
-
-* Apply Phenodigm-style scaling to normalize each KO mouse phenotype similarity to 0–100:  
-   Compute observed max/mean, then normalize by theoretical max/mean.  
-   `Score = 100 * (normalized_max + normalized_mean) / 2`  
+* Apply PhenoDigm max/average scaling to normalize each KO mouse gene-pair similarity to 0–100:
+   Compute observed best-match max/mean, then normalize by the symmetric optimal self-match score for the two genes.
+   `Score = 100 * (normalized_max + normalized_mean) / 2`
    If the denominator is 0, the score is set to 0.
 
 ---
@@ -542,4 +545,3 @@ If you have a GitHub account:
 Kuno A, Matsumoto K, Taki T, Takahashi S, and Mizuno S  
 **TSUMUGI: a platform for phenotype-driven gene network identification from comprehensive knockout mouse phenotyping data**  
 *bioRxiv*. (2026) https://doi.org/10.64898/2026.02.18.706720  
-

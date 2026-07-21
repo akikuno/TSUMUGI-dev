@@ -19,6 +19,8 @@
 Outil accessible à tous en ligne 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
+Cette documentation décrit le fonctionnement actuel de **TSUMUGI v1.1.0**. L'application web publique utilise les données IMPC **Release 24.0**.
+
 **TSUMUGI (紡ぎ)** découle de l’idée de « tisser ensemble les gènes qui façonnent les phénotypes ».
 
 # 📖 Utilisation de TSUMUGI
@@ -39,7 +41,7 @@ Symboles suivant [MGI](http://www.informatics.jax.org/).
 Collez plusieurs gènes (un par ligne) pour chercher **au sein de la liste**.  
 > [!CAUTION]  
 > Aucun gène similaire : `No similar phenotypes were found among the entered genes.`  
-> Plus de 200 : `Too many genes submitted. Please limit the number to 200 or fewer.`
+> Si le réseau généré contient au moins 200 gènes : `Too many genes submitted. Please limit the number to 200 or fewer.`
 
 ### 📥 Télécharger les données brutes
 TSUMUGI publie des JSONL compressés en gzip.
@@ -81,6 +83,7 @@ La page se met à jour et dessine automatiquement le réseau selon l’entrée.
 **Nœuds** : gènes. Clic pour voir la liste des phénotypes anormaux observés; glisser pour repositionner.  
 **Arêtes** : clic pour voir les phénotypes partagés.  
 **Modules** encadrent des sous-réseaux de gènes. Clic pour lister les phénotypes des gènes du module; glisser pour repositionner et éviter les chevauchements.
+Les pages Gene utilisent des modules Top-level MP souples/fuzzy, de sorte qu'un gène peut appartenir à plusieurs modules. Les pages Phenotype et Gene List peuvent basculer entre les modules `Similarity` fondés sur les composantes connexes et les modules `Top-level MP`.
 
 ### Panneau de contrôle
 Réglez l’affichage réseau dans le panneau de gauche.
@@ -89,8 +92,9 @@ Réglez l’affichage réseau dans le panneau de gauche.
 `Phenotypes similarity` fixe le seuil des arêtes via le score Resnik→Phenodigm.  
 > Détails : 👉 [🔍 Calcul des groupes de gènes phénotypiquement similaires](#-calcul-des-groupes-de-gènes-phénotypiquement-similaires)
 
-#### Filtre par sévérité phénotypique
-`Phenotype severity` filtre les nœuds par effect size en KO; plus grand = impact plus fort.  
+#### Filtre par effect size
+`Effect size` filtre les nœuds selon la magnitude de l'effect size dérivé de l'IMPC lorsqu'il est disponible.
+Les effect sizes manquants restent manquants, ne sont pas convertis en zéro et leurs nœuds sont affichés en blanc.
 > Masqué pour les phénotypes binaires (ex. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); liste binaire [ici](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou l’entrée d’un seul gène.
 
 #### Spécifier le génotype
@@ -109,6 +113,9 @@ Réglez l’affichage réseau dans le panneau de gauche.
 - `Late` (49+ semaines)
 
 ### Panneau de marquage
+#### Affichage des modules
+Le panneau de droite permet de choisir la définition et le module visible. Les contours des modules peuvent être masqués sans supprimer de gènes ni d'arêtes du réseau.
+
 #### Highlight: Human Disease
 Met en évidence les gènes liés aux maladies humaines (IMPC Disease Models Portal).
 
@@ -119,7 +126,7 @@ Recherche de gènes dans le réseau.
 Ajuste mise en page, taille de police, épaisseur d’arêtes, répulsion (Cose).
 
 #### Export
-Exporte en PNG/CSV/GraphML. CSV inclut les IDs de modules et les phénotypes; GraphML est compatible Cytoscape.
+Exporte en PNG, JPG, SVG, CSV ou GraphML. Les cadres de module peuvent être inclus dans les fichiers PNG, JPG et SVG. Le CSV contient l'affectation active aux modules Similarity ou Top-level MP et les listes de phénotypes; GraphML est compatible Cytoscape.
 
 # 🛠 Interface en ligne de commande
 
@@ -423,7 +430,7 @@ Le CLI prend en charge STDIN/STDOUT, vous pouvez chaîner les commandes:
 
 ## Source de données
 
-Nous utilisons le jeu de données IMPC [Release-23.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-23.0/results) `statistical-results-ALL.csv.gz`.  
+Nous utilisons le jeu de données IMPC [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-data-releases/release-24.0/results) `statistical-results-ALL.csv.gz`.
 Détails des colonnes: [Data fields](https://www.mousephenotype.org/help/programmatic-data-access/data-fields/)  
 
 ## Prétraitement
@@ -434,37 +441,33 @@ Extraire les paires gène–phénotype dont les P-values de souris KO (`p_value`
 
 ## Similarité phénotypique
 
-TSUMUGI adopte une approche de type Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)).  
+TSUMUGI applique la formule de score originale de PhenoDigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/database/bat025)) pour comparer les profils phénotypiques des gènes de souris KO de l'IMPC au sein de Mammalian Phenotype Ontology.
 
 > [!NOTE]
-> Les différences par rapport au Phenodigm original sont les suivantes.  
-> 1. **Les termes en dessous du 5e percentile d’IC sont fixés à IC=0, afin de ne pas évaluer des phénotypes trop généraux (ex. embryo phenotype).**
-> 2. **Nous appliquons une pondération basée sur les correspondances de métadonnées: génotype, stade de vie, sexe.**
+> TSUMUGI utilise la formule de score de PhenoDigm, mais n'exécute pas le pipeline interespèces HPO-MP/ZP OWLSim original. Il compare les annotations MP des gènes de souris KO de l'IMPC.
 
 ### 1. Définition de la similarité des paires de termes MP
 
-* Construire l’ontologie MP et calculer l’Information Content (IC) pour chaque terme:  
-   `IC(term) = -log((|Descendants(term)| + 1) / |All MP terms|)`  
-   Les termes sous le 5e percentile d’IC sont fixés à IC=0.
+* Construire l'ontologie MP et calculer l'Information Content (IC) à partir des annotations IMPC significatives:
+   `IC(term) = -log2(|annotations propagées au terme| / |toutes les annotations significatives|)`
+   Chaque annotation directe est propagée au terme MP annoté et à tous ses ancêtres.
 
-* Pour chaque paire de termes MP, trouver l’ancêtre commun le plus spécifique (MICA) et utiliser son IC comme similarité de Resnik.  
+* Pour chaque paire de termes MP, trouver les ancêtres communs ayant l'IC dérivé des annotations le plus élevé. En cas d'égalité, sélectionner de manière déterministe le candidat ayant le moins de descendants transitifs dans l'ontologie MP, puis l'identifiant de terme MP le plus petit dans l'ordre lexicographique. L'IC du MICA sélectionné est la similarité de Resnik. Ce départage ne modifie ni le score de similarité ni le schéma de sortie.
 
-* Pour deux termes MP, calculer l’indice de Jaccard de leurs ensembles d’ancêtres.  
+* Pour deux termes MP, calculer l'indice de Jaccard de leurs ensembles d'attributs inférés, définis comme le terme lui-même plus tous ses ancêtres.
 
 * Définir la similarité de paires de termes MP comme `sqrt(Resnik * Jaccard)`.
 
-### 2. Pondération selon l’accord des métadonnées phénotypiques
+### 2. Matrice de similarité des paires de gènes
 
-* Appliquer des poids selon les métadonnées phénotypiques: génotype, stade de vie, sexe.
+* Pour chaque paire de gènes, construire une matrice de similarité terme MP × terme MP à partir des scores des paires de termes.
 
-* Pour chaque paire de gènes, construire une matrice de similarité termes MP × termes MP.  
-
-* Multiplier par des poids 0.2, 0.5, 0.75, 1.0 pour 0, 1, 2, 3 correspondances de génotype/stade de vie/sexe.
+* Les métadonnées de génotype, de stade de vie et de sexe sont conservées dans les annotations de phénotypes partagés, mais ne pondèrent pas le score PhenoDigm.
 
 ### 3. Mise à l’échelle Phenodigm
 
-* Appliquer un scaling de type Phenodigm pour normaliser la similarité phénotypique de chaque souris KO à 0–100:  
-   Calculer le maximum/la moyenne observés, puis normaliser par le maximum/la moyenne théoriques.  
+* Appliquer la mise à l'échelle maximum/moyenne de PhenoDigm pour normaliser la similarité de chaque paire de gènes de souris KO à 0–100:
+   Calculer le maximum et la moyenne des best matches observés, puis normaliser par le score optimal symétrique de self match des deux gènes.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    Si le dénominateur est 0, le score est 0.
 

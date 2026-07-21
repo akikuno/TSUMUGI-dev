@@ -1,7 +1,12 @@
+import gzip
+import json
+import math
+
 import pytest
 
 from TSUMUGI.io_handler import (
     parse_obo_file,
+    write_jsonl,
 )
 
 # Define test cases.
@@ -102,3 +107,25 @@ def test_parse_obo_file(tmp_path, obo_content, expected_output):
     # Test with a string path argument.
     result_from_str = parse_obo_file(str(p))
     assert result_from_str == expected_output
+
+
+def test_write_jsonl_accepts_gzip_compresslevel(tmp_path):
+    output_path = tmp_path / "records.jsonl.gz"
+    records = [{"id": "A"}, {"id": "B"}]
+
+    write_jsonl(records, output_path, compresslevel=1)
+
+    with gzip.open(output_path, "rt", encoding="utf-8") as f:
+        assert [json.loads(line) for line in f] == records
+
+
+def test_write_jsonl_round_trips_nan(tmp_path):
+    output_path = tmp_path / "records.jsonl.gz"
+    records = [{"effect_size": float("nan")}]
+
+    write_jsonl(records, output_path, compresslevel=1)
+
+    with gzip.open(output_path, "rt", encoding="utf-8") as f:
+        loaded = [json.loads(line) for line in f]
+
+    assert math.isnan(loaded[0]["effect_size"])

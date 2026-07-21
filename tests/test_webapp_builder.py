@@ -2,6 +2,7 @@ import gzip
 import json
 
 import pytest
+
 from TSUMUGI.subcommands import webapp_builder
 
 
@@ -46,7 +47,7 @@ def test_build_edges_formats_annotations():
     }
 
 
-def test_build_nodes_includes_hide_severity():
+def test_build_nodes_includes_hide_effect_size():
     gene_to_records = {
         "GeneA": [
             {
@@ -67,10 +68,10 @@ def test_build_nodes_includes_hide_severity():
     }
     all_genes = {"GeneA", "GeneB"}
 
-    nodes = webapp_builder.build_nodes(gene_to_records, all_genes, hide_severity=True)
+    nodes = webapp_builder.build_nodes(gene_to_records, all_genes, hide_effect_size=True)
     node_map = {node["data"]["id"]: node["data"] for node in nodes}
 
-    assert node_map["GeneA"]["hide_severity"] is True
+    assert node_map["GeneA"]["hide_effect_size"] is True
     assert set(node_map["GeneA"]["phenotype"]) == {"abnormal movement (Homo, Early)"}
     assert set(node_map["GeneA"]["disease"]) == {"DiseaseA (Homo, Early)"}
     assert node_map["GeneB"]["phenotype"] == []
@@ -183,9 +184,11 @@ def test_build_and_save_webapp_network_writes_outputs(tmp_path, monkeypatch):
     data_dir = tmp_path / "data"
     network_path = data_dir / "network.json.gz"
     symbol_path = data_dir / "marker_symbol_accession_id.json"
+    module_lookup_path = data_dir / "mp_top_level_module_lookup.json"
 
     assert network_path.exists()
     assert symbol_path.exists()
+    assert module_lookup_path.exists()
     assert calls == [(tmp_path, "data/network.json.gz", "Gene List")]
 
     with gzip.open(network_path, "rt", encoding="utf-8") as fh:
@@ -195,7 +198,7 @@ def test_build_and_save_webapp_network_writes_outputs(tmp_path, monkeypatch):
     edge_data = [elem["data"] for elem in elements if "source" in elem["data"]]
 
     assert {node["id"] for node in node_data} == {"GeneA", "GeneB"}
-    assert all(node.get("hide_severity") is True for node in node_data)
+    assert all(node.get("hide_effect_size") is True for node in node_data)
     assert edge_data[0]["edge_size"] == 12
 
     with open(symbol_path, encoding="utf-8") as fh:

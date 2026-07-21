@@ -7,7 +7,7 @@ from collections import defaultdict
 from collections.abc import Iterator
 from pathlib import Path
 
-from TSUMUGI import io_handler
+from TSUMUGI import gene_phenotype_module_builder, io_handler
 
 MAX_NODE_COUNT = 150
 
@@ -33,7 +33,7 @@ def _create_annotation_string(*parts):
 ###############################################################################
 
 
-def build_nodes(gene_to_records, all_genes, hide_severity: bool = False):
+def build_nodes(gene_to_records, all_genes, hide_effect_size: bool = False):
     """
     Embed the following formatted text into data.annotation:
         Phenotypes of {GENE} KO mice
@@ -86,8 +86,8 @@ def build_nodes(gene_to_records, all_genes, hide_severity: bool = False):
                 "node_color": 1,
             }
         }
-        if hide_severity:
-            node["data"]["hide_severity"] = True
+        if hide_effect_size:
+            node["data"]["hide_effect_size"] = True
 
         nodes.append(node)
 
@@ -154,7 +154,7 @@ def _build_symbol_to_id_map(gene_to_records: dict[str, list[dict]]) -> dict[str,
     return symbol_to_id
 
 
-def build_webapp_network(genewise_path, pairwise_path, hide_severity: bool = False):
+def build_webapp_network(genewise_path, pairwise_path, hide_effect_size: bool = False):
     """Return (nodes, edges)."""
     # Read pairwise annotations and collect all genes
 
@@ -170,7 +170,7 @@ def build_webapp_network(genewise_path, pairwise_path, hide_severity: bool = Fal
         gene_to_records[rec["marker_symbol"]].append(rec)
     gene_to_records = dict(gene_to_records)
 
-    nodes = build_nodes(gene_to_records, all_genes, hide_severity=hide_severity)
+    nodes = build_nodes(gene_to_records, all_genes, hide_effect_size=hide_effect_size)
 
     if len(nodes) > MAX_NODE_COUNT:
         raise ValueError(
@@ -194,8 +194,8 @@ def build_and_save_webapp_network(genewise_path, pairwise_path, output_dir):
     json_path = data_dir / "network.json.gz"
     network_label = "Gene List"
 
-    # For gene/gene list views, we hide severity; caller (TSUMUGI main) can pass False for phenotype mode
-    nodes, edges, symbol_to_id = build_webapp_network(genewise_path, pairwise_path, hide_severity=True)
+    # For gene/gene list views, we hide effect-size display; caller can pass False for phenotype mode.
+    nodes, edges, symbol_to_id = build_webapp_network(genewise_path, pairwise_path, hide_effect_size=True)
     elements = nodes + edges
     with gzip.open(json_path, "wt", encoding="utf-8") as f:
         json.dump(elements, f, indent=4)
@@ -203,6 +203,13 @@ def build_and_save_webapp_network(genewise_path, pairwise_path, output_dir):
     symmap_path = data_dir / "marker_symbol_accession_id.json"
     with open(symmap_path, "w", encoding="utf-8") as fh:
         json.dump(symbol_to_id, fh, ensure_ascii=False, indent=2)
+
+    with as_file(files("TSUMUGI") / "data" / "mp.obo") as mp_obo_path:
+        ontology_terms = io_handler.parse_obo_file(mp_obo_path)
+    gene_phenotype_module_builder.write_mp_top_level_module_lookup_json(
+        ontology_terms,
+        data_dir / "mp_top_level_module_lookup.json",
+    )
 
     _create_webapp_bundle(
         output_dir=output_dir,

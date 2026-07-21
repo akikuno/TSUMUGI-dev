@@ -1,4 +1,5 @@
 import pytest
+
 from TSUMUGI.subcommands import genes_filterer
 from TSUMUGI.subcommands.genes_filterer import (
     _filter_annotations_by_gene_pairs,

@@ -219,11 +219,21 @@ export function getCentralityRange(cy, centralityType) {
 // Centrality UI state and management
 // ############################################################################
 
-let centralityType = 'normalized_degree'; // active options: none, degree, betweenness, normalized_degree, normalized_betweenness
+let centralityType = 'none'; // active options: none, degree, betweenness, normalized_degree, normalized_betweenness
 let centralityScale = 0; // 0 to 1 scale factor
 let cytoscapeInstance = null;
 let createSliderFunction = null;
 let isCentralityInputBound = false;
+
+function isPerfEnabled() {
+    return new URLSearchParams(window.location.search).get("perf") === "1";
+}
+
+function logPerf(label, startTime) {
+    if (isPerfEnabled()) {
+        console.info(`[TSUMUGI perf] ${label}: ${(performance.now() - startTime).toFixed(1)} ms`);
+    }
+}
 
 function clampNumber(value, min, max) {
     if (!Number.isFinite(value)) {
@@ -301,11 +311,6 @@ export function initializeCentralitySystem(cy, createSlider) {
         centralityDropdown.value = centralityType;
     }
     handleCentralityTypeChange(centralityType);
-
-    // Calculate initial centrality values
-    setTimeout(() => {
-        recalculateCentrality();
-    }, 500);
 }
 
 /**
@@ -329,6 +334,7 @@ function handleCentralityTypeChange(value) {
             if (!window.centralitySliderInstance) {
                 initializeCentralitySlider();
             }
+            recalculateCentrality();
         }
         updateNodeSizeByCentrality();
     }
@@ -365,17 +371,38 @@ export function recalculateCentrality() {
         return;
     }
 
-    // Calculate centrality for visible nodes
-    const degreeCentrality = calculateDegreeCentrality(cytoscapeInstance);
-    const betweennessCentrality = calculateBetweennessCentrality(cytoscapeInstance);
-    const normalizedDegreeCentrality = calculateNormalizedDegreeCentrality(cytoscapeInstance);
-    const normalizedBetweennessCentrality = calculateNormalizedBetweennessCentrality(cytoscapeInstance);
+    if (centralityType === 'none') {
+        updateNodeSizeByCentrality();
+        return;
+    }
 
-    // Update node data with centrality values
-    updateNodeCentrality(cytoscapeInstance, degreeCentrality, 'degree');
-    updateNodeCentrality(cytoscapeInstance, betweennessCentrality, 'betweenness');
-    updateNodeCentrality(cytoscapeInstance, normalizedDegreeCentrality, 'normalized_degree');
-    updateNodeCentrality(cytoscapeInstance, normalizedBetweennessCentrality, 'normalized_betweenness');
+    const startTime = performance.now();
+    const visibleNodes = cytoscapeInstance.nodes().filter(node => node.style('display') === 'element');
+
+    if (centralityType === 'degree') {
+        updateNodeCentrality(cytoscapeInstance, calculateDegreeCentrality(cytoscapeInstance), 'degree');
+    } else if (centralityType === 'normalized_degree') {
+        const degreeCentrality = calculateDegreeCentrality(cytoscapeInstance);
+        const normalizedDegreeCentrality = new Map();
+        visibleNodes.forEach(node => {
+            const degree = degreeCentrality.get(node.id()) || 0;
+            const phenotypeCount = countNodePhenotypes(node);
+            normalizedDegreeCentrality.set(node.id(), phenotypeCount > 0 ? degree / phenotypeCount : 0);
+        });
+        updateNodeCentrality(cytoscapeInstance, normalizedDegreeCentrality, 'normalized_degree');
+    } else if (centralityType === 'betweenness') {
+        updateNodeCentrality(cytoscapeInstance, calculateBetweennessCentrality(cytoscapeInstance), 'betweenness');
+    } else if (centralityType === 'normalized_betweenness') {
+        const betweennessCentrality = calculateBetweennessCentrality(cytoscapeInstance);
+        const normalizedBetweennessCentrality = new Map();
+        visibleNodes.forEach(node => {
+            const betweenness = betweennessCentrality.get(node.id()) || 0;
+            const phenotypeCount = countNodePhenotypes(node);
+            normalizedBetweennessCentrality.set(node.id(), phenotypeCount > 0 ? betweenness / phenotypeCount : 0);
+        });
+        updateNodeCentrality(cytoscapeInstance, normalizedBetweennessCentrality, 'normalized_betweenness');
+    }
+    logPerf(`centrality ${centralityType}`, startTime);
 
     // Apply node size updates if sliders are active
     updateNodeSizeByCentrality();
