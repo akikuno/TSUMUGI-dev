@@ -19,7 +19,6 @@
 ブラウザはこちら： 🔗https://larc-tsukuba.github.io/tsumugi/  
 コマンドラインの詳細はページ下部 (🛠 コマンドライン版) にございます。  
 
-この文書は**TSUMUGIv1.1.0**の現行仕様を説明しています。公開Web版はIMPCの**Release 24.0**を使用しています。
 
 TSUMUGI(**紡ぎ**)の由来は、「表現型を織りなす遺伝子群を紡ぎ出す」という開発動機に即しています。  
 
@@ -194,9 +193,9 @@ KOマウスとヒト疾患の関連は、[IMPC Disease Models Portal](https://di
 
 以下の要素を調整できます：
 
-- ネットワークレイアウト(layout)
-- フォントサイズ(Font size)
-- エッジ（線）の太さ(Edge width)
+- ネットワークレイアウト (layout)
+- フォントサイズ (Font size)
+- エッジ（線）の太さ (Edge width)
 - ノード（点）間の距離（＊Coseレイアウト限定） (Node repulsion)
 
 #### 4. エクスポートパネル
@@ -557,7 +556,7 @@ TSUMUGIは、Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/datab
 
 * 各遺伝子ペアについて、MP用語ペアの類似度からMP用語×MP用語の類似度行列を作成します。
 
-* 遺伝型、ライフステージ、性差のメタデータは共有表現型注釈に保持しますが、Phenodigmスコアの重み付けには使用しません。
+* 遺伝型、ライフステージ、性差のメタデータは共有表現型注釈に保持します。Phenodigmスコアの重み付けには使用しません。
 
 ### 3. Phenodigmスケーリング
 
