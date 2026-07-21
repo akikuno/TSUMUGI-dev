@@ -502,7 +502,7 @@ TSUMUGI adapts the original PhenoDigm scoring formula ([Smedley D, et al. (2013)
    `IC(term) = -log2(|annotations propagated to term| / |all significant annotations|)`
    Each direct annotation is propagated to the annotated MP term and all of its ancestors.
 
-* For each MP term pair, find the common ancestor with the highest IC and use its IC as Resnik similarity.
+* For each MP term pair, find the common ancestors with the highest annotation-derived IC. If multiple candidates tie, select one deterministically by the fewest transitive descendants in the MP ontology (not only direct children), then by the lexicographically smallest MP term ID. Use the selected MICA's IC as Resnik similarity. This tie-break changes neither the similarity score nor the output schema.
 
 * For two MP terms, compute the Jaccard index of their inferred attribute sets, defined as each term itself plus all ancestors.
 

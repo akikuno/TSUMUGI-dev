@@ -15,6 +15,7 @@ from tqdm import tqdm
 from TSUMUGI.ontology_handler import (
     build_term_hierarchy,
     find_all_ancestor_terms,
+    find_all_descendant_terms,
     find_common_ancestors,
 )
 
@@ -33,6 +34,13 @@ def _get_inferred_attributes(term_id: str, parent_term_map: dict[str, set[str]])
 def _calculate_inferred_attribute_map(term_ids: set[str], parent_term_map: dict[str, set[str]]) -> dict[str, set[str]]:
     """Precompute inferred attribute sets for the terms being compared."""
     return {term_id: _get_inferred_attributes(term_id, parent_term_map) for term_id in term_ids}
+
+
+def _calculate_term_descendant_count_map(
+    term_ids: Iterable[str], child_term_map: dict[str, set[str]]
+) -> dict[str, int]:
+    """Precompute the number of unique transitive descendants for each ontology term."""
+    return {term_id: len(find_all_descendant_terms(term_id, child_term_map)) for term_id in term_ids}
 
 
 def _calculate_term_ic_map(
@@ -77,6 +85,7 @@ def _calculate_term_ic_map(
 _worker_parent_term_map: dict[str, set[str]] | None = None
 _worker_inferred_attribute_map: dict[str, set[str]] | None = None
 _worker_term_ic_map: dict[str, float] | None = None
+_worker_term_descendant_count_map: dict[str, int] | None = None
 
 
 def _get_process_pool_context() -> BaseContext:
@@ -94,12 +103,15 @@ def _init_worker(
     parent_term_map: dict[str, set[str]],
     inferred_attribute_map: dict[str, set[str]],
     term_ic_map: dict[str, float],
+    term_descendant_count_map: dict[str, int],
 ) -> None:
     """Initializer for worker processes to avoid repeatedly pickling large objects."""
     global _worker_parent_term_map, _worker_inferred_attribute_map, _worker_term_ic_map
+    global _worker_term_descendant_count_map
     _worker_parent_term_map = parent_term_map
     _worker_inferred_attribute_map = inferred_attribute_map
     _worker_term_ic_map = term_ic_map
+    _worker_term_descendant_count_map = term_descendant_count_map
 
 
 def _calculate_pair_mica_and_resnik(
@@ -107,9 +119,10 @@ def _calculate_pair_mica_and_resnik(
     term2_id: str,
     parent_term_map: dict[str, set[str]],
     term_ic_map: dict[str, float],
+    term_descendant_count_map: dict[str, int],
     inferred_attribute_map: dict[str, set[str]] | None = None,
 ) -> tuple[str | None, float]:
-    """Calculate MSCA (by IC) and Resnik similarity using precalculated IC."""
+    """Calculate MICA and Resnik similarity with deterministic ontology-breadth tie-breaking."""
     if term1_id == term2_id:
         return term1_id, term_ic_map.get(term1_id, 0.0)
 
@@ -123,9 +136,16 @@ def _calculate_pair_mica_and_resnik(
     if not common_ancestors:
         return None, 0.0
 
-    msca = max(common_ancestors, key=lambda t: term_ic_map.get(t, 0.0))
-    similarity = term_ic_map.get(msca, 0.0)
-    return msca, similarity
+    mica = min(
+        common_ancestors,
+        key=lambda term_id: (
+            -term_ic_map.get(term_id, 0.0),
+            term_descendant_count_map[term_id],
+            term_id,
+        ),
+    )
+    similarity = term_ic_map.get(mica, 0.0)
+    return mica, similarity
 
 
 def _calculate_pair_jaccard(
@@ -159,6 +179,7 @@ def _calculate_pair_msca_score_map(
     term2_id: str,
     parent_term_map: dict[str, set[str]],
     term_ic_map: dict[str, float],
+    term_descendant_count_map: dict[str, int],
     inferred_attribute_map: dict[str, set[str]] | None = None,
 ) -> tuple[tuple[str, str], dict[str | None, float]]:
     """Calculate pairwise term similarity.
@@ -173,7 +194,12 @@ def _calculate_pair_msca_score_map(
         jaccard = 1.0
     else:
         msca, resnik = _calculate_pair_mica_and_resnik(
-            term1_id, term2_id, parent_term_map, term_ic_map, inferred_attribute_map
+            term1_id,
+            term2_id,
+            parent_term_map,
+            term_ic_map,
+            term_descendant_count_map,
+            inferred_attribute_map,
         )
         jaccard = _calculate_pair_jaccard(term1_id, term2_id, parent_term_map, inferred_attribute_map)
 
@@ -189,10 +215,23 @@ def _calculate_pair_worker(term_pair: tuple[str, str]) -> tuple[tuple[str], dict
     parent_term_map = _worker_parent_term_map
     inferred_attribute_map = _worker_inferred_attribute_map
     term_ic_map = _worker_term_ic_map
-    if parent_term_map is None or inferred_attribute_map is None or term_ic_map is None:
+    term_descendant_count_map = _worker_term_descendant_count_map
+    if (
+        parent_term_map is None
+        or inferred_attribute_map is None
+        or term_ic_map is None
+        or term_descendant_count_map is None
+    ):
         raise RuntimeError("Worker maps are not initialized.")
 
-    return _calculate_pair_msca_score_map(term1_id, term2_id, parent_term_map, term_ic_map, inferred_attribute_map)
+    return _calculate_pair_msca_score_map(
+        term1_id,
+        term2_id,
+        parent_term_map,
+        term_ic_map,
+        term_descendant_count_map,
+        inferred_attribute_map,
+    )
 
 
 def calculate_all_pairwise_similarities(
@@ -208,8 +247,9 @@ def calculate_all_pairwise_similarities(
             raise ValueError("genewise_phenotype_significants is required for annotation-frequency IC.")
         genewise_phenotype_significants = annotation_records
 
-    parent_term_map, _ = build_term_hierarchy(ontology_terms)
+    parent_term_map, child_term_map = build_term_hierarchy(ontology_terms)
     term_ic_map = _calculate_term_ic_map(ontology_terms, parent_term_map, genewise_phenotype_significants)
+    term_descendant_count_map = _calculate_term_descendant_count_map(ontology_terms, child_term_map)
     term_list = sorted(all_term_ids)
     inferred_attribute_map = _calculate_inferred_attribute_map(set(term_list), parent_term_map)
 
@@ -218,7 +258,12 @@ def calculate_all_pairwise_similarities(
     if threads == 1:
         for term1_id, term2_id in combinations_with_replacement(term_list, 2):
             term_pairs, msca_score_map = _calculate_pair_msca_score_map(
-                term1_id, term2_id, parent_term_map, term_ic_map, inferred_attribute_map
+                term1_id,
+                term2_id,
+                parent_term_map,
+                term_ic_map,
+                term_descendant_count_map,
+                inferred_attribute_map,
             )
             terms_similarity_map[term_pairs] = msca_score_map
         return terms_similarity_map, term_ic_map
@@ -227,7 +272,7 @@ def calculate_all_pairwise_similarities(
         max_workers=threads,
         mp_context=_get_process_pool_context(),
         initializer=_init_worker,
-        initargs=(parent_term_map, inferred_attribute_map, term_ic_map),
+        initargs=(parent_term_map, inferred_attribute_map, term_ic_map, term_descendant_count_map),
     ) as executor:
         term_pairs_iterable = combinations_with_replacement(term_list, 2)
         chunksize = max(1, len(term_list) * (len(term_list) + 1) // (threads * 16))

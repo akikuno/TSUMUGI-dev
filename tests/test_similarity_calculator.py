@@ -1,5 +1,8 @@
 import math
 import multiprocessing as mp
+import os
+import subprocess
+import sys
 
 import numpy as np
 import pytest
@@ -12,6 +15,7 @@ from TSUMUGI.similarity_calculator import (
     _calculate_pair_msca_score_map,
     _calculate_similarity_matrix,
     _calculate_term_ancestor_map,
+    _calculate_term_descendant_count_map,
     _calculate_term_ic_map,
     _delete_parent_terms_from_ancestors,
     _get_process_pool_context,
@@ -74,8 +78,9 @@ def test_calculate_pair_mica_and_resnik(sample_ontology, term1, term2, expected_
     annotation_records = sample_ontology["annotation_records"]
 
     ic_map = _calculate_term_ic_map(ontology_terms, parent_map, annotation_records)
+    descendant_count_map = _calculate_term_descendant_count_map(ontology_terms, sample_ontology["child_map"])
 
-    mica, sim = _calculate_pair_mica_and_resnik(term1, term2, parent_map, ic_map)
+    mica, sim = _calculate_pair_mica_and_resnik(term1, term2, parent_map, ic_map, descendant_count_map)
 
     assert mica == expected_mica
     assert sim == pytest.approx(ic_map[expected_mica])
@@ -104,11 +109,21 @@ def test_calculate_pair_msca_score_map(
         term_ic_map = _calculate_term_ic_map(
             sample_ontology["ontology_terms"], parent_map, sample_ontology["annotation_records"]
         )
+        descendant_count_map = _calculate_term_descendant_count_map(
+            sample_ontology["ontology_terms"], sample_ontology["child_map"]
+        )
     else:
         parent_map = parent_map_override
         term_ic_map = term_ic_map_override
+        descendant_count_map = {}
 
-    term_pairs, msca_score_map = _calculate_pair_msca_score_map(term1, term2, parent_map, term_ic_map)
+    term_pairs, msca_score_map = _calculate_pair_msca_score_map(
+        term1,
+        term2,
+        parent_map,
+        term_ic_map,
+        descendant_count_map,
+    )
 
     assert term_pairs == tuple(sorted((term1, term2)))
     assert expected_msca in msca_score_map
@@ -119,6 +134,144 @@ def test_calculate_pair_msca_score_map(
         expected_score = math.sqrt(resnik * expected_jaccard)
 
     assert msca_score_map[expected_msca] == pytest.approx(expected_score)
+
+
+def test_calculate_term_descendant_count_map_counts_unique_transitive_descendants(sample_ontology):
+    descendant_count_map = _calculate_term_descendant_count_map(
+        sample_ontology["ontology_terms"], sample_ontology["child_map"]
+    )
+
+    assert descendant_count_map == {"A": 5, "B": 3, "C": 2, "D": 0, "E": 1, "F": 0}
+
+
+def test_mica_tie_break_prefers_fewer_transitive_descendants_over_fewer_direct_children():
+    ontology_terms = {
+        "R": {"id": "R", "name": "Root"},
+        "A": {"id": "A", "name": "Branch A", "is_a": ["R"]},
+        "B": {"id": "B", "name": "Branch B", "is_a": ["R"]},
+        "P": {"id": "P", "name": "Term P", "is_a": ["A", "B"]},
+        "Q": {"id": "Q", "name": "Term Q", "is_a": ["A", "B"]},
+        "X": {"id": "X", "name": "Term X", "is_a": ["A"]},
+        "Y": {"id": "Y", "name": "Term Y", "is_a": ["X"]},
+        "Z": {"id": "Z", "name": "Term Z", "is_a": ["Y"]},
+        "U": {"id": "U", "name": "Term U", "is_a": ["B"]},
+        "V": {"id": "V", "name": "Term V", "is_a": ["B"]},
+    }
+    parent_map, child_map = build_term_hierarchy(ontology_terms)
+    descendant_count_map = _calculate_term_descendant_count_map(ontology_terms, child_map)
+    term_ic_map = dict.fromkeys(ontology_terms, 0.0)
+    term_ic_map.update({"A": 2.0, "B": 2.0})
+
+    mica, similarity = _calculate_pair_mica_and_resnik(
+        "P",
+        "Q",
+        parent_map,
+        term_ic_map,
+        descendant_count_map,
+    )
+
+    assert len(child_map["A"]) < len(child_map["B"])
+    assert descendant_count_map["A"] > descendant_count_map["B"]
+    assert mica == "B"
+    assert similarity == pytest.approx(2.0)
+
+
+def test_mica_tie_break_never_overrides_higher_annotation_ic():
+    parent_map = {"P": {"A", "B"}, "Q": {"A", "B"}}
+    term_ic_map = {"A": 3.0, "B": 2.0}
+    descendant_count_map = {"A": 100, "B": 0}
+
+    mica, similarity = _calculate_pair_mica_and_resnik(
+        "P",
+        "Q",
+        parent_map,
+        term_ic_map,
+        descendant_count_map,
+    )
+
+    assert mica == "A"
+    assert similarity == pytest.approx(3.0)
+
+
+def test_mica_tie_break_prefers_descendant_when_tied_candidates_are_ancestor_and_descendant():
+    parent_map = {
+        "B": {"A"},
+        "P": {"B"},
+        "Q": {"B"},
+    }
+    term_ic_map = {"A": 2.0, "B": 2.0}
+    descendant_count_map = {"A": 3, "B": 2, "P": 0, "Q": 0}
+
+    mica, similarity = _calculate_pair_mica_and_resnik(
+        "P",
+        "Q",
+        parent_map,
+        term_ic_map,
+        descendant_count_map,
+    )
+
+    assert mica == "B"
+    assert similarity == pytest.approx(2.0)
+
+
+def test_mica_tie_break_uses_term_id_as_final_fallback():
+    parent_map = {"P": {"MP:0002", "MP:0001"}, "Q": {"MP:0002", "MP:0001"}}
+    term_ic_map = {"MP:0001": 2.0, "MP:0002": 2.0}
+    descendant_count_map = {"MP:0001": 4, "MP:0002": 4}
+
+    mica, similarity = _calculate_pair_mica_and_resnik(
+        "P",
+        "Q",
+        parent_map,
+        term_ic_map,
+        descendant_count_map,
+    )
+
+    assert mica == "MP:0001"
+    assert similarity == pytest.approx(2.0)
+
+
+def test_mica_tie_break_requires_descendant_counts_for_all_candidates():
+    parent_map = {"P": {"A", "B"}, "Q": {"A", "B"}}
+
+    with pytest.raises(KeyError, match="B"):
+        _calculate_pair_mica_and_resnik(
+            "P",
+            "Q",
+            parent_map,
+            {"A": 2.0, "B": 2.0},
+            {"A": 0},
+        )
+
+
+def test_mica_tie_break_is_independent_of_python_hash_seed():
+    code = """
+from TSUMUGI.similarity_calculator import _calculate_pair_mica_and_resnik
+
+parent_map = {"P": set(("A", "B")), "Q": set(("A", "B"))}
+mica, _ = _calculate_pair_mica_and_resnik(
+    "P",
+    "Q",
+    parent_map,
+    {"A": 2.0, "B": 2.0},
+    {"A": 5, "B": 4},
+)
+print(mica)
+"""
+    results = set()
+    for hash_seed in range(1, 9):
+        environment = os.environ.copy()
+        environment["PYTHONHASHSEED"] = str(hash_seed)
+        completed = subprocess.run(
+            [sys.executable, "-c", code],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=environment,
+        )
+        results.add(completed.stdout.strip())
+
+    assert results == {"B"}
 
 
 def test_calculate_term_ic_map_uses_annotation_frequency_with_ancestor_propagation(sample_ontology):
@@ -387,6 +540,38 @@ def test_calculate_all_pairwise_similarities_multiprocessing_matches_single_thre
         threads=2,
     )
 
+    assert multiprocessing_pair_map == single_thread_pair_map
+    assert multiprocessing_ic_map == single_thread_ic_map
+
+
+def test_calculate_all_pairwise_similarities_multiprocessing_preserves_mica_tie_break():
+    ontology_terms = {
+        "R": {"id": "R", "name": "Root"},
+        "A": {"id": "A", "name": "Branch A", "is_a": ["R"]},
+        "B": {"id": "B", "name": "Branch B", "is_a": ["R"]},
+        "P": {"id": "P", "name": "Term P", "is_a": ["A", "B"]},
+        "Q": {"id": "Q", "name": "Term Q", "is_a": ["A", "B"]},
+        "X": {"id": "X", "name": "Term X", "is_a": ["A"]},
+        "C": {"id": "C", "name": "Unrelated term", "is_a": ["R"]},
+    }
+    annotation_records = [{"mp_term_id": "P"}, {"mp_term_id": "Q"}, {"mp_term_id": "C"}]
+    term_ids = set(ontology_terms)
+
+    single_thread_pair_map, single_thread_ic_map = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        genewise_phenotype_significants=annotation_records,
+        threads=1,
+    )
+    multiprocessing_pair_map, multiprocessing_ic_map = calculate_all_pairwise_similarities(
+        ontology_terms,
+        term_ids,
+        genewise_phenotype_significants=annotation_records,
+        threads=2,
+    )
+
+    assert set(single_thread_pair_map[("P", "Q")]) == {"B"}
+    assert single_thread_pair_map[("P", "Q")]["B"] > 0.0
     assert multiprocessing_pair_map == single_thread_pair_map
     assert multiprocessing_ic_map == single_thread_ic_map
 

@@ -49,6 +49,9 @@
 - Align Phenodigm calculation with the original paper  
   Issue: [#170](https://github.com/akikuno/TSUMUGI-dev/issues/170)  
 
+- Make MICA tie-breaking deterministic using ontology descendant counts  
+  Issue: [#180](https://github.com/akikuno/TSUMUGI-dev/issues/180)  
+
 
 ### 🔧 Maintenance
 
