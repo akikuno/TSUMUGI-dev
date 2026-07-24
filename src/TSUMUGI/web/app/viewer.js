@@ -96,7 +96,18 @@ const mapPhenotypeToId = loadJSON("../data/mp_term_id_lookup.json") || {};
 const mapPhenotypeToTopLevelModules = loadJSON("../data/mp_top_level_module_lookup.json") || {};
 setPageTitle(pageConfig, mapSymbolToId, mapPhenotypeToId);
 
-const elements = loadElementsForConfig(pageConfig);
+let elements;
+try {
+    elements = await loadElementsForConfig(pageConfig);
+} catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load network data.";
+    console.error("Failed to construct network:", error);
+    if (isGeneSymbolPage || isGeneListPage) {
+        updateNoNodesMessage(true);
+    }
+    renderEmptyState(message);
+    throw error;
+}
 if (!elements || elements.length === 0) {
     if (isGeneSymbolPage) {
         updateNoNodesMessage(true);

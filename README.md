@@ -45,7 +45,8 @@ Paste multiple genes (one per line). This extracts phenotypically similar genes 
 
 > [!CAUTION]  
 > If no similar genes are found: `No similar phenotypes were found among the entered genes.`  
-> If the generated network contains 200 or more genes: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> Gene List accepts up to 200 distinct available genes. Duplicate symbols and blank lines are removed before counting.
+> Unavailable symbols are reported and excluded. A list with 201 or more available genes is rejected before network data are loaded.
 
 ### 📥 Download data
 
@@ -84,7 +85,9 @@ Example:
 The page transitions and draws the network automatically.
 
 > [!IMPORTANT]  
-> Gene pairs with **3 or more shared abnormal phenotypes** and **phenotypic similarity > 0.0** are visualized.
+> Gene and Phenotype pages visualize gene pairs with **3 or more shared abnormal phenotype contexts** and
+> **phenotypic similarity > 0.0**. Gene List retains pairs with **1 or more shared abnormal phenotype contexts**
+> among the submitted genes.
 
 ### Network panel
 **Nodes** represent genes. Click to see the list of abnormal phenotypes observed in that KO mouse; drag to rearrange positions.  

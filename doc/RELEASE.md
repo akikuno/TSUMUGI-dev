@@ -13,6 +13,13 @@
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 -->
 
+## v1.1.1 (2026-MM-DD)
+
+### 🐛 Bug Fixes
+
+- Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning  
+  Issue: [#182](https://github.com/akikuno/TSUMUGI-dev/issues/182)  
+
 
 ## v1.1.0 (2026-07-22)
 

@@ -357,6 +357,46 @@ def test_find_optimal_scores_ignores_non_target_metadata_pairs():
     assert optimal_score == 10
 
 
+def test_find_optimal_scores_moves_toward_higher_threshold_for_too_many_genes():
+    related_genes = {"GeneA", "GeneB", "GeneC", "GeneD", "GeneE"}
+    pairwise_similarity_annotations = {
+        ("GeneA", "GeneB"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 40},
+        ("GeneA", "GeneC"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 30},
+        ("GeneA", "GeneD"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 20},
+        ("GeneA", "GeneE"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 10},
+    }
+
+    optimal_score = network_constructor._find_optimal_scores(
+        [10, 20, 30, 40],
+        related_genes,
+        pairwise_similarity_annotations,
+        low_threshold=3,
+        high_threshold=3,
+    )
+
+    assert optimal_score == 30
+
+
+def test_find_optimal_scores_moves_toward_lower_threshold_for_too_few_genes():
+    related_genes = {"GeneA", "GeneB", "GeneC", "GeneD", "GeneE"}
+    pairwise_similarity_annotations = {
+        ("GeneA", "GeneB"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 40},
+        ("GeneA", "GeneC"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 30},
+        ("GeneA", "GeneD"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 20},
+        ("GeneA", "GeneE"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 10},
+    }
+
+    optimal_score = network_constructor._find_optimal_scores(
+        [10, 20, 30, 40],
+        related_genes,
+        pairwise_similarity_annotations,
+        low_threshold=5,
+        high_threshold=5,
+    )
+
+    assert optimal_score == 10
+
+
 def test_build_pairwise_adjacency_index_indexes_both_genes():
     pairwise_similarity_annotations = {
         ("GeneA", "GeneB"): {"phenotype_shared_annotations": ["P1"], "phenotype_similarity_score": 10},
@@ -445,7 +485,7 @@ def test_filter_related_genes_ranks_only_target_metadata_matching_pairs(monkeypa
     assert filtered_genes_with_candidates == {"GeneA", "GeneB"}
 
 
-def test_build_gene_network_json_uses_indexed_induced_pairs(tmp_path):
+def test_build_gene_network_json_writes_complete_direct_edges_for_both_endpoints(tmp_path):
     genewise_phenotype_significants = [
         {
             "mp_term_name": "phenotype 1",
@@ -486,15 +526,74 @@ def test_build_gene_network_json_uses_indexed_induced_pairs(tmp_path):
     )
 
     with gzip.open(tmp_path / "GeneA.json.gz", "rt", encoding="utf-8") as f:
-        network_json = json.load(f)
+        gene_a_asset = json.load(f)
+    with gzip.open(tmp_path / "GeneB.json.gz", "rt", encoding="utf-8") as f:
+        gene_b_asset = json.load(f)
 
-    edge_pairs = {
+    gene_a_edge_pairs = {
         (element["data"]["source"], element["data"]["target"])
-        for element in network_json
-        if "source" in element["data"]
+        for element in gene_a_asset["direct_edges"]
+    }
+    gene_b_edge_pairs = {
+        (element["data"]["source"], element["data"]["target"])
+        for element in gene_b_asset["direct_edges"]
     }
 
-    assert edge_pairs == {("GeneA", "GeneB"), ("GeneA", "GeneC"), ("GeneB", "GeneC")}
+    assert gene_a_asset["schema_version"] == 2
+    assert gene_a_asset["node"]["data"]["id"] == "GeneA"
+    assert gene_a_edge_pairs == {("GeneA", "GeneB"), ("GeneA", "GeneC")}
+    assert gene_b_edge_pairs == {("GeneA", "GeneB"), ("GeneB", "GeneC")}
+
+    gene_a_to_b = next(
+        edge["data"]
+        for edge in gene_a_asset["direct_edges"]
+        if edge["data"]["target"] == "GeneB"
+    )
+    assert gene_a_to_b["phenotype_similarity_score"] == 10
+    assert gene_a_to_b["shared_context_count"] == 1
+    assert "edge_size" not in gene_a_to_b
+    manifest = json.loads((tmp_path / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["pair_count"] == 3
+    assert manifest["edge_copy_count"] == 6
+    assert manifest["gene_count"] == 3
+
+
+def test_build_gene_network_json_is_byte_deterministic(tmp_path):
+    genewise_phenotype_significants = [
+        {
+            "mp_term_name": "phenotype 1",
+            "marker_symbol": gene,
+            "zygosity": "Homo",
+            "life_stage": "Early",
+            "sexual_dimorphism": "None",
+            "effect_size": 1.0,
+        }
+        for gene in ["GeneA", "GeneB"]
+    ]
+    pairwise_similarity_annotations = [
+        {
+            "gene1_symbol": "GeneA",
+            "gene2_symbol": "GeneB",
+            "phenotype_shared_annotations": [_phenotype_annotation("phenotype 1")],
+            "phenotype_similarity_score": 10,
+        }
+    ]
+
+    network_constructor.build_gene_network_json(
+        genewise_phenotype_significants,
+        pairwise_similarity_annotations,
+        {},
+        tmp_path,
+    )
+    first = (tmp_path / "GeneA.json.gz").read_bytes()
+    network_constructor.build_gene_network_json(
+        genewise_phenotype_significants,
+        pairwise_similarity_annotations,
+        {},
+        tmp_path,
+    )
+
+    assert (tmp_path / "GeneA.json.gz").read_bytes() == first
 
 
 def test_build_phenotype_network_json_requires_target_metadata_match(tmp_path):

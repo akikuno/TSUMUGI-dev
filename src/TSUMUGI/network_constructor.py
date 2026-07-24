@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 import gzip
+import hashlib
+import io
 import json
 import math
 import random
+import tempfile
+import zlib
 from collections import defaultdict
+from collections.abc import Iterable
+from contextlib import ExitStack
 from itertools import combinations
 from pathlib import Path
+from typing import Any
 
 from tqdm import tqdm
 
@@ -26,6 +33,8 @@ ZYGOSITY_MAP = {
 MAX_GENE_COUNT = 150
 GENE_COUNT_LOWER_BOUND = 100
 GENE_COUNT_UPPER_BOUND = 150
+GENE_ASSET_SCHEMA_VERSION = 2
+DIRECT_EDGE_BUCKET_COUNT = 256
 
 ###############################################################################
 # Compose datasets
@@ -381,9 +390,9 @@ def _find_optimal_scores(
         if low_threshold <= n <= high_threshold:
             return sorted_scores[mid]
         elif n < low_threshold:
-            low = mid + 1
-        else:
             high = mid - 1
+        else:
+            low = mid + 1
     return -1
 
 
@@ -687,115 +696,180 @@ def _build_node_info(
     return node
 
 
+def _build_direct_edge_info(
+    record: dict[str, Any],
+) -> dict[str, dict[str, str | list[str] | int]]:
+    gene1, gene2 = sorted([str(record["gene1_symbol"]), str(record["gene2_symbol"])])
+    shared_annotations = record.get("phenotype_shared_annotations", [])
+    phenotypes = {
+        _create_phenotype_annotation_string(
+            annotation["mp_term_name"],
+            annotation["zygosity"],
+            annotation.get("life_stage", ""),
+            annotation.get("sexual_dimorphism", ""),
+        )
+        for annotation in shared_annotations
+    }
+    return {
+        "data": {
+            "source": gene1,
+            "target": gene2,
+            "phenotype": sorted(phenotypes),
+            "phenotype_similarity_score": int(record.get("phenotype_similarity_score", 0)),
+            "shared_context_count": len(shared_annotations),
+        }
+    }
+
+
+def _direct_edge_bucket_index(gene: str, bucket_count: int) -> int:
+    return zlib.crc32(gene.encode("utf-8")) % bucket_count
+
+
+def _write_direct_edge_buckets(
+    pairwise_similarity_annotations: Iterable[dict[str, Any]],
+    bucket_paths: list[Path],
+    min_shared_annotations: int,
+    min_phenotype_similarity_score: int,
+) -> int:
+    pair_count = 0
+    with ExitStack() as stack:
+        handles = [
+            stack.enter_context(path.open("w", encoding="utf-8"))
+            for path in bucket_paths
+        ]
+        for record in pairwise_similarity_annotations:
+            shared_annotations = record.get("phenotype_shared_annotations", [])
+            score = int(record.get("phenotype_similarity_score", 0))
+            if len(shared_annotations) < min_shared_annotations or score < min_phenotype_similarity_score:
+                continue
+            pair_count += 1
+
+            edge = _build_direct_edge_info(record)
+            edge_json = json.dumps(edge, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+            source = str(edge["data"]["source"])
+            target = str(edge["data"]["target"])
+            for gene in (source, target):
+                bucket_index = _direct_edge_bucket_index(gene, len(bucket_paths))
+                handles[bucket_index].write(f"{gene}\t{edge_json}\n")
+    return pair_count
+
+
+def _write_deterministic_json_gz(path: Path, payload: Any) -> None:
+    with path.open("wb") as raw_file:
+        with gzip.GzipFile(fileobj=raw_file, mode="wb", compresslevel=9, mtime=0) as gzip_file:
+            with io.TextIOWrapper(gzip_file, encoding="utf-8") as text_file:
+                json.dump(
+                    payload,
+                    text_file,
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                    sort_keys=True,
+                )
+
+
+def _write_gene_assets_from_bucket(
+    bucket_path: Path,
+    gene_records_map: dict[str, list[dict[str, str | float]]],
+    disease_annotations_composed: dict[str, set[str]],
+    output_dir: Path,
+    hide_effect_size: bool,
+) -> list[dict[str, str | int]]:
+    edges_by_gene: dict[str, dict[tuple[str, str], dict[str, Any]]] = defaultdict(dict)
+    with bucket_path.open(encoding="utf-8") as f:
+        for line in f:
+            gene, edge_json = line.rstrip("\n").split("\t", 1)
+            edge = json.loads(edge_json)
+            data = edge["data"]
+            pair = (str(data["source"]), str(data["target"]))
+            existing = edges_by_gene[gene].get(pair)
+            if existing is not None and existing != edge:
+                raise ValueError(f"Conflicting direct edge payload for {pair[0]} and {pair[1]}")
+            edges_by_gene[gene][pair] = edge
+
+    manifest_entries = []
+    for gene in sorted(edges_by_gene):
+        direct_edges = [
+            edges_by_gene[gene][pair]
+            for pair in sorted(edges_by_gene[gene])
+        ]
+        node = _build_node_info(
+            gene,
+            gene_records_map,
+            disease_annotations_composed,
+            gene,
+            hide_effect_size=hide_effect_size,
+        )
+        asset = {
+            "schema_version": GENE_ASSET_SCHEMA_VERSION,
+            "gene": gene,
+            "node": node,
+            "direct_edges": direct_edges,
+        }
+        output_json = output_dir / f"{gene}.json.gz"
+        _write_deterministic_json_gz(output_json, asset)
+        manifest_entries.append(
+            {
+                "gene": gene,
+                "bytes": output_json.stat().st_size,
+                "sha256": hashlib.sha256(output_json.read_bytes()).hexdigest(),
+            }
+        )
+    return manifest_entries
+
+
 def build_gene_network_json(
     genewise_phenotype_significants: list[dict[str, str | float]],
-    pairwise_similarity_annotations: dict[tuple[str], dict[str, dict[str, str] | int]],
+    pairwise_similarity_annotations: Iterable[dict[str, Any]],
     disease_annotations_by_gene: dict[str, dict[str, str]],
     output_dir,
     hide_effect_size: bool = True,
+    min_shared_annotations: int = 1,
+    min_phenotype_similarity_score: int = 1,
 ) -> None:
-    gene_records_map, pairwise_similarity_annotations_composed, disease_annotations_composed = _compose_dataset(
-        genewise_phenotype_significants, pairwise_similarity_annotations, disease_annotations_by_gene
-    )
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for stale_path in output_dir.glob("*.json.gz"):
+        stale_path.unlink()
+    manifest_path = output_dir / "manifest.json"
+    if manifest_path.exists():
+        manifest_path.unlink()
 
-    pairwise_adjacency_index = _build_pairwise_adjacency_index(pairwise_similarity_annotations_composed)
-    gene_sets = set(pairwise_adjacency_index.keys())
+    gene_records_map = _compose_genewise_phenotype_significants(genewise_phenotype_significants)
+    disease_annotations_composed = _compose_disease_annotations_by_allele(disease_annotations_by_gene)
 
-    for target_gene in tqdm(gene_sets, total=len(gene_sets)):
-        related_pairs_with_target_gene = pairwise_adjacency_index.get(target_gene, [])
-        related_genes = {target_gene}
-        for genes in related_pairs_with_target_gene:
-            gene1, gene2 = genes
-            related_genes.add(gene1)
-            related_genes.add(gene2)
-
-        # Skip if less than 2 related genes
-        if len(related_genes) < 2:
-            continue
-
-        related_pairs = _collect_induced_gene_pairs(related_genes, pairwise_adjacency_index)
-
-        # Filter genes if more than MAX_GENE_COUNT
-        if len(related_genes) > MAX_GENE_COUNT:
-            related_genes_filtered = _filter_related_genes(
-                genewise_phenotype_significants,
-                related_genes,
-                pairwise_similarity_annotations_composed,
-                candidate_pairs=related_pairs,
-            )
-            related_genes_filtered.add(target_gene)
-            related_pairs = [
-                pairs
-                for pairs in related_pairs
-                if pairs[0] in related_genes_filtered and pairs[1] in related_genes_filtered
-            ]
-
-        # ---------------------------------------
-        # Nodes
-        # ---------------------------------------
-        nodes_json = []
-        visited_genes = set()
-        for pair in related_pairs:
-            gene1, gene2 = pair
-            if gene1 not in visited_genes:
-                visited_genes.add(gene1)
-                node_json = _build_node_info(
-                    gene1,
-                    gene_records_map,
-                    disease_annotations_composed,
-                    target_gene,
-                    hide_effect_size=hide_effect_size,
-                )
-                nodes_json.append(node_json)
-            if gene2 not in visited_genes:
-                visited_genes.add(gene2)
-                node_json = _build_node_info(
-                    gene2,
-                    gene_records_map,
-                    disease_annotations_composed,
-                    target_gene,
-                    hide_effect_size=hide_effect_size,
-                )
-                nodes_json.append(node_json)
-
-        # Sort nodes for stability
-        nodes_json.sort(key=lambda x: x["data"]["id"])
-        # ---------------------------------------
-        # Edges
-        # ---------------------------------------
-        pairwise_similarity_annotations_filtered = {
-            pair: pairwise_similarity_annotations_composed[pair] for pair in related_pairs
-        }
-
-        if not pairwise_similarity_annotations_filtered:
-            return []
-
-        # Scale phenotype similarity scores to 1-100
-        pairwise_similarity_annotations_scaled = _scale_phenotype_similarity_scores(
-            pairwise_similarity_annotations_filtered, target_gene
+    with tempfile.TemporaryDirectory(prefix="tsumugi-gene-assets-", dir=output_dir.parent) as temp_dir:
+        temp_path = Path(temp_dir)
+        bucket_paths = [
+            temp_path / f"direct-edges-{bucket_index:03d}.jsonl"
+            for bucket_index in range(DIRECT_EDGE_BUCKET_COUNT)
+        ]
+        pair_count = _write_direct_edge_buckets(
+            pairwise_similarity_annotations,
+            bucket_paths,
+            min_shared_annotations,
+            min_phenotype_similarity_score,
         )
-
-        edges_json = []
-        for pair in related_pairs:
-            gene1, gene2 = sorted(pair)
-            phenotypes = pairwise_similarity_annotations_scaled[pair]["phenotype_shared_annotations"]
-            phenodigm_score = pairwise_similarity_annotations_scaled[pair]["phenotype_similarity_score"]
-            edges_json.append(
-                {
-                    "data": {
-                        "source": gene1,
-                        "target": gene2,
-                        "phenotype": sorted(phenotypes),
-                        "edge_size": phenodigm_score,
-                    }
-                }
+        manifest_entries = []
+        for bucket_path in tqdm(bucket_paths, desc="Writing complete gene assets"):
+            manifest_entries.extend(
+                _write_gene_assets_from_bucket(
+                    bucket_path,
+                    gene_records_map,
+                    disease_annotations_composed,
+                    output_dir,
+                    hide_effect_size,
+                )
             )
-
-        # Sort nodes for stability
-        edges_json.sort(key=lambda e: (e["data"]["source"], e["data"]["target"]))
-
-        network_json = nodes_json + edges_json
-
-        output_json = Path(output_dir / f"{target_gene}.json.gz")
-        with gzip.open(output_json, "wt", encoding="utf-8") as f:
-            json.dump(network_json, f, indent=4)
+        manifest = {
+            "schema_version": GENE_ASSET_SCHEMA_VERSION,
+            "min_shared_annotations": min_shared_annotations,
+            "min_phenotype_similarity_score": min_phenotype_similarity_score,
+            "gene_count": len(manifest_entries),
+            "pair_count": pair_count,
+            "edge_copy_count": pair_count * 2,
+            "files": sorted(manifest_entries, key=lambda entry: str(entry["gene"])),
+        }
+        manifest_path.write_text(
+            json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )

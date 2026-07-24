@@ -89,8 +89,17 @@ def write_binary_phenotypes_txt(records_significants, TEMPDIR: Path, output_file
 
 # available gene symbols
 def write_available_gene_symbols_txt(TEMPDIR: Path, output_file: Path) -> None:
+    module_paths = sorted(Path(TEMPDIR, "network", "genesymbol_modules").glob("*.json.gz"))
+    source_paths = module_paths or sorted(Path(TEMPDIR, "network", "genesymbol").glob("*.json.gz"))
     with open(output_file, "w") as f:
-        for path_genesymbol in Path(TEMPDIR, "network", "genesymbol").glob("*.json.gz"):
+        for path_genesymbol in source_paths:
+            gene_symbol = path_genesymbol.name.replace(".json.gz", "")
+            f.write(f"{gene_symbol}\n")
+
+
+def write_available_gene_list_symbols_txt(TEMPDIR: Path, output_file: Path) -> None:
+    with open(output_file, "w") as f:
+        for path_genesymbol in sorted(Path(TEMPDIR, "network", "genesymbol").glob("*.json.gz")):
             gene_symbol = path_genesymbol.name.replace(".json.gz", "")
             f.write(f"{gene_symbol}\n")
 

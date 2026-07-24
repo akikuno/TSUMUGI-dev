@@ -20,6 +20,19 @@ export function loadJSONGz(url) {
     return result;
 }
 
+export async function fetchJSONGz(url) {
+    const response = await fetch(url, { cache: "no-cache" });
+    if (!response.ok) {
+        throw new Error(`Failed to load ${url}: HTTP ${response.status}`);
+    }
+    const compressedData = new Uint8Array(await response.arrayBuffer());
+    try {
+        return JSON.parse(window.pako.ungzip(compressedData, { to: "string" }));
+    } catch (error) {
+        throw new Error(`Failed to decode ${url}: ${error.message}`);
+    }
+}
+
 export function loadJSON(url) {
     const req = new XMLHttpRequest();
     let result = null;

@@ -69,3 +69,21 @@ def test_write_mp_term_id_lookup(tmp_path):
         "phenotype_alpha": "MP:0001",  # picks most frequent ID
         "phenotype_beta": "MP:0002",  # included when available and has ID
     }
+
+
+def test_gene_symbol_lists_separate_gene_pages_from_gene_list_assets(tmp_path):
+    gene_dir = tmp_path / "network" / "genesymbol"
+    module_dir = tmp_path / "network" / "genesymbol_modules"
+    gene_dir.mkdir(parents=True)
+    module_dir.mkdir(parents=True)
+    _write_network(gene_dir / "GeneA.json.gz", {})
+    _write_network(gene_dir / "GeneB.json.gz", {})
+    _write_network(module_dir / "GeneA.json.gz", {})
+
+    gene_output = tmp_path / "available_gene_symbols.txt"
+    gene_list_output = tmp_path / "available_gene_list_symbols.txt"
+    report_generator.write_available_gene_symbols_txt(tmp_path, gene_output)
+    report_generator.write_available_gene_list_symbols_txt(tmp_path, gene_list_output)
+
+    assert gene_output.read_text(encoding="utf-8") == "GeneA\n"
+    assert gene_list_output.read_text(encoding="utf-8") == "GeneA\nGeneB\n"
