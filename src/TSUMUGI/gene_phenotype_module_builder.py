@@ -369,10 +369,7 @@ def _scale_gene_display_scores(scores: list[int]) -> dict[int, int]:
     maximum = max(scores)
     if minimum == maximum:
         return dict.fromkeys(set(scores), 100)
-    return {
-        score: int(1 + ((score - minimum) * 99 / (maximum - minimum)))
-        for score in set(scores)
-    }
+    return {score: int(1 + ((score - minimum) * 99 / (maximum - minimum))) for score in set(scores)}
 
 
 def _build_gene_display_network(

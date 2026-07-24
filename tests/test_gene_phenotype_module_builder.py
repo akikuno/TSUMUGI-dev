@@ -263,9 +263,7 @@ def test_build_gene_display_network_selects_direct_neighbors_then_induces_edges(
 
     node_ids = {element["data"]["id"] for element in network if "id" in element["data"]}
     edge_pairs = {
-        (element["data"]["source"], element["data"]["target"])
-        for element in network
-        if "source" in element["data"]
+        (element["data"]["source"], element["data"]["target"]) for element in network if "source" in element["data"]
     }
     assert node_ids == {"GeneA", "GeneB", "GeneC"}
     assert edge_pairs == {

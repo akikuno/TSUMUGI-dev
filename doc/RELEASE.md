@@ -21,7 +21,20 @@
   Issue: [#182](https://github.com/akikuno/TSUMUGI-dev/issues/182)  
 
 
-## v1.1.0 (2026-07-22)
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+
+<details>
+<summary> v1.1.0 (2026-07-22) </summary>
 
 ### 🖼️ User Interface
 
@@ -76,18 +89,8 @@
 - Standardize “Severity” terminology to “Effect size” in TSUMUGI  
   Issue: [#177](https://github.com/akikuno/TSUMUGI-dev/issues/177)  
 
-<!-- ############################################################ # -->
-
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
 </details>
-============================================================= -->
+
 
 <details>
 <summary> v1.0.2 (2026-02-03) </summary>

@@ -21,9 +21,7 @@ def test_available_mp_terms_exclude_empty_networks(tmp_path):
     report_generator.write_available_mp_terms_json(tmp_path, output_json)
 
     assert output_txt.read_text(encoding="utf-8") == "available phenotype\n"
-    assert json.loads(output_json.read_text(encoding="utf-8")) == {
-        "available phenotype": "available_phenotype"
-    }
+    assert json.loads(output_json.read_text(encoding="utf-8")) == {"available phenotype": "available_phenotype"}
 
 
 def test_binary_phenotypes_exclude_empty_networks(tmp_path):

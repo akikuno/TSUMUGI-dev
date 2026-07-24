@@ -733,10 +733,7 @@ def _write_direct_edge_buckets(
 ) -> int:
     pair_count = 0
     with ExitStack() as stack:
-        handles = [
-            stack.enter_context(path.open("w", encoding="utf-8"))
-            for path in bucket_paths
-        ]
+        handles = [stack.enter_context(path.open("w", encoding="utf-8")) for path in bucket_paths]
         for record in pairwise_similarity_annotations:
             shared_annotations = record.get("phenotype_shared_annotations", [])
             score = int(record.get("phenotype_similarity_score", 0))
@@ -788,10 +785,7 @@ def _write_gene_assets_from_bucket(
 
     manifest_entries = []
     for gene in sorted(edges_by_gene):
-        direct_edges = [
-            edges_by_gene[gene][pair]
-            for pair in sorted(edges_by_gene[gene])
-        ]
+        direct_edges = [edges_by_gene[gene][pair] for pair in sorted(edges_by_gene[gene])]
         node = _build_node_info(
             gene,
             gene_records_map,
@@ -840,8 +834,7 @@ def build_gene_network_json(
     with tempfile.TemporaryDirectory(prefix="tsumugi-gene-assets-", dir=output_dir.parent) as temp_dir:
         temp_path = Path(temp_dir)
         bucket_paths = [
-            temp_path / f"direct-edges-{bucket_index:03d}.jsonl"
-            for bucket_index in range(DIRECT_EDGE_BUCKET_COUNT)
+            temp_path / f"direct-edges-{bucket_index:03d}.jsonl" for bucket_index in range(DIRECT_EDGE_BUCKET_COUNT)
         ]
         pair_count = _write_direct_edge_buckets(
             pairwise_similarity_annotations,

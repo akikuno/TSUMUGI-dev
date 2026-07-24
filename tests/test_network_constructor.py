@@ -531,12 +531,10 @@ def test_build_gene_network_json_writes_complete_direct_edges_for_both_endpoints
         gene_b_asset = json.load(f)
 
     gene_a_edge_pairs = {
-        (element["data"]["source"], element["data"]["target"])
-        for element in gene_a_asset["direct_edges"]
+        (element["data"]["source"], element["data"]["target"]) for element in gene_a_asset["direct_edges"]
     }
     gene_b_edge_pairs = {
-        (element["data"]["source"], element["data"]["target"])
-        for element in gene_b_asset["direct_edges"]
+        (element["data"]["source"], element["data"]["target"]) for element in gene_b_asset["direct_edges"]
     }
 
     assert gene_a_asset["schema_version"] == 2
@@ -544,11 +542,7 @@ def test_build_gene_network_json_writes_complete_direct_edges_for_both_endpoints
     assert gene_a_edge_pairs == {("GeneA", "GeneB"), ("GeneA", "GeneC")}
     assert gene_b_edge_pairs == {("GeneA", "GeneB"), ("GeneB", "GeneC")}
 
-    gene_a_to_b = next(
-        edge["data"]
-        for edge in gene_a_asset["direct_edges"]
-        if edge["data"]["target"] == "GeneB"
-    )
+    gene_a_to_b = next(edge["data"] for edge in gene_a_asset["direct_edges"] if edge["data"]["target"] == "GeneB")
     assert gene_a_to_b["phenotype_similarity_score"] == 10
     assert gene_a_to_b["shared_context_count"] == 1
     assert "edge_size" not in gene_a_to_b

@@ -64,8 +64,7 @@ def write_mp_term_id_lookup(records_significants, available_mp_terms_file: Path,
 # binary phenotypes
 def write_binary_phenotypes_txt(records_significants, TEMPDIR: Path, output_file: Path) -> None:
     available_mp_terms = {
-        path.name.replace(".json.gz", "").replace("_", " ")
-        for path in _iter_nonempty_phenotype_network_paths(TEMPDIR)
+        path.name.replace(".json.gz", "").replace("_", " ") for path in _iter_nonempty_phenotype_network_paths(TEMPDIR)
     }
 
     mp_term_names_effect_size = defaultdict(set)
