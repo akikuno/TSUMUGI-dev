@@ -397,6 +397,19 @@ const cy = cytoscape({
             },
         },
         {
+            selector: "node.disease-highlight.phenotype-highlight",
+            style: {
+                "border-width": 5,
+                "border-color": "#3FA7D6",
+                "outline-width": 5,
+                "outline-style": "solid",
+                "outline-color": "#fc4c00",
+                "outline-opacity": 1,
+                "outline-offset": 3,
+                "bounds-expansion": 8,
+            },
+        },
+        {
             selector: ".export-module-frame-box",
             style: {
                 shape: "rectangle",

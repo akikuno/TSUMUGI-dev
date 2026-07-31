@@ -15,9 +15,14 @@
 
 ## v1.1.1 (2026-MM-DD)
 
+### 🖼️ User Interface
+
+- Render overlapping Human Disease and Phenotype highlights as concentric rings<br>
+  Issue: [#158](https://github.com/akikuno/TSUMUGI-dev/issues/158)
+
 ### 🐛 Bug Fixes
 
-- Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning  
+- Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning<br>
   Issue: [#182](https://github.com/akikuno/TSUMUGI-dev/issues/182)  
 
 
