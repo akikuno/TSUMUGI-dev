@@ -22,6 +22,7 @@
 
 - Render overlapping Human Disease and Phenotype highlights as concentric rings<br>
   Issue: [#158](https://github.com/akikuno/TSUMUGI-dev/issues/158)
+  Thanks @aki2274 for reporting the issue!!
 
 - Consolidate phenotype highlight options across genotype, life-stage, and sex metadata<br>
   Issue: [#183](https://github.com/akikuno/TSUMUGI-dev/issues/183)
