@@ -469,3 +469,44 @@ def test_exclude_specific_phenotype_genewise(mock_stdout, setup_test_files):
     assert len(output) == 4
     assert {record["marker_symbol"] for record in output} == {"GeneD", "GeneE"}
     assert all(record["marker_symbol"] not in {"GeneA", "GeneB", "GeneC"} for record in output)
+
+
+@patch("sys.stdout", new_callable=StringIO)
+def test_include_specific_phenotype_round_trips_null_effect_size(
+    mock_stdout,
+    tmp_path,
+    test_obo_content,
+):
+    path_obo = tmp_path / "test.obo"
+    path_genewise = tmp_path / "genewise.jsonl"
+    path_obo.write_text(test_obo_content, encoding="utf-8")
+    path_genewise.write_text(
+        json.dumps(
+            {
+                "mp_term_name": "vertebral transformation",
+                "mp_term_id": "MP:0000002",
+                "significant": True,
+                "zygosity": "Homo",
+                "life_stage": "Early",
+                "sexual_dimorphism": "Male",
+                "marker_symbol": "GeneA",
+                "effect_size": None,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    include_specific_phenotype(
+        path_pairwise_similarity_annotations=None,
+        path_genewise_phenotype_annotations=path_genewise,
+        path_obo=path_obo,
+        mp_term_id="MP:0000002",
+        is_pairwise=False,
+    )
+
+    output = json.loads(
+        mock_stdout.getvalue(),
+        parse_constant=lambda value: pytest.fail(f"Nonstandard JSON constant: {value}"),
+    )
+    assert output["effect_size"] is None

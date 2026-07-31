@@ -50,7 +50,7 @@ TSUMUGI publie des JSONL compressés en gzip.
 - Symbole génétique (ex. "1110059G10Rik")  
 - Marker accession ID (ex. "MGI:1913452")  
 - Nom/ID de phénotype (ex. "fused joints", "MP:0000137")  
-- Effect size (ex. 0.0, 1.324)  
+- Effect size (`number` ou `null` ; ex. 0.0, 1.324)
 - Significativité (True/false)  
 - Zygosité ("Homo", "Hetero", "Hemi")  
 - Stade de vie ("Embryo", "Early", "Interval", "Late")  
@@ -94,7 +94,7 @@ Réglez l’affichage réseau dans le panneau de gauche.
 
 #### Filtre par effect size
 `Effect size` filtre les nœuds selon la magnitude de l'effect size dérivé de l'IMPC lorsqu'il est disponible.
-Les effect sizes manquants restent manquants, ne sont pas convertis en zéro et leurs nœuds sont affichés en blanc.
+Les effect sizes manquants sont sérialisés dans JSONL avec la valeur JSON standard `null`, restent sémantiquement manquants au lieu d’être convertis en zéro et leurs nœuds sont affichés en blanc.
 > Masqué pour les phénotypes binaires (ex. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); liste binaire [ici](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou l’entrée d’un seul gène.
 
 #### Spécifier le génotype

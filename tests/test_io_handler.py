@@ -6,7 +6,9 @@ import pytest
 
 from TSUMUGI.io_handler import (
     parse_obo_file,
+    read_jsonl,
     write_jsonl,
+    write_jsonl_to_stdout,
 )
 
 # Define test cases.
@@ -119,13 +121,71 @@ def test_write_jsonl_accepts_gzip_compresslevel(tmp_path):
         assert [json.loads(line) for line in f] == records
 
 
-def test_write_jsonl_round_trips_nan(tmp_path):
-    output_path = tmp_path / "records.jsonl.gz"
-    records = [{"effect_size": float("nan")}]
+def _reject_nonstandard_constant(value):
+    raise ValueError(f"Nonstandard JSON constant: {value}")
 
-    write_jsonl(records, output_path, compresslevel=1)
+
+def test_write_jsonl_serializes_missing_effect_size_as_null(tmp_path):
+    output_path = tmp_path / "records.jsonl.gz"
+    record = {"effect_size": float("nan")}
+
+    write_jsonl([record], output_path, compresslevel=1)
 
     with gzip.open(output_path, "rt", encoding="utf-8") as f:
-        loaded = [json.loads(line) for line in f]
+        raw_line = f.read()
+
+    loaded_standard_json = json.loads(
+        raw_line,
+        parse_constant=_reject_nonstandard_constant,
+    )
+    loaded_tsumugi = list(read_jsonl(output_path))
+
+    assert '"effect_size": null' in raw_line
+    assert loaded_standard_json["effect_size"] is None
+    assert math.isnan(loaded_tsumugi[0]["effect_size"])
+    assert math.isnan(record["effect_size"])
+
+
+@pytest.mark.parametrize("effect_size", [0.0, 1.25, -2.5])
+def test_write_jsonl_preserves_finite_effect_size(tmp_path, effect_size):
+    output_path = tmp_path / "records.jsonl"
+
+    write_jsonl([{"effect_size": effect_size}], output_path)
+
+    loaded = json.loads(
+        output_path.read_text(encoding="utf-8"),
+        parse_constant=_reject_nonstandard_constant,
+    )
+    assert loaded["effect_size"] == effect_size
+
+
+def test_write_jsonl_to_stdout_serializes_missing_effect_size_as_null(capsys):
+    record = {"effect_size": float("nan")}
+
+    write_jsonl_to_stdout(record)
+
+    raw_line = capsys.readouterr().out
+    loaded = json.loads(raw_line, parse_constant=_reject_nonstandard_constant)
+    assert loaded["effect_size"] is None
+    assert math.isnan(record["effect_size"])
+
+
+def test_write_jsonl_rejects_nonfinite_values_outside_effect_size(tmp_path):
+    output_path = tmp_path / "records.jsonl"
+
+    with pytest.raises(ValueError, match="Out of range float values"):
+        write_jsonl(
+            [{"effect_size": 1.0, "phenotype_similarity_score": float("nan")}],
+            output_path,
+        )
+
+    assert output_path.read_text(encoding="utf-8") == ""
+
+
+def test_read_jsonl_accepts_legacy_nan_effect_size(tmp_path):
+    output_path = tmp_path / "legacy.jsonl"
+    output_path.write_text('{"effect_size": NaN}\n', encoding="utf-8")
+
+    loaded = list(read_jsonl(output_path))
 
     assert math.isnan(loaded[0]["effect_size"])

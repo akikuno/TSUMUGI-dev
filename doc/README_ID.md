@@ -50,7 +50,7 @@ TSUMUGI menyediakan file JSONL terkompresi gzip.
 - Simbol gen (contoh "1110059G10Rik")  
 - Marker accession ID (contoh "MGI:1913452")  
 - Nama/ID fenotipe (contoh "fused joints", "MP:0000137")  
-- Effect size (contoh 0.0, 1.324)  
+- Effect size (`number` atau `null`; contoh 0.0, 1.324)
 - Signifikansi (True/false)  
 - Zigositas ("Homo", "Hetero", "Hemi")  
 - Tahap hidup ("Embryo", "Early", "Interval", "Late")  
@@ -94,7 +94,7 @@ Menyesuaikan tampilan jaringan di panel kiri.
 
 #### Filter effect size
 `Effect size` memfilter node berdasarkan besar kecilnya effect size turunan IMPC jika tersedia.
-Effect size yang hilang tetap diperlakukan sebagai nilai hilang, tidak diubah menjadi nol, dan node terkait ditampilkan berwarna putih.
+Effect size yang hilang diserialisasi dalam JSONL sebagai JSON standar `null`, tetap bermakna sebagai nilai hilang alih-alih diubah menjadi nol, dan node terkait ditampilkan berwarna putih.
 > Disembunyikan untuk fenotipe biner (mis. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); daftar biner [di sini](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) atau input satu gen.
 
 #### Tentukan genotype

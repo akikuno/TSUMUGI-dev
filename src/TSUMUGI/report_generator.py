@@ -6,6 +6,8 @@ from collections import defaultdict
 from collections.abc import Iterator
 from pathlib import Path
 
+from TSUMUGI import io_handler
+
 
 def _iter_nonempty_phenotype_network_paths(TEMPDIR: Path) -> Iterator[Path]:
     """Yield phenotype network files that contain at least one element."""
@@ -117,26 +119,21 @@ def write_marker_symbol_accession_id_json(records_significants, TEMPDIR: Path, o
 
 
 def write_records_jsonl_gz(records, output_file: Path) -> None:
-    with gzip.open(output_file, "wt", encoding="utf-8") as f:
-        for record in records:
-            f.write(json.dumps(record) + "\n")
+    io_handler.write_jsonl(records, output_file)
 
 
 def write_pairwise_similarity_annotations(pairwise_similarity_annotations, output_file: Path) -> None:
-    with gzip.open(output_file, "wt", encoding="utf-8") as f:
+    def iter_records():
         for gene_pair, annotation in pairwise_similarity_annotations.items():
             gene1_symbol, gene2_symbol = sorted(gene_pair)
             if not annotation["phenotype_shared_annotations"]:
                 continue
             phenotype_similarity_score = annotation["phenotype_similarity_score"]
-            f.write(
-                json.dumps(
-                    {
-                        "gene1_symbol": gene1_symbol,
-                        "gene2_symbol": gene2_symbol,
-                        "phenotype_shared_annotations": annotation["phenotype_shared_annotations"],
-                        "phenotype_similarity_score": phenotype_similarity_score,
-                    }
-                )
-                + "\n"
-            )
+            yield {
+                "gene1_symbol": gene1_symbol,
+                "gene2_symbol": gene2_symbol,
+                "phenotype_shared_annotations": annotation["phenotype_shared_annotations"],
+                "phenotype_similarity_score": phenotype_similarity_score,
+            }
+
+    io_handler.write_jsonl(iter_records(), output_file)

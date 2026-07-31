@@ -50,7 +50,7 @@ TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
 - 유전자 심벌(예: "1110059G10Rik")  
 - 마커 Accession ID(예: "MGI:1913452")  
 - 표현형 명/ID(예: "fused joints", "MP:0000137")  
-- Effect size(예: 0.0, 1.324)  
+- Effect size(`number` 또는`null`, 예: 0.0, 1.324)
 - 유의성(True/false)  
 - Zygosity("Homo", "Hetero", "Hemi")  
 - Life stage("Embryo", "Early", "Interval", "Late")  
@@ -94,7 +94,7 @@ Gene 페이지는soft/fuzzy Top-level MP module을 사용하므로 하나의 유
 
 #### Effect size 필터
 `Effect size` 슬라이더로 사용 가능한 경우 IMPC-derived effect size의 크기에 따라 노드를 필터링합니다.
-누락된effect size는0으로 변환하지 않고 결측값으로 유지하며, 해당node는 흰색으로 표시합니다.
+누락된`effect_size`는JSONL에서 표준JSON의`null`로 직렬화합니다. 0으로 변환하지 않고 결측값으로 유지하며, 해당node는 흰색으로 표시합니다.
 > 이진 표현형(예: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 이진 목록은 [여기](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt))나 단일 유전자 입력 시에는 표시되지 않습니다.
 
 #### Genotype 지정

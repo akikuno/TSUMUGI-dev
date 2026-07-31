@@ -79,7 +79,7 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 - 遺伝子アクセッションID（Marker accession ID；例："MGI:1913452"）  
 - 表現型名（Phenotype term name；例："fused joints"）  
 - 表現型ID（Phenotype term ID；例："MP:0000137"）  
-- 効果量（Effect size；例：1.324）  
+- 効果量（Effect size；`number`または`null`、例：1.324）
 - 有意性（Statistical significance；True/false）  
 - 接合型（Zygosity；"Homo", "Hetero", "Hemi"）  
 - 発達段階（Life stage；"Embryo", "Early", "Interval", "Late"）  
@@ -147,7 +147,7 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 
 `Effect size`のスライダーでは、IMPC由来の効果量に基づいて、ノードの表示を調整できます。
 
-欠損したeffect sizeは0へ変換せず欠損値として保持し、該当するノードは白色で表示します。
+欠損した`effect_size`はJSONLで標準JSONの`null`として出力します。0ではなく欠損値として扱い、該当するノードは白色で表示します。
 
 > [!NOTE]
 > IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Effect size`のスライダーはありません。

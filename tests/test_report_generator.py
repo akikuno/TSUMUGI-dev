@@ -4,6 +4,10 @@ import json
 from TSUMUGI import report_generator
 
 
+def _reject_nonstandard_constant(value):
+    raise ValueError(f"Nonstandard JSON constant: {value}")
+
+
 def _write_network(path, network):
     with gzip.open(path, "wt", encoding="utf-8") as f:
         json.dump(network, f)
@@ -85,3 +89,44 @@ def test_gene_symbol_lists_separate_gene_pages_from_gene_list_assets(tmp_path):
 
     assert gene_output.read_text(encoding="utf-8") == "GeneA\n"
     assert gene_list_output.read_text(encoding="utf-8") == "GeneA\nGeneB\n"
+
+
+def test_write_records_jsonl_gz_uses_standard_json_null(tmp_path):
+    output_path = tmp_path / "records.jsonl.gz"
+
+    report_generator.write_records_jsonl_gz(
+        [{"marker_symbol": "GeneA", "effect_size": float("nan")}],
+        output_path,
+    )
+
+    with gzip.open(output_path, "rt", encoding="utf-8") as stream:
+        raw_line = stream.read()
+    record = json.loads(
+        raw_line,
+        parse_constant=_reject_nonstandard_constant,
+    )
+    assert record == {"marker_symbol": "GeneA", "effect_size": None}
+
+
+def test_write_pairwise_similarity_annotations_uses_standard_json(tmp_path):
+    output_path = tmp_path / "pairwise.jsonl.gz"
+    annotations = {
+        ("GeneB", "GeneA"): {
+            "phenotype_shared_annotations": [{"mp_term_name": "phenotype"}],
+            "phenotype_similarity_score": 42,
+        }
+    }
+
+    report_generator.write_pairwise_similarity_annotations(
+        annotations,
+        output_path,
+    )
+
+    with gzip.open(output_path, "rt", encoding="utf-8") as stream:
+        record = json.loads(stream.read())
+    assert record == {
+        "gene1_symbol": "GeneA",
+        "gene2_symbol": "GeneB",
+        "phenotype_shared_annotations": [{"mp_term_name": "phenotype"}],
+        "phenotype_similarity_score": 42,
+    }

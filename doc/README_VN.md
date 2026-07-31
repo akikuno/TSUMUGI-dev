@@ -50,7 +50,7 @@ TSUMUGI cung cấp file JSONL nén gzip.
 - Ký hiệu gen (ví dụ "1110059G10Rik")  
 - Marker accession ID (ví dụ "MGI:1913452")  
 - Tên/ID kiểu hình (ví dụ "fused joints", "MP:0000137")  
-- Effect size (ví dụ 0.0, 1.324)  
+- Effect size (`number` hoặc `null`; ví dụ 0.0, 1.324)
 - Ý nghĩa thống kê (True/false)  
 - Zygosity ("Homo", "Hetero", "Hemi")  
 - Giai đoạn sống ("Embryo", "Early", "Interval", "Late")  
@@ -94,7 +94,7 @@ Trang Gene sử dụng module Top-level MP soft/fuzzy, vì vậy một gen có t
 
 #### Lọc theo effect size
 `Effect size` lọc nút theo độ lớn của effect size từ IMPC khi có dữ liệu.
-Effect size bị thiếu được giữ là giá trị thiếu thay vì chuyển thành 0, và các nút tương ứng được hiển thị màu trắng.
+Effect size bị thiếu được tuần tự hóa trong JSONL thành giá trị JSON chuẩn `null`, vẫn mang ngữ nghĩa là giá trị thiếu thay vì chuyển thành 0, và các nút tương ứng được hiển thị màu trắng.
 > Ẩn cho kiểu hình nhị phân (ví dụ [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); danh sách nhị phân [tại đây](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) hoặc khi nhập một gen.
 
 #### Chỉ định kiểu gen

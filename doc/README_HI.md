@@ -50,7 +50,7 @@ TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित कर�
 - जीन प्रतीक (जैसे "1110059G10Rik")  
 - Marker accession ID (जैसे "MGI:1913452")  
 - फेनोटाइप नाम/ID (जैसे "fused joints", "MP:0000137")  
-- Effect size (जैसे 0.0, 1.324)  
+- Effect size (`number` या `null`; जैसे 0.0, 1.324)
 - Significance (True/false)  
 - Zygosity ("Homo", "Hetero", "Hemi")  
 - Life stage ("Embryo", "Early", "Interval", "Late")  
@@ -94,7 +94,7 @@ Gene पेज soft/fuzzy Top-level MP modules का उपयोग करत�
 
 #### Effect size से फ़िल्टर
 `Effect size` स्लाइडर उपलब्ध होने पर IMPC-derived effect size के परिमाण के आधार पर नोड्स को फ़िल्टर करता है。
-Missing effect sizes को zero में नहीं बदला जाता; वे missing रहते हैं और संबंधित nodes सफेद दिखते हैं।
+Missing effect sizes को JSONL में standard JSON `null` के रूप में serialize किया जाता है; वे semantically missing रहते हैं, zero में नहीं बदले जाते, और संबंधित nodes सफेद दिखते हैं।
 > द्विआधारी फेनोटाइप (उदाहरण: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); द्विआधारी सूची: [यहाँ](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) या एकल जीन इनपुट पर यह छिपा रहता है。
 
 #### Genotype निर्दिष्ट करें

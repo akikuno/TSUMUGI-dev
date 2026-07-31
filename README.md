@@ -57,7 +57,7 @@ TSUMUGI reports gzipped JSONL files.
 - Gene symbol (e.g., "1110059G10Rik")  
 - Marker accession ID (e.g., "MGI:1913452")  
 - Phenotype term name/ID (e.g., "fused joints", "MP:0000137")  
-- Effect size (e.g., 0.0, 1.324)  
+- Effect size (`number` or `null`; e.g., 0.0, 1.324)
 - Significance flag (true/false)  
 - Zygosity ("Homo", "Hetero", "Hemi")  
 - Life stage ("Embryo", "Early", "Interval", "Late")  
@@ -106,7 +106,7 @@ Adjust network display from the left panel.
 #### Filter by effect size
 `Effect size` slider filters nodes by the magnitude of the IMPC-derived effect size when available.
 
-Missing effect sizes remain missing rather than being converted to zero, and those nodes are shown in white.
+Missing effect sizes are serialized as standard JSON `null`, remain semantically missing rather than being converted to zero, and those nodes are shown in white.
 
 > [!NOTE]
 > Hidden for binary phenotypes (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binary list: 👉 [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or gene(s) input.

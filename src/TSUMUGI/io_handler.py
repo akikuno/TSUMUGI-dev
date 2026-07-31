@@ -3,14 +3,44 @@ from __future__ import annotations
 import csv
 import gzip
 import json
+import math
 import pickle
 import sys
 from collections.abc import Iterable, Iterator
+from numbers import Real
 from pathlib import Path
 
 from tqdm import tqdm
 
 from TSUMUGI import formatter
+
+
+def _prepare_jsonl_record(record: dict) -> dict:
+    """Return a JSON-safe record without mutating the input record."""
+    effect_size = record.get("effect_size")
+    if isinstance(effect_size, Real) and not math.isfinite(float(effect_size)):
+        prepared = dict(record)
+        prepared["effect_size"] = None
+        return prepared
+    return record
+
+
+def _restore_internal_missing_effect_size(record: dict) -> dict:
+    """Restore the internal NaN sentinel from a serialized null effect size."""
+    if "effect_size" in record and record["effect_size"] is None:
+        restored = dict(record)
+        restored["effect_size"] = float("nan")
+        return restored
+    return record
+
+
+def _serialize_jsonl_record(record: dict) -> str:
+    """Serialize one record as strict standard JSON."""
+    return json.dumps(
+        _prepare_jsonl_record(record),
+        ensure_ascii=False,
+        allow_nan=False,
+    )
 
 
 def count_newline(file_path: str | Path, chunk_size: int = 1024 * 1024) -> int:
@@ -140,7 +170,7 @@ def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
     if path_jsonl is None or str(path_jsonl) == "-" or path_jsonl == sys.stdin:
         for line in sys.stdin:
             if line.strip():
-                yield json.loads(line)
+                yield _restore_internal_missing_effect_size(json.loads(line))
         return
 
     # file / gzip
@@ -150,7 +180,7 @@ def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
     with open_func(p, "rt", encoding="utf-8") as f:
         for line in f:
             if line.strip():
-                yield json.loads(line)
+                yield _restore_internal_missing_effect_size(json.loads(line))
 
 
 def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None, compresslevel: int = 9) -> None:
@@ -172,15 +202,13 @@ def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None, compress
     message = f"Writing JSONL to {path_jsonl}"
     with open_func(p, "wt", encoding="utf-8") as f:
         for record in tqdm(records, desc=message):
-            json.dump(record, f, ensure_ascii=False)
-            f.write("\n")
+            f.write(_serialize_jsonl_record(record) + "\n")
 
 
 def write_jsonl_to_stdout(record: dict) -> None:
     """Write record as JSONL and suppress BrokenPipeError cleanly."""
     try:
-        json.dump(record, sys.stdout, ensure_ascii=False)
-        sys.stdout.write("\n")
+        sys.stdout.write(_serialize_jsonl_record(record) + "\n")
     except BrokenPipeError:
         try:
             sys.stdout.close()

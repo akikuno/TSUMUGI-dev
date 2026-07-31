@@ -50,7 +50,7 @@ TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
 - 基因符號（例："1110059G10Rik"）  
 - Marker accession ID（例："MGI:1913452"）  
 - 表現型名稱/ID（例："fused joints", "MP:0000137"）  
-- Effect size（例：0.0, 1.324）  
+- Effect size（`number`或`null`；例：0.0, 1.324）
 - 顯著性（True/false）  
 - 接合型（"Homo", "Hetero", "Hemi"）  
 - 生命階段（"Embryo", "Early", "Interval", "Late"）  
@@ -94,7 +94,7 @@ Gene頁面使用soft/fuzzy Top-level MP模組，因此一個基因可以屬於�
 
 #### 依 effect size 過濾
 `Effect size` 滑桿依 IMPC-derived effect size 的大小過濾節點（若有資料）。
-缺失的effect size會保留為缺失值，不會轉換為0；相應節點顯示為白色。
+缺失的`effect_size`在JSONL中序列化為標準JSON的`null`，其語義仍為缺失值而不會轉換為0；相應節點顯示為白色。
 > 對二值表現型（如 [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 二值列表見[此處](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或單一基因輸入時，此控制隱藏。
 
 #### 指定接合型

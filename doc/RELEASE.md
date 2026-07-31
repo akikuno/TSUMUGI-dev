@@ -28,6 +28,11 @@
 
 ### 🐛 Bug Fixes
 
+- Serialize missing `effect_size` values as standard JSON `null` in JSONL outputs while preserving internal missing-value handling<br>
+  Issue: [#186](https://github.com/akikuno/TSUMUGI-dev/issues/186)
+
+
+
 - Make Female and Male filters mutually exclusive in web visualizations<br>
   Issue: [#184](https://github.com/akikuno/TSUMUGI-dev/issues/184)
 
@@ -95,7 +100,7 @@
 
 ### 🔧 Maintenance
 
-- Handle missing IMPC effect_size values as NaN instead of 0 in TSUMUGI records
+- Handle missing IMPC `effect_size` values as missing values instead of 0 during internal processing
   Issue: [#165](https://github.com/akikuno/TSUMUGI-dev/issues/165)  
 
 ### 📝 Documentation
