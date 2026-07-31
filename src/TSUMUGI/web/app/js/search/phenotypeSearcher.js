@@ -2,6 +2,11 @@
 // Phenotype Search and Highlight Functions
 // ############################################################
 
+import {
+    getPhenotypeTermNames,
+    hasSelectedPhenotype,
+} from "../data/phenotypeAnnotations.js?v=20260731-phenotype-selector";
+
 // Hold the available and selected phenotype lists
 let allPhenotypes = [];
 let selectedPhenotypes = new Set();
@@ -41,11 +46,8 @@ function initializePhenotypeSearch(cy) {
         if (node.style("display") !== "none" && !node.hidden()) {
             const nodeData = node.data();
             if (nodeData.phenotype) {
-                const phenotypes = Array.isArray(nodeData.phenotype) ? nodeData.phenotype : [nodeData.phenotype];
-                phenotypes.forEach((phenotype) => {
-                    if (phenotype && phenotype.trim() !== "") {
-                        phenotypeSet.add(phenotype.trim());
-                    }
+                getPhenotypeTermNames(nodeData.phenotype).forEach((phenotype) => {
+                    phenotypeSet.add(phenotype);
                 });
             }
         }
@@ -214,19 +216,8 @@ function updatePhenotypeHighlight(cy) {
     cy.nodes().forEach((node) => {
         const nodeData = node.data();
 
-        if (nodeData.phenotype) {
-            const nodePhenotypes = Array.isArray(nodeData.phenotype) ? nodeData.phenotype : [nodeData.phenotype];
-
-            // Look for any overlap between the node's phenotypes and the selected ones
-            const hasSelectedPhenotype = Array.from(selectedPhenotypes).some((selectedPhenotype) =>
-                nodePhenotypes.some(
-                    (nodePhenotype) => nodePhenotype && nodePhenotype.trim() === selectedPhenotype.trim(),
-                ),
-            );
-
-            if (hasSelectedPhenotype) {
-                node.addClass("phenotype-highlight");
-            }
+        if (hasSelectedPhenotype(nodeData.phenotype, selectedPhenotypes)) {
+            node.addClass("phenotype-highlight");
         }
     });
 }

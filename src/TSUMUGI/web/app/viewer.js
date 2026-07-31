@@ -6,6 +6,10 @@ import { createSlider } from "./js/ui/slider.js";
 import { filterElementsByGenotypeAndSex } from "./js/graph/filters.js";
 import { loadJSON, loadJSONGz } from "./js/data/dataLoader.js";
 import {
+    getPhenotypeTermName,
+    normalizePhenotypes,
+} from "./js/data/phenotypeAnnotations.js?v=20260731-phenotype-selector";
+import {
     applyNodeMinMax,
     getPageConfig,
     hidePhenotypeOnlySections,
@@ -18,7 +22,7 @@ import {
 import { createLayoutController } from "./js/graph/layoutController.js";
 import { setupGeneSearch } from "./js/search/geneSearcher.js";
 import { highlightDiseaseAnnotation } from "./js/graph/highlighter.js";
-import { setupPhenotypeSearch } from "./js/search/phenotypeSearcher.js";
+import { setupPhenotypeSearch } from "./js/search/phenotypeSearcher.js?v=20260731-phenotype-selector";
 import { initializeCentralitySystem, recalculateCentrality } from "./js/graph/centrality.js";
 import { initDynamicFontSize } from "./js/ui/dynamicFontSize.js";
 import { initMobilePanel } from "./js/ui/mobilePanel.js";
@@ -205,17 +209,6 @@ function createGenePhenotypeModuleState(data) {
 
 function isNonGeneModulePage() {
     return isPhenotypePage || isGeneListPage;
-}
-
-function normalizePhenotypes(value) {
-    if (Array.isArray(value)) return value.filter(Boolean);
-    return value ? [value] : [];
-}
-
-function getPhenotypeTermName(annotation) {
-    const text = String(annotation || "");
-    const suffixIndex = text.lastIndexOf(" (");
-    return suffixIndex >= 0 ? text.slice(0, suffixIndex) : text;
 }
 
 function buildTopLevelModuleMemberships(phenotypes) {
