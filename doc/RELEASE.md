@@ -28,6 +28,9 @@
 
 ### 🐛 Bug Fixes
 
+- Make Female and Male filters mutually exclusive in web visualizations<br>
+  Issue: [#184](https://github.com/akikuno/TSUMUGI-dev/issues/184)
+
 - Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning<br>
   Issue: [#182](https://github.com/akikuno/TSUMUGI-dev/issues/182)  
 

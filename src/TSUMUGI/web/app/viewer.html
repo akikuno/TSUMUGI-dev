@@ -23,7 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/cytoscape-svg@0.4.0/cytoscape-svg.min.js" defer></script>
 
     <!-- Custom JS -->
-    <script type="module" src="./viewer.js?v=20260731-module-node-count-filter"></script>
+    <script type="module" src="./viewer.js?v=20260731-sex-filter-mutual-exclusion"></script>
 
     <!-- ============================= -->
     <!-- CSS -->
@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./css/app.css?v=20260731-remove-left-panel-scrollbar" />
+    <link rel="stylesheet" href="./css/app.css?v=20260731-sex-filter-mutual-exclusion" />
 </head>
 
 <body>
@@ -146,17 +146,17 @@
                     <form id="sex-filter-form" class="two-column-options">
                         <div class="option-column">
                             <div class="round-checkbox">
-                                <input type="checkbox" id="sex-all" value="All" checked />
+                                <input type="radio" id="sex-all" name="sex-filter" value="All" checked />
                                 <label for="sex-all">All</label>
                             </div>
                         </div>
                         <div class="option-column">
                             <div class="round-checkbox">
-                                <input type="checkbox" id="female" value="Female" />
+                                <input type="radio" id="female" name="sex-filter" value="Female" />
                                 <label for="female">Female</label>
                             </div>
                             <div class="round-checkbox">
-                                <input type="checkbox" id="male" value="Male" />
+                                <input type="radio" id="male" name="sex-filter" value="Male" />
                                 <label for="male">Male</label>
                             </div>
                         </div>

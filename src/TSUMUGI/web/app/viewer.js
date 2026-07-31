@@ -11,7 +11,7 @@ import {
     isFullNodeCountRange,
 } from "./js/graph/moduleNodeCountFilter.js?v=20260731-module-node-count-filter";
 import { createSlider } from "./js/ui/slider.js";
-import { filterElementsByGenotypeAndSex } from "./js/graph/filters.js";
+import { filterElementsByGenotypeAndSex } from "./js/graph/filters.js?v=20260731-sex-filter-mutual-exclusion";
 import { loadJSON, loadJSONGz } from "./js/data/dataLoader.js";
 import {
     getPhenotypeTermName,
@@ -2198,7 +2198,12 @@ function setupAllToggle(formId) {
     }
 }
 
-["genotype-filter-form", "sex-filter-form", "lifestage-filter-form"].forEach((formId) => setupAllToggle(formId));
+["genotype-filter-form", "lifestage-filter-form"].forEach((formId) => setupAllToggle(formId));
+
+const sexFilterForm = document.getElementById("sex-filter-form");
+if (sexFilterForm) {
+    sexFilterForm.addEventListener("change", applyFiltering);
+}
 
 // =============================================================================
 // Highlight human disease annotations
