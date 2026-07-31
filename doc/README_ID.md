@@ -194,7 +194,7 @@ Output: `./tsumugi-output` berisi anotasi genewise (genewise_phenotype_annotatio
 Ekstrak pasangan gen (atau gen) yang memiliki fenotipe target, atau pasangan yang diukur namun tidak menunjukkan anomali signifikan.
 
 ```bash
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) (-g | -p) [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
                   [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
@@ -230,7 +230,7 @@ Filter tambahan berdasarkan zigositas. Nilai: `Homo`, `Hetero`, `Hemi`.
 
 ```bash
 # Hanya ekstrak pasangan gen yang mencakup MP:0001146 (abnormal testis morphology) atau istilah turunan (mis., MP:0004849 abnormal testis size)
-tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --include MP:0001146   --pairwise   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Ekstrak pasangan yang MP:0001146 dan turunannya diukur tanpa anomali signifikan
 tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
@@ -301,7 +301,7 @@ tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz 
 
 ### Filter berdasarkan daftar gen (`tsumugi genes --keep/--drop`)
 ```bash
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) (-g | -p) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
@@ -326,7 +326,7 @@ Aamp
 Cacna1c
 EOF
 
-tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+tsumugi genes --genewise --keep genes.txt   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
 
 cat << EOF > gene_pairs.csv
 Maf,Aamp
@@ -424,7 +424,7 @@ tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewis
 ```
 
 CLI mendukung STDIN/STDOUT, sehingga Anda bisa merangkai perintah:  
-`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`tsumugi score --min 50 --in pairwise_similarity_annotations.jsonl.gz | tsumugi sex --drop Male > pairwise_score50_no_male.jsonl`
 
 # 🔍 Cara kami menghitung kesamaan fenotipe
 

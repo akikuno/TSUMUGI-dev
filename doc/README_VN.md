@@ -194,7 +194,7 @@ tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistica
 Trích xuất các cặp gene (hoặc gene) có phenotype quan tâm, hoặc các cặp đã đo nhưng không có bất thường đáng kể.
 
 ```bash
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) (-g | -p) [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
                   [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
@@ -230,7 +230,7 @@ Bộ lọc thêm theo zygosity. Giá trị: `Homo`, `Hetero`, `Hemi`.
 
 ```bash
 # Chỉ trích xuất các cặp gene có MP:0001146 (abnormal testis morphology) hoặc hậu duệ (ví dụ: MP:0004849 abnormal testis size)
-tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --include MP:0001146   --pairwise   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Trích xuất các cặp mà MP:0001146 và hậu duệ được đo nhưng không có bất thường đáng kể
 tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
@@ -301,7 +301,7 @@ Có thể chỉ dùng `--min` hoặc `--max`.
 
 ### Lọc theo danh sách gene (`tsumugi genes --keep/--drop`)
 ```bash
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) (-g | -p) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
@@ -326,7 +326,7 @@ Aamp
 Cacna1c
 EOF
 
-tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+tsumugi genes --genewise --keep genes.txt   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
 
 cat << EOF > gene_pairs.csv
 Maf,Aamp
@@ -424,7 +424,7 @@ tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewis
 ```
 
 CLI hỗ trợ STDIN/STDOUT, vì vậy bạn có thể nối lệnh:  
-`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`tsumugi score --min 50 --in pairwise_similarity_annotations.jsonl.gz | tsumugi sex --drop Male > pairwise_score50_no_male.jsonl`
 
 # 🔍 Cách tính nhóm gen tương đồng kiểu hình
 

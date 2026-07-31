@@ -205,7 +205,7 @@ tsumugi score --min 50 --max 80 \
 
 ### Filter by gene list (`tsumugi genes --keep/--drop`)
 ```bash
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) (-g | -p) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
@@ -347,4 +347,4 @@ tsumugi build-webapp \
 `build-webapp` accepts at most 150 nodes. Use `build-graphml` for larger networks. The generated bundle is served locally by the included launcher, but it loads Cytoscape.js, noUiSlider, pako, fonts, and icons from external content delivery networks; an internet connection is therefore required unless those resources are already cached or vendored separately.
 
 CLI supports STDIN/STDOUT, so you can chain commands:
-`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`tsumugi score --min 50 --in pairwise_similarity_annotations.jsonl.gz | tsumugi sex --drop Male > pairwise_score50_no_male.jsonl`

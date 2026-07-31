@@ -46,6 +46,7 @@
 - Synchronize v1.1.1 version and data provenance across README files
 - Correct CLI input names, options, examples, and locally served webapp requirements
 - Move the complete CLI reference to `doc/CLI.md` and shorten the English and Japanese README files
+- Validate documented CLI examples in pytest, including all translated README files
 - Clarify MICA-based shared contexts, page-specific display scaling, sex labels, disease annotations, and interpretation limits
 
 ### 🔧 Maintenance
