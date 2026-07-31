@@ -597,7 +597,7 @@
 
 ### 🐛 Bug Fixes
 
-- Fix a bug where gene links led to [Page Not Found](https://www.mousephenotype.org/data/genes). Issue: #53 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/fdacb58db89cf99c84a597cc85e0919152c4d2fa)]
+- Fix a bug where gene links led to Page Not Found (`https://www.mousephenotype.org/data/genes`). Issue: #53 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/fdacb58db89cf99c84a597cc85e0919152c4d2fa)]
 
 ### 🔧 Maintenance
 
@@ -647,7 +647,7 @@
 
 ### 💥 Breaking
 
-- Change URL from [LARC server](https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/) to [Github Pages](https://larc-tsukuba.github.io/tsumugi/). Issue: [#49](https://github.com/akikuno/TSUMUGI-dev/issues/49) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/c434cf09b778f4cc33bdb31bed6da9a52461a53f)]
+- Change URL from [LARC server](https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/) to [Github Pages](https://larc-tsukuba.github.io/tsumugi/). Issue: [#49](https://github.com/akikuno/TSUMUGI-dev/issues/49)
 
 ### 🌟 New Features
 

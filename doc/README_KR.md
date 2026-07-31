@@ -108,7 +108,7 @@ Gene 페이지는soft/fuzzy Top-level MP module을 사용하므로 하나의 유
 #### Effect size 필터
 `Effect size`는 페이지별 표시 값으로 노드를 필터링합니다. TSUMUGI는 IMPC 효과 크기의 절댓값에 `log1p`를 적용하고 대상 표현형 안에서 1–100으로 다시 조정합니다. 이 값은 페이지 내 순위를 위한 지표이며 원래 효과 크기가 아니므로 표현형 페이지 사이에서 비교할 수 없습니다.
 누락된`effect_size`는JSONL에서 표준JSON의`null`로 직렬화합니다. 0으로 변환하지 않고 결측값으로 유지하며, 해당node는 흰색으로 표시합니다.
-> 이진 표현형(예: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 이진 목록은 [여기](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt))나 단일 유전자 입력 시에는 표시되지 않습니다.
+> 이진 표현형(예: abnormal embryo development; 이진 목록은 [여기](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt))나 단일 유전자 입력 시에는 표시되지 않습니다.
 
 #### Genotype 지정
 표현형이 나타나는 접합형을 선택:

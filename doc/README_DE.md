@@ -108,7 +108,7 @@ Anzeige im linken Panel anpassen.
 #### Nach Effect size filtern
 `Effect size` filtert Knoten nach einem seitenspezifischen Anzeigewert. TSUMUGI verwendet den Absolutbetrag des IMPC-Effect-size, wendet `log1p` an und skaliert die Werte des Zielphänotyps auf 1–100. Dies ist eine Ranghilfe innerhalb der Seite, nicht der rohe Effect-size, und nicht zwischen Phänotypseiten vergleichbar.
 Fehlende effect sizes werden in JSONL als standardkonformes JSON `null` serialisiert, bleiben semantisch fehlend statt in den Zahlenwert 0 konvertiert zu werden und erscheinen als weiße Knoten.
-> Ausgeblendet bei binären Phänotypen (z. B. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binäre Liste [hier](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) oder Single-Gene-Eingabe.
+> Ausgeblendet bei binären Phänotypen (z. B. abnormal embryo development; binäre Liste [hier](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) oder Single-Gene-Eingabe.
 
 #### Genotyp festlegen
 - `Homo`

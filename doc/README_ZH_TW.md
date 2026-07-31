@@ -108,7 +108,7 @@ Gene頁面使用soft/fuzzy Top-level MP模組，因此一個基因可以屬於�
 #### 依 effect size 過濾
 `Effect size`依頁面特定的顯示值過濾節點。TSUMUGI取IMPC效應量的絕對值，進行`log1p`轉換，並在目標表現型內重新縮放到1–100。該值只用於頁面內排序，不是原始效應量，也不能在不同表現型頁面之間比較。
 缺失的`effect_size`在JSONL中序列化為標準JSON的`null`，其語義仍為缺失值而不會轉換為0；相應節點顯示為白色。
-> 對二值表現型（如 [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 二值列表見[此處](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或單一基因輸入時，此控制隱藏。
+> 對二值表現型（如 abnormal embryo development; 二值列表見[此處](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或單一基因輸入時，此控制隱藏。
 
 #### 指定接合型
 - `Homo`（純合）

@@ -108,7 +108,7 @@ Trang Gene sử dụng module Top-level MP soft/fuzzy, vì vậy một gen có t
 #### Lọc theo effect size
 `Effect size` lọc nút theo giá trị hiển thị riêng của trang. TSUMUGI lấy giá trị tuyệt đối của effect size IMPC, áp dụng `log1p`, rồi đổi thang các giá trị của kiểu hình mục tiêu thành 1–100. Đây là chỉ báo xếp hạng trong trang, không phải effect size thô và không thể so sánh giữa các trang kiểu hình.
 Effect size bị thiếu được tuần tự hóa trong JSONL thành giá trị JSON chuẩn `null`, vẫn mang ngữ nghĩa là giá trị thiếu thay vì chuyển thành 0, và các nút tương ứng được hiển thị màu trắng.
-> Ẩn cho kiểu hình nhị phân (ví dụ [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); danh sách nhị phân [tại đây](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) hoặc khi nhập một gen.
+> Ẩn cho kiểu hình nhị phân (ví dụ abnormal embryo development; danh sách nhị phân [tại đây](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) hoặc khi nhập một gen.
 
 #### Chỉ định kiểu gen
 - `Homo`

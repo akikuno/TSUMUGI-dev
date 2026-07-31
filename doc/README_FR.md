@@ -108,7 +108,7 @@ Réglez l’affichage réseau dans le panneau de gauche.
 #### Filtre par effect size
 `Effect size` filtre les nœuds selon une valeur d’affichage propre à la page. TSUMUGI prend la valeur absolue de la taille d’effet IMPC, applique `log1p`, puis remet les valeurs du phénotype cible à l’échelle de 1–100. C’est une aide au classement dans la page, pas la taille d’effet brute, et elle ne se compare pas entre pages de phénotype.
 Les effect sizes manquants sont sérialisés dans JSONL avec la valeur JSON standard `null`, restent sémantiquement manquants au lieu d’être convertis en zéro et leurs nœuds sont affichés en blanc.
-> Masqué pour les phénotypes binaires (ex. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); liste binaire [ici](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou l’entrée d’un seul gène.
+> Masqué pour les phénotypes binaires (ex. abnormal embryo development; liste binaire [ici](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou l’entrée d’un seul gène.
 
 #### Spécifier le génotype
 - `Homo` (homozygote)  

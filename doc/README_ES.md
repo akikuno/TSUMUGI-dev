@@ -108,7 +108,7 @@ Ajusta la visualización desde el panel izquierdo.
 #### Filtro por effect size
 `Effect size` filtra nodos mediante un valor de visualización específico de la página. TSUMUGI toma el valor absoluto del tamaño del efecto de IMPC, aplica `log1p` y reescala los valores del fenotipo objetivo a 1–100. Es una ayuda de ordenación dentro de la página, no el tamaño del efecto bruto, y no se compara entre páginas de fenotipo.
 Los effect sizes ausentes se serializan en JSONL como `null` de JSON estándar, se mantienen semánticamente ausentes en vez de convertirse en cero y sus nodos se muestran en blanco.
-> Oculto para fenotipos binarios (p. ej., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); lista binaria [aquí](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) o entrada de un solo gen.
+> Oculto para fenotipos binarios (p. ej., abnormal embryo development; lista binaria [aquí](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) o entrada de un solo gen.
 
 #### Especificar genotipo
 - `Homo` (homocigoto)

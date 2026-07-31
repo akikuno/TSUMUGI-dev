@@ -108,7 +108,7 @@ Gene पेज soft/fuzzy Top-level MP modules का उपयोग करत�
 #### Effect size से फ़िल्टर
 `Effect size` page-specific display value के आधार पर nodes filter करता है। TSUMUGI IMPC effect size का absolute value लेकर `log1p` लगाता है और target phenotype के मानों को 1–100 पर scale करता है। यह page के भीतर ranking aid है, raw effect size नहीं, और phenotype pages के बीच तुलना योग्य नहीं है।
 Missing effect sizes को JSONL में standard JSON `null` के रूप में serialize किया जाता है; वे semantically missing रहते हैं, zero में नहीं बदले जाते, और संबंधित nodes सफेद दिखते हैं।
-> द्विआधारी फेनोटाइप (उदाहरण: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); द्विआधारी सूची: [यहाँ](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) या एकल जीन इनपुट पर यह छिपा रहता है。
+> द्विआधारी फेनोटाइप (उदाहरण: abnormal embryo development; द्विआधारी सूची: [यहाँ](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) या एकल जीन इनपुट पर यह छिपा रहता है。
 
 #### Genotype निर्दिष्ट करें
 - `Homo`(समयुग्मजी)

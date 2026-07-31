@@ -163,7 +163,7 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 欠損した`effect_size`はJSONLで標準JSONの`null`として出力します。0ではなく欠損値として扱い、該当するノードは白色で表示します。
 
 > [!NOTE]
-> IMPCによる表現型の評価が二値（あり・なし）の場合（例: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html)：二値遺伝子のリストは[こちら](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Effect size`のスライダーはありません。
+> IMPCによる表現型の評価が二値（あり・なし）の場合（例: abnormal embryo development：二値遺伝子のリストは[こちら](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）や、遺伝子名が入力の場合には、`Effect size`のスライダーはありません。
 
 #### 遺伝型を指定
 

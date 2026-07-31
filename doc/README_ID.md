@@ -108,7 +108,7 @@ Menyesuaikan tampilan jaringan di panel kiri.
 #### Filter effect size
 `Effect size` memfilter node berdasarkan nilai tampilan khusus halaman. TSUMUGI mengambil nilai absolut effect size IMPC, menerapkan `log1p`, lalu menskalakan nilai fenotipe target menjadi 1–100. Ini adalah alat pemeringkatan dalam halaman, bukan effect size mentah, dan tidak dapat dibandingkan ant halaman fenotipe.
 Effect size yang hilang diserialisasi dalam JSONL sebagai JSON standar `null`, tetap bermakna sebagai nilai hilang alih-alih diubah menjadi nol, dan node terkait ditampilkan berwarna putih.
-> Disembunyikan untuk fenotipe biner (mis. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); daftar biner [di sini](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) atau input satu gen.
+> Disembunyikan untuk fenotipe biner (mis. abnormal embryo development; daftar biner [di sini](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) atau input satu gen.
 
 #### Tentukan genotype
 - `Homo`
