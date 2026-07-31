@@ -34,18 +34,28 @@ function restoreHighlightStates(cy) {
     }
 }
 
+export function resolveActiveFilterValues(checkedValues, allValues) {
+    if (!Array.isArray(checkedValues) || checkedValues.length === 0 || checkedValues.includes("All")) {
+        return [...allValues];
+    }
+    return [...checkedValues];
+}
+
+export function hideAllGraphElements(cy, setElementVisibility = () => {}) {
+    cy.batch(() => {
+        cy.elements().forEach((element) => {
+            setElementVisibility(element, false);
+            element.style("display", "none");
+        });
+    });
+}
+
 function getActiveFilterValues(formSelector, allValues) {
-    const checkedInputs = Array.from(document.querySelectorAll(`${formSelector} input[type="checkbox"]:checked`));
-    if (checkedInputs.length === 0) {
-        return allValues;
-    }
-
-    const checkedValues = checkedInputs.map((input) => input.value);
-    if (checkedValues.includes("All")) {
-        return allValues;
-    }
-
-    return checkedValues;
+    const checkedInputs = Array.from(document.querySelectorAll(`${formSelector} input:checked`));
+    return resolveActiveFilterValues(
+        checkedInputs.map((input) => input.value),
+        allValues,
+    );
 }
 
 /**

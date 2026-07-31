@@ -20,6 +20,7 @@ from TSUMUGI import (
 
 WEB_MIN_SHARED_ANNOTATIONS = 3
 WEB_MIN_PHENOTYPE_SIMILARITY_SCORE = 1
+GENE_ASSET_MIN_SHARED_ANNOTATIONS = 1
 
 
 def _filter_pairwise_similarity_annotations_for_web(
@@ -108,10 +109,20 @@ def run_pipeline(args) -> None:
         ###########################################################
         logging.info("Generating phenotype and gene networks...")
 
-        pairwise_similarity_annotations = io_handler.read_jsonl(path_pairwise_similarity_annotations)
+        logging.info("Building complete direct-edge gene asset files...")
+        output_dir = Path(TEMPDIR / "network" / "genesymbol")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        network_constructor.build_gene_network_json(
+            genewise_phenotype_significants,
+            io_handler.read_jsonl(path_pairwise_similarity_annotations),
+            disease_annotations_by_gene,
+            output_dir,
+            min_shared_annotations=GENE_ASSET_MIN_SHARED_ANNOTATIONS,
+            min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+        )
 
         pairwise_similarity_annotations_with_shared_phenotype = _filter_pairwise_similarity_annotations_for_web(
-            pairwise_similarity_annotations,
+            io_handler.read_jsonl(path_pairwise_similarity_annotations),
             min_shared_annotations=WEB_MIN_SHARED_ANNOTATIONS,
             min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
         )
@@ -142,17 +153,6 @@ def run_pipeline(args) -> None:
             disease_annotations_by_gene,
             output_dir,
             binary_phenotypes=binary_phenotypes,
-        )
-
-        logging.info("Building gene network JSON files...")
-        output_dir = Path(TEMPDIR / "network" / "genesymbol")
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        network_constructor.build_gene_network_json(
-            genewise_phenotype_significants,
-            pairwise_similarity_annotations_with_shared_phenotype,
-            disease_annotations_by_gene,
-            output_dir,
         )
 
         logging.info("Building gene phenotype module JSON files...")
@@ -220,6 +220,10 @@ def run_pipeline(args) -> None:
 
     # available gene symbols
     report_generator.write_available_gene_symbols_txt(TEMPDIR, Path(output_dir / "available_gene_symbols.txt"))
+    report_generator.write_available_gene_list_symbols_txt(
+        TEMPDIR,
+        Path(output_dir / "available_gene_list_symbols.txt"),
+    )
 
     # marker symbol to accession id
     report_generator.write_marker_symbol_accession_id_json(

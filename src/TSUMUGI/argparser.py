@@ -117,11 +117,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     # =========================================================
-    # mp: Filter gene pairs by a specific MP term and its descendants
+    # mp: Filter genewise or pairwise records by a specific MP term
     # =========================================================
     mp_parser = subparsers.add_parser(
         "mp",
-        help="Filter gene pairs by a specific MP term and its descendants",
+        help="Filter genewise or pairwise records by a specific MP term",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
@@ -132,7 +132,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--include",
         dest="include",
         metavar="MP_ID",
-        help=("Include gene pairs that share the specified MP term (descendants included).\nExample: -i MP:0001146"),
+        help=(
+            "Return genewise significant annotations or pairwise shared contexts for the\n"
+            "specified MP term (descendants included).\n"
+            "Example: -i MP:0001146"
+        ),
     )
     group_mp_filter.add_argument(
         "-e",
@@ -140,18 +144,25 @@ def build_parser() -> argparse.ArgumentParser:
         dest="exclude",
         metavar="MP_ID",
         help=(
-            "Exclude gene pairs that (when measured) lack the specified MP term "
-            "(descendants included).\n"
+            "Return genes with a mapped non-significant measurement for the specified MP term\n"
+            "(related ancestor and descendant terms included) and no matching significant\n"
+            "abnormal annotation under the selected metadata conditions.\n"
             "Example: -e MP:0001146"
         ),
     )
     # --- Group B: granularity (genewise / pairwise) ---
     group_level = mp_parser.add_mutually_exclusive_group(required=False)
     group_level.add_argument(
-        "-g", "--genewise", action="store_true", help="Filter by number of phenotypes per KO mouse"
+        "-g",
+        "--genewise",
+        action="store_true",
+        help="Output genewise annotation records for matching genes",
     )
     group_level.add_argument(
-        "-p", "--pairwise", action="store_true", help="Filter by number of shared phenotypes between KO pairs"
+        "-p",
+        "--pairwise",
+        action="store_true",
+        help="Output pairwise records when both genes match",
     )
 
     mp_parser.add_argument(
@@ -176,7 +187,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
             "Required when using '-e/--exclude' to determine genes that were measured\n"
-            "and showed no phenotype for the target MP term.\n"
+            "without a significant abnormal annotation for the target MP term.\n"
         ),
     )
 
@@ -537,12 +548,12 @@ def parse_args(argv=None):
 
         if args.exclude and not args.path_genewise:
             parser.error(
-                "mp: '-a/--path_genewise' is required when using '-e/--exclude'.\n"
+                "mp: '-a/--genewise_annotations' is required when using '-e/--exclude'.\n"
                 "Path to the 'genewise_phenotype_annotations' file (JSONL or JSONL.gz).\n"
             )
 
         if not args.genewise and not args.pairwise:
-            parser.error("genes: Please specify either '-g/--genewise' or '-p/--pairwise'.")
+            parser.error("mp: Please specify either '-g/--genewise' or '-p/--pairwise'.")
 
     ########################################################################
     # count / score

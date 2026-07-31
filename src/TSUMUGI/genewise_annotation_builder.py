@@ -51,10 +51,10 @@ def build_genewise_phenotype_annotations(
     records_annotated = annotator.annotate_life_stage(records_formatted, embryo_assays)
     # Sexual dimorphism
     records_annotated = annotator.annotate_sexual_dimorphism(records_annotated, threshold=1e-4)
+    # Annotate Significant (True/False)
+    records_annotated = annotator.annotate_significant(records_annotated, ontology_terms)
     # Human Diseases
     records_annotated = annotator.annotate_diseases(records_annotated, disease_annotations_by_gene)
-    # Annotate Significant (True/False)
-    records_annotated = annotator.annotate_significant(records_annotated)
 
     # --------------------------------------------------------
     # Filter records
@@ -87,7 +87,11 @@ def build_genewise_phenotype_annotations(
         "life_stage",
         "sexual_dimorphism",
     ]
-    records_filtered = filterer.distinct_records_with_max_effect(records_filtered, unique_keys)
+    records_filtered = filterer.distinct_records_with_max_effect(
+        records_filtered,
+        unique_keys,
+        prefer_significant=True,
+    )
 
     genewise_phenotype_annotations = records_filtered
 

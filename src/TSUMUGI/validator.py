@@ -13,11 +13,14 @@ def validate_statistical_results(file_path: str) -> None:
         "p_value",
         "effect_size",
         "female_ko_effect_p_value",  # sex differences
+        "female_ko_parameter_estimate",  # sex-specific effect size
         "male_ko_effect_p_value",  # sex differences
+        "male_ko_parameter_estimate",  # sex-specific effect size
         "zygosity",  # zygosity
         "pipeline_name",  # life-stage
         "procedure_name",  # life-stage
         "allele_symbol",  # map to Phendigm
+        "intermediate_mp_term_id",  # measured phenotype mapping
     }
     records = io_handler.load_csv_as_dicts(file_path)
     record_columns = next(records).keys()

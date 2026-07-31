@@ -17,10 +17,12 @@ def select_targetted_phenotypes(TEMPDIR: Path) -> set[str]:
 
 
 def select_targetted_genes(TEMPDIR: Path) -> set[str]:
-    gene_symbols_file = Path(TEMPDIR, "webapp", "available_gene_symbols.txt")
-    targetted_genes = gene_symbols_file.read_text().splitlines() if gene_symbols_file.exists() else []
-
-    return set(targetted_genes)
+    targetted_genes = set()
+    for filename in ["available_gene_symbols.txt", "available_gene_list_symbols.txt"]:
+        gene_symbols_file = Path(TEMPDIR, "webapp", filename)
+        if gene_symbols_file.exists():
+            targetted_genes.update(gene_symbols_file.read_text().splitlines())
+    return targetted_genes
 
 
 ###########################################################
@@ -117,6 +119,10 @@ def _copy_json_files(targetted_phenotypes, targetted_genes, TEMPDIR: Path, outpu
         if module_file.exists():
             shutil.copy(module_file, dst_gene_module_dir / module_file.name)
 
+    gene_manifest = src_gene_dir / "manifest.json"
+    if gene_manifest.exists():
+        shutil.copy(gene_manifest, dst_gene_dir / gene_manifest.name)
+
 
 def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
     data_dir = output_dir / "data"
@@ -126,6 +132,7 @@ def _copy_webapp_files(TEMPDIR: Path, output_dir: str | Path) -> None:
         Path(TEMPDIR, "webapp", "available_mp_terms.json"): data_dir / "available_mp_terms.json",
         Path(TEMPDIR, "webapp", "available_mp_terms.txt"): data_dir / "available_mp_terms.txt",
         Path(TEMPDIR, "webapp", "available_gene_symbols.txt"): data_dir / "available_gene_symbols.txt",
+        Path(TEMPDIR, "webapp", "available_gene_list_symbols.txt"): data_dir / "available_gene_list_symbols.txt",
         Path(TEMPDIR, "webapp", "marker_symbol_accession_id.json"): data_dir / "marker_symbol_accession_id.json",
         Path(TEMPDIR, "webapp", "binary_phenotypes.txt"): data_dir / "binary_phenotypes.txt",
         Path(TEMPDIR, "webapp", "mp_term_id_lookup.json"): data_dir / "mp_term_id_lookup.json",

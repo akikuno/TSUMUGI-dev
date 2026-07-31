@@ -19,7 +19,7 @@
 웹에서 누구나 사용할 수 있는 공개 도구입니다👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-이 문서는 **TSUMUGI v1.1.0**의 현재 동작을 설명합니다. 공개 웹 앱은 IMPC **Release 24.0** 데이터를 사용합니다.
+이 문서는 **TSUMUGI v1.1.1**의 현재 동작을 설명합니다. 공개 웹 앱은 IMPC **Release 24.0** 데이터를 사용합니다.
 
 **TSUMUGI(紡ぎ)**는 “표현형을 이루는 유전자 군을 실잣듯 엮는다”는 뜻에서 유래했습니다.
 
@@ -39,9 +39,9 @@ TSUMUGI는 세 가지 입력을 지원합니다.
 
 ### 유전자 리스트(Gene List)
 여러 유전자를 줄바꿈으로 입력합니다. **리스트 내부의 유전자들 간** 표현형 유사 유전자를 추출합니다.  
-> [!CAUTION]  
-> 유사 유전자를 하나도 찾지 못하면 `No similar phenotypes were found among the entered genes.` 경고 후 중단합니다.  
-> 생성된network에200개 이상의 유전자가 포함되면`Too many genes submitted. Please limit the number to 200 or fewer.` 경고 후 중단합니다.
+> [!CAUTION]
+> 유사한 유전자가 없으면 `No similar phenotypes were found among the entered genes.`가 표시됩니다.
+> Gene List는 서로 다른 사용 가능 유전자를 최대 200개까지 받습니다. 중복 기호와 빈 줄은 계산 전에 제거하고, 사용할 수 없는 기호는 보고한 뒤 제외합니다. 사용 가능 유전자가 201개 이상인 목록은 네트워크 데이터를 불러오기 전에 거부합니다.
 
 ### 📥 원시 데이터 다운로드
 TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
@@ -50,11 +50,11 @@ TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
 - 유전자 심벌(예: "1110059G10Rik")  
 - 마커 Accession ID(예: "MGI:1913452")  
 - 표현형 명/ID(예: "fused joints", "MP:0000137")  
-- Effect size(예: 0.0, 1.324)  
-- 유의성(True/false)  
+- Effect size(`number` 또는`null`, 예: 0.0, 1.324)
+- 유의성 플래그(IMPC 이상 표현형 주석은 `true`, 유의한 이상이 없는 매핑된 측정은 `false`)
 - Zygosity("Homo", "Hetero", "Hemi")  
 - Life stage("Embryo", "Early", "Interval", "Late")  
-- Sexual dimorphism("", "Male", "Female")  
+- 성별 차이(`None`, `Male`, `Female`)
 - Disease annotation(예: [] 또는 "Premature Ovarian Failure 18")
 
 예시:
@@ -64,20 +64,33 @@ TSUMUGI는 gzip 압축된 JSONL을 제공합니다.
 
 #### `pairwise_similarity_annotations.jsonl.gz`
 - 유전자 쌍(`gene1_symbol`, `gene2_symbol`)  
-- `phenotype_shared_annotations`(라이프 스테이지, 접합형, 성별 등 공유 표현형 메타데이터)  
-- `phenotype_similarity_score`(Resnik 기반 Phenodigm 점수, 0–100)
+- `phenotype_shared_annotations`(메타데이터가 일치하는 MICA 컨텍스트: MP 용어, 생애 단계, 접합형, 성별 레이블)
+- `phenotype_similarity_score`(Phenodigm 점수, 0–100)
 
 예시:
 ```
 {"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
+## 해석 시 주의사항
+
+- **공유 컨텍스트:** `phenotype_shared_annotations`의 각 항목은 접합형, 생애 단계, 성별 레이블이 일치하는 두 유의한 MP 주석의 가장 정보량이 큰 공통 조상(MICA)입니다. 두 유전자에 동일한 말단(leaf) MP 용어가 직접 주석되었다는 뜻은 아닙니다. 같은 MICA라도 메타데이터가 다르면 별도 컨텍스트로 나타날 수 있습니다.
+- **표시 규칙:** Gene 및 Phenotype 페이지는 공유 이상 표현형 컨텍스트가 3개 이상이고 유사도 점수가 0보다 큰 유전자 쌍을 표시합니다. Gene List는 입력한 유전자 사이에 공유 컨텍스트가 1개 이상이어야 합니다. 이는 표시 규칙이며 통계적 유의성 기준이 아닙니다.
+- **유사도 표시:** 배포되는 `phenotype_similarity_score`는 0–100 범위의 Phenodigm 점수입니다. 웹 앱은 각 네트워크의 값을 1–100으로 다시 조정하므로 서로 다른 페이지의 슬라이더와 툴팁 값을 공통 절대 척도로 비교할 수 없습니다.
+- **효과 크기 표시:** TSUMUGI는 IMPC 효과 크기의 절댓값에 `log1p`를 적용하고 대상 표현형 안에서 1–100으로 다시 조정합니다. 이 값은 페이지 내 순위를 위한 지표이며 원래 효과 크기가 아니므로 서로 다른 표현형 페이지 사이에서 직접 비교할 수 없습니다. 결측값은 JSON `null`로 유지되고 해당 노드는 흰색으로 표시됩니다.
+- **모듈:** 모듈은 시각적 그룹이며 분자 경로나 단백질 복합체의 근거가 아닙니다. `Similarity`는 연결 성분, `Top-level MP`는 온톨로지 기반 그룹을 뜻하며 Gene 페이지의 soft/fuzzy 모듈에서는 한 유전자가 여러 모듈에 속할 수 있습니다. 모듈 노드 수 필터는 표시할 모듈만 제한합니다.
+- **성별 레이블:** `Female`은 암컷 KO 효과 P-value만 ≤ 0.0001임을 뜻하고, `Male`은 수컷 KO 효과에 대해 같은 의미입니다. 두 옵션은 웹 인터페이스에서 상호 배타적이며 정식 성별×유전자형 상호작용 검정을 대신하지 않습니다.
+- **표현형 하이라이트:** 같은 표현형의 메타데이터 변형은 하나의 선택지로 통합됩니다. 한 유전자에서 Human Disease와 하나 이상의 표현형 하이라이트가 겹치면 각 범주를 동심원으로 표시합니다.
+- **질병 하이라이트:** IMPC Disease Models Portal 주석은 질병 모델 유사성의 근거이며 그 자체로 사람의 유전자–질병 인과관계를 확립하지 않습니다.
+- **비유의 레코드:** 해당 조건에서 유의한 이상 주석이 나오지 않은 매핑된 측정을 뜻합니다. 동물이 정상이거나 표현형이 없음을 증명하지 않으며 `disease_annotation`은 비어 있습니다.
+- **점수의 의미:** TSUMUGI 점수는 P-value, 효과 크기, 결합 친화도 또는 인과적 유전자 상호작용의 근거가 아닙니다.
+
 # 🌐 네트워크
 
 입력에 따라 페이지가 전환되고 네트워크가 자동으로 그려집니다.
 
-> [!IMPORTANT]  
-> **공유하는 이상 표현형이 3개 이상이고 표현형 유사도가 0.0보다 큰** 유전자 쌍이 시각화 대상입니다.
+> [!IMPORTANT]
+> Gene 및 Phenotype 페이지는 공유 이상 표현형 컨텍스트가 3개 이상이고 유사도 점수가 0보다 큰 유전자 쌍을 표시하며, Gene List는 입력한 유전자 사이에 공유 컨텍스트가 1개 이상이어야 합니다. 이는 표시 규칙이며 통계적 유의성 기준이 아닙니다.
 
 ### 네트워크 패널
 **노드**는 유전자를 나타냅니다. 클릭하면 KO 마우스에서 관찰된 이상 표현형 리스트를 표시하며, 드래그로 위치를 조정할 수 있습니다.  
@@ -89,13 +102,13 @@ Gene 페이지는soft/fuzzy Top-level MP module을 사용하므로 하나의 유
 좌측 패널에서 네트워크 표시를 조정할 수 있습니다.
 
 #### 표현형 유사도 필터
-`Phenotypes similarity` 슬라이더로 Resnik→Phenodigm 점수를 기준으로 엣지 표시 임계를 설정합니다.  
+`Phenotypes similarity`는 표시용 유사도 값으로 엣지를 필터링합니다. 배포되는 `phenotype_similarity_score`는 0–100 범위이지만 각 네트워크에서는 1–100으로 다시 조정되므로 서로 다른 페이지의 값을 직접 비교할 수 없습니다.
 > 자세한 계산 방법: 👉 [🔍 표현형 유사 유전자군 계산](#-표현형-유사-유전자군-계산)
 
 #### Effect size 필터
-`Effect size` 슬라이더로 사용 가능한 경우 IMPC-derived effect size의 크기에 따라 노드를 필터링합니다.
-누락된effect size는0으로 변환하지 않고 결측값으로 유지하며, 해당node는 흰색으로 표시합니다.
-> 이진 표현형(예: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 이진 목록은 [여기](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt))나 단일 유전자 입력 시에는 표시되지 않습니다.
+`Effect size`는 페이지별 표시 값으로 노드를 필터링합니다. TSUMUGI는 IMPC 효과 크기의 절댓값에 `log1p`를 적용하고 대상 표현형 안에서 1–100으로 다시 조정합니다. 이 값은 페이지 내 순위를 위한 지표이며 원래 효과 크기가 아니므로 표현형 페이지 사이에서 비교할 수 없습니다.
+누락된`effect_size`는JSONL에서 표준JSON의`null`로 직렬화합니다. 0으로 변환하지 않고 결측값으로 유지하며, 해당node는 흰색으로 표시합니다.
+> 이진 표현형(예: abnormal embryo development; 이진 목록은 [여기](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt))나 단일 유전자 입력 시에는 표시되지 않습니다.
 
 #### Genotype 지정
 표현형이 나타나는 접합형을 선택:
@@ -117,8 +130,11 @@ Gene 페이지는soft/fuzzy Top-level MP module을 사용하므로 하나의 유
 #### Module 표시
 오른쪽panel에서module 정의와 표시할module을 선택할 수 있습니다. Module 경계를 숨겨도network의 유전자나edge는 제거되지 않습니다.
 
+#### Highlight: Phenotype
+표현형 주석에 따라 유전자를 하이라이트합니다. 같은 표현형의 메타데이터 변형은 하나의 선택지로 통합됩니다. 한 유전자에서 Human Disease와 하나 이상의 표현형 하이라이트가 겹치면 각 범주를 동심원으로 표시합니다.
+
 #### Highlight: Human Disease
-IMPC Disease Models Portal 데이터를 사용해 질병 관련 유전자를 하이라이트합니다.
+IMPC Disease Models Portal에서 질병 모델 주석이 있는 KO 유전자를 하이라이트합니다. 이 주석은 모델 유사성의 근거이며 그 자체로 사람의 유전자–질병 인과관계를 확립하지 않습니다.
 
 #### Search: Specific Gene
 네트워크 내 유전자명을 검색합니다.
@@ -136,7 +152,7 @@ TSUMUGI CLI는 로컬에 다운로드한 최신 IMPC 데이터를 사용해 재�
 ## 기능
 
 - IMPC `statistical-results-ALL.csv.gz`로 재계산(선택적으로 `mp.obo`, `impc_phenodigm.csv`).  
-- MP 용어 포함/제외 필터.  
+- 유의한 MP 주석 또는 매핑된 비유의 측정 레코드로 필터링.
 - 유전자 목록 필터(콤마 구분 또는 텍스트 파일).  
 - 출력: GraphML(`tsumugi build-graphml`), 오프라인 웹앱 번들(`tsumugi build-webapp`).
 
@@ -157,7 +173,7 @@ pip install tsumugi
 ## 사용 가능한 명령
 
 - `tsumugi run`: IMPC 데이터에서 네트워크 재계산  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: MP 용어를 포함/비포함하는 유전자 쌍 또는 유전자 필터  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 유의한 MP 주석 또는 매핑된 비유의 측정 레코드로 유전자 쌍이나 유전자 필터링
 - `tsumugi count --pairwise/--genewise (--min/--max)`: phenotype 개수로 필터(쌍/유전자)  
 - `tsumugi score (--min/--max)`: phenotype 유사도 점수로 필터(쌍)  
 - `tsumugi genes --keep/--drop`: 유전자 목록 기준 유지/제외(콤마 또는 텍스트 파일)  
@@ -172,7 +188,7 @@ pip install tsumugi
 > 파일로 저장하려면 `>`로 리다이렉트하세요.
 
 > [!IMPORTANT]
-> `tsumugi run`을 제외한 모든 명령은 `pairwise_similarity_annotation.jsonl.gz` 또는 `genewise_phenotype_annotation.jsonl.gz`가 필요합니다.
+> `tsumugi run`을 제외한 모든 명령은 `pairwise_similarity_annotations.jsonl.gz` 또는 `genewise_phenotype_annotations.jsonl.gz`가 필요합니다.
 > 두 파일 모두 [TSUMUGI 메인 페이지](https://larc-tsukuba.github.io/tsumugi/)에서 다운로드할 수 있습니다.
 
 ## 사용법
@@ -195,7 +211,7 @@ tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistica
 관심 있는 phenotype를 포함하는 유전자 쌍(또는 유전자)을 추출하거나, 측정되었지만 유의한 이상이 없던 쌍을 추출합니다.
 
 ```bash
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) (-g | -p) [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
                   [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
@@ -204,6 +220,9 @@ tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWI
 
 #### `-e MP_ID`, `--exclude MP_ID`
 지정한 MP 용어(하위 용어 포함)를 측정했지만 유의한 phenotype가 없었던 유전자/유전자 쌍을 반환합니다. `-a/--genewise_annotations`가 필요합니다.
+
+> [!CAUTION]
+> 비유의 레코드는 동물이 정상이거나 표현형이 없음을 증명하지 않습니다. 매핑된 측정에서 해당 조건의 유의한 이상 주석이 나오지 않았음을 나타낼 뿐입니다.
 
 #### `-g`, `--genewise`
 유전자 단위로 필터합니다. `genewise_phenotype_annotations.jsonl(.gz)`를 읽으며, `--genewise` 사용 시 `-a/--genewise_annotations`를 지정합니다.
@@ -231,10 +250,10 @@ pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
 
 ```bash
 # MP:0001146(abnormal testis morphology) 또는 하위 용어(예: MP:0004849 abnormal testis size)를 포함하는 유전자 쌍만 추출
-tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --include MP:0001146   --pairwise   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # MP:0001146 및 하위 용어가 측정되었지만 유의한 이상이 없던 유전자 쌍을 추출
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # 유전자 단위로 MP:0001146을 포함하는 유의한 phenotype만 추출
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -276,7 +295,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - 유전자별 phenotype 수(genewise 필요):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 `--min` 또는 `--max` 중 하나만 사용해도 됩니다.
@@ -302,7 +321,7 @@ tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz 
 
 ### 유전자 목록으로 필터(`tsumugi genes --keep/--drop`)
 ```bash
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) (-g | -p) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
@@ -327,7 +346,7 @@ Aamp
 Cacna1c
 EOF
 
-tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+tsumugi genes --genewise --keep genes.txt   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
 
 cat << EOF > gene_pairs.csv
 Maf,Aamp
@@ -404,7 +423,7 @@ pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
 genewise 주석 파일(JSONL/.gz) 경로. 필수입니다.
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -421,11 +440,11 @@ genewise 주석 파일(JSONL/.gz) 경로. 필수입니다.
 웹앱 번들(HTML/CSS/JS + 네트워크 데이터) 출력 디렉터리. 확장자가 있는 파일명은 지정하지 마세요.
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI는 STDIN/STDOUT을 지원하므로 파이프로 연결할 수 있습니다:  
-`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`tsumugi score --min 50 --in pairwise_similarity_annotations.jsonl.gz | tsumugi sex --drop Male > pairwise_score50_no_male.jsonl`
 
 # 🔍 표현형 유사 유전자군 계산
 
@@ -436,9 +455,12 @@ IMPC 데이터셋 [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-da
 
 ## 전처리
 
-KO 마우스의 P-value (`p_value`, `female_ko_effect_p_value`, `male_ko_effect_p_value`)가 ≤ 0.0001인 유전자–표현형 쌍을 추출합니다.  
-- 유전형 특이적 표현형은 `homo`, `hetero`, `hemi`로 주석합니다.  
-- 성 특이적 표현형은 `female` 또는 `male`로 주석합니다.
+TSUMUGI는 IMPC `mp_term_id`가 비어 있지 않은 레코드를 IMPC 이상 표현형 주석으로 취급합니다. 또한 측정 여부를 고려한 제외 검색을 위해 유의한 이상 주석이 없는 매핑된 측정 레코드도 보존합니다.
+비유의 측정에서는 `intermediate_mp_term_id`에 있는 용어 중 ontology상 서로 비교할 수 없는 가장 구체적인 비루트 용어를 각각 별도 레코드로 출력합니다. `MP:0000001`에만 매핑되거나 유효한 MP 용어에 매핑되지 않은 측정은 표현형별 검색에 사용할 수 없으므로 출력하지 않습니다.
+
+- 접합형을 `Homo`, `Hetero`, `Hemi`로 변환합니다.
+- `female_ko_effect_p_value`만 ≤ 0.0001이면 `Female`, `male_ko_effect_p_value`만 ≤ 0.0001이면 `Male`, 그 밖에는 `None`을 부여합니다.
+- 효과 크기의 절댓값을 사용합니다. 결측값은 결측 상태로 유지하며 JSON에서는 `null`로 직렬화합니다.
 
 ## 표현형 유사도
 
@@ -454,6 +476,7 @@ TSUMUGI는Mammalian Phenotype Ontology 내에서IMPC KO 마우스 유전자의�
    각direct annotation을annotated MP term과 모든ancestor로 전파합니다.
 
 * 각MP term pair에서annotation-derived IC가 가장 높은common ancestor를 찾습니다. 동률이면MP ontology에서transitive descendant가 가장 적은 후보를 먼저 선택하고, 그다음lexicographical order가 가장 작은MP term ID를 결정적으로 선택합니다. 선택한MICA의IC를Resnik similarity로 사용합니다. 이tie-break는similarity score와output schema를 변경하지 않습니다.
+   동률 후보의 수치형 용어 쌍 점수는 같지만 선택된 MICA 레이블에 따라 공유 컨텍스트 수와 표시 대상 여부가 달라질 수 있습니다.
 
 * 두MP term에 대해term 자체와 모든ancestor로 정의된inferred attribute set의Jaccard index를 계산합니다.
 
@@ -463,7 +486,7 @@ TSUMUGI는Mammalian Phenotype Ontology 내에서IMPC KO 마우스 유전자의�
 
 * 각유전자 쌍에 대해term-pair score로MP term × MP term similarity matrix를 만듭니다.
 
-* Genotype, life stage, sex metadata는shared-phenotype annotation에 유지되지만PhenoDigm score의 가중치로 사용하지 않습니다.
+* 접합형, 생애 단계, 성별 레이블이 일치할 때만 MICA를 `phenotype_shared_annotations`에 기록합니다. 이 메타데이터는 PhenoDigm 점수 자체의 가중치로 사용하지 않습니다.
 
 ### 3. Phenodigm 스케일링
 
@@ -471,6 +494,8 @@ TSUMUGI는Mammalian Phenotype Ontology 내에서IMPC KO 마우스 유전자의�
    관측된best-match maximum/mean을 계산한 다음두유전자의symmetric optimal self-match score로 정규화합니다.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    분모가 0이면 점수는 0입니다.
+
+최종 점수는 표현형 프로필 유사도를 나타냅니다. P-value, 효과 크기, 결합 친화도 또는 유전자 사이의 인과적 상호작용을 뜻하지 않습니다.
 
 ---
 

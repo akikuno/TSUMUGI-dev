@@ -19,7 +19,7 @@
 Alat ini terbuka untuk semua pengguna secara daring 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Dokumentasi ini menjelaskan perilaku **TSUMUGI v1.1.0** saat ini. Aplikasi web publik menggunakan data IMPC **Release 24.0**.
+Dokumentasi ini menjelaskan perilaku **TSUMUGI v1.1.1** saat ini. Aplikasi web publik menggunakan data IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** berarti “menyulam kelompok gen pembentuk fenotipe”.
 
@@ -39,9 +39,9 @@ Simbol mengikuti [MGI](http://www.informatics.jax.org/).
 
 ### Gene List
 Tempel beberapa gen (satu per baris) untuk mencari **di dalam daftar itu**.  
-> [!CAUTION]  
-> Jika tidak ada yang mirip: `No similar phenotypes were found among the entered genes.`  
-> Jika jaringan yang dihasilkan memuat 200 gen atau lebih: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> [!CAUTION]
+> Jika tidak ditemukan gen serupa: `No similar phenotypes were found among the entered genes.`
+> Gene List menerima paling banyak 200 gen tersedia yang berbeda. Duplikat dan baris kosong dihapus sebelum penghitungan; simbol yang tidak tersedia dilaporkan dan dikeluarkan. Daftar dengan 201 atau lebih gen tersedia ditolak sebelum data jaringan dimuat.
 
 ### 📥 Unduh data mentah
 TSUMUGI menyediakan file JSONL terkompresi gzip.
@@ -50,11 +50,11 @@ TSUMUGI menyediakan file JSONL terkompresi gzip.
 - Simbol gen (contoh "1110059G10Rik")  
 - Marker accession ID (contoh "MGI:1913452")  
 - Nama/ID fenotipe (contoh "fused joints", "MP:0000137")  
-- Effect size (contoh 0.0, 1.324)  
-- Signifikansi (True/false)  
+- Effect size (`number` atau `null`; contoh 0.0, 1.324)
+- Penanda signifikansi (`true` untuk anotasi fenotipe abnormal IMPC; `false` untuk pengukuran terpetakan tanpa abnormalitas signifikan)
 - Zigositas ("Homo", "Hetero", "Hemi")  
 - Tahap hidup ("Embryo", "Early", "Interval", "Late")  
-- Dimorfisme seksual ("", "Male", "Female")  
+- Dimorfisme seksual (`None`, `Male`, `Female`)
 - Anotasi penyakit (contoh [] atau "Premature Ovarian Failure 18")
 
 Contoh:
@@ -64,20 +64,33 @@ Contoh:
 
 #### `pairwise_similarity_annotations.jsonl.gz`
 - Pasangan gen (`gene1_symbol`, `gene2_symbol`)  
-- `phenotype_shared_annotations`: metadata (tahap hidup, zigositas, perbedaan jenis kelamin) untuk fenotipe bersama  
-- `phenotype_similarity_score`: skor Resnik→Phenodigm (0–100)
+- `phenotype_shared_annotations` (konteks MICA dengan metadata yang cocok: istilah MP, tahap hidup, zigositas, dan label jenis kelamin)
+- `phenotype_similarity_score` (skor Phenodigm, 0–100)
 
 Contoh:
 ```
 {"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
+## Catatan interpretasi
+
+- **Konteks bersama:** Setiap item `phenotype_shared_annotations` adalah leluhur bersama paling informatif (MICA) dari dua anotasi MP signifikan dengan label zigositas, tahap hidup, dan jenis kelamin yang sama. Ini tidak selalu berarti kedua gen memiliki istilah MP daun yang sama sebagai anotasi langsung. MICA yang sama dapat muncul sebagai konteks terpisah bila metadatanya berbeda.
+- **Aturan tampilan:** Halaman Gene dan Phenotype menampilkan pasangan dengan sedikitnya tiga konteks fenotipe abnormal bersama dan skor kesamaan di atas 0. Gene List memerlukan sedikitnya satu konteks bersama di antara gen yang dimasukkan. Ini adalah aturan tampilan, bukan kriteria signifikansi statistik.
+- **Tampilan kesamaan:** `phenotype_similarity_score` yang didistribusikan adalah skor Phenodigm 0–100. Aplikasi web menskalakan ulang nilai yang tersedia pada setiap jaringan menjadi 1–100; nilai slider dan tooltip ant halaman bukan skala absolut yang dapat dibandingkan.
+- **Tampilan effect size:** TSUMUGI mengambil nilai absolut effect size IMPC, menerapkan `log1p`, lalu menskalakan nilai fenotipe target menjadi 1–100. Nilai ini hanya membantu pemeringkatan dalam halaman, bukan effect size mentah, dan tidak dapat dibandingkan langsung ant halaman fenotipe. Nilai yang hilang tetap berupa JSON `null` dan node ditampilkan putih.
+- **Modul:** Modul adalah kelompok visual, bukan bukti jalur molekuler atau kompleks protein. `Similarity` memakai komponen terhubung dan `Top-level MP` memakai kelompok berbasis ontologi; modul soft/fuzzy pada halaman Gene memungkinkan keanggotaan ganda. Filter jumlah node modul hanya membatasi modul yang ditampilkan.
+- **Label jenis kelamin:** `Female` berarti hanya P-value efek KO betina yang ≤ 0.0001; `Male` berarti hal yang sama untuk efek KO jantan. Kedua opsi saling eksklusif di antarmuka dan tidak menggantikan uji formal interaksi jenis kelamin×genotipe.
+- **Sorotan fenotipe:** Varian metadata dari fenotipe yang sama digabung menjadi satu opsi. Jika Human Disease dan satu atau lebih sorotan fenotipe bertumpang tindih pada sebuah gen, kategorinya ditampilkan sebagai cincin konsentris.
+- **Sorotan penyakit:** Anotasi dari IMPC Disease Models Portal merupakan bukti kemiripan model dan tidak dengan sendirinya menetapkan hubungan kausal gen–penyakit pada manusia.
+- **Catatan tidak signifikan:** Catatan ini mewakili pengukuran terpetakan tanpa anotasi abnormal signifikan pada kondisi tersebut. Catatan ini tidak membuktikan normalitas atau ketiadaan fenotipe; `disease_annotation` tetap kosong.
+- **Makna skor:** Skor TSUMUGI bukan P-value, effect size, afinitas ikatan, atau bukti interaksi gen kausal.
+
 # 🌐 Jaringan
 
 Halaman berpindah dan menggambar jaringan secara otomatis sesuai input.
 
-> [!IMPORTANT]  
-> Pairs dengan **≥3 fenotipe abnormal bersama** dan **similarity > 0.0** akan divisualkan.
+> [!IMPORTANT]
+> Halaman Gene dan Phenotype menampilkan pasangan dengan sedikitnya tiga konteks fenotipe abnormal bersama dan skor kesamaan di atas 0; Gene List memerlukan sedikitnya satu konteks bersama di antara gen yang dimasukkan. Ini adalah aturan tampilan, bukan kriteria signifikansi statistik.
 
 ### Panel jaringan
 **Node** mewakili gen. Klik untuk melihat daftar fenotipe abnormal; seret untuk memindahkan.  
@@ -89,13 +102,13 @@ Halaman Gene menggunakan modul Top-level MP soft/fuzzy, sehingga satu gen dapat 
 Menyesuaikan tampilan jaringan di panel kiri.
 
 #### Filter kesamaan fenotipe
-`Phenotypes similarity` mengatur ambang edge berdasar skor Resnik→Phenodigm.  
+`Phenotypes similarity` memfilter edge berdasarkan nilai kesamaan yang ditampilkan. `phenotype_similarity_score` yang didistribusikan berkisar 0–100, tetapi setiap jaringan yang ditampilkan diskalakan ulang menjadi 1–100; nilai dari halaman berbeda tidak dapat dibandingkan langsung.
 > Cara hitung: 👉 [🔍 Cara kami menghitung kesamaan fenotipe](#-how-we-calculate-phenotypically-similar-genes)
 
 #### Filter effect size
-`Effect size` memfilter node berdasarkan besar kecilnya effect size turunan IMPC jika tersedia.
-Effect size yang hilang tetap diperlakukan sebagai nilai hilang, tidak diubah menjadi nol, dan node terkait ditampilkan berwarna putih.
-> Disembunyikan untuk fenotipe biner (mis. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); daftar biner [di sini](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) atau input satu gen.
+`Effect size` memfilter node berdasarkan nilai tampilan khusus halaman. TSUMUGI mengambil nilai absolut effect size IMPC, menerapkan `log1p`, lalu menskalakan nilai fenotipe target menjadi 1–100. Ini adalah alat pemeringkatan dalam halaman, bukan effect size mentah, dan tidak dapat dibandingkan ant halaman fenotipe.
+Effect size yang hilang diserialisasi dalam JSONL sebagai JSON standar `null`, tetap bermakna sebagai nilai hilang alih-alih diubah menjadi nol, dan node terkait ditampilkan berwarna putih.
+> Disembunyikan untuk fenotipe biner (mis. abnormal embryo development; daftar biner [di sini](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) atau input satu gen.
 
 #### Tentukan genotype
 - `Homo`
@@ -116,8 +129,11 @@ Effect size yang hilang tetap diperlakukan sebagai nilai hilang, tidak diubah me
 #### Tampilan modul
 Definisi modul dan modul yang terlihat dapat dipilih di panel kanan. Batas modul dapat disembunyikan tanpa menghapus gen atau edge dari jaringan.
 
+#### Highlight: Phenotype
+Menyorot gen berdasarkan anotasi fenotipe. Varian metadata dari fenotipe yang sama digabung menjadi satu opsi. Jika Human Disease dan sedikitnya satu sorotan fenotipe bertumpang tindih pada sebuah gen, kategorinya ditampilkan sebagai cincin konsentris.
+
 #### Highlight: Human Disease
-Sorot gen terkait penyakit (data IMPC Disease Models Portal).
+Menyorot gen KO yang memiliki anotasi model penyakit di IMPC Disease Models Portal. Anotasi ini menunjukkan kemiripan model dan tidak dengan sendirinya menetapkan hubungan kausal gen–penyakit pada manusia.
 
 #### Search: Specific Gene
 Cari nama gen dalam jaringan.
@@ -135,7 +151,7 @@ CLI TSUMUGI memungkinkan penggunaan data IMPC terbaru secara lokal, dengan filte
 ## Fitur
 
 - Hitung ulang dengan `statistical-results-ALL.csv.gz` IMPC (opsional `mp.obo`, `impc_phenodigm.csv`).  
-- Filter berdasarkan ada/tidaknya istilah MP.  
+- Filter berdasarkan anotasi MP signifikan atau pengukuran terpetakan yang tidak signifikan.
 - Filter berdasarkan daftar gen (dipisah koma atau file teks).  
 - Output: GraphML (`tsumugi build-graphml`), bundle webapp offline (`tsumugi build-webapp`).
 
@@ -156,7 +172,7 @@ Siap digunakan saat `tsumugi --version` menampilkan versinya.
 ## Perintah yang tersedia
 
 - `tsumugi run`: hitung ulang jaringan dari data IMPC  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: filter pasangan gen atau gen yang mengandung/tidak menunjukkan istilah MP  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: filter pasangan gen atau gen berdasarkan anotasi MP signifikan atau pengukuran terpetakan yang tidak signifikan
 - `tsumugi count --pairwise/--genewise (--min/--max)`: filter berdasarkan jumlah fenotipe (pairwise/genewise)  
 - `tsumugi score (--min/--max)`: filter berdasarkan skor kemiripan (pairwise)  
 - `tsumugi genes --keep/--drop`: pertahankan/hapus berdasarkan daftar gen (koma atau file teks)  
@@ -171,7 +187,7 @@ Siap digunakan saat `tsumugi --version` menampilkan versinya.
 > Gunakan `>` untuk menyimpan ke file.
 
 > [!IMPORTANT]
-> Semua perintah kecuali `tsumugi run` memerlukan `pairwise_similarity_annotation.jsonl.gz` atau `genewise_phenotype_annotation.jsonl.gz`.
+> Semua perintah kecuali `tsumugi run` memerlukan `pairwise_similarity_annotations.jsonl.gz` atau `genewise_phenotype_annotations.jsonl.gz`.
 > Kedua file dapat diunduh dari [halaman utama TSUMUGI](https://larc-tsukuba.github.io/tsumugi/).
 
 ## Cara pakai
@@ -194,7 +210,7 @@ Output: `./tsumugi-output` berisi anotasi genewise (genewise_phenotype_annotatio
 Ekstrak pasangan gen (atau gen) yang memiliki fenotipe target, atau pasangan yang diukur namun tidak menunjukkan anomali signifikan.
 
 ```bash
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) (-g | -p) [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
                   [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
@@ -203,6 +219,9 @@ Sertakan gen/pasangan gen yang memiliki istilah MP yang ditentukan (termasuk tur
 
 #### `-e MP_ID`, `--exclude MP_ID`
 Kembalikan gen/pasangan gen yang diukur untuk istilah MP (termasuk turunan) tetapi tidak menunjukkan fenotipe signifikan. Memerlukan `-a/--genewise_annotations`.
+
+> [!CAUTION]
+> Catatan tidak signifikan tidak membuktikan bahwa hewan normal atau fenotipe tidak ada. Catatan ini hanya menyatakan bahwa pengukuran terpetakan tidak menghasilkan anotasi abnormal signifikan pada kondisi tersebut.
 
 #### `-g`, `--genewise`
 Filter pada level gen. Membaca `genewise_phenotype_annotations.jsonl(.gz)`. Saat menggunakan `--genewise`, sertakan `-a/--genewise_annotations`.
@@ -230,10 +249,10 @@ Filter tambahan berdasarkan zigositas. Nilai: `Homo`, `Hetero`, `Hemi`.
 
 ```bash
 # Hanya ekstrak pasangan gen yang mencakup MP:0001146 (abnormal testis morphology) atau istilah turunan (mis., MP:0004849 abnormal testis size)
-tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --include MP:0001146   --pairwise   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Ekstrak pasangan yang MP:0001146 dan turunannya diukur tanpa anomali signifikan
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # Ekstrak anotasi signifikan tingkat gen yang mengandung MP:0001146 (turunan termasuk)
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +294,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - Fenotipe per gen (genewise wajib):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 `--min` atau `--max` saja juga bisa.
@@ -301,7 +320,7 @@ tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz 
 
 ### Filter berdasarkan daftar gen (`tsumugi genes --keep/--drop`)
 ```bash
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) (-g | -p) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
@@ -326,7 +345,7 @@ Aamp
 Cacna1c
 EOF
 
-tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+tsumugi genes --genewise --keep genes.txt   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
 
 cat << EOF > gene_pairs.csv
 Maf,Aamp
@@ -403,7 +422,7 @@ Path ke file anotasi pairwise (JSONL/.gz). Jika dihilangkan, membaca dari STDIN.
 Path ke file anotasi genewise (JSONL/.gz). Wajib.
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,11 +439,11 @@ Path ke file anotasi genewise (JSONL/.gz). Wajib.
 Direktori output untuk bundle webapp (HTML/CSS/JS + data jaringan). Jangan berikan nama file dengan ekstensi.
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI mendukung STDIN/STDOUT, sehingga Anda bisa merangkai perintah:  
-`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`tsumugi score --min 50 --in pairwise_similarity_annotations.jsonl.gz | tsumugi sex --drop Male > pairwise_score50_no_male.jsonl`
 
 # 🔍 Cara kami menghitung kesamaan fenotipe
 
@@ -435,9 +454,12 @@ Kolom dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-da
 
 ## Pra-pemrosesan
 
-Ekstrak pasangan gen–fenotipe dengan P-value pada tikus KO (`p_value`, `female_ko_effect_p_value`, atau `male_ko_effect_p_value`) ≤ 0.0001.  
-- Anotasikan fenotipe spesifik genotipe sebagai `homo`, `hetero`, atau `hemi`.  
-- Anotasikan fenotipe spesifik jenis kelamin sebagai `female` atau `male`.
+TSUMUGI memperlakukan `mp_term_id` IMPC yang tidak kosong sebagai anotasi fenotipe abnormal IMPC. Pengukuran terpetakan tanpa anotasi abnormal signifikan juga dipertahankan untuk kueri pengecualian yang mempertimbangkan apakah pengukuran dilakukan.
+Untuk pengukuran tidak signifikan, setiap istilah non-root paling spesifik dalam `intermediate_mp_term_id` yang tidak dapat dibandingkan secara ontologis dengan istilah terpilih lainnya dikeluarkan sebagai rekaman terpisah. Pengukuran yang hanya dipetakan ke `MP:0000001` atau tidak memiliki istilah MP valid tidak dikeluarkan karena tidak mendukung kueri khusus fenotipe.
+
+- Zigositas diubah menjadi `Homo`, `Hetero`, atau `Hemi`.
+- `Female` diberikan jika hanya `female_ko_effect_p_value` yang ≤ 0.0001, dan `Male` jika hanya `male_ko_effect_p_value` yang ≤ 0.0001; selain itu diberikan `None`.
+- Nilai absolut effect size digunakan. Nilai yang hilang tetap hilang dan diserialisasi sebagai `null` dalam JSON.
 
 ## Kesamaan fenotipe
 
@@ -453,6 +475,7 @@ TSUMUGI menerapkan rumus skor asli PhenoDigm ([Smedley D, et al. (2013)](https:/
    Setiap anotasi langsung dipropagasikan ke istilah MP yang dianotasi dan seluruh leluhurnya.
 
 * Untuk setiap pasangan istilah MP, cari leluhur bersama dengan IC berbasis anotasi tertinggi. Jika seri, pilih secara deterministik kandidat dengan keturunan transitif paling sedikit dalam ontologi MP, lalu ID istilah MP yang paling kecil secara leksikografis. IC MICA yang dipilih menjadi kesamaan Resnik. Tie-break ini tidak mengubah skor kesamaan atau skema output.
+   Kandidat yang seri memiliki skor numerik pasangan istilah yang sama, tetapi label MICA yang dipilih dapat mengubah jumlah konteks bersama dan akibatnya kelayakan untuk ditampilkan.
 
 * Untuk dua istilah MP, hitung indeks Jaccard dari himpunan atribut terinferensi, yang terdiri dari istilah itu sendiri dan semua leluhurnya.
 
@@ -462,7 +485,7 @@ TSUMUGI menerapkan rumus skor asli PhenoDigm ([Smedley D, et al. (2013)](https:/
 
 * Untuk setiap pasangan gen, buat matriks kesamaan istilah MP × istilah MP dari skor pasangan istilah.
 
-* Metadata genotipe, tahap kehidupan, dan jenis kelamin dipertahankan dalam anotasi fenotipe bersama, tetapi tidak membobot skor PhenoDigm.
+* MICA hanya dicatat dalam `phenotype_shared_annotations` jika zigositas, tahap hidup, dan label jenis kelamin cocok. Metadata ini tidak membobot skor PhenoDigm.
 
 ### 3. Penskalaan Phenodigm
 
@@ -470,6 +493,8 @@ TSUMUGI menerapkan rumus skor asli PhenoDigm ([Smedley D, et al. (2013)](https:/
    Hitung maksimum dan rata-rata best match yang teramati, lalu normalisasi dengan skor optimal self match simetris dari kedua gen.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    Jika penyebut 0, skor ditetapkan ke 0.
+
+Skor yang dihasilkan mengukur kesamaan profil fenotipe. Skor ini bukan P-value, effect size, afinitas ikatan, atau bukti interaksi kausal antar gen.
 
 ---
 

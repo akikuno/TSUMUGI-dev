@@ -6,6 +6,8 @@ from collections import defaultdict
 from collections.abc import Iterator
 from pathlib import Path
 
+from TSUMUGI import io_handler
+
 
 def _iter_nonempty_phenotype_network_paths(TEMPDIR: Path) -> Iterator[Path]:
     """Yield phenotype network files that contain at least one element."""
@@ -64,8 +66,7 @@ def write_mp_term_id_lookup(records_significants, available_mp_terms_file: Path,
 # binary phenotypes
 def write_binary_phenotypes_txt(records_significants, TEMPDIR: Path, output_file: Path) -> None:
     available_mp_terms = {
-        path.name.replace(".json.gz", "").replace("_", " ")
-        for path in _iter_nonempty_phenotype_network_paths(TEMPDIR)
+        path.name.replace(".json.gz", "").replace("_", " ") for path in _iter_nonempty_phenotype_network_paths(TEMPDIR)
     }
 
     mp_term_names_effect_size = defaultdict(set)
@@ -89,8 +90,17 @@ def write_binary_phenotypes_txt(records_significants, TEMPDIR: Path, output_file
 
 # available gene symbols
 def write_available_gene_symbols_txt(TEMPDIR: Path, output_file: Path) -> None:
+    module_paths = sorted(Path(TEMPDIR, "network", "genesymbol_modules").glob("*.json.gz"))
+    source_paths = module_paths or sorted(Path(TEMPDIR, "network", "genesymbol").glob("*.json.gz"))
     with open(output_file, "w") as f:
-        for path_genesymbol in Path(TEMPDIR, "network", "genesymbol").glob("*.json.gz"):
+        for path_genesymbol in source_paths:
+            gene_symbol = path_genesymbol.name.replace(".json.gz", "")
+            f.write(f"{gene_symbol}\n")
+
+
+def write_available_gene_list_symbols_txt(TEMPDIR: Path, output_file: Path) -> None:
+    with open(output_file, "w") as f:
+        for path_genesymbol in sorted(Path(TEMPDIR, "network", "genesymbol").glob("*.json.gz")):
             gene_symbol = path_genesymbol.name.replace(".json.gz", "")
             f.write(f"{gene_symbol}\n")
 
@@ -109,26 +119,21 @@ def write_marker_symbol_accession_id_json(records_significants, TEMPDIR: Path, o
 
 
 def write_records_jsonl_gz(records, output_file: Path) -> None:
-    with gzip.open(output_file, "wt", encoding="utf-8") as f:
-        for record in records:
-            f.write(json.dumps(record) + "\n")
+    io_handler.write_jsonl(records, output_file)
 
 
 def write_pairwise_similarity_annotations(pairwise_similarity_annotations, output_file: Path) -> None:
-    with gzip.open(output_file, "wt", encoding="utf-8") as f:
+    def iter_records():
         for gene_pair, annotation in pairwise_similarity_annotations.items():
             gene1_symbol, gene2_symbol = sorted(gene_pair)
             if not annotation["phenotype_shared_annotations"]:
                 continue
             phenotype_similarity_score = annotation["phenotype_similarity_score"]
-            f.write(
-                json.dumps(
-                    {
-                        "gene1_symbol": gene1_symbol,
-                        "gene2_symbol": gene2_symbol,
-                        "phenotype_shared_annotations": annotation["phenotype_shared_annotations"],
-                        "phenotype_similarity_score": phenotype_similarity_score,
-                    }
-                )
-                + "\n"
-            )
+            yield {
+                "gene1_symbol": gene1_symbol,
+                "gene2_symbol": gene2_symbol,
+                "phenotype_shared_annotations": annotation["phenotype_shared_annotations"],
+                "phenotype_similarity_score": phenotype_similarity_score,
+            }
+
+    io_handler.write_jsonl(iter_records(), output_file)

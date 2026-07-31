@@ -13,8 +13,67 @@
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 -->
 
+## v1.1.1 (2026-07-31)
 
-## v1.1.0 (2026-07-22)
+### 🖼️ User Interface
+
+- Add a node-count range filter for modules in web visualizations  
+  Issue: [#167](https://github.com/akikuno/TSUMUGI-dev/issues/167)
+
+- Render overlapping Human Disease and Phenotype highlights as concentric rings  
+  Issue: [#158](https://github.com/akikuno/TSUMUGI-dev/issues/158)
+  Thanks @aki2274 for reporting the issue!!
+
+- Consolidate phenotype highlight options across genotype, life-stage, and sex metadata  
+  Issue: [#183](https://github.com/akikuno/TSUMUGI-dev/issues/183)
+
+- Remove the desktop left panel scrollbar
+
+### 🐛 Bug Fixes
+
+- Serialize missing `effect_size` values as standard JSON `null` in JSONL outputs while preserving internal missing-value handling  
+  Issue: [#186](https://github.com/akikuno/TSUMUGI-dev/issues/186)
+
+- Make Female and Male filters mutually exclusive in web visualizations  
+  Issue: [#184](https://github.com/akikuno/TSUMUGI-dev/issues/184)
+
+- Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning  
+  Issue: [#182](https://github.com/akikuno/TSUMUGI-dev/issues/182)  
+
+- Hide residual nodes and edges when Gene Symbol filters remove the target gene
+- Resolve MP names from the selected ontology IDs and keep disease annotations empty for non-significant records
+- Preserve significant annotations as single records and expand non-significant measurements to all most-specific non-root intermediate MP mappings
+- Prefer significant annotations when deduplicating condition-equivalent records so that missing effect sizes cannot replace significant annotations
+
+### 📝 Documentation
+
+- Synchronize v1.1.1 version and data provenance across README files
+- Correct CLI input names, options, examples, and locally served webapp requirements
+- Move the complete CLI reference to `doc/CLI.md` and shorten the English and Japanese README files
+- Validate documented CLI examples in pytest, including all translated README files
+- Clarify MICA-based shared contexts, page-specific display scaling, sex labels, disease annotations, and interpretation limits
+- Synchronize interpretation guidance and preprocessing semantics across all translated README files
+- Validate README version consistency, translated CLI synchronization, and documentation links in CI
+
+### 🔧 Maintenance
+
+- Validate every statistical-results column used by the preprocessing pipeline
+- Run JavaScript unit tests in GitHub Actions
+
+-------------------------------------------------------------
+
+# Past Releases
+
+<!-- =============================================================
+<details>
+<summary> v0.X.X (2025-MM-DD) </summary>
+
+</details>
+============================================================= -->
+
+
+<details>
+<summary> v1.1.0 (2026-07-22) </summary>
 
 ### 🖼️ User Interface
 
@@ -61,7 +120,7 @@
 
 ### 🔧 Maintenance
 
-- Handle missing IMPC effect_size values as NaN instead of 0 in TSUMUGI records
+- Handle missing IMPC `effect_size` values as missing values instead of 0 during internal processing
   Issue: [#165](https://github.com/akikuno/TSUMUGI-dev/issues/165)  
 
 ### 📝 Documentation
@@ -69,18 +128,8 @@
 - Standardize “Severity” terminology to “Effect size” in TSUMUGI  
   Issue: [#177](https://github.com/akikuno/TSUMUGI-dev/issues/177)  
 
-<!-- ############################################################ # -->
-
--------------------------------------------------------------
-
-# Past Releases
-
-<!-- =============================================================
-<details>
-<summary> v0.X.X (2025-MM-DD) </summary>
-
 </details>
-============================================================= -->
+
 
 <details>
 <summary> v1.0.2 (2026-02-03) </summary>
@@ -548,7 +597,7 @@
 
 ### 🐛 Bug Fixes
 
-- Fix a bug where gene links led to [Page Not Found](https://www.mousephenotype.org/data/genes). Issue: #53 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/fdacb58db89cf99c84a597cc85e0919152c4d2fa)]
+- Fix a bug where gene links led to Page Not Found (`https://www.mousephenotype.org/data/genes`). Issue: #53 [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/fdacb58db89cf99c84a597cc85e0919152c4d2fa)]
 
 ### 🔧 Maintenance
 
@@ -598,7 +647,7 @@
 
 ### 💥 Breaking
 
-- Change URL from [LARC server](https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/) to [Github Pages](https://larc-tsukuba.github.io/tsumugi/). Issue: [#49](https://github.com/akikuno/TSUMUGI-dev/issues/49) [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/c434cf09b778f4cc33bdb31bed6da9a52461a53f)]
+- Change URL from [LARC server](https://www.md.tsukuba.ac.jp/LabAnimalResCNT/TSUMUGI/) to [Github Pages](https://larc-tsukuba.github.io/tsumugi/). Issue: [#49](https://github.com/akikuno/TSUMUGI-dev/issues/49)
 
 ### 🌟 New Features
 

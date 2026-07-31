@@ -4,6 +4,10 @@ import json
 from TSUMUGI import report_generator
 
 
+def _reject_nonstandard_constant(value):
+    raise ValueError(f"Nonstandard JSON constant: {value}")
+
+
 def _write_network(path, network):
     with gzip.open(path, "wt", encoding="utf-8") as f:
         json.dump(network, f)
@@ -21,9 +25,7 @@ def test_available_mp_terms_exclude_empty_networks(tmp_path):
     report_generator.write_available_mp_terms_json(tmp_path, output_json)
 
     assert output_txt.read_text(encoding="utf-8") == "available phenotype\n"
-    assert json.loads(output_json.read_text(encoding="utf-8")) == {
-        "available phenotype": "available_phenotype"
-    }
+    assert json.loads(output_json.read_text(encoding="utf-8")) == {"available phenotype": "available_phenotype"}
 
 
 def test_binary_phenotypes_exclude_empty_networks(tmp_path):
@@ -68,4 +70,63 @@ def test_write_mp_term_id_lookup(tmp_path):
     assert result == {
         "phenotype_alpha": "MP:0001",  # picks most frequent ID
         "phenotype_beta": "MP:0002",  # included when available and has ID
+    }
+
+
+def test_gene_symbol_lists_separate_gene_pages_from_gene_list_assets(tmp_path):
+    gene_dir = tmp_path / "network" / "genesymbol"
+    module_dir = tmp_path / "network" / "genesymbol_modules"
+    gene_dir.mkdir(parents=True)
+    module_dir.mkdir(parents=True)
+    _write_network(gene_dir / "GeneA.json.gz", {})
+    _write_network(gene_dir / "GeneB.json.gz", {})
+    _write_network(module_dir / "GeneA.json.gz", {})
+
+    gene_output = tmp_path / "available_gene_symbols.txt"
+    gene_list_output = tmp_path / "available_gene_list_symbols.txt"
+    report_generator.write_available_gene_symbols_txt(tmp_path, gene_output)
+    report_generator.write_available_gene_list_symbols_txt(tmp_path, gene_list_output)
+
+    assert gene_output.read_text(encoding="utf-8") == "GeneA\n"
+    assert gene_list_output.read_text(encoding="utf-8") == "GeneA\nGeneB\n"
+
+
+def test_write_records_jsonl_gz_uses_standard_json_null(tmp_path):
+    output_path = tmp_path / "records.jsonl.gz"
+
+    report_generator.write_records_jsonl_gz(
+        [{"marker_symbol": "GeneA", "effect_size": float("nan")}],
+        output_path,
+    )
+
+    with gzip.open(output_path, "rt", encoding="utf-8") as stream:
+        raw_line = stream.read()
+    record = json.loads(
+        raw_line,
+        parse_constant=_reject_nonstandard_constant,
+    )
+    assert record == {"marker_symbol": "GeneA", "effect_size": None}
+
+
+def test_write_pairwise_similarity_annotations_uses_standard_json(tmp_path):
+    output_path = tmp_path / "pairwise.jsonl.gz"
+    annotations = {
+        ("GeneB", "GeneA"): {
+            "phenotype_shared_annotations": [{"mp_term_name": "phenotype"}],
+            "phenotype_similarity_score": 42,
+        }
+    }
+
+    report_generator.write_pairwise_similarity_annotations(
+        annotations,
+        output_path,
+    )
+
+    with gzip.open(output_path, "rt", encoding="utf-8") as stream:
+        record = json.loads(stream.read())
+    assert record == {
+        "gene1_symbol": "GeneA",
+        "gene2_symbol": "GeneB",
+        "phenotype_shared_annotations": [{"mp_term_name": "phenotype"}],
+        "phenotype_similarity_score": 42,
     }

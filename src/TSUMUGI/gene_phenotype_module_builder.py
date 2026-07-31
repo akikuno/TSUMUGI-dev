@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 MP_ONTOLOGY_ROOT_ID = "MP:0000001"
 EDGE_KEY_SEPARATOR = "||"
+GENE_DISPLAY_MAX_NODES = 150
 
 
 def _edge_key(source: str, target: str) -> str:
@@ -120,7 +121,7 @@ def _build_edge_module_memberships(
     return edge_modules, missing_terms
 
 
-def _load_gene_network(path_json_gz: Path) -> list[dict[str, dict[str, Any]]]:
+def _load_gene_network(path_json_gz: Path) -> Any:
     with gzip.open(path_json_gz, "rt", encoding="utf-8") as f:
         return json.load(f)
 
@@ -339,6 +340,85 @@ def _write_summary_csv(path_csv: Path, rows: list[dict[str, Any]], missing_terms
             )
 
 
+def _build_direct_pair_index(
+    pairwise_similarity_annotations: Iterable[dict[str, Any]],
+) -> tuple[dict[str, dict[str, Any]], dict[str, list[str]]]:
+    records_by_key: dict[str, dict[str, Any]] = {}
+    adjacency: dict[str, list[str]] = defaultdict(list)
+    for record in pairwise_similarity_annotations:
+        record_source = str(record["gene1_symbol"])
+        record_target = str(record["gene2_symbol"])
+        source, target = sorted([record_source, record_target])
+        key = _edge_key(source, target)
+        normalized = record
+        if record_source != source:
+            normalized = {**record, "gene1_symbol": source, "gene2_symbol": target}
+        existing = records_by_key.get(key)
+        if existing is not None and existing != normalized:
+            raise ValueError(f"Conflicting pairwise annotations for {source} and {target}")
+        records_by_key[key] = normalized
+        adjacency[source].append(key)
+        adjacency[target].append(key)
+    return records_by_key, {gene: sorted(set(keys)) for gene, keys in adjacency.items()}
+
+
+def _scale_gene_display_scores(scores: list[int]) -> dict[int, int]:
+    if not scores:
+        return {}
+    minimum = min(scores)
+    maximum = max(scores)
+    if minimum == maximum:
+        return dict.fromkeys(set(scores), 100)
+    return {score: int(1 + ((score - minimum) * 99 / (maximum - minimum))) for score in set(scores)}
+
+
+def _build_gene_display_network(
+    target_gene: str,
+    records_by_key: dict[str, dict[str, Any]],
+    adjacency: dict[str, list[str]],
+    max_nodes: int = GENE_DISPLAY_MAX_NODES,
+) -> list[dict[str, dict[str, Any]]]:
+    candidates = []
+    for key in adjacency.get(target_gene, []):
+        record = records_by_key[key]
+        source = str(record["gene1_symbol"])
+        target = str(record["gene2_symbol"])
+        other_gene = target if source == target_gene else source
+        score = int(record.get("phenotype_similarity_score", 0))
+        shared_count = len(record.get("phenotype_shared_annotations", []))
+        candidates.append((other_gene, score, shared_count))
+
+    candidates.sort(key=lambda item: (-item[1], -item[2], item[0]))
+    selected_nodes = {target_gene}
+    selected_nodes.update(gene for gene, _, _ in candidates[: max_nodes - 1])
+
+    selected_edge_keys = set()
+    for gene in selected_nodes:
+        for key in adjacency.get(gene, []):
+            record = records_by_key[key]
+            source = str(record["gene1_symbol"])
+            target = str(record["gene2_symbol"])
+            if source in selected_nodes and target in selected_nodes:
+                selected_edge_keys.add(key)
+
+    selected_records = [records_by_key[key] for key in sorted(selected_edge_keys)]
+    score_map = _scale_gene_display_scores(
+        [int(record.get("phenotype_similarity_score", 0)) for record in selected_records]
+    )
+    nodes = [{"data": {"id": gene}} for gene in sorted(selected_nodes)]
+    edges = [
+        {
+            "data": {
+                "source": str(record["gene1_symbol"]),
+                "target": str(record["gene2_symbol"]),
+                "edge_size": score_map[int(record.get("phenotype_similarity_score", 0))],
+            }
+        }
+        for record in selected_records
+    ]
+    return nodes + edges
+
+
 def write_mp_top_level_module_lookup_json(
     ontology_terms: dict[str, dict[str, Any]],
     output_path: str | Path,
@@ -367,18 +447,37 @@ def build_gene_phenotype_module_json(
     output_dir = Path(output_dir)
     summary_csv_path = Path(summary_csv_path)
 
+    pairwise_records = (
+        pairwise_similarity_annotations
+        if isinstance(pairwise_similarity_annotations, list)
+        else list(pairwise_similarity_annotations)
+    )
     modules_by_id, modules_by_term_name = _build_top_level_module_index(ontology_terms)
     edge_module_memberships, missing_terms = _build_edge_module_memberships(
-        pairwise_similarity_annotations,
+        pairwise_records,
         modules_by_term_name,
         modules_by_id,
     )
+    records_by_key, adjacency = _build_direct_pair_index(pairwise_records)
 
     rows = []
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for stale_path in output_dir.glob("*.json.gz"):
+        stale_path.unlink()
     gene_network_files = sorted(gene_network_dir.glob("*.json.gz"))
     for gene_network_path in tqdm(gene_network_files, total=len(gene_network_files)):
         target_gene = gene_network_path.name.removesuffix(".json.gz")
-        network_json = _load_gene_network(gene_network_path)
+        stored_network = _load_gene_network(gene_network_path)
+        if isinstance(stored_network, list):
+            network_json = stored_network
+        else:
+            if target_gene not in adjacency:
+                continue
+            network_json = _build_gene_display_network(
+                target_gene,
+                records_by_key,
+                adjacency,
+            )
         payload, summary = _build_gene_module_payload(target_gene, network_json, edge_module_memberships)
         _write_json_gz(output_dir / gene_network_path.name, payload)
         rows.append(summary)

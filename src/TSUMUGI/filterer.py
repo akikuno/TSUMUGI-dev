@@ -26,7 +26,9 @@ def _effect_size_sort_key(record: dict[str, str | float]) -> float:
 
 
 def distinct_records_with_max_effect(
-    records: Iterable[dict[str, str | float]], unique_keys: list[str]
+    records: Iterable[dict[str, str | float]],
+    unique_keys: list[str],
+    prefer_significant: bool = False,
 ) -> Generator[dict[str, str | float]]:
     """
     Groups records by the specified keys and returns the record with the maximum
@@ -40,5 +42,14 @@ def distinct_records_with_max_effect(
     records_sorted = sorted(records, key=record_key_getter)
 
     for _, group in groupby(records_sorted, key=record_key_getter):
-        record_with_max_effect = max(group, key=_effect_size_sort_key)
+        if prefer_significant:
+            record_with_max_effect = max(
+                group,
+                key=lambda record: (
+                    bool(record.get("significant", False)),
+                    _effect_size_sort_key(record),
+                ),
+            )
+        else:
+            record_with_max_effect = max(group, key=_effect_size_sort_key)
         yield record_with_max_effect

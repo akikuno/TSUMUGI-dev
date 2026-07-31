@@ -1,4 +1,15 @@
-import { loadJSONGz } from "../data/dataLoader.js";
+import { fetchJSONGz, loadJSONGz } from "../data/dataLoader.js";
+import {
+    buildInducedGeneElements,
+    GENE_LIST_MIN_SHARED_CONTEXTS,
+    GENE_PAGE_MIN_SHARED_CONTEXTS,
+    selectGeneDisplayIds,
+    validateGeneAsset,
+    validateGeneListRequestGenes,
+} from "../../../js/geneAssetUtils.js";
+
+const GENE_ASSET_FETCH_CONCURRENCY = 12;
+const GENE_LIST_REQUEST_PREFIX = "tsumugi:gene-list:";
 
 export function getPageConfig() {
     const params = new URLSearchParams(window.location.search);
@@ -7,11 +18,13 @@ export function getPageConfig() {
     const providedName = params.get("name") || "";
     const name = mode === "genelist" && !providedName ? "geneList" : providedName;
     const title = params.get("title") || name;
+    const requestId = params.get("request") || "";
 
     return {
         mode,
         name,
         displayName: title || name || "TSUMUGI",
+        requestId,
     };
 }
 
@@ -124,23 +137,81 @@ export async function setVersionLabel() {
     versionLabel.textContent = versionText || "-";
 }
 
-export function loadElementsForConfig(config) {
+async function mapWithConcurrency(items, concurrency, callback) {
+    const results = new Array(items.length);
+    let nextIndex = 0;
+
+    async function worker() {
+        while (nextIndex < items.length) {
+            const index = nextIndex;
+            nextIndex += 1;
+            results[index] = await callback(items[index], index);
+        }
+    }
+
+    const workerCount = Math.min(concurrency, items.length);
+    await Promise.all(Array.from({ length: workerCount }, () => worker()));
+    return results;
+}
+
+async function loadGeneAssets(genes, initialAssets = new Map()) {
+    const assets = new Map(initialAssets);
+    const missingGenes = genes.filter((gene) => !assets.has(gene));
+    const loadedAssets = await mapWithConcurrency(
+        missingGenes,
+        GENE_ASSET_FETCH_CONCURRENCY,
+        async (gene) => {
+            const asset = await fetchJSONGz(`../data/genesymbol/${encodeURIComponent(gene)}.json.gz`);
+            return validateGeneAsset(asset, gene);
+        },
+    );
+    loadedAssets.forEach((asset) => assets.set(asset.gene, asset));
+    return genes.map((gene) => assets.get(gene));
+}
+
+function readGeneListRequest(requestId) {
+    if (!requestId) {
+        throw new Error("Gene List request identifier is missing.");
+    }
+    const stored = localStorage.getItem(`${GENE_LIST_REQUEST_PREFIX}${requestId}`);
+    if (!stored) {
+        throw new Error("Gene List request was not found. Please submit the list again.");
+    }
+    const request = JSON.parse(stored);
+    if (!request) {
+        throw new Error("Gene List request is invalid. Please submit the list again.");
+    }
+    const genes = validateGeneListRequestGenes(request.genes);
+    return { ...request, genes };
+}
+
+export async function loadElementsForConfig(config) {
     if (config.mode === "phenotype") {
         return loadJSONGz(`../data/phenotype/${config.name}.json.gz`) || [];
     }
 
     if (config.mode === "genesymbol") {
-        return loadJSONGz(`../data/genesymbol/${config.name}.json.gz`) || [];
+        const targetAsset = validateGeneAsset(
+            await fetchJSONGz(`../data/genesymbol/${encodeURIComponent(config.name)}.json.gz`),
+            config.name,
+        );
+        const selectedGenes = selectGeneDisplayIds(targetAsset);
+        const assets = await loadGeneAssets(selectedGenes, new Map([[config.name, targetAsset]]));
+        return buildInducedGeneElements(assets, selectedGenes, {
+            minSharedContexts: GENE_PAGE_MIN_SHARED_CONTEXTS,
+            targetGene: config.name,
+        });
     }
 
-    // Gene list page pulls data from localStorage
-    try {
-        const stored = localStorage.getItem("elements");
-        return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-        console.error("Failed to parse stored elements for gene list:", error);
-        return [];
+    const request = readGeneListRequest(config.requestId);
+    const assets = await loadGeneAssets(request.genes);
+    const elements = buildInducedGeneElements(assets, request.genes, {
+        minSharedContexts: GENE_LIST_MIN_SHARED_CONTEXTS,
+    });
+    if (!elements.some((element) => element.data && element.data.source && element.data.target)) {
+        throw new Error("No similar phenotypes were found among the entered genes.");
     }
+    return elements;
 }
 
 export function renderEmptyState(message) {

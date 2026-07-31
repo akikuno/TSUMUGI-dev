@@ -114,10 +114,9 @@ def exclude_specific_phenotype(
                 continue
             genes_with_phenotype.add(record["marker_symbol"])
 
-    # For genes whose phenotype status remains undetermined in (1),
-    # if a non-significant phenotype annotation exists for the target mp_term_id or any of
-    # its ancestor/descendant terms, the gene is classified as “confirmed as having no phenotype.”
-    genes_without_phenotype = set()
+    # For genes without a matching significant annotation, retain genes with a
+    # mapped non-significant measurement for the target term or a related term.
+    genes_with_non_significant_measurement = set()
     for record in genewise_phenotype_annotations:
         if record["marker_symbol"] in genes_with_phenotype:
             continue
@@ -132,17 +131,20 @@ def exclude_specific_phenotype(
                 continue
             if zygosity is not None and record["zygosity"] != zygosity:
                 continue
-            genes_without_phenotype.add(record["marker_symbol"])
+            genes_with_non_significant_measurement.add(record["marker_symbol"])
 
-    # Now filter gene pairs based on genes_without_phenotype
+    # Filter gene pairs based on mapped non-significant measurements.
     if is_pairwise:
         pairwise_similarity_annotations = io_handler.read_jsonl(path_pairwise_similarity_annotations)
         for record in pairwise_similarity_annotations:
-            if record["gene1_symbol"] in genes_without_phenotype and record["gene2_symbol"] in genes_without_phenotype:
+            if (
+                record["gene1_symbol"] in genes_with_non_significant_measurement
+                and record["gene2_symbol"] in genes_with_non_significant_measurement
+            ):
                 # output to stdout as JSONL
                 io_handler.write_jsonl_to_stdout(record)
     else:
         for record in genewise_phenotype_annotations:
-            if record["marker_symbol"] in genes_without_phenotype:
+            if record["marker_symbol"] in genes_with_non_significant_measurement:
                 # output to stdout as JSONL
                 io_handler.write_jsonl_to_stdout(record)

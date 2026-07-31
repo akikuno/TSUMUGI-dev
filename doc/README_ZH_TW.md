@@ -19,7 +19,7 @@
 此工具開放給所有人使用👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-本文件說明**TSUMUGI v1.1.0**的現行功能。公開Web應用程式使用IMPC **Release 24.0**資料。
+本文件說明**TSUMUGI v1.1.1**的現行功能。公開Web應用程式使用IMPC **Release 24.0**資料。
 
 **TSUMUGI(紡ぎ)** 源自「將形成表型的基因群像紡線一樣編織」的概念。
 
@@ -39,9 +39,9 @@ TSUMUGI 支援三種輸入。
 
 ### 基因列表（Gene List）
 可輸入多個基因（每行一個），在列表內提取**表型相似的基因**。  
-> [!CAUTION]  
-> 找不到相似基因時：`No similar phenotypes were found among the entered genes.`  
-> 若生成的網路包含200個或更多基因：`Too many genes submitted. Please limit the number to 200 or fewer.`
+> [!CAUTION]
+> 如果沒有找到相似基因：`No similar phenotypes were found among the entered genes.`
+> Gene List最多接受200個不同且可用的基因。計數前會移除重複符號與空行；不可用符號會被報告並排除。包含201個或更多可用基因的清單會在載入網路資料前被拒絕。
 
 ### 📥 下載原始資料
 TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
@@ -50,11 +50,11 @@ TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
 - 基因符號（例："1110059G10Rik"）  
 - Marker accession ID（例："MGI:1913452"）  
 - 表現型名稱/ID（例："fused joints", "MP:0000137"）  
-- Effect size（例：0.0, 1.324）  
-- 顯著性（True/false）  
+- Effect size（`number`或`null`；例：0.0, 1.324）
+- 顯著性標記（IMPC異常表現型註釋為`true`；已映射但沒有顯著異常的測量為`false`）
 - 接合型（"Homo", "Hetero", "Hemi"）  
 - 生命階段（"Embryo", "Early", "Interval", "Late"）  
-- 性別差異（"", "Male", "Female"）  
+- 性別差異（`None`、`Male`、`Female`）
 - 疾病註解（例：[] 或 "Premature Ovarian Failure 18"）
 
 範例：
@@ -64,20 +64,33 @@ TSUMUGI 發佈 gzip 壓縮的 JSONL 檔。
 
 #### `pairwise_similarity_annotations.jsonl.gz`
 - 基因對 (`gene1_symbol`, `gene2_symbol`)  
-- `phenotype_shared_annotations`：共享表現型的中介資料（生命階段、接合型、性別差異）  
-- `phenotype_similarity_score`：Resnik→Phenodigm 分數（0–100）
+- `phenotype_shared_annotations`（元資料一致的MICA脈絡：MP術語、生命階段、接合型與性別標籤）
+- `phenotype_similarity_score`（Phenodigm分數，0–100）
 
 範例：
 ```
 {"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
+## 解讀注意事項
+
+- **共享脈絡：** `phenotype_shared_annotations`中的每個項目，都是兩條顯著MP註釋在接合型、生命階段與性別標籤一致時得到的資訊量最大共同祖先（MICA）。這不一定表示兩個基因都直接註釋了同一個葉節點MP術語。同一個MICA在元資料不同時可作為不同脈絡出現。
+- **顯示規則：** Gene與Phenotype頁面顯示共享異常表現型脈絡不少於3個且相似度分數大於0的基因配對。Gene List要求輸入基因之間至少有1個共享脈絡。這些是顯示規則，不是統計顯著性標準。
+- **相似度顯示：** 發布的`phenotype_similarity_score`是0–100的Phenodigm分數。Web應用會把每個目前網路中的可用值重新縮放到1–100，因此不同頁面的滑桿值與提示值不能當作統一的絕對尺度比較。
+- **效應量顯示：** TSUMUGI取IMPC效應量的絕對值，進行`log1p`轉換，並在目標表現型內重新縮放到1–100。該值僅用於頁面內排序，不是原始效應量，也不能在不同表現型頁面之間直接比較。缺失值維持為JSON `null`，對應節點顯示為白色。
+- **模組：** 模組只是視覺分組，並不是分子路徑或蛋白質複合體的證據。`Similarity`表示連通分量，`Top-level MP`表示基於本體的分組；Gene頁面的soft/fuzzy模組允許一個基因屬於多個模組。模組節點數篩選器只限制目前顯示的模組。
+- **性別標籤：** `Female`表示只有雌性KO效應P-value≤0.0001；`Male`表示只有雄性KO效應P-value≤0.0001。兩個選項在Web介面中互斥，不能取代正式的性別×基因型交互作用檢定。
+- **表現型醒目提示：** 同一表現型的不同元資料變體會合併為一個選項。當Human Disease與一個或多個表現型在同一基因上重疊時，各類別以同心圓顯示。
+- **疾病醒目提示：** IMPC Disease Models Portal的註釋只提供疾病模型相似性證據，不能單獨確立人類基因–疾病因果關係。
+- **非顯著記錄：** 這表示在對應條件下已完成映射測量，但沒有顯著異常註釋。它不能證明動物正常或表現型不存在；`disease_annotation`維持為空。
+- **分數含義：** TSUMUGI分數不是P-value、效應量、結合親和力，也不是基因間因果交互作用的證據。
+
 # 🌐 網路
 
 系統會依輸入自動繪製網路。
 
-> [!IMPORTANT]  
-> **共享異常表現型≥3 且 表現型相似度 > 0.0** 的基因對會被視覺化。
+> [!IMPORTANT]
+> Gene與Phenotype頁面顯示共享異常表現型脈絡不少於3個且相似度分數大於0的基因配對；Gene List要求輸入基因之間至少有1個共享脈絡。這些是顯示規則，不是統計顯著性標準。
 
 ### 網路面板
 **節點**代表基因。點擊可查看該 KO 小鼠的異常表現型清單，拖曳可調整位置。  
@@ -89,13 +102,13 @@ Gene頁面使用soft/fuzzy Top-level MP模組，因此一個基因可以屬於�
 可於左側調整網路顯示。
 
 #### 依表現型相似度過濾
-`Phenotypes similarity` 滑桿依 Resnik→Phenodigm 分數設定邊的門檻。  
+`Phenotypes similarity`依顯示用相似度值過濾邊。發布的`phenotype_similarity_score`範圍為0–100，但每個顯示網路都會重新縮放到1–100，因此不同頁面的值不能直接比較。
 > 計算詳情：👉 [🔍 表現型相似基因群的計算方法](#-表現型相似基因群的計算方法)
 
 #### 依 effect size 過濾
-`Effect size` 滑桿依 IMPC-derived effect size 的大小過濾節點（若有資料）。
-缺失的effect size會保留為缺失值，不會轉換為0；相應節點顯示為白色。
-> 對二值表現型（如 [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 二值列表見[此處](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或單一基因輸入時，此控制隱藏。
+`Effect size`依頁面特定的顯示值過濾節點。TSUMUGI取IMPC效應量的絕對值，進行`log1p`轉換，並在目標表現型內重新縮放到1–100。該值只用於頁面內排序，不是原始效應量，也不能在不同表現型頁面之間比較。
+缺失的`effect_size`在JSONL中序列化為標準JSON的`null`，其語義仍為缺失值而不會轉換為0；相應節點顯示為白色。
+> 對二值表現型（如 abnormal embryo development; 二值列表見[此處](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或單一基因輸入時，此控制隱藏。
 
 #### 指定接合型
 - `Homo`（純合）
@@ -116,8 +129,11 @@ Gene頁面使用soft/fuzzy Top-level MP模組，因此一個基因可以屬於�
 #### 模組顯示
 可在右側面板選擇模組定義與目前顯示的模組。隱藏模組邊框不會從網路中移除基因或邊。
 
+#### Highlight: Phenotype
+根據表現型註釋醒目提示基因。同一表現型的不同元資料變體會合併為一個選項。當Human Disease與至少一個表現型在同一基因上重疊時，各類別以同心圓顯示。
+
 #### Highlight: Human Disease
-使用 IMPC Disease Models Portal 資料，高亮與人類疾病相關的基因。
+醒目提示在IMPC Disease Models Portal中具有疾病模型註釋的KO基因。該註釋表示模型相似性，不能單獨確立人類基因–疾病因果關係。
 
 #### Search: Specific Gene
 於網路中搜尋基因名。
@@ -135,7 +151,7 @@ TSUMUGI CLI 允許使用本地下載的最新IMPC資料，並提供比網頁版�
 ## 功能
 
 - 使用IMPC的`statistical-results-ALL.csv.gz`重新計算（可選`mp.obo`、`impc_phenodigm.csv`）。  
-- 依MP術語包含/排除進行過濾。  
+- 依顯著MP註釋或已映射的非顯著測量記錄進行過濾。
 - 依基因清單過濾（逗號分隔或文字檔）。  
 - 輸出：GraphML（`tsumugi build-graphml`）、離線Web應用包（`tsumugi build-webapp`）。
 
@@ -156,7 +172,7 @@ pip install tsumugi
 ## 可用命令
 
 - `tsumugi run`: 從IMPC資料重新計算網路  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 依MP術語包含/排除基因對或基因  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 依顯著MP註釋或已映射的非顯著測量記錄過濾基因配對或基因
 - `tsumugi count --pairwise/--genewise (--min/--max)`: 依表型數量過濾（基因對/基因）  
 - `tsumugi score (--min/--max)`: 依表型相似度得分過濾（基因對）  
 - `tsumugi genes --keep/--drop`: 基因清單保留/剔除（逗號或文字檔）  
@@ -171,7 +187,7 @@ pip install tsumugi
 > 如需存檔，請使用`>`重導向。
 
 > [!IMPORTANT]
-> 除`tsumugi run`外，所有命令都需要`pairwise_similarity_annotation.jsonl.gz`或`genewise_phenotype_annotation.jsonl.gz`。
+> 除`tsumugi run`外，所有命令都需要`pairwise_similarity_annotations.jsonl.gz`或`genewise_phenotype_annotations.jsonl.gz`。
 > 兩個檔案都可以從[TSUMUGI首頁](https://larc-tsukuba.github.io/tsumugi/)下載。
 
 ## 使用方法
@@ -194,7 +210,7 @@ tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistica
 擷取包含目標表型的基因對（或基因），或擷取已量測但未出現顯著異常的基因對。
 
 ```bash
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) (-g | -p) [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
                   [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
@@ -203,6 +219,9 @@ tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWI
 
 #### `-e MP_ID`, `--exclude MP_ID`
 回傳已量測該MP術語（包含下位術語）但未出現顯著表型的基因/基因對。需要`-a/--genewise_annotations`。
+
+> [!CAUTION]
+> 非顯著記錄不能證明動物正常或表現型不存在。它只表示映射測量在該條件下沒有產生顯著異常註釋。
 
 #### `-g`, `--genewise`
 以基因層級過濾。讀取`genewise_phenotype_annotations.jsonl(.gz)`。使用`--genewise`時請指定`-a/--genewise_annotations`。
@@ -230,10 +249,10 @@ pairwise註解檔（JSONL/.gz）路徑。省略時從STDIN讀取。
 
 ```bash
 # 僅擷取包含MP:0001146（abnormal testis morphology）或其下位術語（如MP:0004849 abnormal testis size）的基因對
-tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --include MP:0001146   --pairwise   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # 擷取已量測MP:0001146及其下位術語但未出現顯著異常的基因對
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # 以基因擷取包含MP:0001146的顯著表型（含下位術語）
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +294,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - 每個基因的表型數量（需genewise）：
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 只用`--min`或`--max`也可以。
@@ -301,7 +320,7 @@ tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz 
 
 ### 依基因清單過濾（`tsumugi genes --keep/--drop`）
 ```bash
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) (-g | -p) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
@@ -326,7 +345,7 @@ Aamp
 Cacna1c
 EOF
 
-tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+tsumugi genes --genewise --keep genes.txt   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
 
 cat << EOF > gene_pairs.csv
 Maf,Aamp
@@ -403,7 +422,7 @@ pairwise註解檔（JSONL/.gz）路徑。省略時從STDIN讀取。
 genewise註解檔（JSONL/.gz）路徑。必需。
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,11 +439,11 @@ genewise註解檔（JSONL/.gz）路徑。必需。
 Webapp輸出目錄（HTML/CSS/JS + 網路資料）。不要指定帶副檔名的檔名。
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI支援STDIN/STDOUT，可串聯命令：  
-`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`tsumugi score --min 50 --in pairwise_similarity_annotations.jsonl.gz | tsumugi sex --drop Male > pairwise_score50_no_male.jsonl`
 
 # 🔍 表現型相似基因群的計算方法
 
@@ -435,9 +454,12 @@ CLI支援STDIN/STDOUT，可串聯命令：
 
 ## 前處理
 
-擷取KO小鼠P-value（`p_value`、`female_ko_effect_p_value`或`male_ko_effect_p_value`）≤ 0.0001的基因–表現型配對。  
-- 基因型特異表現型標註為`homo`、`hetero`或`hemi`。  
-- 性別特異表現型標註為`female`或`male`。
+TSUMUGI將IMPC `mp_term_id`非空的記錄視為IMPC異常表現型註釋。同時保留已映射但沒有顯著異常註釋的測量記錄，用於考量是否完成測量的排除查詢。
+對於非顯著測量，`intermediate_mp_term_id`中ontology上互不可比的最具體非根術語會分別輸出為獨立記錄。僅映射至`MP:0000001`或未映射至有效MP術語的測量無法支援表現型特異查詢，因此不予輸出。
+
+- 將接合型轉換為`Homo`、`Hetero`或`Hemi`。
+- 僅`female_ko_effect_p_value`≤0.0001時標記為`Female`，僅`male_ko_effect_p_value`≤0.0001時標記為`Male`，其他情況標記為`None`。
+- 使用效應量的絕對值。缺失值維持缺失，並在JSON中序列化為`null`。
 
 ## 表現型相似度
 
@@ -453,6 +475,7 @@ TSUMUGI使用PhenoDigm原始評分公式（[Smedley D, et al. (2013)](https://do
    每個直接annotation都會傳播到被註解的MP術語及其全部ancestor。
 
 * 對每個MP術語對，尋找annotation-derived IC最高的共同ancestor。若候選同分，則依序確定性選擇MP本體中transitive descendant較少的候選，以及字典序較小的MP term ID。所選MICA的IC作為Resnik相似度。此tie-break不改變相似度分數或輸出schema。
+   並列候選的術語配對數值分數相同，但所選MICA標籤可能改變共享脈絡數量，進而影響是否符合顯示條件。
 
 * 對兩個MP術語，計算其inferred attribute集合的Jaccard指數；此集合定義為術語本身及其全部ancestor。
 
@@ -462,7 +485,7 @@ TSUMUGI使用PhenoDigm原始評分公式（[Smedley D, et al. (2013)](https://do
 
 * 對每個基因對，依據術語對分數建立MP術語×MP術語相似度矩陣。
 
-* 基因型、生命階段與性別metadata保留於共享表現型annotation中，但不作為PhenoDigm分數的加權依據。
+* 只有在接合型、生命階段與性別標籤一致時，才把MICA記錄到`phenotype_shared_annotations`中。這些元資料不會對PhenoDigm分數加權。
 
 ### 3. Phenodigm縮放
 
@@ -470,6 +493,8 @@ TSUMUGI使用PhenoDigm原始評分公式（[Smedley D, et al. (2013)](https://do
    計算觀測best match的maximum/mean，再使用兩個基因對稱的optimal self-match score進行正規化。
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    若分母為0，分數為0。
+
+最終分數衡量表現型譜相似度。它不是P-value、效應量、結合親和力，也不是基因間因果交互作用的證據。
 
 ---
 

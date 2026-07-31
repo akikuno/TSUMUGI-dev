@@ -123,7 +123,7 @@ function serializeModuleLabels(modules) {
 function getNodeModuleMemberships(node, exportOptions) {
     if (!node) return [];
     const publicMemberships = node.data("module_memberships");
-    if (Array.isArray(publicMemberships) && publicMemberships.length > 0) {
+    if (Array.isArray(publicMemberships)) {
         return publicMemberships;
     }
     const topLevelMemberships = node.data(exportOptions.topLevelModuleDataKey);

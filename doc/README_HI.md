@@ -19,7 +19,7 @@
 यह वेब पर सभी के लिए उपलब्ध है👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-यह दस्तावेज़ **TSUMUGI v1.1.0** के वर्तमान व्यवहार का वर्णन करता है। सार्वजनिक वेब ऐप IMPC **Release 24.0** डेटा का उपयोग करता है।
+यह दस्तावेज़ **TSUMUGI v1.1.1** के वर्तमान व्यवहार का वर्णन करता है। सार्वजनिक वेब ऐप IMPC **Release 24.0** डेटा का उपयोग करता है।
 
 **TSUMUGI(紡ぎ)** का अर्थ है “फेनोटाइप बनाने वाले जीन समूह को धागे की तरह बुनना”।
 
@@ -39,9 +39,9 @@ TSUMUGI तीन तरह के इनपुट का समर्थन क
 
 ### जीन सूची (Gene List)
 एकाधिक जीन (प्रति पंक्ति एक) दें और **सूची के भीतर** समान फेनोटाइप खोजें।  
-> [!CAUTION]  
-> यदि कोई समान जीन नहीं मिला: `No similar phenotypes were found among the entered genes.`  
-> यदि generated network में 200 या अधिक genes हों: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> [!CAUTION]
+> समान genes न मिलने पर: `No similar phenotypes were found among the entered genes.`
+> Gene List अधिकतम 200 अलग और उपलब्ध genes स्वीकार करता है। Counting से पहले duplicates और blank lines हटते हैं; unavailable symbols report करके बाहर किए जाते हैं। 201 या अधिक उपलब्ध genes वाली list network data load होने से पहले reject होती है।
 
 ### 📥 कच्चा डेटा डाउनलोड
 TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित करता है।
@@ -50,11 +50,11 @@ TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित कर�
 - जीन प्रतीक (जैसे "1110059G10Rik")  
 - Marker accession ID (जैसे "MGI:1913452")  
 - फेनोटाइप नाम/ID (जैसे "fused joints", "MP:0000137")  
-- Effect size (जैसे 0.0, 1.324)  
-- Significance (True/false)  
+- Effect size (`number` या `null`; जैसे 0.0, 1.324)
+- Significance flag (`true` IMPC abnormal-phenotype annotation के लिए; `false` significant abnormality के बिना mapped measurement के लिए)
 - Zygosity ("Homo", "Hetero", "Hemi")  
 - Life stage ("Embryo", "Early", "Interval", "Late")  
-- Sexual dimorphism ("", "Male", "Female")  
+- Sexual dimorphism (`None`, `Male`, `Female`)
 - Disease annotation (जैसे [] या "Premature Ovarian Failure 18")
 
 उदाहरण:
@@ -64,20 +64,33 @@ TSUMUGI gzip-कंप्रेस्ड JSONL प्रकाशित कर�
 
 #### `pairwise_similarity_annotations.jsonl.gz`
 - जीन युग्म (`gene1_symbol`, `gene2_symbol`)  
-- `phenotype_shared_annotations` (जीवन चरण, zygosity, यौन द्विरूपता जैसे मेटाडेटा)  
-- `phenotype_similarity_score` (Resnik-आधारित Phenodigm स्कोर, 0–100)
+- `phenotype_shared_annotations` (metadata-matched MICA contexts: MP term, life stage, zygosity और sex label)
+- `phenotype_similarity_score` (Phenodigm score, 0–100)
 
 उदाहरण:
 ```
 {"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
+## व्याख्या संबंधी नोट्स
+
+- **साझा कॉन्टेक्स्ट:** `phenotype_shared_annotations` का प्रत्येक item दो significant MP annotations का सबसे अधिक सूचना वाला साझा पूर्वज (MICA) है, जिनकी zygosity, life stage और sex label समान हैं। इसका यह अर्थ आवश्यक नहीं कि दोनों genes में वही सीधे annotated terminal (leaf) MP term हो। Metadata अलग होने पर वही MICA अलग कॉन्टेक्स्ट के रूप में आ सकता है।
+- **प्रदर्शन नियम:** Gene और Phenotype पेज कम से कम तीन साझा abnormal-phenotype कॉन्टेक्स्ट तथा 0 से अधिक similarity score वाले gene pairs दिखाते हैं। Gene List में दिए गए genes के बीच कम से कम एक साझा कॉन्टेक्स्ट आवश्यक है। ये केवल प्रदर्शन नियम हैं, statistical significance के मानदंड नहीं।
+- **Similarity display:** वितरित `phenotype_similarity_score` 0–100 का Phenodigm score है। Web app प्रत्येक दिखाए गए network के उपलब्ध मानों को 1–100 पर फिर से scale करता है; इसलिए अलग-अलग pages के slider और tooltip मान एक समान absolute scale पर तुलना योग्य नहीं हैं।
+- **Effect-size display:** TSUMUGI IMPC effect size का absolute value लेकर `log1p` लगाता है और target phenotype के मानों को 1–100 पर scale करता है। यह page के भीतर rank देखने का संकेतक है, raw effect size नहीं, और अलग phenotype pages के बीच तुलना योग्य नहीं है। Missing values JSON `null` ही रहते हैं और nodes सफेद दिखते हैं।
+- **Modules:** Modules केवल visual groups हैं; वे molecular pathway या protein complex का प्रमाण नहीं हैं। `Similarity` connected components और `Top-level MP` ontology-based groups दर्शाते हैं; Gene page के soft/fuzzy modules में एक gene कई modules में हो सकता है। Module node-count filter केवल दिखने वाले modules सीमित करता है।
+- **Sex labels:** `Female` का अर्थ है कि केवल female KO effect P-value ≤ 0.0001 है; `Male` का अर्थ male KO effect के लिए यही है। Web interface में दोनों विकल्प mutually exclusive हैं और formal sex×genotype interaction test का स्थान नहीं लेते।
+- **Phenotype highlights:** एक ही phenotype के metadata variants को एक विकल्प में मिलाया जाता है। किसी gene पर Human Disease और एक या अधिक phenotype highlights overlap होने पर categories concentric rings के रूप में दिखती हैं।
+- **Disease highlights:** IMPC Disease Models Portal की annotations model similarity का evidence हैं; वे अकेले human gene–disease causal relationship स्थापित नहीं करतीं।
+- **Non-significant records:** ये उस mapped measurement को दर्शाते हैं जिसमें चुनी गई condition पर significant abnormal annotation नहीं मिली। ये animal के normal होने या phenotype के अनुपस्थित होने का प्रमाण नहीं हैं; `disease_annotation` खाली रहता है।
+- **Score interpretation:** TSUMUGI score P-value, effect size, binding affinity या causal gene interaction का evidence नहीं है।
+
 # 🌐 नेटवर्क
 
 इनपुट के आधार पर पेज स्थानांतरित होकर नेटवर्क स्वतः बनता है।
 
-> [!IMPORTANT]  
-> **3 या अधिक साझा असामान्य फेनोटाइप** तथा **फेनोटाइप समानता > 0.0** वाले जीन युग्म दृश्य में दिखते हैं।
+> [!IMPORTANT]
+> Gene और Phenotype पेज कम से कम तीन साझा abnormal-phenotype कॉन्टेक्स्ट तथा 0 से अधिक similarity score वाले gene pairs दिखाते हैं; Gene List में दिए गए genes के बीच कम से कम एक साझा कॉन्टेक्स्ट आवश्यक है। ये प्रदर्शन नियम हैं, statistical significance के मानदंड नहीं।
 
 ### नेटवर्क पैनल
 **नोड** जीन दर्शाते हैं। क्लिक पर KO माउस में देखे गए असामान्य फेनोटाइप सूची दिखती है; ड्रैग से स्थान समायोजित करें।  
@@ -89,13 +102,13 @@ Gene पेज soft/fuzzy Top-level MP modules का उपयोग करत�
 बाएँ पैनल से नेटवर्क का प्रदर्शन समायोजित करें।
 
 #### फेनोटाइप समानता से फ़िल्टर
-`Phenotypes similarity` स्लाइडर Resnik→Phenodigm स्कोर के आधार पर edges का threshold सेट करता है。  
+`Phenotypes similarity` दिखाए गए similarity value के आधार पर edges filter करता है। वितरित `phenotype_similarity_score` 0–100 का है, लेकिन हर दिखाए गए network में इसे 1–100 पर फिर से scale किया जाता है; अलग pages के मान सीधे तुलना योग्य नहीं हैं।
 > गणना विधि: 👉 [🔍 समान फेनोटाइप वाले जीन समूह की गणना](#-समान-फेनोटाइप-वाले-जीन-समूह-की-गणना)
 
 #### Effect size से फ़िल्टर
-`Effect size` स्लाइडर उपलब्ध होने पर IMPC-derived effect size के परिमाण के आधार पर नोड्स को फ़िल्टर करता है。
-Missing effect sizes को zero में नहीं बदला जाता; वे missing रहते हैं और संबंधित nodes सफेद दिखते हैं।
-> द्विआधारी फेनोटाइप (उदाहरण: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); द्विआधारी सूची: [यहाँ](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) या एकल जीन इनपुट पर यह छिपा रहता है。
+`Effect size` page-specific display value के आधार पर nodes filter करता है। TSUMUGI IMPC effect size का absolute value लेकर `log1p` लगाता है और target phenotype के मानों को 1–100 पर scale करता है। यह page के भीतर ranking aid है, raw effect size नहीं, और phenotype pages के बीच तुलना योग्य नहीं है।
+Missing effect sizes को JSONL में standard JSON `null` के रूप में serialize किया जाता है; वे semantically missing रहते हैं, zero में नहीं बदले जाते, और संबंधित nodes सफेद दिखते हैं।
+> द्विआधारी फेनोटाइप (उदाहरण: abnormal embryo development; द्विआधारी सूची: [यहाँ](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) या एकल जीन इनपुट पर यह छिपा रहता है。
 
 #### Genotype निर्दिष्ट करें
 - `Homo`(समयुग्मजी)
@@ -116,8 +129,11 @@ Missing effect sizes को zero में नहीं बदला जात�
 #### Module display
 दाएँ panel में module definition और दिखाई देने वाला module चुनें। Module borders छिपाने पर network से genes या edges नहीं हटते।
 
+#### Highlight: Phenotype
+Phenotype annotation के आधार पर genes highlight करता है। एक ही phenotype के metadata variants को एक विकल्प में मिलाया जाता है। किसी gene पर Human Disease और कम से कम एक phenotype highlight overlap होने पर categories concentric rings के रूप में दिखती हैं।
+
 #### Highlight: Human Disease
-IMPC Disease Models Portal डेटा से रोग-संबंधित जीन को हाइलाइट करता है。
+IMPC Disease Models Portal में disease-model annotations वाले KO genes highlight करता है। यह annotation model similarity का evidence है और अकेले human gene–disease causal relationship स्थापित नहीं करता।
 
 #### Search: Specific Gene
 नेटवर्क में जीन नाम खोजें。
@@ -135,7 +151,7 @@ TSUMUGI CLI आपको स्थानीय रूप से डाउनल�
 ## विशेषताएँ
 
 - IMPC `statistical-results-ALL.csv.gz` से पुनः गणना (वैकल्पिक `mp.obo`, `impc_phenodigm.csv`).  
-- MP शब्दों की उपस्थिति/अनुपस्थिति पर फ़िल्टर।  
+- Significant MP annotations या mapped non-significant measurements के आधार पर फ़िल्टर।
 - जीन सूची से फ़िल्टर (कॉमा-सेपरेटेड या टेक्स्ट फ़ाइल)।  
 - आउटपुट: GraphML (`tsumugi build-graphml`), ऑफ़लाइन webapp बंडल (`tsumugi build-webapp`).
 
@@ -156,7 +172,7 @@ pip install tsumugi
 ## उपलब्ध कमांड
 
 - `tsumugi run`: IMPC डेटा से नेटवर्क पुनः गणना  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: MP शब्दों को शामिल/बहिष्कृत करने वाले gene pairs या genes फ़िल्टर करें  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: significant MP annotations या mapped non-significant measurements के आधार पर gene pairs या genes फ़िल्टर करें
 - `tsumugi count --pairwise/--genewise (--min/--max)`: phenotype गिनती के आधार पर फ़िल्टर (pairs/genes)  
 - `tsumugi score (--min/--max)`: phenotype similarity score पर फ़िल्टर (pairs)  
 - `tsumugi genes --keep/--drop`: gene list से keep/drop (कॉमा या टेक्स्ट फ़ाइल)  
@@ -171,7 +187,7 @@ pip install tsumugi
 > फ़ाइल में सेव करने के लिए `>` से रीडायरेक्ट करें।
 
 > [!IMPORTANT]
-> `tsumugi run` को छोड़कर सभी कमांड को `pairwise_similarity_annotation.jsonl.gz` या `genewise_phenotype_annotation.jsonl.gz` चाहिए।
+> `tsumugi run` को छोड़कर सभी कमांड को `pairwise_similarity_annotations.jsonl.gz` या `genewise_phenotype_annotations.jsonl.gz` चाहिए।
 > दोनों फाइलें [TSUMUGI शीर्ष पृष्ठ](https://larc-tsukuba.github.io/tsumugi/) से डाउनलोड की जा सकती हैं।
 
 ## उपयोग
@@ -194,7 +210,7 @@ tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistica
 रुचि के phenotypes शामिल करने वाले gene pairs (या genes) निकालें, या ऐसे pairs जिनमें वे phenotypes मापे गए लेकिन significant abnormality नहीं मिली।
 
 ```bash
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) (-g | -p) [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
                   [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
@@ -203,6 +219,9 @@ tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWI
 
 #### `-e MP_ID`, `--exclude MP_ID`
 निर्दिष्ट MP term (descendants सहित) के लिए मापे गए genes/gene pairs लौटाएँ जिनमें significant phenotype नहीं दिखा। `-a/--genewise_annotations` आवश्यक है।
+
+> [!CAUTION]
+> Non-significant record यह सिद्ध नहीं करता कि animal normal है या phenotype अनुपस्थित है। यह केवल बताता है कि mapped measurement में उस condition पर significant abnormal annotation नहीं मिली।
 
 #### `-g`, `--genewise`
 gene स्तर पर फ़िल्टर। `genewise_phenotype_annotations.jsonl(.gz)` पढ़ता है। `--genewise` के साथ `-a/--genewise_annotations` दें।
@@ -230,10 +249,10 @@ zygosity के आधार पर अतिरिक्त फ़िल्ट�
 
 ```bash
 # MP:0001146 (abnormal testis morphology) या उसके descendants (जैसे MP:0004849 abnormal testis size) वाले gene pairs निकालें
-tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --include MP:0001146   --pairwise   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # MP:0001146 और descendants मापे गए थे लेकिन significant abnormality नहीं दिखी
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # gene स्तर पर MP:0001146 वाले significant phenotypes निकालें
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +294,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - gene-level phenotype counts (genewise आवश्यक):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 `--min` या `--max` में से केवल एक भी ठीक है।
@@ -301,7 +320,7 @@ tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz 
 
 ### gene list से फ़िल्टर (`tsumugi genes --keep/--drop`)
 ```bash
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) (-g | -p) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
@@ -326,7 +345,7 @@ Aamp
 Cacna1c
 EOF
 
-tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+tsumugi genes --genewise --keep genes.txt   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
 
 cat << EOF > gene_pairs.csv
 Maf,Aamp
@@ -403,7 +422,7 @@ pairwise annotation फ़ाइल (JSONL/.gz) का पाथ। न दे�
 genewise annotation फ़ाइल (JSONL/.gz) का पाथ। आवश्यक।
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,11 +439,11 @@ genewise annotation फ़ाइल (JSONL/.gz) का पाथ। आवश्
 webapp bundle (HTML/CSS/JS + नेटवर्क डेटा) का आउटपुट डायरेक्टरी। एक्सटेंशन वाला फ़ाइल नाम न दें।
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI STDIN/STDOUT सपोर्ट करता है, इसलिए आप कमांड चेन कर सकते हैं:  
-`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`tsumugi score --min 50 --in pairwise_similarity_annotations.jsonl.gz | tsumugi sex --drop Male > pairwise_score50_no_male.jsonl`
 
 # 🔍 समान फेनोटाइप वाले जीन समूह की गणना
 
@@ -435,9 +454,12 @@ CLI STDIN/STDOUT सपोर्ट करता है, इसलिए आप 
 
 ## प्रीप्रोसेसिंग
 
-KO माउस P-value (`p_value`, `female_ko_effect_p_value` या `male_ko_effect_p_value`) ≤ 0.0001 वाले gene–phenotype pairs निकाले जाते हैं।  
-- genotype-विशिष्ट phenotypes को `homo`, `hetero` या `hemi` के रूप में annotate किया जाता है।  
-- sex-विशिष्ट phenotypes को `female` या `male` के रूप में annotate किया जाता है।
+TSUMUGI किसी non-empty IMPC `mp_term_id` को IMPC abnormal-phenotype annotation मानता है। यह mapped measurements को भी रखता है जिनमें significant abnormal annotation नहीं मिली, ताकि measurement-aware exclusion queries की जा सकें।
+Non-significant measurements के लिए `intermediate_mp_term_id` के प्रत्येक ontology-incomparable, सबसे specific non-root term को अलग record के रूप में लिखा जाता है। केवल `MP:0000001` से mapped या किसी valid MP term से mapped न होने वाले measurements को phenotype-specific query में उपयोग न कर सकने के कारण output में शामिल नहीं किया जाता।
+
+- Zygosity को `Homo`, `Hetero` या `Hemi` में बदला जाता है।
+- केवल `female_ko_effect_p_value` ≤ 0.0001 होने पर `Female`, केवल `male_ko_effect_p_value` ≤ 0.0001 होने पर `Male`, अन्यथा `None` दिया जाता है।
+- Effect size का absolute value उपयोग होता है। Missing values missing ही रहती हैं और JSON में `null` के रूप में लिखी जाती हैं।
 
 ## Phenotypic similarity
 
@@ -453,6 +475,7 @@ TSUMUGI Mammalian Phenotype Ontology के भीतर IMPC KO mouse gene phen
    हर direct annotation को annotated MP term और उसके सभी ancestors तक propagate किया जाता है।
 
 * प्रत्येक MP term pair के लिए सबसे अधिक annotation-derived IC वाले common ancestors खोजे जाते हैं। Tie होने पर MP ontology में सबसे कम transitive descendants वाला candidate, फिर lexicographically सबसे छोटा MP term ID deterministically चुना जाता है। चुने गए MICA का IC Resnik similarity होता है। यह tie-break similarity score या output schema नहीं बदलता।
+   Tied candidates का numerical term-pair score समान रहता है, लेकिन चुना गया MICA label shared-context count और इसलिए display eligibility बदल सकता है।
 
 * दो MP terms के inferred attribute sets का Jaccard index निकाला जाता है; प्रत्येक set में term स्वयं और उसके सभी ancestors होते हैं।
 
@@ -462,7 +485,7 @@ TSUMUGI Mammalian Phenotype Ontology के भीतर IMPC KO mouse gene phen
 
 * हर gene pair के लिए term-pair scores से MP term × MP term similarity matrix बनाया जाता है।
 
-* Genotype, life stage और sex metadata shared-phenotype annotations में सुरक्षित रहते हैं, लेकिन PhenoDigm score को weight नहीं करते।
+* MICA को `phenotype_shared_annotations` में तभी दर्ज किया जाता है जब zygosity, life stage और sex label समान हों। ये metadata PhenoDigm score को weight नहीं करते।
 
 ### 3. Phenodigm scaling
 
@@ -470,6 +493,8 @@ TSUMUGI Mammalian Phenotype Ontology के भीतर IMPC KO mouse gene phen
    Observed best-match max/mean निकालकर दोनों genes के symmetric optimal self-match score से normalize किया जाता है।
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    यदि denominator 0 हो, तो score 0 सेट किया जाता है।
+
+अंतिम score phenotype-profile similarity का माप है। यह P-value, effect size, binding affinity या genes के बीच causal interaction का evidence नहीं है।
 
 ---
 

@@ -19,7 +19,7 @@
 Outil accessible à tous en ligne 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Cette documentation décrit le fonctionnement actuel de **TSUMUGI v1.1.0**. L'application web publique utilise les données IMPC **Release 24.0**.
+Cette documentation décrit le fonctionnement actuel de **TSUMUGI v1.1.1**. L'application web publique utilise les données IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** découle de l’idée de « tisser ensemble les gènes qui façonnent les phénotypes ».
 
@@ -39,9 +39,9 @@ Symboles suivant [MGI](http://www.informatics.jax.org/).
 
 ### Liste de gènes (Gene List)
 Collez plusieurs gènes (un par ligne) pour chercher **au sein de la liste**.  
-> [!CAUTION]  
-> Aucun gène similaire : `No similar phenotypes were found among the entered genes.`  
-> Si le réseau généré contient au moins 200 gènes : `Too many genes submitted. Please limit the number to 200 or fewer.`
+> [!CAUTION]
+> Si aucun gène similaire n’est trouvé : `No similar phenotypes were found among the entered genes.`
+> Gene List accepte au maximum 200 gènes disponibles distincts. Les doublons et lignes vides sont retirés avant le comptage; les symboles indisponibles sont signalés et exclus. Une liste contenant au moins 201 gènes disponibles est rejetée avant le chargement des données du réseau.
 
 ### 📥 Télécharger les données brutes
 TSUMUGI publie des JSONL compressés en gzip.
@@ -50,11 +50,11 @@ TSUMUGI publie des JSONL compressés en gzip.
 - Symbole génétique (ex. "1110059G10Rik")  
 - Marker accession ID (ex. "MGI:1913452")  
 - Nom/ID de phénotype (ex. "fused joints", "MP:0000137")  
-- Effect size (ex. 0.0, 1.324)  
-- Significativité (True/false)  
+- Effect size (`number` ou `null` ; ex. 0.0, 1.324)
+- Indicateur de significativité (`true` pour une annotation IMPC de phénotype anormal; `false` pour une mesure associée sans anomalie significative)
 - Zygosité ("Homo", "Hetero", "Hemi")  
 - Stade de vie ("Embryo", "Early", "Interval", "Late")  
-- Dimorphisme sexuel ("", "Male", "Female")  
+- Dimorphisme sexuel (`None`, `Male`, `Female`)
 - Annotation de maladie (ex. [] ou "Premature Ovarian Failure 18")
 
 Exemple :
@@ -64,20 +64,33 @@ Exemple :
 
 #### `pairwise_similarity_annotations.jsonl.gz`
 - Paire de gènes (`gene1_symbol`, `gene2_symbol`)  
-- `phenotype_shared_annotations` : métadonnées par phénotype (stade, zygosité, sexe)  
-- `phenotype_similarity_score` : score Resnik→Phenodigm (0–100)
+- `phenotype_shared_annotations` (contextes MICA à métadonnées concordantes : terme MP, stade de vie, zygosité et étiquette de sexe)
+- `phenotype_similarity_score` (score Phenodigm, 0–100)
 
 Exemple :
 ```
 {"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
+## Notes d’interprétation
+
+- **Contextes partagés :** Chaque élément de `phenotype_shared_annotations` est l’ancêtre commun le plus informatif (MICA) de deux annotations MP significatives dont la zygosité, le stade de vie et l’étiquette de sexe concordent. Cela ne signifie pas nécessairement que les deux gènes portent directement le même terme MP feuille. Un même MICA peut apparaître dans des contextes distincts lorsque les métadonnées diffèrent.
+- **Règles d’affichage :** Les pages Gene et Phenotype affichent les paires ayant au moins trois contextes de phénotype anormal partagé et un score de similarité supérieur à 0. Gene List exige au moins un contexte partagé parmi les gènes saisis. Ce sont des règles d’affichage, pas des critères de significativité statistique.
+- **Affichage de la similarité :** Le `phenotype_similarity_score` distribué est un score Phenodigm de 0–100. L’application web remet à l’échelle de 1–100 les valeurs présentes dans chaque réseau; les valeurs du curseur et des infobulles ne constituent donc pas une échelle absolue comparable entre pages.
+- **Affichage de la taille d’effet :** TSUMUGI prend la valeur absolue de la taille d’effet IMPC, applique `log1p`, puis remet les valeurs du phénotype cible à l’échelle de 1–100. Cette valeur aide au classement dans la page, n’est pas la taille d’effet brute et ne se compare pas directement entre pages de phénotype. Les valeurs manquantes restent `null` en JSON et les nœuds sont affichés en blanc.
+- **Modules :** Les modules sont des regroupements visuels, pas la preuve d’une voie moléculaire ou d’un complexe protéique. `Similarity` correspond aux composantes connexes et `Top-level MP` aux groupes ontologiques; les modules souples/fuzzy de la page Gene autorisent plusieurs appartenances. Le filtre du nombre de nœuds limite uniquement les modules affichés.
+- **Étiquettes de sexe :** `Female` signifie que seule la P-value de l’effet KO femelle est ≤ 0.0001; `Male` signifie la même chose pour l’effet KO mâle. Les options sont mutuellement exclusives dans l’interface et ne remplacent pas un test formel d’interaction sexe×génotype.
+- **Mise en évidence des phénotypes :** Les variantes de métadonnées d’un même phénotype sont regroupées en une option. Si Human Disease et un ou plusieurs phénotypes se chevauchent sur un gène, les catégories sont représentées par des anneaux concentriques.
+- **Mise en évidence des maladies :** Les annotations de l’IMPC Disease Models Portal constituent une preuve de similarité de modèle et n’établissent pas à elles seules une relation causale entre gène et maladie chez l’humain.
+- **Enregistrements non significatifs :** Ils représentent une mesure associée sans annotation anormale significative dans la condition considérée. Ils ne prouvent ni la normalité ni l’absence du phénotype; `disease_annotation` reste vide.
+- **Interprétation du score :** Le score TSUMUGI n’est ni une P-value, ni une taille d’effet, ni une affinité de liaison, ni la preuve d’une interaction génique causale.
+
 # 🌐 Réseau
 
 La page se met à jour et dessine automatiquement le réseau selon l’entrée.
 
-> [!IMPORTANT]  
-> Les paires de gènes avec **≥3 phénotypes anormaux partagés** et **similarité > 0.0** sont visualisées.
+> [!IMPORTANT]
+> Les pages Gene et Phenotype affichent les paires ayant au moins trois contextes de phénotype anormal partagé et un score de similarité supérieur à 0; Gene List exige au moins un contexte partagé parmi les gènes saisis. Ce sont des règles d’affichage, pas des critères de significativité statistique.
 
 ### Panneau réseau
 **Nœuds** : gènes. Clic pour voir la liste des phénotypes anormaux observés; glisser pour repositionner.  
@@ -89,13 +102,13 @@ Les pages Gene utilisent des modules Top-level MP souples/fuzzy, de sorte qu'un 
 Réglez l’affichage réseau dans le panneau de gauche.
 
 #### Filtre par similarité phénotypique
-`Phenotypes similarity` fixe le seuil des arêtes via le score Resnik→Phenodigm.  
+`Phenotypes similarity` filtre les arêtes selon la valeur de similarité affichée. Le `phenotype_similarity_score` distribué va de 0–100, mais chaque réseau affiché est remis à l’échelle de 1–100; les valeurs de pages différentes ne sont pas directement comparables.
 > Détails : 👉 [🔍 Calcul des groupes de gènes phénotypiquement similaires](#-calcul-des-groupes-de-gènes-phénotypiquement-similaires)
 
 #### Filtre par effect size
-`Effect size` filtre les nœuds selon la magnitude de l'effect size dérivé de l'IMPC lorsqu'il est disponible.
-Les effect sizes manquants restent manquants, ne sont pas convertis en zéro et leurs nœuds sont affichés en blanc.
-> Masqué pour les phénotypes binaires (ex. [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); liste binaire [ici](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou l’entrée d’un seul gène.
+`Effect size` filtre les nœuds selon une valeur d’affichage propre à la page. TSUMUGI prend la valeur absolue de la taille d’effet IMPC, applique `log1p`, puis remet les valeurs du phénotype cible à l’échelle de 1–100. C’est une aide au classement dans la page, pas la taille d’effet brute, et elle ne se compare pas entre pages de phénotype.
+Les effect sizes manquants sont sérialisés dans JSONL avec la valeur JSON standard `null`, restent sémantiquement manquants au lieu d’être convertis en zéro et leurs nœuds sont affichés en blanc.
+> Masqué pour les phénotypes binaires (ex. abnormal embryo development; liste binaire [ici](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou l’entrée d’un seul gène.
 
 #### Spécifier le génotype
 - `Homo` (homozygote)  
@@ -116,8 +129,11 @@ Les effect sizes manquants restent manquants, ne sont pas convertis en zéro et 
 #### Affichage des modules
 Le panneau de droite permet de choisir la définition et le module visible. Les contours des modules peuvent être masqués sans supprimer de gènes ni d'arêtes du réseau.
 
+#### Highlight: Phenotype
+Met en évidence les gènes selon leur annotation phénotypique. Les variantes de métadonnées d’un même phénotype sont regroupées en une option. Lorsque Human Disease et au moins un phénotype se chevauchent sur un gène, les catégories sont représentées par des anneaux concentriques.
+
 #### Highlight: Human Disease
-Met en évidence les gènes liés aux maladies humaines (IMPC Disease Models Portal).
+Met en évidence les gènes KO portant des annotations de modèles de maladie dans l’IMPC Disease Models Portal. Cette annotation indique une similarité de modèle et n’établit pas à elle seule une relation causale entre gène et maladie chez l’humain.
 
 #### Search: Specific Gene
 Recherche de gènes dans le réseau.
@@ -135,7 +151,7 @@ Le CLI TSUMUGI permet d'utiliser localement les dernières données IMPC, avec d
 ## Fonctionnalités
 
 - Recalculer avec `statistical-results-ALL.csv.gz` IMPC (optionnel `mp.obo`, `impc_phenodigm.csv`).  
-- Filtrer par présence/absence de termes MP.  
+- Filtrer selon les annotations MP significatives ou les mesures associées non significatives.
 - Filtrer par liste de gènes (séparée par virgules ou fichier texte).  
 - Sorties: GraphML (`tsumugi build-graphml`), bundle webapp hors ligne (`tsumugi build-webapp`).
 
@@ -156,7 +172,7 @@ Prêt quand `tsumugi --version` affiche la version.
 ## Commandes disponibles
 
 - `tsumugi run`: recalculer le réseau à partir des données IMPC  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: filtrer des paires ou des gènes qui contiennent/ne montrent pas un terme MP  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: filtrer des paires ou des gènes selon les annotations MP significatives ou les mesures associées non significatives
 - `tsumugi count --pairwise/--genewise (--min/--max)`: filtrer par nombre de phénotypes (paires/gènes)  
 - `tsumugi score (--min/--max)`: filtrer par score de similarité (paires)  
 - `tsumugi genes --keep/--drop`: conserver/retirer via liste de gènes (virgules ou fichier texte)  
@@ -171,7 +187,7 @@ Prêt quand `tsumugi --version` affiche la version.
 > Redirigez avec `>` pour enregistrer dans un fichier.
 
 > [!IMPORTANT]
-> Toutes les commandes sauf `tsumugi run` nécessitent `pairwise_similarity_annotation.jsonl.gz` ou `genewise_phenotype_annotation.jsonl.gz`.
+> Toutes les commandes sauf `tsumugi run` nécessitent `pairwise_similarity_annotations.jsonl.gz` ou `genewise_phenotype_annotations.jsonl.gz`.
 > Les deux fichiers peuvent être téléchargés depuis la [page d’accueil de TSUMUGI](https://larc-tsukuba.github.io/tsumugi/).
 
 ## Utilisation
@@ -194,7 +210,7 @@ Sorties: `./tsumugi-output` contient les annotations genewise (genewise_phenotyp
 Extraire les paires de gènes (ou gènes) qui incluent les phénotypes d'intérêt, ou celles mesurées sans anomalie significative.
 
 ```bash
-tsumugi mp [-h] (-i MP_ID | -e MP_ID) [-g | -p] [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi mp [-h] (-i MP_ID | -e MP_ID) (-g | -p) [-m PATH_MP_OBO] [-a PATH_GENEWISE_ANNOTATIONS] [--in PATH_PAIRWISE_ANNOTATIONS]
                   [--life_stage LIFE_STAGE] [--sex SEX] [--zygosity ZYGOSITY]
 ```
 
@@ -203,6 +219,9 @@ Inclure les gènes/paires qui possèdent le terme MP spécifié (descendants inc
 
 #### `-e MP_ID`, `--exclude MP_ID`
 Renvoyer les gènes/paires mesurés pour le terme MP (descendants inclus) sans anomalie significative. `-a/--genewise_annotations` requis.
+
+> [!CAUTION]
+> Un enregistrement non significatif ne prouve ni que l’animal est normal ni que le phénotype est absent. Il indique seulement que la mesure associée n’a pas produit d’annotation anormale significative dans cette condition.
 
 #### `-g`, `--genewise`
 Filtrer au niveau gène. Lit `genewise_phenotype_annotations.jsonl(.gz)`. Avec `--genewise`, indiquez `-a/--genewise_annotations`.
@@ -230,10 +249,10 @@ Filtre additionnel par zygosité. Valeurs: `Homo`, `Hetero`, `Hemi`.
 
 ```bash
 # Extraire uniquement les paires contenant MP:0001146 (abnormal testis morphology) ou des termes descendants (ex. MP:0004849 abnormal testis size)
-tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --include MP:0001146   --pairwise   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Extraire les paires où MP:0001146 et les termes descendants ont été mesurés sans anomalie significative
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # Extraire les annotations significatives au niveau du gène contenant MP:0001146 (descendants inclus)
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +294,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - Phénotypes par gène (genewise requis):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 `--min` ou `--max` seul est accepté.
@@ -301,7 +320,7 @@ tsumugi score --min 50 --max 80   --in pairwise_similarity_annotations.jsonl.gz 
 
 ### Filtrer par liste de gènes (`tsumugi genes --keep/--drop`)
 ```bash
-tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) [-g | -p] [--in PATH_PAIRWISE_ANNOTATIONS]
+tsumugi genes [-h] (-k GENE_SYMBOL | -d GENE_SYMBOL) (-g | -p) [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
 #### `-k GENE_SYMBOL`, `--keep GENE_SYMBOL`
@@ -326,7 +345,7 @@ Aamp
 Cacna1c
 EOF
 
-tsumugi genes --genewise --keep genes.txt   --in "$directory"/pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
+tsumugi genes --genewise --keep genes.txt   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_keep_genes.jsonl
 
 cat << EOF > gene_pairs.csv
 Maf,Aamp
@@ -403,7 +422,7 @@ Chemin vers les annotations pairwise (JSONL/.gz). Si omis, lecture depuis STDIN.
 Chemin vers les annotations genewise (JSONL/.gz). Requis.
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,11 +439,11 @@ Chemin vers les annotations genewise (JSONL/.gz). Requis.
 Répertoire de sortie du bundle webapp (HTML/CSS/JS + données réseau). Ne pas fournir un nom de fichier avec extension.
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 Le CLI prend en charge STDIN/STDOUT, vous pouvez chaîner les commandes:  
-`zcat pairwise_similarity_annotations.jsonl.gz | tsumugi mp ... | tsumugi genes ... > out.jsonl`
+`tsumugi score --min 50 --in pairwise_similarity_annotations.jsonl.gz | tsumugi sex --drop Male > pairwise_score50_no_male.jsonl`
 
 # 🔍 Calcul des groupes de gènes phénotypiquement similaires
 
@@ -435,9 +454,12 @@ Détails des colonnes: [Data fields](https://www.mousephenotype.org/help/program
 
 ## Prétraitement
 
-Extraire les paires gène–phénotype dont les P-values de souris KO (`p_value`, `female_ko_effect_p_value` ou `male_ko_effect_p_value`) sont ≤ 0.0001.  
-- Annoter les phénotypes spécifiques au génotype en `homo`, `hetero` ou `hemi`.  
-- Annoter les phénotypes spécifiques au sexe en `female` ou `male`.
+TSUMUGI considère un `mp_term_id` IMPC non vide comme une annotation IMPC de phénotype anormal. Il conserve également les mesures associées sans annotation anormale significative pour les requêtes d’exclusion tenant compte de la présence d’une mesure.
+Pour les mesures non significatives, chaque terme non racine le plus spécifique de `intermediate_mp_term_id`, ontologiquement incomparable aux autres termes retenus, est émis dans un enregistrement distinct. Les mesures associées uniquement à `MP:0000001` ou à aucun terme MP valide sont omises, car elles ne permettent pas de requête spécifique à un phénotype.
+
+- Convertit la zygosité en `Homo`, `Hetero` ou `Hemi`.
+- Attribue `Female` lorsque seule `female_ko_effect_p_value` est ≤ 0.0001 et `Male` lorsque seule `male_ko_effect_p_value` est ≤ 0.0001; sinon, attribue `None`.
+- Utilise la valeur absolue de la taille d’effet. Les valeurs manquantes restent manquantes et sont sérialisées en `null` dans JSON.
 
 ## Similarité phénotypique
 
@@ -453,6 +475,7 @@ TSUMUGI applique la formule de score originale de PhenoDigm ([Smedley D, et al. 
    Chaque annotation directe est propagée au terme MP annoté et à tous ses ancêtres.
 
 * Pour chaque paire de termes MP, trouver les ancêtres communs ayant l'IC dérivé des annotations le plus élevé. En cas d'égalité, sélectionner de manière déterministe le candidat ayant le moins de descendants transitifs dans l'ontologie MP, puis l'identifiant de terme MP le plus petit dans l'ordre lexicographique. L'IC du MICA sélectionné est la similarité de Resnik. Ce départage ne modifie ni le score de similarité ni le schéma de sortie.
+   Les candidats ex æquo ont le même score numérique de paire de termes, mais l’étiquette MICA choisie peut modifier le nombre de contextes partagés et donc l’éligibilité à l’affichage.
 
 * Pour deux termes MP, calculer l'indice de Jaccard de leurs ensembles d'attributs inférés, définis comme le terme lui-même plus tous ses ancêtres.
 
@@ -462,7 +485,7 @@ TSUMUGI applique la formule de score originale de PhenoDigm ([Smedley D, et al. 
 
 * Pour chaque paire de gènes, construire une matrice de similarité terme MP × terme MP à partir des scores des paires de termes.
 
-* Les métadonnées de génotype, de stade de vie et de sexe sont conservées dans les annotations de phénotypes partagés, mais ne pondèrent pas le score PhenoDigm.
+* Un MICA n’est enregistré dans `phenotype_shared_annotations` que si la zygosité, le stade de vie et l’étiquette de sexe concordent. Ces métadonnées ne pondèrent pas le score PhenoDigm.
 
 ### 3. Mise à l’échelle Phenodigm
 
@@ -470,6 +493,8 @@ TSUMUGI applique la formule de score originale de PhenoDigm ([Smedley D, et al. 
    Calculer le maximum et la moyenne des best matches observés, puis normaliser par le score optimal symétrique de self match des deux gènes.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    Si le dénominateur est 0, le score est 0.
+
+Le score obtenu mesure la similarité des profils phénotypiques. Ce n’est ni une P-value, ni une taille d’effet, ni une affinité de liaison, ni la preuve d’une interaction causale entre les gènes.
 
 ---
 
