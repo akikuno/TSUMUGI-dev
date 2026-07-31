@@ -13,7 +13,7 @@
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 -->
 
-## v1.1.1 (2026-MM-DD)
+## v1.1.1 (2026-07-31)
 
 ### 🖼️ User Interface
 
