@@ -17,27 +17,27 @@
 
 ### 🖼️ User Interface
 
-- Add a node-count range filter for modules in web visualizations<br>
+- Add a node-count range filter for modules in web visualizations  
   Issue: [#167](https://github.com/akikuno/TSUMUGI-dev/issues/167)
 
-- Render overlapping Human Disease and Phenotype highlights as concentric rings<br>
+- Render overlapping Human Disease and Phenotype highlights as concentric rings  
   Issue: [#158](https://github.com/akikuno/TSUMUGI-dev/issues/158)
   Thanks @aki2274 for reporting the issue!!
 
-- Consolidate phenotype highlight options across genotype, life-stage, and sex metadata<br>
+- Consolidate phenotype highlight options across genotype, life-stage, and sex metadata  
   Issue: [#183](https://github.com/akikuno/TSUMUGI-dev/issues/183)
 
 - Remove the desktop left panel scrollbar
 
 ### 🐛 Bug Fixes
 
-- Serialize missing `effect_size` values as standard JSON `null` in JSONL outputs while preserving internal missing-value handling<br>
+- Serialize missing `effect_size` values as standard JSON `null` in JSONL outputs while preserving internal missing-value handling  
   Issue: [#186](https://github.com/akikuno/TSUMUGI-dev/issues/186)
 
-- Make Female and Male filters mutually exclusive in web visualizations<br>
+- Make Female and Male filters mutually exclusive in web visualizations  
   Issue: [#184](https://github.com/akikuno/TSUMUGI-dev/issues/184)
 
-- Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning<br>
+- Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning  
   Issue: [#182](https://github.com/akikuno/TSUMUGI-dev/issues/182)  
 
 - Hide residual nodes and edges when Gene Symbol filters remove the target gene
