@@ -24,11 +24,11 @@ This web app is available to everyone online👇️
 
 This repository documents **TSUMUGI v1.1.1**.
 
-| Component | Version or data release |
-| --- | --- |
-| Source code and CLI described here | TSUMUGI v1.1.1 |
-| Public web app | TSUMUGI v1.1.0 (verified 2026-07-31; v1.1.1 deployment pending) |
-| Data used by the public web app | IMPC Release 24.0 |
+| Component                          | Version or data release                                         |
+| ---------------------------------- | --------------------------------------------------------------- |
+| Source code and CLI described here | TSUMUGI v1.1.1                                                  |
+| Public web app                     | TSUMUGI v1.1.0 (verified 2026-07-31; v1.1.1 deployment pending) |
+| Data used by the public web app    | IMPC Release 24.0                                               |
 
 Archived software releases are available from [Zenodo](https://zenodo.org/records/21480711).
 
@@ -119,7 +119,8 @@ Adjust network display from the left panel.
 Missing effect sizes are serialized as standard JSON `null`, remain semantically missing rather than being converted to zero, and those nodes are shown in white.
 
 > [!NOTE]
-> Hidden for binary phenotypes (e.g., [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); binary list: 👉 [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or gene(s) input.
+> Hidden for binary phenotypes  
+> binary list: 👉 [here](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) or gene(s) input.
 
 #### Specify genotype
 Choose the genotype in which phenotypes appear:
@@ -203,18 +204,18 @@ tsumugi mp --include MP:0001146 \
 
 ## Main commands
 
-| Command | Purpose |
-| --- | --- |
-| `tsumugi run` | Recompute annotations and the similarity network from IMPC data |
-| `tsumugi mp` | Filter by the presence or measured non-significance of an MP term |
-| `tsumugi count` | Filter by phenotype counts per pair or per gene |
-| `tsumugi score` | Filter by pairwise phenotype similarity score |
-| `tsumugi genes` | Keep or drop gene symbols or gene pairs listed in a file |
-| `tsumugi life-stage` | Keep or drop a life stage |
-| `tsumugi sex` | Keep or drop a sex label |
-| `tsumugi zygosity` | Keep or drop a zygosity |
-| `tsumugi build-graphml` | Export GraphML |
-| `tsumugi build-webapp` | Build a locally served webapp bundle |
+| Command                 | Purpose                                                           |
+| ----------------------- | ----------------------------------------------------------------- |
+| `tsumugi run`           | Recompute annotations and the similarity network from IMPC data   |
+| `tsumugi mp`            | Filter by the presence or measured non-significance of an MP term |
+| `tsumugi count`         | Filter by phenotype counts per pair or per gene                   |
+| `tsumugi score`         | Filter by pairwise phenotype similarity score                     |
+| `tsumugi genes`         | Keep or drop gene symbols or gene pairs listed in a file          |
+| `tsumugi life-stage`    | Keep or drop a life stage                                         |
+| `tsumugi sex`           | Keep or drop a sex label                                          |
+| `tsumugi zygosity`      | Keep or drop a zygosity                                           |
+| `tsumugi build-graphml` | Export GraphML                                                    |
+| `tsumugi build-webapp`  | Build a locally served webapp bundle                              |
 
 Filtering and export commands use `pairwise_similarity_annotations.jsonl.gz`, `genewise_phenotype_annotations.jsonl.gz`, or both. The files are available from the [TSUMUGI top page](https://larc-tsukuba.github.io/tsumugi/). Filtering commands write JSONL to STDOUT and can be chained with pipes.
 
