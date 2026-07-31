@@ -23,7 +23,7 @@
     <script src="https://cdn.jsdelivr.net/npm/cytoscape-svg@0.4.0/cytoscape-svg.min.js" defer></script>
 
     <!-- Custom JS -->
-    <script type="module" src="./viewer.js?v=20260731-phenotype-selector"></script>
+    <script type="module" src="./viewer.js?v=20260731-module-node-count-filter"></script>
 
     <!-- ============================= -->
     <!-- CSS -->
@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="https://larc-tsukuba.github.io/tsumugi/css/sanitize.css" />
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./css/app.css?v=20260611-export-frames-v4" />
+    <link rel="stylesheet" href="./css/app.css?v=20260731-module-node-count-filter" />
 </head>
 
 <body>
@@ -198,6 +198,41 @@
                     </form>
                 </div>
 
+            </div>
+
+            <!-- ===================================== -->
+            <!-- Filter by network structure -->
+            <!-- ===================================== -->
+            <div class="panel-section" id="network-structure-controls">
+                <div class="panel-title">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    Network structure
+                </div>
+
+                <div class="boxed-section">
+                    <span>Module size</span>
+                    <div class="slider-container">
+                        <div class="label-row">
+                            <span class="control-label">Node count:</span>
+                            <div class="info-tooltip-container">
+                                <div class="info-tooltip-icon">i</div>
+                                <div class="info-tooltip-content">
+                                    Show modules whose number of visible nodes is within this range.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="numeric-inputs module-node-count-inputs" aria-label="Module node count range">
+                                <input type="number" id="module-node-count-min-input" class="range-input" min="1"
+                                    step="1" aria-label="Module node count minimum" />
+                                <span class="range-separator">-</span>
+                                <input type="number" id="module-node-count-max-input" class="range-input" min="1"
+                                    step="1" aria-label="Module node count maximum" />
+                            </div>
+                        </div>
+                        <div class="slider-element" id="module-node-count-slider"></div>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -17,6 +17,9 @@
 
 ### 🖼️ User Interface
 
+- Add a node-count range filter for modules in web visualizations<br>
+  Issue: [#167](https://github.com/akikuno/TSUMUGI-dev/issues/167)
+
 - Render overlapping Human Disease and Phenotype highlights as concentric rings<br>
   Issue: [#158](https://github.com/akikuno/TSUMUGI-dev/issues/158)
 
