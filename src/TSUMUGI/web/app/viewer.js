@@ -11,7 +11,10 @@ import {
     isFullNodeCountRange,
 } from "./js/graph/moduleNodeCountFilter.js?v=20260731-module-node-count-filter";
 import { createSlider } from "./js/ui/slider.js";
-import { filterElementsByGenotypeAndSex } from "./js/graph/filters.js?v=20260731-sex-filter-mutual-exclusion";
+import {
+    filterElementsByGenotypeAndSex,
+    hideAllGraphElements,
+} from "./js/graph/filters.js?v=20260731-gene-empty-state";
 import { loadJSON, loadJSONGz } from "./js/data/dataLoader.js";
 import {
     getPhenotypeTermName,
@@ -1983,6 +1986,9 @@ if (isPhenotypePage) {
         const targetNode = cy.getElementById(targetGene);
 
         if (targetNode.length === 0) {
+            hideAllGraphElements(cy, (element, isVisible) => {
+                setBaseVisibilityScratch(element, isVisible);
+            });
             updateNoNodesMessage(true);
             return;
         }

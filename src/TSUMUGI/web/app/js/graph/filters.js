@@ -41,6 +41,15 @@ export function resolveActiveFilterValues(checkedValues, allValues) {
     return [...checkedValues];
 }
 
+export function hideAllGraphElements(cy, setElementVisibility = () => {}) {
+    cy.batch(() => {
+        cy.elements().forEach((element) => {
+            setElementVisibility(element, false);
+            element.style("display", "none");
+        });
+    });
+}
+
 function getActiveFilterValues(formSelector, allValues) {
     const checkedInputs = Array.from(document.querySelectorAll(`${formSelector} input:checked`));
     return resolveActiveFilterValues(
