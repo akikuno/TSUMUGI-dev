@@ -455,6 +455,7 @@ CLI支持STDIN/STDOUT，可串联命令:
 ## 预处理
 
 TSUMUGI将IMPC `mp_term_id`非空的记录视为IMPC异常表型注释。同时保留已映射但没有显著异常注释的测量记录，用于考虑是否完成测量的排除查询。
+对于非显著测量，`intermediate_mp_term_id`中ontology上互不可比的最具体非根术语会分别输出为独立记录。仅映射到`MP:0000001`或未映射到有效MP术语的测量无法支持表型特异查询，因此不予输出。
 
 - 将接合型转换为`Homo`、`Hetero`或`Hemi`。
 - 仅`female_ko_effect_p_value`≤0.0001时标记为`Female`，仅`male_ko_effect_p_value`≤0.0001时标记为`Male`，其他情况标记为`None`。

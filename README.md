@@ -230,6 +230,7 @@ See dataset columns: [Data fields](https://www.mousephenotype.org/help/programma
 ## Preprocessing
 
 TSUMUGI treats a non-empty IMPC `mp_term_id` as an IMPC phenodeviant annotation. It also retains mapped measurement records without a significant abnormal annotation for measurement-aware exclusion queries.
+For non-significant measurements, every ontology-incomparable, most-specific non-root term in `intermediate_mp_term_id` is emitted as a separate record. Measurements mapped only to `MP:0000001`, or to no valid MP term, are omitted because they do not support phenotype-specific queries.
 
 - Convert zygosity to `Homo`, `Hetero`, or `Hemi`.
 - Assign `Female` when only `female_ko_effect_p_value` is ≤ 0.0001 and `Male` when only `male_ko_effect_p_value` is ≤ 0.0001; otherwise assign `None`.

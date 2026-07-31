@@ -99,3 +99,25 @@ def test_distinct_records_with_max_effect_treats_nan_as_missing():
     assert result[1]["gene"] == "B"
     assert result[1]["id"] == "missing-only"
     assert math.isnan(result[1]["effect_size"])
+
+
+def test_distinct_records_with_max_effect_can_prioritize_significant_records():
+    records = [
+        {"gene": "A", "effect_size": 10.0, "significant": False},
+        {"gene": "A", "effect_size": 1.0, "significant": True},
+        {"gene": "B", "effect_size": 2.0, "significant": True},
+        {"gene": "B", "effect_size": 3.0, "significant": True},
+    ]
+
+    result = list(
+        distinct_records_with_max_effect(
+            records,
+            ["gene"],
+            prefer_significant=True,
+        )
+    )
+
+    assert result == [
+        {"gene": "A", "effect_size": 1.0, "significant": True},
+        {"gene": "B", "effect_size": 3.0, "significant": True},
+    ]

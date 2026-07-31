@@ -455,6 +455,7 @@ Kolom dataset: [Data fields](https://www.mousephenotype.org/help/programmatic-da
 ## Pra-pemrosesan
 
 TSUMUGI memperlakukan `mp_term_id` IMPC yang tidak kosong sebagai anotasi fenotipe abnormal IMPC. Pengukuran terpetakan tanpa anotasi abnormal signifikan juga dipertahankan untuk kueri pengecualian yang mempertimbangkan apakah pengukuran dilakukan.
+Untuk pengukuran tidak signifikan, setiap istilah non-root paling spesifik dalam `intermediate_mp_term_id` yang tidak dapat dibandingkan secara ontologis dengan istilah terpilih lainnya dikeluarkan sebagai rekaman terpisah. Pengukuran yang hanya dipetakan ke `MP:0000001` atau tidak memiliki istilah MP valid tidak dikeluarkan karena tidak mendukung kueri khusus fenotipe.
 
 - Zigositas diubah menjadi `Homo`, `Hetero`, atau `Hemi`.
 - `Female` diberikan jika hanya `female_ko_effect_p_value` yang ≤ 0.0001, dan `Male` jika hanya `male_ko_effect_p_value` yang ≤ 0.0001; selain itu diberikan `None`.

@@ -455,6 +455,7 @@ Colunas do dataset: [Data fields](https://www.mousephenotype.org/help/programmat
 ## Pré-processamento
 
 O TSUMUGI trata um `mp_term_id` do IMPC não vazio como uma anotação fenotípica anormal do IMPC. Também mantém medições mapeadas sem anotação anormal significativa para consultas de exclusão que consideram se houve medição.
+Para medições não significativas, cada termo não raiz mais específico de `intermediate_mp_term_id` que seja ontologicamente incomparável aos demais é emitido como um registro separado. Medições mapeadas apenas para `MP:0000001` ou sem um termo MP válido são omitidas porque não permitem consultas específicas de fenótipo.
 
 - Converte a zigosidade para `Homo`, `Hetero` ou `Hemi`.
 - Atribui `Female` quando apenas `female_ko_effect_p_value` é ≤ 0.0001 e `Male` quando apenas `male_ko_effect_p_value` é ≤ 0.0001; caso contrário, atribui `None`.

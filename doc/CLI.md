@@ -86,6 +86,7 @@ Return genes/gene pairs with a mapped measurement for the specified MP term (rel
 
 > [!CAUTION]
 > A non-significant record does not prove that the animal is normal or that the phenotype is absent. It records that the mapped measurement did not produce a significant abnormal annotation under that condition.
+> Each non-significant measurement is expanded to every ontology-incomparable, most-specific non-root term in `intermediate_mp_term_id`. Root-only and unmapped measurements are omitted because they cannot support phenotype-specific exclusion queries.
 
 #### `-g`, `--genewise`
 Filter at gene level. Reads `genewise_phenotype_annotations.jsonl(.gz)`. When using `--genewise`, specify `-a/--genewise_annotations`.

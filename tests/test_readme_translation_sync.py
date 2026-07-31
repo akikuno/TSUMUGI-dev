@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -34,6 +35,8 @@ INTERPRETATION_TOKENS = (
 
 PREPROCESSING_TOKENS = (
     "`mp_term_id`",
+    "`intermediate_mp_term_id`",
+    "`MP:0000001`",
     "`Homo`",
     "`Hetero`",
     "`Hemi`",
@@ -44,6 +47,18 @@ PREPROCESSING_TOKENS = (
     "`None`",
     "`null`",
 )
+
+
+def test_documented_versions_match_pyproject() -> None:
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    version_match = re.search(r'^version = "([^"]+)"$', pyproject, flags=re.MULTILINE)
+    assert version_match is not None
+    expected_version = f"TSUMUGI v{version_match.group(1)}"
+    readmes = [PROJECT_ROOT / "README.md", *sorted((PROJECT_ROOT / "doc").glob("README_*.md"))]
+
+    for path in readmes:
+        introduction = "\n".join(path.read_text(encoding="utf-8").splitlines()[:40])
+        assert expected_version in introduction, f"{path}: documented version does not match pyproject.toml"
 
 
 def test_translated_readmes_include_all_interpretation_topics() -> None:

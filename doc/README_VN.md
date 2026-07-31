@@ -455,6 +455,7 @@ Thông tin cột dữ liệu: [Data fields](https://www.mousephenotype.org/help/
 ## Tiền xử lý
 
 TSUMUGI coi `mp_term_id` IMPC không rỗng là annotation kiểu hình bất thường của IMPC. Công cụ cũng giữ lại các phép đo đã ánh xạ nhưng không có annotation bất thường có ý nghĩa để phục vụ truy vấn loại trừ có xét đến việc đã đo hay chưa.
+Đối với phép đo không có ý nghĩa, mỗi thuật ngữ non-root cụ thể nhất trong `intermediate_mp_term_id` và không thể so sánh với các thuật ngữ được chọn khác trong ontology được xuất thành một record riêng. Phép đo chỉ ánh xạ tới `MP:0000001` hoặc không ánh xạ tới thuật ngữ MP hợp lệ sẽ bị loại vì không hỗ trợ truy vấn theo kiểu hình.
 
 - Chuyển zygosity thành `Homo`, `Hetero` hoặc `Hemi`.
 - Gán `Female` khi chỉ `female_ko_effect_p_value` ≤ 0.0001 và `Male` khi chỉ `male_ko_effect_p_value` ≤ 0.0001; các trường hợp khác gán `None`.

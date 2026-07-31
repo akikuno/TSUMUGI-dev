@@ -455,6 +455,7 @@ CLI支援STDIN/STDOUT，可串聯命令：
 ## 前處理
 
 TSUMUGI將IMPC `mp_term_id`非空的記錄視為IMPC異常表現型註釋。同時保留已映射但沒有顯著異常註釋的測量記錄，用於考量是否完成測量的排除查詢。
+對於非顯著測量，`intermediate_mp_term_id`中ontology上互不可比的最具體非根術語會分別輸出為獨立記錄。僅映射至`MP:0000001`或未映射至有效MP術語的測量無法支援表現型特異查詢，因此不予輸出。
 
 - 將接合型轉換為`Homo`、`Hetero`或`Hemi`。
 - 僅`female_ko_effect_p_value`≤0.0001時標記為`Female`，僅`male_ko_effect_p_value`≤0.0001時標記為`Male`，其他情況標記為`None`。

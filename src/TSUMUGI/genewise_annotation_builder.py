@@ -87,7 +87,11 @@ def build_genewise_phenotype_annotations(
         "life_stage",
         "sexual_dimorphism",
     ]
-    records_filtered = filterer.distinct_records_with_max_effect(records_filtered, unique_keys)
+    records_filtered = filterer.distinct_records_with_max_effect(
+        records_filtered,
+        unique_keys,
+        prefer_significant=True,
+    )
 
     genewise_phenotype_annotations = records_filtered
 

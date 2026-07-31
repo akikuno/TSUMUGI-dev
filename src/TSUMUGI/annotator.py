@@ -3,6 +3,10 @@ from __future__ import annotations
 import re
 from collections.abc import Generator, Iterable, Iterator
 
+from TSUMUGI import ontology_handler
+
+ROOT_MP_TERM_ID = "MP:0000001"
+
 ###########################################################
 # annotate_life_stage
 ###########################################################
@@ -90,15 +94,51 @@ def annotate_diseases(records_annotated, disease_annotations_by_gene: dict) -> G
 
 
 def annotate_significant(records_annotated: Iterable[dict], ontology_terms: dict[str, dict]) -> Generator[dict]:
+    parent_term_map, _ = ontology_handler.build_term_hierarchy(ontology_terms)
+    ancestor_cache: dict[str, set[str]] = {}
+    selection_cache: dict[str, tuple[str, ...]] = {}
+
+    def find_ancestors(term_id: str) -> set[str]:
+        if term_id not in ancestor_cache:
+            ancestor_cache[term_id] = ontology_handler.find_all_ancestor_terms(term_id, parent_term_map)
+        return ancestor_cache[term_id]
+
+    def select_most_specific_terms(intermediate_mp_term_id: str) -> tuple[str, ...]:
+        if intermediate_mp_term_id in selection_cache:
+            return selection_cache[intermediate_mp_term_id]
+
+        candidates = {
+            term_id.strip()
+            for term_id in intermediate_mp_term_id.split(",")
+            if term_id.strip() in ontology_terms and term_id.strip() != ROOT_MP_TERM_ID
+        }
+        selected = tuple(
+            sorted(
+                term_id
+                for term_id in candidates
+                if not any(term_id in find_ancestors(other_term_id) for other_term_id in candidates - {term_id})
+            )
+        )
+        selection_cache[intermediate_mp_term_id] = selected
+        return selected
+
     for record in records_annotated:
         if record["mp_term_id"]:
             record["significant"] = True
+            record["mp_term_name"] = ontology_terms.get(record["mp_term_id"], {}).get(
+                "name",
+                record["mp_term_name"],
+            )
             yield record
+            continue
 
-        record["effect_size"] = 0.0
-        record["p_value"] = 1.0
-        record["significant"] = False
-        record["mp_term_id"] = record["intermediate_mp_term_id"].split(",")[-1]
-        record["mp_term_name"] = ontology_terms.get(record["mp_term_id"], {}).get("name", "")
+        selected_term_ids = select_most_specific_terms(record["intermediate_mp_term_id"])
+        for term_id in selected_term_ids:
+            non_significant_record = record.copy()
+            non_significant_record["effect_size"] = 0.0
+            non_significant_record["p_value"] = 1.0
+            non_significant_record["significant"] = False
+            non_significant_record["mp_term_id"] = term_id
+            non_significant_record["mp_term_name"] = ontology_terms[term_id].get("name", "")
 
-        yield record
+            yield non_significant_record

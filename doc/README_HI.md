@@ -455,6 +455,7 @@ CLI STDIN/STDOUT सपोर्ट करता है, इसलिए आप 
 ## प्रीप्रोसेसिंग
 
 TSUMUGI किसी non-empty IMPC `mp_term_id` को IMPC abnormal-phenotype annotation मानता है। यह mapped measurements को भी रखता है जिनमें significant abnormal annotation नहीं मिली, ताकि measurement-aware exclusion queries की जा सकें।
+Non-significant measurements के लिए `intermediate_mp_term_id` के प्रत्येक ontology-incomparable, सबसे specific non-root term को अलग record के रूप में लिखा जाता है। केवल `MP:0000001` से mapped या किसी valid MP term से mapped न होने वाले measurements को phenotype-specific query में उपयोग न कर सकने के कारण output में शामिल नहीं किया जाता।
 
 - Zygosity को `Homo`, `Hetero` या `Hemi` में बदला जाता है।
 - केवल `female_ko_effect_p_value` ≤ 0.0001 होने पर `Female`, केवल `male_ko_effect_p_value` ≤ 0.0001 होने पर `Male`, अन्यथा `None` दिया जाता है।

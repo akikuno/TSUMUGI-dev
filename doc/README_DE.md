@@ -455,6 +455,7 @@ Spalten des Datensatzes: [Data fields](https://www.mousephenotype.org/help/progr
 ## Vorverarbeitung
 
 TSUMUGI behandelt einen nicht leeren IMPC-`mp_term_id` als IMPC-Annotation eines abweichenden Phänotyps. Zugeordnete Messungen ohne signifikante abnorme Annotation bleiben für messungsbezogene Ausschlussabfragen erhalten.
+Für nicht signifikante Messungen wird jeder ontologisch spezifischste Nicht-Root-Term aus `intermediate_mp_term_id`, der mit den anderen ausgewählten Termen nicht vergleichbar ist, als eigener Datensatz ausgegeben. Messungen, die nur `MP:0000001` oder keinen gültigen MP-Term enthalten, werden nicht ausgegeben, da sie keine phänotypspezifische Abfrage unterstützen.
 
 - Zygosität wird in `Homo`, `Hetero` oder `Hemi` umgewandelt.
 - `Female` wird vergeben, wenn nur `female_ko_effect_p_value` ≤ 0.0001 ist, und `Male`, wenn nur `male_ko_effect_p_value` ≤ 0.0001 ist; andernfalls `None`.

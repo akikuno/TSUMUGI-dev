@@ -39,7 +39,9 @@
 - Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning<br>
   Issue: [#182](https://github.com/akikuno/TSUMUGI-dev/issues/182)  
 
-- Resolve measured non-significant MP names from the selected ontology ID and keep disease annotations empty for non-significant records
+- Resolve MP names from the selected ontology IDs and keep disease annotations empty for non-significant records
+- Preserve significant annotations as single records and expand non-significant measurements to all most-specific non-root intermediate MP mappings
+- Prefer significant annotations when deduplicating condition-equivalent records so that missing effect sizes cannot replace significant annotations
 
 ### 📝 Documentation
 
@@ -49,6 +51,7 @@
 - Validate documented CLI examples in pytest, including all translated README files
 - Clarify MICA-based shared contexts, page-specific display scaling, sex labels, disease annotations, and interpretation limits
 - Synchronize interpretation guidance and preprocessing semantics across all translated README files
+- Validate README version consistency, translated CLI synchronization, and documentation links in CI
 
 ### 🔧 Maintenance
 

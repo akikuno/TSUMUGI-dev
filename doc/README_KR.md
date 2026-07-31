@@ -456,6 +456,7 @@ IMPC 데이터셋 [Release 24.0](https://ftp.ebi.ac.uk/pub/databases/impc/all-da
 ## 전처리
 
 TSUMUGI는 IMPC `mp_term_id`가 비어 있지 않은 레코드를 IMPC 이상 표현형 주석으로 취급합니다. 또한 측정 여부를 고려한 제외 검색을 위해 유의한 이상 주석이 없는 매핑된 측정 레코드도 보존합니다.
+비유의 측정에서는 `intermediate_mp_term_id`에 있는 용어 중 ontology상 서로 비교할 수 없는 가장 구체적인 비루트 용어를 각각 별도 레코드로 출력합니다. `MP:0000001`에만 매핑되거나 유효한 MP 용어에 매핑되지 않은 측정은 표현형별 검색에 사용할 수 없으므로 출력하지 않습니다.
 
 - 접합형을 `Homo`, `Hetero`, `Hemi`로 변환합니다.
 - `female_ko_effect_p_value`만 ≤ 0.0001이면 `Female`, `male_ko_effect_p_value`만 ≤ 0.0001이면 `Male`, 그 밖에는 `None`을 부여합니다.

@@ -1,0 +1,45 @@
+name: Documentation link check
+
+on:
+    pull_request:
+    workflow_dispatch:
+    schedule:
+        - cron: "17 3 * * 1"
+
+permissions:
+    contents: read
+
+jobs:
+    link_check:
+        name: Check documentation links
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Restore link-check cache
+              uses: actions/cache@v4
+              with:
+                  path: .lycheecache
+                  key: lychee-${{ runner.os }}-${{ github.sha }}
+                  restore-keys: |
+                      lychee-${{ runner.os }}-
+
+            - name: Check Markdown links
+              uses: lycheeverse/lychee-action@v2
+              with:
+                  args: >-
+                      --root-dir "${{ github.workspace }}"
+                      --cache
+                      --max-cache-age 1d
+                      --cache-exclude-status "429"
+                      --accept "100..=103,200..=299,429"
+                      --max-concurrency 16
+                      --retry-wait-time 2
+                      --no-progress
+                      README.md
+                      "./doc/**/*.md"
+                      "./image/**/*.md"
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  fail: true
+                  jobSummary: true

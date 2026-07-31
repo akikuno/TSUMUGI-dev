@@ -455,6 +455,7 @@ Columnas del dataset: [Data fields](https://www.mousephenotype.org/help/programm
 ## Preprocesamiento
 
 TSUMUGI trata un `mp_term_id` de IMPC no vacío como una anotación fenotípica anómala de IMPC. También conserva las mediciones asignadas sin una anotación anómala significativa para consultas de exclusión que tienen en cuenta si se realizó la medición.
+Para las mediciones no significativas, cada término no raíz más específico de `intermediate_mp_term_id` que sea ontológicamente incomparable con los demás se emite como un registro separado. Las mediciones asignadas solo a `MP:0000001` o sin un término MP válido se omiten porque no permiten consultas específicas de fenotipo.
 
 - Convierte la cigosis en `Homo`, `Hetero` o `Hemi`.
 - Asigna `Female` cuando solo `female_ko_effect_p_value` es ≤ 0.0001 y `Male` cuando solo `male_ko_effect_p_value` es ≤ 0.0001; en los demás casos asigna `None`.
