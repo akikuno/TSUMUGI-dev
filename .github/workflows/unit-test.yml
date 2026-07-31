@@ -1,4 +1,4 @@
-name: Pytest for TSUMUGI
+name: Unit test for TSUMUGI
 
 on:
     push:
@@ -42,3 +42,18 @@ jobs:
                   PYTHONPATH: src
               run: |
                   pytest tests/ -p no:warnings -vv
+
+    javascript_tests:
+        name: JavaScript unit tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+
+            - name: Execute JavaScript tests
+              run: npm run test:js

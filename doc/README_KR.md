@@ -19,7 +19,7 @@
 웹에서 누구나 사용할 수 있는 공개 도구입니다👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-이 문서는 **TSUMUGI v1.1.0**의 현재 동작을 설명합니다. 공개 웹 앱은 IMPC **Release 24.0** 데이터를 사용합니다.
+이 문서는 **TSUMUGI v1.1.1**의 현재 동작을 설명합니다. 공개 웹 앱은 IMPC **Release 24.0** 데이터를 사용합니다.
 
 **TSUMUGI(紡ぎ)**는 “표현형을 이루는 유전자 군을 실잣듯 엮는다”는 뜻에서 유래했습니다.
 
@@ -172,7 +172,7 @@ pip install tsumugi
 > 파일로 저장하려면 `>`로 리다이렉트하세요.
 
 > [!IMPORTANT]
-> `tsumugi run`을 제외한 모든 명령은 `pairwise_similarity_annotation.jsonl.gz` 또는 `genewise_phenotype_annotation.jsonl.gz`가 필요합니다.
+> `tsumugi run`을 제외한 모든 명령은 `pairwise_similarity_annotations.jsonl.gz` 또는 `genewise_phenotype_annotations.jsonl.gz`가 필요합니다.
 > 두 파일 모두 [TSUMUGI 메인 페이지](https://larc-tsukuba.github.io/tsumugi/)에서 다운로드할 수 있습니다.
 
 ## 사용법
@@ -234,7 +234,7 @@ pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
 tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # MP:0001146 및 하위 용어가 측정되었지만 유의한 이상이 없던 유전자 쌍을 추출
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # 유전자 단위로 MP:0001146을 포함하는 유의한 phenotype만 추출
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -276,7 +276,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - 유전자별 phenotype 수(genewise 필요):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 `--min` 또는 `--max` 중 하나만 사용해도 됩니다.
@@ -404,7 +404,7 @@ pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
 genewise 주석 파일(JSONL/.gz) 경로. 필수입니다.
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -421,7 +421,7 @@ genewise 주석 파일(JSONL/.gz) 경로. 필수입니다.
 웹앱 번들(HTML/CSS/JS + 네트워크 데이터) 출력 디렉터리. 확장자가 있는 파일명은 지정하지 마세요.
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI는 STDIN/STDOUT을 지원하므로 파이프로 연결할 수 있습니다:  

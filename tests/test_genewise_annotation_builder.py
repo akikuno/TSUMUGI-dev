@@ -70,3 +70,20 @@ def test_build_genewise_phenotype_annotations_preserves_numeric_effect_size(
     annotation = _build_annotation(effect_size_marker, include_effect_size=True)
 
     assert annotation["effect_size"] == expected
+
+
+def test_build_genewise_phenotype_annotations_keeps_non_significant_measurement():
+    record = _base_statistical_result()
+    record["mp_term_id"] = ""
+    record["mp_term_name"] = ""
+    record["intermediate_mp_term_id"] = "MP:0005553"
+    record["intermediate_mp_term_name"] = "mismatched source name"
+    ontology_terms = {"MP:0005553": {"id": "MP:0005553", "name": "increased circulating creatinine level"}}
+
+    annotations = list(build_genewise_phenotype_annotations(iter([record]), ontology_terms, {}))
+
+    assert len(annotations) == 1
+    assert annotations[0]["mp_term_id"] == "MP:0005553"
+    assert annotations[0]["mp_term_name"] == "increased circulating creatinine level"
+    assert annotations[0]["significant"] is False
+    assert annotations[0]["disease_annotation"] == []

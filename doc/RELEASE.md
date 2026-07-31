@@ -26,12 +26,12 @@
 - Consolidate phenotype highlight options across genotype, life-stage, and sex metadata<br>
   Issue: [#183](https://github.com/akikuno/TSUMUGI-dev/issues/183)
 
+- Remove the desktop left panel scrollbar
+
 ### 🐛 Bug Fixes
 
 - Serialize missing `effect_size` values as standard JSON `null` in JSONL outputs while preserving internal missing-value handling<br>
   Issue: [#186](https://github.com/akikuno/TSUMUGI-dev/issues/186)
-
-
 
 - Make Female and Male filters mutually exclusive in web visualizations<br>
   Issue: [#184](https://github.com/akikuno/TSUMUGI-dev/issues/184)
@@ -39,6 +39,18 @@
 - Fix Gene List input-limit semantics and prevent edge loss caused by pre-pruning<br>
   Issue: [#182](https://github.com/akikuno/TSUMUGI-dev/issues/182)  
 
+- Resolve measured non-significant MP names from the selected ontology ID and keep disease annotations empty for non-significant records
+
+### 📝 Documentation
+
+- Synchronize v1.1.1 version and data provenance across README files
+- Correct CLI input names, options, examples, and locally served webapp requirements
+- Clarify MICA-based shared contexts, page-specific display scaling, sex labels, disease annotations, and interpretation limits
+
+### 🔧 Maintenance
+
+- Validate every statistical-results column used by the preprocessing pipeline
+- Run JavaScript unit tests in GitHub Actions
 
 -------------------------------------------------------------
 

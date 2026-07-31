@@ -19,7 +19,7 @@
 此工具開放給所有人使用👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-本文件說明**TSUMUGI v1.1.0**的現行功能。公開Web應用程式使用IMPC **Release 24.0**資料。
+本文件說明**TSUMUGI v1.1.1**的現行功能。公開Web應用程式使用IMPC **Release 24.0**資料。
 
 **TSUMUGI(紡ぎ)** 源自「將形成表型的基因群像紡線一樣編織」的概念。
 
@@ -171,7 +171,7 @@ pip install tsumugi
 > 如需存檔，請使用`>`重導向。
 
 > [!IMPORTANT]
-> 除`tsumugi run`外，所有命令都需要`pairwise_similarity_annotation.jsonl.gz`或`genewise_phenotype_annotation.jsonl.gz`。
+> 除`tsumugi run`外，所有命令都需要`pairwise_similarity_annotations.jsonl.gz`或`genewise_phenotype_annotations.jsonl.gz`。
 > 兩個檔案都可以從[TSUMUGI首頁](https://larc-tsukuba.github.io/tsumugi/)下載。
 
 ## 使用方法
@@ -233,7 +233,7 @@ pairwise註解檔（JSONL/.gz）路徑。省略時從STDIN讀取。
 tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # 擷取已量測MP:0001146及其下位術語但未出現顯著異常的基因對
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # 以基因擷取包含MP:0001146的顯著表型（含下位術語）
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +275,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - 每個基因的表型數量（需genewise）：
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 只用`--min`或`--max`也可以。
@@ -403,7 +403,7 @@ pairwise註解檔（JSONL/.gz）路徑。省略時從STDIN讀取。
 genewise註解檔（JSONL/.gz）路徑。必需。
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,7 +420,7 @@ genewise註解檔（JSONL/.gz）路徑。必需。
 Webapp輸出目錄（HTML/CSS/JS + 網路資料）。不要指定帶副檔名的檔名。
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI支援STDIN/STDOUT，可串聯命令：  

@@ -1,6 +1,11 @@
 import re
 
-from TSUMUGI.annotator import _annotate_life_stage, _annotate_sexual_dimorphism
+from TSUMUGI.annotator import (
+    _annotate_life_stage,
+    _annotate_sexual_dimorphism,
+    annotate_diseases,
+    annotate_significant,
+)
 
 
 def test_annotate_life_stage():
@@ -35,3 +40,41 @@ def test_annotate_sexual_dimorphism():
     expected_results = ["Female", "Male", "None"]
     for f_p, m_p, expected in zip(female_ko_effect_p_values, male_ko_effect_p_values, expected_results):
         assert _annotate_sexual_dimorphism(f_p, m_p) == expected
+
+
+def test_annotate_significant_resolves_intermediate_name_from_ontology():
+    record = {
+        "mp_term_id": "",
+        "mp_term_name": "",
+        "intermediate_mp_term_id": "MP:0000002,MP:0000001",
+        "effect_size": 1.5,
+        "p_value": 0.2,
+    }
+    ontology_terms = {
+        "MP:0000001": {"name": "mammalian phenotype"},
+        "MP:0000002": {"name": "abnormal phenotype"},
+    }
+
+    result = list(annotate_significant([record], ontology_terms))
+
+    assert result == [
+        {
+            "mp_term_id": "MP:0000001",
+            "mp_term_name": "mammalian phenotype",
+            "intermediate_mp_term_id": "MP:0000002,MP:0000001",
+            "effect_size": 0.0,
+            "p_value": 1.0,
+            "significant": False,
+        }
+    ]
+
+
+def test_annotate_diseases_keeps_non_significant_record_without_disease():
+    record = {
+        "significant": False,
+        "disease_annotation": ["Disease A"],
+    }
+
+    result = list(annotate_diseases([record], {}))
+
+    assert result == [{"significant": False, "disease_annotation": []}]

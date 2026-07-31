@@ -19,7 +19,7 @@
 यह वेब पर सभी के लिए उपलब्ध है👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-यह दस्तावेज़ **TSUMUGI v1.1.0** के वर्तमान व्यवहार का वर्णन करता है। सार्वजनिक वेब ऐप IMPC **Release 24.0** डेटा का उपयोग करता है।
+यह दस्तावेज़ **TSUMUGI v1.1.1** के वर्तमान व्यवहार का वर्णन करता है। सार्वजनिक वेब ऐप IMPC **Release 24.0** डेटा का उपयोग करता है।
 
 **TSUMUGI(紡ぎ)** का अर्थ है “फेनोटाइप बनाने वाले जीन समूह को धागे की तरह बुनना”।
 
@@ -171,7 +171,7 @@ pip install tsumugi
 > फ़ाइल में सेव करने के लिए `>` से रीडायरेक्ट करें।
 
 > [!IMPORTANT]
-> `tsumugi run` को छोड़कर सभी कमांड को `pairwise_similarity_annotation.jsonl.gz` या `genewise_phenotype_annotation.jsonl.gz` चाहिए।
+> `tsumugi run` को छोड़कर सभी कमांड को `pairwise_similarity_annotations.jsonl.gz` या `genewise_phenotype_annotations.jsonl.gz` चाहिए।
 > दोनों फाइलें [TSUMUGI शीर्ष पृष्ठ](https://larc-tsukuba.github.io/tsumugi/) से डाउनलोड की जा सकती हैं।
 
 ## उपयोग
@@ -233,7 +233,7 @@ zygosity के आधार पर अतिरिक्त फ़िल्ट�
 tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # MP:0001146 और descendants मापे गए थे लेकिन significant abnormality नहीं दिखी
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # gene स्तर पर MP:0001146 वाले significant phenotypes निकालें
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +275,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - gene-level phenotype counts (genewise आवश्यक):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 `--min` या `--max` में से केवल एक भी ठीक है।
@@ -403,7 +403,7 @@ pairwise annotation फ़ाइल (JSONL/.gz) का पाथ। न दे�
 genewise annotation फ़ाइल (JSONL/.gz) का पाथ। आवश्यक।
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,7 +420,7 @@ genewise annotation फ़ाइल (JSONL/.gz) का पाथ। आवश्
 webapp bundle (HTML/CSS/JS + नेटवर्क डेटा) का आउटपुट डायरेक्टरी। एक्सटेंशन वाला फ़ाइल नाम न दें।
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI STDIN/STDOUT सपोर्ट करता है, इसलिए आप कमांड चेन कर सकते हैं:  

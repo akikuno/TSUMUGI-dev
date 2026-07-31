@@ -68,6 +68,7 @@ def annotate_diseases(records_annotated, disease_annotations_by_gene: dict) -> G
     for record in records_annotated:
         if not record["significant"]:
             record["disease_annotation"] = []
+            yield record
             continue
 
         record["disease_annotation"] = set()
@@ -88,7 +89,7 @@ def annotate_diseases(records_annotated, disease_annotations_by_gene: dict) -> G
         yield record
 
 
-def annotate_significant(records_annotated: Iterable[dict]) -> Generator[dict]:
+def annotate_significant(records_annotated: Iterable[dict], ontology_terms: dict[str, dict]) -> Generator[dict]:
     for record in records_annotated:
         if record["mp_term_id"]:
             record["significant"] = True
@@ -98,6 +99,6 @@ def annotate_significant(records_annotated: Iterable[dict]) -> Generator[dict]:
         record["p_value"] = 1.0
         record["significant"] = False
         record["mp_term_id"] = record["intermediate_mp_term_id"].split(",")[-1]
-        record["mp_term_name"] = record["intermediate_mp_term_name"].split(",")[-1]
+        record["mp_term_name"] = ontology_terms.get(record["mp_term_id"], {}).get("name", "")
 
         yield record

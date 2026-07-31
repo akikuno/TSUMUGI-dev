@@ -19,7 +19,7 @@
 Alat ini terbuka untuk semua pengguna secara daring 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Dokumentasi ini menjelaskan perilaku **TSUMUGI v1.1.0** saat ini. Aplikasi web publik menggunakan data IMPC **Release 24.0**.
+Dokumentasi ini menjelaskan perilaku **TSUMUGI v1.1.1** saat ini. Aplikasi web publik menggunakan data IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** berarti “menyulam kelompok gen pembentuk fenotipe”.
 
@@ -171,7 +171,7 @@ Siap digunakan saat `tsumugi --version` menampilkan versinya.
 > Gunakan `>` untuk menyimpan ke file.
 
 > [!IMPORTANT]
-> Semua perintah kecuali `tsumugi run` memerlukan `pairwise_similarity_annotation.jsonl.gz` atau `genewise_phenotype_annotation.jsonl.gz`.
+> Semua perintah kecuali `tsumugi run` memerlukan `pairwise_similarity_annotations.jsonl.gz` atau `genewise_phenotype_annotations.jsonl.gz`.
 > Kedua file dapat diunduh dari [halaman utama TSUMUGI](https://larc-tsukuba.github.io/tsumugi/).
 
 ## Cara pakai
@@ -233,7 +233,7 @@ Filter tambahan berdasarkan zigositas. Nilai: `Homo`, `Hetero`, `Hemi`.
 tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Ekstrak pasangan yang MP:0001146 dan turunannya diukur tanpa anomali signifikan
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # Ekstrak anotasi signifikan tingkat gen yang mengandung MP:0001146 (turunan termasuk)
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +275,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - Fenotipe per gen (genewise wajib):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 `--min` atau `--max` saja juga bisa.
@@ -403,7 +403,7 @@ Path ke file anotasi pairwise (JSONL/.gz). Jika dihilangkan, membaca dari STDIN.
 Path ke file anotasi genewise (JSONL/.gz). Wajib.
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,7 +420,7 @@ Path ke file anotasi genewise (JSONL/.gz). Wajib.
 Direktori output untuk bundle webapp (HTML/CSS/JS + data jaringan). Jangan berikan nama file dengan ekstensi.
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI mendukung STDIN/STDOUT, sehingga Anda bisa merangkai perintah:  

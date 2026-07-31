@@ -19,7 +19,7 @@
 Mở cho mọi người sử dụng trực tuyến 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Tài liệu này mô tả hoạt động hiện tại của **TSUMUGI v1.1.0**. Ứng dụng web công khai sử dụng dữ liệu IMPC **Release 24.0**.
+Tài liệu này mô tả hoạt động hiện tại của **TSUMUGI v1.1.1**. Ứng dụng web công khai sử dụng dữ liệu IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** mang ý nghĩa “dệt các nhóm gen tạo nên kiểu hình”.
 
@@ -171,7 +171,7 @@ Sẵn sàng khi `tsumugi --version` hiển thị phiên bản.
 > Dùng `>` để ghi ra file.
 
 > [!IMPORTANT]
-> Tất cả lệnh, trừ `tsumugi run`, yêu cầu `pairwise_similarity_annotation.jsonl.gz` hoặc `genewise_phenotype_annotation.jsonl.gz`.
+> Tất cả lệnh, trừ `tsumugi run`, yêu cầu `pairwise_similarity_annotations.jsonl.gz` hoặc `genewise_phenotype_annotations.jsonl.gz`.
 > Cả hai file đều có thể tải từ [trang chủ TSUMUGI](https://larc-tsukuba.github.io/tsumugi/).
 
 ## Cách dùng
@@ -233,7 +233,7 @@ Bộ lọc thêm theo zygosity. Giá trị: `Homo`, `Hetero`, `Hemi`.
 tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Trích xuất các cặp mà MP:0001146 và hậu duệ được đo nhưng không có bất thường đáng kể
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # Trích xuất annotation có ý nghĩa ở mức gene chứa MP:0001146 (tính cả hậu duệ)
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +275,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - Phenotype theo gene (cần genewise):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 Có thể chỉ dùng `--min` hoặc `--max`.
@@ -403,7 +403,7 @@ tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANN
 Đường dẫn tới file genewise (JSONL/.gz). Bắt buộc.
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,7 +420,7 @@ tsumugi build-webapp [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNO
 Thư mục đầu ra cho bundle webapp (HTML/CSS/JS + dữ liệu mạng). Không dùng tên file có đuôi mở rộng.
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 CLI hỗ trợ STDIN/STDOUT, vì vậy bạn có thể nối lệnh:  

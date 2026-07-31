@@ -19,7 +19,7 @@
 Está disponible para cualquiera en la web👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Esta documentación describe el funcionamiento actual de **TSUMUGI v1.1.0**. La aplicación web pública utiliza datos de IMPC **Release 24.0**.
+Esta documentación describe el funcionamiento actual de **TSUMUGI v1.1.1**. La aplicación web pública utiliza datos de IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** procede de “tejer los grupos génicos que forman los fenotipos”.
 
@@ -171,7 +171,7 @@ Listo cuando `tsumugi --version` muestra la versión.
 > Redirige con `>` si quieres guardar en un archivo.
 
 > [!IMPORTANT]
-> Todos los comandos excepto `tsumugi run` requieren `pairwise_similarity_annotation.jsonl.gz` o `genewise_phenotype_annotation.jsonl.gz`.
+> Todos los comandos excepto `tsumugi run` requieren `pairwise_similarity_annotations.jsonl.gz` o `genewise_phenotype_annotations.jsonl.gz`.
 > Ambos archivos pueden descargarse desde la [página principal de TSUMUGI](https://larc-tsukuba.github.io/tsumugi/).
 
 ## Uso
@@ -233,7 +233,7 @@ Filtro adicional por cigocidad. Valores: `Homo`, `Hetero`, `Hemi`.
 tsumugi mp --include MP:0001146   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
 
 # Extraer pares donde MP:0001146 y términos descendientes se midieron sin anomalía significativa
-tsumugi mp --exclude MP:0001146   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_filtered.jsonl
+tsumugi mp --exclude MP:0001146   --pairwise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_without_significant_testis_phenotype.jsonl
 
 # Extraer anotaciones significativas a nivel de gen que contengan MP:0001146 (descendientes incluidos)
 tsumugi mp --include MP:0001146   --genewise   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > genewise_filtered.jsonl
@@ -275,7 +275,7 @@ tsumugi count --pairwise --min 3 --max 20   --in pairwise_similarity_annotations
 
 - Fenotipos por gen (requiere genewise):
 ```bash
-tsumugi count --genewise --min 5 --max 50   --genewise genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > genewise_min5_max50.jsonl
+tsumugi count --genewise --min 5 --max 50   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_genes_with_5_to_50_phenotypes.jsonl
 ```
 
 Se puede usar solo `--min` o `--max`.
@@ -403,7 +403,7 @@ Ruta al archivo pairwise (JSONL/.gz). Si se omite, lee desde STDIN.
 Ruta al archivo genewise (JSONL/.gz). Requerido.
 
 ```bash
-tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   > network.graphml
+tsumugi build-graphml   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   > network.graphml
 ```
 
 ```bash
@@ -420,7 +420,7 @@ Ruta al archivo genewise (JSONL/.gz). Requerido.
 Directorio de salida del bundle webapp (HTML/CSS/JS + datos de red). No especifiques un nombre de archivo con extensión.
 
 ```bash
-tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise genewise_phenotype_annotations.jsonl.gz   --output_dir ./webapp_output
+tsumugi build-webapp   --in pairwise_similarity_annotations.jsonl.gz   --genewise_annotations genewise_phenotype_annotations.jsonl.gz   --out ./webapp_output
 ```
 
 El CLI admite STDIN/STDOUT, así que puedes encadenar comandos:  
