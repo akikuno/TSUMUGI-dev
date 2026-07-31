@@ -39,9 +39,9 @@ Símbolos seguem a [MGI](http://www.informatics.jax.org/).
 
 ### Lista de genes (Gene List)
 Cole vários genes (um por linha) para buscar **dentro da lista**.  
-> [!CAUTION]  
-> Se nada for encontrado: `No similar phenotypes were found among the entered genes.`  
-> Se a rede gerada contiver 200 genes ou mais: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> [!CAUTION]
+> Se nenhum gene semelhante for encontrado: `No similar phenotypes were found among the entered genes.`
+> Gene List aceita no máximo 200 genes disponíveis distintos. Duplicatas e linhas vazias são removidas antes da contagem; símbolos indisponíveis são informados e excluídos. Uma lista com 201 ou mais genes disponíveis é rejeitada antes do carregamento dos dados da rede.
 
 ### 📥 Baixar dados brutos
 TSUMUGI publica arquivos JSONL comprimidos em gzip.
@@ -51,10 +51,10 @@ TSUMUGI publica arquivos JSONL comprimidos em gzip.
 - Marker accession ID (ex.: "MGI:1913452")  
 - Nome/ID do fenótipo (ex.: "fused joints", "MP:0000137")  
 - Effect size (`number` ou `null`; ex.: 0.0, 1.324)
-- Significância (True/false)  
+- Indicador de significância (`true` para uma anotação fenotípica anormal do IMPC; `false` para uma medição mapeada sem anormalidade significativa)
 - Zigosidade ("Homo", "Hetero", "Hemi")  
 - Estágio de vida ("Embryo", "Early", "Interval", "Late")  
-- Dimorfismo sexual ("", "Male", "Female")  
+- Dimorfismo sexual (`None`, `Male`, `Female`)
 - Anotação de doença (ex.: [] ou "Premature Ovarian Failure 18")
 
 Exemplo:
@@ -64,20 +64,33 @@ Exemplo:
 
 #### `pairwise_similarity_annotations.jsonl.gz`
 - Par de genes (`gene1_symbol`, `gene2_symbol`)  
-- `phenotype_shared_annotations`: metadados (estágio de vida, zigosidade, sexo) para fenótipos compartilhados  
-- `phenotype_similarity_score`: Resnik→Phenodigm (0–100)
+- `phenotype_shared_annotations` (contextos MICA com metadados coincidentes: termo MP, estágio de vida, zigosidade e etiqueta de sexo)
+- `phenotype_similarity_score` (score Phenodigm, 0–100)
 
 Exemplo:
 ```
 {"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
+## Notas de interpretação
+
+- **Contextos compartilhados:** Cada item de `phenotype_shared_annotations` é o ancestral comum mais informativo (MICA) de duas anotações MP significativas cujas etiquetas de zigosidade, estágio de vida e sexo coincidem. Isso não significa necessariamente que ambos os genes tenham o mesmo termo MP folha anotado diretamente. O mesmo MICA pode aparecer como contextos separados quando os metadados diferem.
+- **Regras de exibição:** As páginas Gene e Phenotype exibem pares com pelo menos três contextos de fenótipo anormal compartilhado e score de similaridade maior que 0. Gene List exige pelo menos um contexto compartilhado entre os genes inseridos. Essas são regras de exibição, não critérios de significância estatística.
+- **Exibição da similaridade:** O `phenotype_similarity_score` distribuído é um score Phenodigm de 0–100. A aplicação web reescala para 1–100 os valores disponíveis em cada rede; portanto, valores do controle deslizante e das dicas não formam uma escala absoluta comparável entre páginas.
+- **Exibição do tamanho de efeito:** O TSUMUGI usa o valor absoluto do tamanho de efeito do IMPC, aplica `log1p` e reescala os valores do fenótipo-alvo para 1–100. Esse valor auxilia a ordenação dentro da página, não é o tamanho de efeito bruto e não deve ser comparado diretamente entre páginas de fenótipo. Valores ausentes permanecem `null` em JSON e os nós são exibidos em branco.
+- **Módulos:** Os módulos são agrupamentos visuais, não evidência de uma via molecular ou complexo proteico. `Similarity` usa componentes conectados e `Top-level MP` usa grupos ontológicos; os módulos soft/fuzzy da página Gene permitem associação múltipla. O filtro de número de nós limita apenas os módulos exibidos.
+- **Etiquetas de sexo:** `Female` indica que apenas o P-value do efeito KO feminino é ≤ 0.0001; `Male` indica o mesmo para o efeito KO masculino. As opções são mutuamente exclusivas na interface e não substituem um teste formal de interação sexo×genótipo.
+- **Destaque de fenótipos:** Variantes de metadados do mesmo fenótipo são consolidadas em uma opção. Quando Human Disease e um ou mais fenótipos se sobrepõem em um gene, as categorias são mostradas como anéis concêntricos.
+- **Destaque de doença:** As anotações do IMPC Disease Models Portal são evidência de similaridade de modelo e, isoladamente, não estabelecem uma relação causal gene–doença em humanos.
+- **Registros não significativos:** Representam uma medição mapeada sem anotação anormal significativa naquela condição. Não demonstram normalidade nem ausência do fenótipo; `disease_annotation` permanece vazio.
+- **Significado do score:** O score TSUMUGI não é P-value, tamanho de efeito, afinidade de ligação nem evidência de interação gênica causal.
+
 # 🌐 Rede
 
 Página muda e desenha a rede automaticamente.
 
-> [!IMPORTANT]  
-> Visualiza pares com **≥3 fenótipos anormais compartilhados** e **similaridade > 0.0**.
+> [!IMPORTANT]
+> As páginas Gene e Phenotype exibem pares com pelo menos três contextos de fenótipo anormal compartilhado e score de similaridade maior que 0; Gene List exige pelo menos um contexto compartilhado entre os genes inseridos. Essas são regras de exibição, não critérios de significância estatística.
 
 ### Painel da rede
 **Nós** representam genes. Clique para ver fenótipos anormais; arraste para reposicionar.  
@@ -89,11 +102,11 @@ As páginas Gene usam módulos Top-level MP soft/fuzzy, portanto um gene pode pe
 Ajuste de exibição no painel esquerdo.
 
 #### Filtrar por similaridade fenotípica
-`Phenotypes similarity` define o limiar das arestas pelo score Resnik→Phenodigm.  
+`Phenotypes similarity` filtra as arestas pelo valor de similaridade exibido. O `phenotype_similarity_score` distribuído varia de 0–100, mas cada rede exibida é reescalada para 1–100; valores de páginas diferentes não são diretamente comparáveis.
 > Detalhes: 👉 [🔍 Cálculo de grupos de genes com fenótipos similares](#-cálculo-de-grupos-de-genes-com-fenótipos-similares)
 
 #### Filtrar por effect size
-`Effect size` filtra nós pela magnitude do effect size derivado do IMPC quando disponível.
+`Effect size` filtra nós por um valor de exibição específico da página. O TSUMUGI usa o valor absoluto do tamanho de efeito do IMPC, aplica `log1p` e reescala os valores do fenótipo-alvo para 1–100. É um auxílio de ordenação dentro da página, não o tamanho de efeito bruto, e não deve ser comparado entre páginas de fenótipo.
 Effect sizes ausentes são serializados no JSONL como o valor `null` do JSON padrão, permanecem semanticamente ausentes em vez de serem convertidos em zero e os nós correspondentes são exibidos em branco.
 > Oculto para fenótipos binários (ex.: [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); lista binária [aqui](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) ou entrada de um gene.
 
@@ -116,8 +129,11 @@ Effect sizes ausentes são serializados no JSONL como o valor `null` do JSON pad
 #### Exibição de módulos
 No painel direito, selecione a definição e o módulo visível. As bordas dos módulos podem ser ocultadas sem remover genes ou arestas da rede.
 
+#### Highlight: Phenotype
+Realça genes com base na anotação fenotípica. Variantes de metadados do mesmo fenótipo são consolidadas em uma opção. Quando Human Disease e pelo menos um fenótipo se sobrepõem em um gene, as categorias são mostradas como anéis concêntricos.
+
 #### Highlight: Human Disease
-Realça genes associados a doenças humanas (IMPC Disease Models Portal).
+Realça genes KO com anotações de modelos de doença no IMPC Disease Models Portal. Essa anotação indica similaridade de modelo e, isoladamente, não estabelece uma relação causal gene–doença em humanos.
 
 #### Search: Specific Gene
 Busca nomes de genes na rede.
@@ -135,7 +151,7 @@ A CLI do TSUMUGI permite usar localmente os dados IMPC mais recentes e oferece f
 ## Recursos
 
 - Recalcular com `statistical-results-ALL.csv.gz` do IMPC (opcional `mp.obo`, `impc_phenodigm.csv`).  
-- Filtrar por presença/ausência de termos MP.  
+- Filtrar por anotações MP significativas ou medições mapeadas não significativas.
 - Filtrar por lista de genes (separada por vírgulas ou arquivo de texto).  
 - Saídas: GraphML (`tsumugi build-graphml`), bundle webapp offline (`tsumugi build-webapp`).
 
@@ -156,7 +172,7 @@ Pronto quando `tsumugi --version` exibir a versão.
 ## Comandos disponíveis
 
 - `tsumugi run`: recalcular a rede a partir dos dados IMPC  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: filtrar pares ou genes que contêm/não mostram um termo MP  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: filtrar pares ou genes por anotações MP significativas ou medições mapeadas não significativas
 - `tsumugi count --pairwise/--genewise (--min/--max)`: filtrar por número de fenótipos (pares/genes)  
 - `tsumugi score (--min/--max)`: filtrar por score de similaridade (pares)  
 - `tsumugi genes --keep/--drop`: manter/remover por lista de genes (vírgulas ou arquivo de texto)  
@@ -203,6 +219,9 @@ Inclui genes/pares que tenham o termo MP especificado (descendentes incluídos).
 
 #### `-e MP_ID`, `--exclude MP_ID`
 Retorna genes/pares medidos para o termo MP (descendentes incluídos) que não mostraram fenótipo significativo. Requer `-a/--genewise_annotations`.
+
+> [!CAUTION]
+> Um registro não significativo não prova que o animal é normal nem que o fenótipo está ausente. Ele apenas indica que a medição mapeada não gerou uma anotação anormal significativa naquela condição.
 
 #### `-g`, `--genewise`
 Filtra no nível de gene. Lê `genewise_phenotype_annotations.jsonl(.gz)`. Ao usar `--genewise`, indique `-a/--genewise_annotations`.
@@ -435,9 +454,11 @@ Colunas do dataset: [Data fields](https://www.mousephenotype.org/help/programmat
 
 ## Pré-processamento
 
-Extraímos pares gene–fenótipo cujos P-values em camundongos KO (`p_value`, `female_ko_effect_p_value` ou `male_ko_effect_p_value`) são ≤ 0.0001.  
-- Anotar fenótipos específicos de genótipo como `homo`, `hetero` ou `hemi`.  
-- Anotar fenótipos específicos de sexo como `female` ou `male`.
+O TSUMUGI trata um `mp_term_id` do IMPC não vazio como uma anotação fenotípica anormal do IMPC. Também mantém medições mapeadas sem anotação anormal significativa para consultas de exclusão que consideram se houve medição.
+
+- Converte a zigosidade para `Homo`, `Hetero` ou `Hemi`.
+- Atribui `Female` quando apenas `female_ko_effect_p_value` é ≤ 0.0001 e `Male` quando apenas `male_ko_effect_p_value` é ≤ 0.0001; caso contrário, atribui `None`.
+- Usa o valor absoluto do tamanho de efeito. Valores ausentes permanecem ausentes e são serializados como `null` em JSON.
 
 ## Similaridade fenotípica
 
@@ -453,6 +474,7 @@ O TSUMUGI aplica a fórmula de pontuação original do PhenoDigm ([Smedley D, et
    Cada anotação direta é propagada para o termo MP anotado e todos os seus ancestrais.
 
 * Para cada par de termos MP, encontrar os ancestrais comuns com o maior IC derivado de anotações. Em caso de empate, selecionar de forma determinística o candidato com menos descendentes transitivos na ontologia MP e, depois, o menor ID de termo MP em ordem lexicográfica. O IC do MICA selecionado é a similaridade de Resnik. Esse desempate não altera o score de similaridade nem o schema de saída.
+   Candidatos empatados têm o mesmo score numérico do par de termos, mas a etiqueta MICA selecionada pode alterar a contagem de contextos compartilhados e, consequentemente, a elegibilidade para exibição.
 
 * Para dois termos MP, calcular o índice de Jaccard dos conjuntos de atributos inferidos, definidos como o próprio termo e todos os seus ancestrais.
 
@@ -462,7 +484,7 @@ O TSUMUGI aplica a fórmula de pontuação original do PhenoDigm ([Smedley D, et
 
 * Para cada par de genes, construir uma matriz de similaridade termo MP × termo MP a partir dos scores de pares de termos.
 
-* Os metadados de genótipo, estágio de vida e sexo são preservados nas anotações de fenótipos compartilhados, mas não ponderam o score PhenoDigm.
+* Um MICA só é registrado em `phenotype_shared_annotations` quando zigosidade, estágio de vida e etiqueta de sexo coincidem. Esses metadados não ponderam o score PhenoDigm.
 
 ### 3. Escalonamento Phenodigm
 
@@ -470,6 +492,8 @@ O TSUMUGI aplica a fórmula de pontuação original do PhenoDigm ([Smedley D, et
    Calcular o máximo e a média de best match observados e normalizar pelo score ótimo simétrico de self match dos dois genes.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    Se o denominador for 0, a pontuação será 0.
+
+O score resultante mede a similaridade entre perfis fenotípicos. Não é P-value, tamanho de efeito, afinidade de ligação nem evidência de interação causal entre genes.
 
 ---
 

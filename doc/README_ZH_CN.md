@@ -39,9 +39,9 @@ TSUMUGI 支持三种输入。
 
 ### 基因列表（Gene List）
 支持多个基因（每行一个），在列表内部提取**表型相似的基因**。  
-> [!CAUTION]  
-> 若找不到相似基因：`No similar phenotypes were found among the entered genes.`  
-> 若生成的网络包含200个或更多基因：`Too many genes submitted. Please limit the number to 200 or fewer.`
+> [!CAUTION]
+> 如果没有找到相似基因：`No similar phenotypes were found among the entered genes.`
+> Gene List最多接受200个不同且可用的基因。计数前会删除重复符号和空行；不可用符号会被报告并排除。包含201个或更多可用基因的列表会在加载网络数据前被拒绝。
 
 ### 📥 下载原始数据
 TSUMUGI 发布 gzip 压缩的 JSONL 文件。
@@ -51,10 +51,10 @@ TSUMUGI 发布 gzip 压缩的 JSONL 文件。
 - Marker accession ID（如 "MGI:1913452"）  
 - 表型名/ID（如 "fused joints", "MP:0000137"）  
 - Effect size（`number`或`null`；如 0.0, 1.324）
-- 显著性（True/false）  
+- 显著性标志（IMPC异常表型注释为`true`；已映射但没有显著异常的测量为`false`）
 - 接合型（"Homo", "Hetero", "Hemi"）  
 - 生命阶段（"Embryo", "Early", "Interval", "Late"）  
-- 性别差异（"", "Male", "Female"）  
+- 性别差异（`None`、`Male`、`Female`）
 - 疾病注释（如 [] 或 "Premature Ovarian Failure 18"）
 
 示例：
@@ -64,20 +64,33 @@ TSUMUGI 发布 gzip 压缩的 JSONL 文件。
 
 #### `pairwise_similarity_annotations.jsonl.gz`
 - 基因对（`gene1_symbol`, `gene2_symbol`）  
-- `phenotype_shared_annotations`：共享表型的元数据（生命阶段、接合型、性别差异）  
-- `phenotype_similarity_score`：基于 Resnik 的 Phenodigm 分数（0–100）
+- `phenotype_shared_annotations`（元数据一致的MICA上下文：MP术语、生命阶段、接合型和性别标签）
+- `phenotype_similarity_score`（Phenodigm分数，0–100）
 
 示例：
 ```
 {"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
+## 解读注意事项
+
+- **共享上下文：** `phenotype_shared_annotations`中的每个条目，都是两条显著MP注释在接合型、生命阶段和性别标签一致时得到的信息量最大共同祖先（MICA）。这不一定表示两个基因都直接注释了同一个叶节点MP术语。同一个MICA在元数据不同时可作为不同上下文出现。
+- **显示规则：** Gene和Phenotype页面显示共享异常表型上下文不少于3个且相似度分数大于0的基因对。Gene List要求输入基因之间至少有1个共享上下文。这些是显示规则，不是统计显著性标准。
+- **相似度显示：** 发布的`phenotype_similarity_score`是0–100的Phenodigm分数。Web应用会把每个当前网络中的可用值重新缩放到1–100，因此不同页面的滑块值和提示值不能作为统一的绝对尺度比较。
+- **效应量显示：** TSUMUGI取IMPC效应量的绝对值，进行`log1p`转换，并在目标表型内重新缩放到1–100。该值仅用于页面内排序，不是原始效应量，也不能在不同表型页面之间直接比较。缺失值保持为JSON `null`，对应节点显示为白色。
+- **模块：** 模块只是视觉分组，并不是分子通路或蛋白质复合物的证据。`Similarity`表示连通分量，`Top-level MP`表示基于本体的分组；Gene页面的soft/fuzzy模块允许一个基因属于多个模块。模块节点数过滤器只限制当前显示的模块。
+- **性别标签：** `Female`表示只有雌性KO效应P-value≤0.0001；`Male`表示只有雄性KO效应P-value≤0.0001。两个选项在Web界面中互斥，不能替代正式的性别×基因型交互检验。
+- **表型高亮：** 同一表型的不同元数据变体会合并为一个选项。当Human Disease与一个或多个表型在同一基因上重叠时，各类别以同心圆显示。
+- **疾病高亮：** IMPC Disease Models Portal的注释只提供疾病模型相似性证据，不能单独确立人类基因–疾病因果关系。
+- **非显著记录：** 这表示在对应条件下已完成映射测量，但没有显著异常注释。它不能证明动物正常或表型不存在；`disease_annotation`保持为空。
+- **分数含义：** TSUMUGI分数不是P-value、效应量、结合亲和力，也不是基因间因果相互作用的证据。
+
 # 🌐 网络
 
 根据输入自动生成网络。
 
-> [!IMPORTANT]  
-> **共享异常表型≥3 且 表型相似度>0.0** 的基因对会被可视化。
+> [!IMPORTANT]
+> Gene和Phenotype页面显示共享异常表型上下文不少于3个且相似度分数大于0的基因对；Gene List要求输入基因之间至少有1个共享上下文。这些是显示规则，不是统计显著性标准。
 
 ### 网络面板
 **节点**代表基因。点击可查看该 KO 小鼠的异常表型列表，拖拽可调整位置。  
@@ -89,11 +102,11 @@ Gene页面使用soft/fuzzy Top-level MP模块，因此一个基因可以属于�
 在左侧面板调整网络显示。
 
 #### 按表型相似度过滤
-`Phenotypes similarity` 滑块按 Resnik→Phenodigm 分数为边设定阈值。  
+`Phenotypes similarity`按显示用相似度值过滤边。发布的`phenotype_similarity_score`范围为0–100，但每个显示网络都会重新缩放到1–100，因此不同页面的值不能直接比较。
 > 计算详情：👉 [🔍 表型相似基因群的计算方法](#-表型相似基因群的计算方法)
 
 #### 按 effect size 过滤
-`Effect size` 滑块按可用的 IMPC-derived effect size 大小过滤节点。
+`Effect size`按页面特定的显示值过滤节点。TSUMUGI取IMPC效应量的绝对值，进行`log1p`转换，并在目标表型内重新缩放到1–100。该值只用于页面内排序，不是原始效应量，也不能在不同表型页面之间比较。
 缺失的`effect_size`在JSONL中序列化为标准JSON的`null`，其语义仍为缺失值而不会转换为0；相应节点显示为白色。
 > 对于二值表型（如 [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); 二值列表见[此处](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)）或单基因输入，此控件隐藏。
 
@@ -116,8 +129,11 @@ Gene页面使用soft/fuzzy Top-level MP模块，因此一个基因可以属于�
 #### 模块显示
 可在右侧面板选择模块定义和当前显示的模块。隐藏模块边框不会从网络中移除基因或边。
 
+#### Highlight: Phenotype
+根据表型注释高亮基因。同一表型的不同元数据变体会合并为一个选项。当Human Disease与至少一个表型在同一基因上重叠时，各类别以同心圆显示。
+
 #### Highlight: Human Disease
-基于 IMPC Disease Models Portal 数据，高亮与人类疾病相关的基因。
+高亮在IMPC Disease Models Portal中具有疾病模型注释的KO基因。该注释表示模型相似性，不能单独确立人类基因–疾病因果关系。
 
 #### Search: Specific Gene
 在网络中搜索基因名。
@@ -135,7 +151,7 @@ TSUMUGI CLI 允许使用本地下载的最新IMPC数据，并提供比网页版�
 ## 功能
 
 - 使用IMPC的`statistical-results-ALL.csv.gz`重新计算（可选`mp.obo`、`impc_phenodigm.csv`）。  
-- 按MP术语的包含/排除进行过滤。  
+- 按显著MP注释或已映射的非显著测量记录进行过滤。
 - 按基因列表过滤（逗号分隔或文本文件）。  
 - 输出：GraphML（`tsumugi build-graphml`）、离线Web应用包（`tsumugi build-webapp`）。
 
@@ -156,7 +172,7 @@ pip install tsumugi
 ## 可用命令
 
 - `tsumugi run`: 从IMPC数据重新计算网络  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 按MP术语包含/排除基因对或基因  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: 按显著MP注释或已映射的非显著测量记录过滤基因对或基因
 - `tsumugi count --pairwise/--genewise (--min/--max)`: 按表型数量过滤（基因对/基因）  
 - `tsumugi score (--min/--max)`: 按表型相似性得分过滤（基因对）  
 - `tsumugi genes --keep/--drop`: 基因列表保留/剔除（逗号或文本文件）  
@@ -203,6 +219,9 @@ tsumugi mp [-h] (-i MP_ID | -e MP_ID) (-g | -p) [-m PATH_MP_OBO] [-a PATH_GENEWI
 
 #### `-e MP_ID`, `--exclude MP_ID`
 返回已测量该MP术语（包含下位术语）但未出现显著表型的基因/基因对。需要`-a/--genewise_annotations`。
+
+> [!CAUTION]
+> 非显著记录不能证明动物正常或表型不存在。它只表示映射测量在该条件下没有产生显著异常注释。
 
 #### `-g`, `--genewise`
 按基因级别过滤。读取`genewise_phenotype_annotations.jsonl(.gz)`。使用`--genewise`时请指定`-a/--genewise_annotations`。
@@ -435,9 +454,11 @@ CLI支持STDIN/STDOUT，可串联命令:
 
 ## 预处理
 
-提取KO小鼠P-value（`p_value`、`female_ko_effect_p_value`或`male_ko_effect_p_value`）≤ 0.0001的基因–表型对。  
-- 基因型特异表型标注为`homo`、`hetero`或`hemi`。  
-- 性别特异表型标注为`female`或`male`。
+TSUMUGI将IMPC `mp_term_id`非空的记录视为IMPC异常表型注释。同时保留已映射但没有显著异常注释的测量记录，用于考虑是否完成测量的排除查询。
+
+- 将接合型转换为`Homo`、`Hetero`或`Hemi`。
+- 仅`female_ko_effect_p_value`≤0.0001时标记为`Female`，仅`male_ko_effect_p_value`≤0.0001时标记为`Male`，其他情况标记为`None`。
+- 使用效应量的绝对值。缺失值保持缺失，并在JSON中序列化为`null`。
 
 ## 表型相似度
 
@@ -453,6 +474,7 @@ TSUMUGI使用PhenoDigm原始评分公式（[Smedley D, et al. (2013)](https://do
    每个直接annotation都会传播到被注释的MP术语及其全部ancestor。
 
 * 对每个MP术语对，查找annotation-derived IC最高的共同ancestor。若候选同分，则依次确定性选择MP本体中transitive descendant较少的候选，以及字典序较小的MP term ID。所选MICA的IC作为Resnik相似度。该tie-break不改变相似度得分或输出schema。
+   并列候选的术语对数值分数相同，但所选MICA标签可能改变共享上下文数量，进而影响是否满足显示条件。
 
 * 对两个MP术语，计算其inferred attribute集合的Jaccard指数；该集合定义为术语本身及其全部ancestor。
 
@@ -462,7 +484,7 @@ TSUMUGI使用PhenoDigm原始评分公式（[Smedley D, et al. (2013)](https://do
 
 * 对每个基因对，根据术语对得分构建MP术语×MP术语相似度矩阵。
 
-* 基因型、生命阶段和性别metadata保留在共享表型annotation中，但不用于PhenoDigm得分加权。
+* 只有在接合型、生命阶段和性别标签一致时，才把MICA记录到`phenotype_shared_annotations`中。这些元数据不会对PhenoDigm分数加权。
 
 ### 3. Phenodigm缩放
 
@@ -470,6 +492,8 @@ TSUMUGI使用PhenoDigm原始评分公式（[Smedley D, et al. (2013)](https://do
    计算观测best match的maximum/mean，然后使用两个基因对称的optimal self-match score进行归一化。
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    若分母为0，则得分为0。
+
+最终分数衡量表型谱相似度。它不是P-value、效应量、结合亲和力，也不是基因间因果相互作用的证据。
 
 ---
 

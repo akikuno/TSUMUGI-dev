@@ -39,9 +39,9 @@ Theo ký hiệu [MGI](http://www.informatics.jax.org/).
 
 ### Danh sách gen (Gene List)
 Nhiều gen (mỗi dòng một gen) để tìm **trong danh sách đó**.  
-> [!CAUTION]  
-> Không tìm thấy: `No similar phenotypes were found among the entered genes.`  
-> Nếu mạng được tạo có từ 200 gen trở lên: `Too many genes submitted. Please limit the number to 200 or fewer.`
+> [!CAUTION]
+> Nếu không tìm thấy gen tương tự: `No similar phenotypes were found among the entered genes.`
+> Gene List nhận tối đa 200 gen khả dụng khác nhau. Gen trùng lặp và dòng trống được loại bỏ trước khi đếm; ký hiệu không khả dụng được báo cáo và loại trừ. Danh sách có từ 201 gen khả dụng trở lên bị từ chối trước khi tải dữ liệu mạng.
 
 ### 📥 Tải dữ liệu thô
 TSUMUGI cung cấp file JSONL nén gzip.
@@ -51,10 +51,10 @@ TSUMUGI cung cấp file JSONL nén gzip.
 - Marker accession ID (ví dụ "MGI:1913452")  
 - Tên/ID kiểu hình (ví dụ "fused joints", "MP:0000137")  
 - Effect size (`number` hoặc `null`; ví dụ 0.0, 1.324)
-- Ý nghĩa thống kê (True/false)  
+- Cờ ý nghĩa (`true` cho annotation kiểu hình bất thường IMPC; `false` cho phép đo đã ánh xạ nhưng không có bất thường có ý nghĩa)
 - Zygosity ("Homo", "Hetero", "Hemi")  
 - Giai đoạn sống ("Embryo", "Early", "Interval", "Late")  
-- Khác biệt giới tính ("", "Male", "Female")  
+- Khác biệt giới tính (`None`, `Male`, `Female`)
 - Chú thích bệnh (ví dụ [] hoặc "Premature Ovarian Failure 18")
 
 Ví dụ:
@@ -64,20 +64,33 @@ Ví dụ:
 
 #### `pairwise_similarity_annotations.jsonl.gz`
 - Cặp gen (`gene1_symbol`, `gene2_symbol`)  
-- `phenotype_shared_annotations`: metadata (giai đoạn sống, zygosity, khác biệt giới tính) cho các kiểu hình chung  
-- `phenotype_similarity_score`: điểm Resnik→Phenodigm (0–100)
+- `phenotype_shared_annotations` (bối cảnh MICA có metadata trùng nhau: thuật ngữ MP, giai đoạn sống, zygosity và nhãn giới tính)
+- `phenotype_similarity_score` (điểm Phenodigm, 0–100)
 
 Ví dụ:
 ```
 {"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
 ```
 
+## Lưu ý diễn giải
+
+- **Bối cảnh chung:** Mỗi mục trong `phenotype_shared_annotations` là tổ tiên chung có lượng thông tin cao nhất (MICA) của hai annotation MP có ý nghĩa, với nhãn hợp tử, giai đoạn sống và giới tính trùng nhau. Điều này không nhất thiết có nghĩa là hai gen có cùng thuật ngữ MP lá được gán trực tiếp. Cùng một MICA có thể xuất hiện thành các bối cảnh riêng khi metadata khác nhau.
+- **Quy tắc hiển thị:** Trang Gene và Phenotype hiển thị cặp gen có ít nhất ba bối cảnh kiểu hình bất thường chung và điểm tương đồng lớn hơn 0. Gene List yêu cầu ít nhất một bối cảnh chung giữa các gen đã nhập. Đây là quy tắc hiển thị, không phải tiêu chí có ý nghĩa thống kê.
+- **Hiển thị độ tương đồng:** `phenotype_similarity_score` được phân phối là điểm Phenodigm 0–100. Ứng dụng web đổi thang các giá trị có trong từng mạng thành 1–100; vì vậy giá trị thanh trượt và tooltip giữa các trang không phải một thang tuyệt đối có thể so sánh.
+- **Hiển thị effect size:** TSUMUGI lấy giá trị tuyệt đối của effect size từ IMPC, áp dụng `log1p`, rồi đổi thang các giá trị của kiểu hình mục tiêu thành 1–100. Giá trị này chỉ hỗ trợ xếp hạng trong trang, không phải effect size thô và không thể so sánh trực tiếp giữa các trang kiểu hình. Giá trị thiếu vẫn là JSON `null` và nút được hiển thị màu trắng.
+- **Module:** Module là nhóm trực quan, không phải bằng chứng về pathway phân tử hay phức hợp protein. `Similarity` dùng thành phần liên thông và `Top-level MP` dùng nhóm dựa trên ontology; module soft/fuzzy ở trang Gene cho phép một gen thuộc nhiều module. Bộ lọc số nút chỉ giới hạn các module được hiển thị.
+- **Nhãn giới tính:** `Female` nghĩa là chỉ P-value của hiệu ứng KO ở con cái ≤ 0.0001; `Male` có nghĩa tương tự cho hiệu ứng KO ở con đực. Hai lựa chọn loại trừ nhau trong giao diện và không thay thế kiểm định tương tác giới tính×kiểu gen chính thức.
+- **Tô sáng kiểu hình:** Các biến thể metadata của cùng một kiểu hình được gộp thành một lựa chọn. Khi Human Disease và một hoặc nhiều kiểu hình trùng nhau trên một gen, các nhóm được hiển thị bằng vòng tròn đồng tâm.
+- **Tô sáng bệnh:** Annotation từ IMPC Disease Models Portal là bằng chứng về độ tương đồng mô hình và không tự nó xác lập quan hệ nhân quả gen–bệnh ở người.
+- **Bản ghi không có ý nghĩa:** Đây là phép đo đã ánh xạ nhưng không có annotation bất thường có ý nghĩa trong điều kiện đó. Nó không chứng minh trạng thái bình thường hay sự vắng mặt của kiểu hình; `disease_annotation` được để trống.
+- **Ý nghĩa của điểm:** Điểm TSUMUGI không phải P-value, effect size, ái lực liên kết hay bằng chứng về tương tác gen có quan hệ nhân quả.
+
 # 🌐 Mạng
 
 Trang chuyển và vẽ mạng tự động theo đầu vào.
 
-> [!IMPORTANT]  
-> Minh họa các cặp gen có **≥3 kiểu hình bất thường chung** và **độ tương đồng > 0.0**.
+> [!IMPORTANT]
+> Trang Gene và Phenotype hiển thị cặp gen có ít nhất ba bối cảnh kiểu hình bất thường chung và điểm tương đồng lớn hơn 0; Gene List yêu cầu ít nhất một bối cảnh chung giữa các gen đã nhập. Đây là quy tắc hiển thị, không phải tiêu chí có ý nghĩa thống kê.
 
 ### Bảng mạng
 **Nút**: gen. Nhấp để xem danh sách kiểu hình bất thường; kéo để sắp xếp.  
@@ -89,11 +102,11 @@ Trang Gene sử dụng module Top-level MP soft/fuzzy, vì vậy một gen có t
 Điều chỉnh hiển thị mạng ở bảng trái.
 
 #### Lọc theo độ tương đồng kiểu hình
-`Phenotypes similarity` đặt ngưỡng cạnh dựa trên điểm Resnik→Phenodigm.  
+`Phenotypes similarity` lọc cạnh theo giá trị tương đồng được hiển thị. `phenotype_similarity_score` được phân phối nằm trong 0–100, nhưng mỗi mạng hiển thị được đổi thang thành 1–100; giá trị ở các trang khác nhau không thể so sánh trực tiếp.
 > Cách tính: 👉 [🔍 Cách tính nhóm gen tương đồng kiểu hình](#-cách-tính-nhóm-gen-tương-đồng-kiểu-hình)
 
 #### Lọc theo effect size
-`Effect size` lọc nút theo độ lớn của effect size từ IMPC khi có dữ liệu.
+`Effect size` lọc nút theo giá trị hiển thị riêng của trang. TSUMUGI lấy giá trị tuyệt đối của effect size IMPC, áp dụng `log1p`, rồi đổi thang các giá trị của kiểu hình mục tiêu thành 1–100. Đây là chỉ báo xếp hạng trong trang, không phải effect size thô và không thể so sánh giữa các trang kiểu hình.
 Effect size bị thiếu được tuần tự hóa trong JSONL thành giá trị JSON chuẩn `null`, vẫn mang ngữ nghĩa là giá trị thiếu thay vì chuyển thành 0, và các nút tương ứng được hiển thị màu trắng.
 > Ẩn cho kiểu hình nhị phân (ví dụ [abnormal embryo development](https://larc-tsukuba.github.io/tsumugi/app/phenotype/abnormal_embryo_development.html); danh sách nhị phân [tại đây](https://github.com/larc-tsukuba/tsumugi/blob/main/data/binary_phenotypes.txt)) hoặc khi nhập một gen.
 
@@ -116,8 +129,11 @@ Effect size bị thiếu được tuần tự hóa trong JSONL thành giá trị
 #### Hiển thị module
 Chọn định nghĩa module và module hiển thị trong bảng bên phải. Có thể ẩn đường viền module mà không loại bỏ gen hoặc cạnh khỏi mạng.
 
+#### Highlight: Phenotype
+Tô sáng gen theo annotation kiểu hình. Các biến thể metadata của cùng một kiểu hình được gộp thành một lựa chọn. Khi Human Disease và ít nhất một kiểu hình trùng nhau trên một gen, các nhóm được hiển thị bằng vòng tròn đồng tâm.
+
 #### Highlight: Human Disease
-Tô sáng gen liên quan bệnh (dữ liệu IMPC Disease Models Portal).
+Tô sáng các gen KO có annotation mô hình bệnh trong IMPC Disease Models Portal. Annotation này cho biết độ tương đồng mô hình và không tự nó xác lập quan hệ nhân quả gen–bệnh ở người.
 
 #### Search: Specific Gene
 Tìm tên gen trong mạng.
@@ -135,7 +151,7 @@ CLI của TSUMUGI cho phép dùng dữ liệu IMPC mới nhất tải về cục
 ## Tính năng
 
 - Tính lại bằng `statistical-results-ALL.csv.gz` của IMPC (tùy chọn `mp.obo`, `impc_phenodigm.csv`).  
-- Lọc theo có/không có thuật ngữ MP.  
+- Lọc theo annotation MP có ý nghĩa hoặc phép đo đã ánh xạ nhưng không có ý nghĩa.
 - Lọc theo danh sách gene (ngăn cách bằng dấu phẩy hoặc file text).  
 - Đầu ra: GraphML (`tsumugi build-graphml`), gói webapp offline (`tsumugi build-webapp`).
 
@@ -156,7 +172,7 @@ Sẵn sàng khi `tsumugi --version` hiển thị phiên bản.
 ## Lệnh có sẵn
 
 - `tsumugi run`: tính lại mạng từ dữ liệu IMPC  
-- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: lọc cặp gene hoặc gene có/không có thuật ngữ MP  
+- `tsumugi mp --include/--exclude (--pairwise/--genewise)`: lọc cặp gen hoặc gen theo annotation MP có ý nghĩa hoặc phép đo đã ánh xạ nhưng không có ý nghĩa
 - `tsumugi count --pairwise/--genewise (--min/--max)`: lọc theo số lượng phenotype (pairwise/genewise)  
 - `tsumugi score (--min/--max)`: lọc theo điểm tương đồng (pairwise)  
 - `tsumugi genes --keep/--drop`: giữ/bỏ theo danh sách gene (dấu phẩy hoặc file text)  
@@ -203,6 +219,9 @@ Bao gồm gene/cặp gene có thuật ngữ MP chỉ định (tính cả hậu d
 
 #### `-e MP_ID`, `--exclude MP_ID`
 Trả về gene/cặp gene đã đo cho thuật ngữ MP (tính cả hậu duệ) nhưng không có phenotype đáng kể. Yêu cầu `-a/--genewise_annotations`.
+
+> [!CAUTION]
+> Bản ghi không có ý nghĩa không chứng minh rằng động vật bình thường hay kiểu hình vắng mặt. Nó chỉ cho biết phép đo đã ánh xạ không tạo ra annotation bất thường có ý nghĩa trong điều kiện đó.
 
 #### `-g`, `--genewise`
 Lọc ở mức gene. Đọc `genewise_phenotype_annotations.jsonl(.gz)`. Khi dùng `--genewise`, hãy chỉ định `-a/--genewise_annotations`.
@@ -435,9 +454,11 @@ Thông tin cột dữ liệu: [Data fields](https://www.mousephenotype.org/help/
 
 ## Tiền xử lý
 
-Trích xuất các cặp gene–kiểu hình có P-value ở chuột KO (`p_value`, `female_ko_effect_p_value` hoặc `male_ko_effect_p_value`) ≤ 0.0001.  
-- Gắn nhãn kiểu hình đặc hiệu kiểu gen là `homo`, `hetero` hoặc `hemi`.  
-- Gắn nhãn kiểu hình đặc hiệu giới tính là `female` hoặc `male`.
+TSUMUGI coi `mp_term_id` IMPC không rỗng là annotation kiểu hình bất thường của IMPC. Công cụ cũng giữ lại các phép đo đã ánh xạ nhưng không có annotation bất thường có ý nghĩa để phục vụ truy vấn loại trừ có xét đến việc đã đo hay chưa.
+
+- Chuyển zygosity thành `Homo`, `Hetero` hoặc `Hemi`.
+- Gán `Female` khi chỉ `female_ko_effect_p_value` ≤ 0.0001 và `Male` khi chỉ `male_ko_effect_p_value` ≤ 0.0001; các trường hợp khác gán `None`.
+- Dùng giá trị tuyệt đối của effect size. Giá trị thiếu vẫn được giữ là thiếu và được tuần tự hóa thành `null` trong JSON.
 
 ## Độ tương đồng kiểu hình
 
@@ -453,6 +474,7 @@ TSUMUGI áp dụng công thức chấm điểm gốc của PhenoDigm ([Smedley D
    Mỗi annotation trực tiếp được lan truyền tới thuật ngữ MP được gán và tất cả tổ tiên của nó.
 
 * Với mỗi cặp thuật ngữ MP, tìm các tổ tiên chung có IC dựa trên annotation cao nhất. Nếu đồng hạng, chọn xác định ứng viên có ít hậu duệ bắc cầu nhất trong ontology MP, sau đó chọn ID thuật ngữ MP nhỏ nhất theo thứ tự từ điển. IC của MICA được chọn là độ tương đồng Resnik. Cách phá hòa này không thay đổi điểm tương đồng hoặc schema đầu ra.
+   Các ứng viên đồng hạng có cùng điểm số cặp thuật ngữ, nhưng nhãn MICA được chọn có thể làm thay đổi số bối cảnh chung và do đó ảnh hưởng điều kiện được hiển thị.
 
 * Với hai thuật ngữ MP, tính chỉ số Jaccard của các tập thuộc tính suy ra, được định nghĩa là chính thuật ngữ đó cùng tất cả tổ tiên.
 
@@ -462,7 +484,7 @@ TSUMUGI áp dụng công thức chấm điểm gốc của PhenoDigm ([Smedley D
 
 * Với mỗi cặp gen, tạo ma trận độ tương đồng thuật ngữ MP × thuật ngữ MP từ điểm của các cặp thuật ngữ.
 
-* Metadata kiểu gen, giai đoạn sống và giới tính được giữ trong annotation kiểu hình chung nhưng không dùng để đặt trọng số cho điểm PhenoDigm.
+* MICA chỉ được ghi vào `phenotype_shared_annotations` khi zygosity, giai đoạn sống và nhãn giới tính trùng nhau. Các metadata này không tạo trọng số cho điểm PhenoDigm.
 
 ### 3. Chuẩn hóa Phenodigm
 
@@ -470,6 +492,8 @@ TSUMUGI áp dụng công thức chấm điểm gốc của PhenoDigm ([Smedley D
    Tính maximum và mean của best match quan sát được, rồi chuẩn hóa bằng điểm optimal self match đối xứng của hai gen.
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    Nếu mẫu số bằng 0, điểm được đặt về 0.
+
+Điểm thu được đo độ tương đồng của hồ sơ kiểu hình. Nó không phải P-value, effect size, ái lực liên kết hay bằng chứng về tương tác nhân quả giữa các gen.
 
 ---
 
