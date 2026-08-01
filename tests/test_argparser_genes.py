@@ -73,3 +73,43 @@ def test_run_has_no_gzip_compresslevel_attribute():
     )
 
     assert not hasattr(args, "gzip_compresslevel")
+
+
+def test_run_integrate_mgi_uses_experimental_defaults():
+    args = argparser.parse_args(
+        [
+            "run",
+            "--output_dir",
+            "out",
+            "--statistical_results",
+            "statistical-results.csv.gz",
+            "--integrate-mgi",
+            "--annotations-only",
+            "--pair-block-size",
+            "16",
+        ]
+    )
+
+    assert args.integrate_mgi is True
+    assert args.annotations_only is True
+    assert args.pair_block_size == 16
+    assert args.mgi_gene_pheno.endswith("data/mgi/MGI_GenePheno.rpt")
+    assert args.mgi_phenotypic_allele.endswith("data/mgi/MGI_PhenotypicAllele.rpt")
+    assert args.mgi_pheno_sex.endswith("data/mgi/MGI_Pheno_Sex.rpt")
+
+
+def test_run_rejects_nonpositive_pair_block_size():
+    with pytest.raises(SystemExit) as excinfo:
+        argparser.parse_args(
+            [
+                "run",
+                "--output_dir",
+                "out",
+                "--statistical_results",
+                "statistical-results.csv.gz",
+                "--pair-block-size",
+                "0",
+            ]
+        )
+
+    assert excinfo.value.code == 2

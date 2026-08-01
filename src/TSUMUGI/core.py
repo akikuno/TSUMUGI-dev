@@ -11,6 +11,7 @@ from pathlib import Path
 from TSUMUGI import (
     gene_phenotype_module_builder,
     genewise_annotation_builder,
+    integrated_pipeline,
     io_handler,
     network_constructor,
     pairwise_similarity_builder,
@@ -52,6 +53,16 @@ def run_pipeline(args) -> None:
     disease_annotations_by_gene: dict[str, list[dict[str, str]]] = io_handler.parse_impc_phenodigm(
         Path(args.impc_phenodigm)
     )
+
+    if getattr(args, "integrate_mgi", False):
+        integrated_pipeline.run_integrated_pipeline(
+            args=args,
+            root_dir=ROOT_DIR,
+            ontology_terms=ontology_terms,
+            disease_annotations_by_gene=disease_annotations_by_gene,
+        )
+        logging.info(f"Finished integrated annotations! Results are saved in {ROOT_DIR.resolve()}")
+        return
 
     Path(ROOT_DIR / "README.md").write_text(
         f"TSUMUGI version: {args.version}\n Running Date: {date.today().isoformat()}"
@@ -103,6 +114,10 @@ def run_pipeline(args) -> None:
             path_pairwise_similarity_annotations,
             compresslevel=9,
         )
+
+        if getattr(args, "annotations_only", False):
+            logging.info("Annotations-only mode: skipping network and web generation.")
+            return
 
         ###########################################################
         # Generate network

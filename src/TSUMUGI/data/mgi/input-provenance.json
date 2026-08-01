@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "files": {
+    "MGI_GenePheno.rpt": {
+      "source_url": "https://www.informatics.jax.org/downloads/reports/MGI_GenePheno.rpt",
+      "retrieved_at": null,
+      "recorded_original_mtime": "2026-07-23T16:29:23.664049700+09:00",
+      "remote_checked_at": "2026-08-01T16:37:10+09:00",
+      "remote_last_modified_at_check": "2026-07-27T12:01:08Z",
+      "remote_matches_local_at_check": false,
+      "local_sha256": "e6cba55730f564a191cbad3fb2628249804452cc2d8ddafb08d09b763eea7d99"
+    },
+    "MGI_PhenotypicAllele.rpt": {
+      "source_url": "https://www.informatics.jax.org/downloads/reports/MGI_PhenotypicAllele.rpt",
+      "retrieved_at": null,
+      "recorded_original_mtime": "2026-07-24T05:47:39.760409200+09:00",
+      "remote_checked_at": "2026-08-01T16:37:10+09:00",
+      "remote_last_modified_at_check": "2026-07-27T12:01:43Z",
+      "remote_matches_local_at_check": false,
+      "local_sha256": "ac1f0dfb263bd07f51aecda7606fabd2d281b50b1908bda1c5013ca855d6da0d"
+    },
+    "MGI_Pheno_Sex.rpt": {
+      "source_url": "https://www.informatics.jax.org/downloads/reports/MGI_Pheno_Sex.rpt",
+      "retrieved_at": null,
+      "recorded_original_mtime": "2026-07-24T05:47:34.999882300+09:00",
+      "remote_checked_at": "2026-08-01T16:37:10+09:00",
+      "remote_last_modified_at_check": "2026-07-27T12:01:42Z",
+      "remote_matches_local_at_check": false,
+      "local_sha256": "99c2b1db28c39125bd9cc6e992164c893d91ebedc4480c34b17cfdde1e128a78"
+    }
+  }
+}

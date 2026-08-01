@@ -6,6 +6,14 @@ from importlib.resources import files
 from pathlib import Path
 
 
+def _positive_int(value: str) -> int:
+    """Parse a strictly positive integer for block-oriented workloads."""
+    parsed = int(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return parsed
+
+
 def _get_version() -> str:
     """
     Get TSUMUGI version defined in pyproject.toml.
@@ -98,9 +106,50 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument(
         "-t",
         "--threads",
-        type=int,
+        type=_positive_int,
         default=1,
         help=("Number of threads to use for TSUMUGI pipeline.\nIf not specified, defaults to 1.\n"),
+    )
+    run.add_argument(
+        "--integrate-mgi",
+        action="store_true",
+        help=(
+            "Integrate all-background primary MGI LOF annotations with IMPC annotations.\n"
+            "This experimental mode writes source-aware genewise and pairwise JSONL files.\n"
+        ),
+    )
+    run.add_argument(
+        "--annotations-only",
+        action="store_true",
+        help="Stop after writing genewise and pairwise annotation files; do not build web assets.\n",
+    )
+    run.add_argument(
+        "--mgi-gene-pheno",
+        dest="mgi_gene_pheno",
+        type=str,
+        required=False,
+        help="Path to MGI_GenePheno.rpt. Uses the bundled experimental file when omitted.\n",
+    )
+    run.add_argument(
+        "--mgi-phenotypic-allele",
+        dest="mgi_phenotypic_allele",
+        type=str,
+        required=False,
+        help="Path to MGI_PhenotypicAllele.rpt. Uses the bundled experimental file when omitted.\n",
+    )
+    run.add_argument(
+        "--mgi-pheno-sex",
+        dest="mgi_pheno_sex",
+        type=str,
+        required=False,
+        help="Path to MGI_Pheno_Sex.rpt. Uses the bundled experimental file when omitted.\n",
+    )
+    run.add_argument(
+        "--pair-block-size",
+        dest="pair_block_size",
+        type=_positive_int,
+        default=128,
+        help="Number of consecutive gene1 markers per deterministic pairwise output shard (default: 128).\n",
     )
     # Debug options (hidden) to retain temporary files
     run.add_argument(
@@ -536,6 +585,15 @@ def parse_args(argv=None):
 
         if not args.impc_phenodigm:
             args.impc_phenodigm = str(files("TSUMUGI") / "data" / "impc_phenodigm.csv")
+
+        if args.integrate_mgi:
+            mgi_data_dir = files("TSUMUGI") / "data" / "mgi"
+            if not args.mgi_gene_pheno:
+                args.mgi_gene_pheno = str(mgi_data_dir / "MGI_GenePheno.rpt")
+            if not args.mgi_phenotypic_allele:
+                args.mgi_phenotypic_allele = str(mgi_data_dir / "MGI_PhenotypicAllele.rpt")
+            if not args.mgi_pheno_sex:
+                args.mgi_pheno_sex = str(mgi_data_dir / "MGI_Pheno_Sex.rpt")
 
     ########################################################################
     # mp

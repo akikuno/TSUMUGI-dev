@@ -2,7 +2,10 @@ import math
 
 import pytest
 
-from TSUMUGI.genewise_annotation_builder import build_genewise_phenotype_annotations
+from TSUMUGI.genewise_annotation_builder import (
+    INTEGRATED_OUTPUT_COLUMNS,
+    build_genewise_phenotype_annotations,
+)
 
 
 def _base_statistical_result():
@@ -22,6 +25,7 @@ def _base_statistical_result():
         "significant": True,
         "intermediate_mp_term_id": "MP:9999999",
         "intermediate_mp_term_name": "intermediate phenotype",
+        "strain_name": "C57BL/6N",
     }
 
 
@@ -110,3 +114,26 @@ def test_build_genewise_phenotype_annotations_prefers_significant_duplicate():
     assert len(annotations) == 1
     assert annotations[0]["significant"] is True
     assert math.isnan(annotations[0]["effect_size"])
+
+
+def test_build_genewise_phenotype_annotations_adds_integration_fields_only_when_requested():
+    record = _base_statistical_result()
+    ontology_terms = {"MP:0005553": {"id": "MP:0005553", "name": "increased circulating creatinine level"}}
+
+    integrated = list(
+        build_genewise_phenotype_annotations(
+            iter([record.copy()]),
+            ontology_terms,
+            {},
+            include_integration_fields=True,
+        )
+    )[0]
+    default = list(build_genewise_phenotype_annotations(iter([record.copy()]), ontology_terms, {}))[0]
+
+    assert integrated["source"] == "impc"
+    assert integrated["significance_basis"] == "impc_statistical_test"
+    assert integrated["strain"] == "C57BL/6N"
+    assert integrated["source_mp_id"] == "MP:0005553"
+    assert integrated["observed_sex"] is None
+    assert tuple(integrated) == INTEGRATED_OUTPUT_COLUMNS
+    assert "strain" not in default

@@ -1,4 +1,5 @@
 import gzip
+import hashlib
 import json
 import math
 
@@ -119,6 +120,33 @@ def test_write_jsonl_accepts_gzip_compresslevel(tmp_path):
 
     with gzip.open(output_path, "rt", encoding="utf-8") as f:
         assert [json.loads(line) for line in f] == records
+
+
+def test_write_jsonl_deterministic_gzip_has_stable_sha256(tmp_path):
+    first = tmp_path / "first.jsonl.gz"
+    second = tmp_path / "second.jsonl.gz"
+    records = [{"id": "A"}, {"id": "B"}]
+
+    write_jsonl(records, first, compresslevel=1, deterministic=True)
+    write_jsonl(records, second, compresslevel=1, deterministic=True)
+
+    assert hashlib.sha256(first.read_bytes()).hexdigest() == hashlib.sha256(second.read_bytes()).hexdigest()
+
+
+def test_write_jsonl_deterministic_gzip_replaces_output_atomically(tmp_path):
+    output_path = tmp_path / "records.jsonl.gz"
+    write_jsonl([{"id": "old"}], output_path, deterministic=True)
+    old_digest = hashlib.sha256(output_path.read_bytes()).hexdigest()
+
+    def interrupted_records():
+        yield {"id": "new"}
+        raise RuntimeError("interrupted")
+
+    with pytest.raises(RuntimeError, match="interrupted"):
+        write_jsonl(interrupted_records(), output_path, deterministic=True)
+
+    assert hashlib.sha256(output_path.read_bytes()).hexdigest() == old_digest
+    assert not (tmp_path / "records.jsonl.gz.partial").exists()
 
 
 def _reject_nonstandard_constant(value):

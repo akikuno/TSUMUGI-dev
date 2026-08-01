@@ -4,9 +4,39 @@ from collections.abc import Iterator
 
 from TSUMUGI import annotator, filterer, formatter
 
+INTEGRATED_OUTPUT_COLUMNS = (
+    "marker_symbol",
+    "marker_accession_id",
+    "mp_term_id",
+    "mp_term_name",
+    "source_mp_id",
+    "zygosity",
+    "life_stage",
+    "sexual_dimorphism",
+    "observed_sex",
+    "strain",
+    "background_raw",
+    "effect_size",
+    "significant",
+    "significance_basis",
+    "source",
+    "disease_annotation",
+    "genotype_id",
+    "allelic_composition",
+    "genotype_state",
+    "allele_ids",
+    "allele_symbols",
+    "allele_types",
+    "pubmed_ids",
+)
+
 
 def build_genewise_phenotype_annotations(
-    records: Iterator[dict], ontology_terms: dict, disease_annotations_by_gene: dict
+    records: Iterator[dict],
+    ontology_terms: dict,
+    disease_annotations_by_gene: dict,
+    *,
+    include_integration_fields: bool = False,
 ) -> Iterator[dict]:
     ###########################################################
     # Preprocess data
@@ -56,6 +86,9 @@ def build_genewise_phenotype_annotations(
     # Human Diseases
     records_annotated = annotator.annotate_diseases(records_annotated, disease_annotations_by_gene)
 
+    if include_integration_fields:
+        records_annotated = _annotate_impc_integration_fields(records_annotated)
+
     # --------------------------------------------------------
     # Filter records
     # --------------------------------------------------------
@@ -74,6 +107,8 @@ def build_genewise_phenotype_annotations(
         "significant",
         "disease_annotation",
     }
+    if include_integration_fields:
+        to_keep_columns = INTEGRATED_OUTPUT_COLUMNS
     records_filtered = filterer.subset_columns(records_filtered, to_keep_columns)
 
     # Keep only records with mp_term_id in the ontology file (= not obsolete)
@@ -87,6 +122,8 @@ def build_genewise_phenotype_annotations(
         "life_stage",
         "sexual_dimorphism",
     ]
+    if include_integration_fields:
+        unique_keys.append("strain")
     records_filtered = filterer.distinct_records_with_max_effect(
         records_filtered,
         unique_keys,
@@ -96,3 +133,22 @@ def build_genewise_phenotype_annotations(
     genewise_phenotype_annotations = records_filtered
 
     return genewise_phenotype_annotations
+
+
+def _annotate_impc_integration_fields(records: Iterator[dict]) -> Iterator[dict]:
+    """Add source-aware fields without changing the default IMPC schema."""
+    for record in records:
+        record["source"] = "impc"
+        record["significance_basis"] = "impc_statistical_test"
+        record["source_mp_id"] = record.get("mp_term_id") or None
+        record["strain"] = record.get("strain_name") or None
+        record["background_raw"] = None
+        record["observed_sex"] = None
+        record["genotype_id"] = None
+        record["allelic_composition"] = None
+        record["genotype_state"] = None
+        record["allele_ids"] = None
+        record["allele_symbols"] = None
+        record["allele_types"] = None
+        record["pubmed_ids"] = None
+        yield record

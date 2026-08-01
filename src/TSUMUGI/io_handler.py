@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import csv
 import gzip
+import io
 import json
 import math
+import os
 import pickle
 import sys
 from collections.abc import Iterable, Iterator
@@ -41,6 +43,11 @@ def _serialize_jsonl_record(record: dict) -> str:
         ensure_ascii=False,
         allow_nan=False,
     )
+
+
+def serialize_jsonl_record(record: dict) -> str:
+    """Serialize one record as strict JSON for custom streaming writers."""
+    return _serialize_jsonl_record(record)
 
 
 def count_newline(file_path: str | Path, chunk_size: int = 1024 * 1024) -> int:
@@ -183,7 +190,13 @@ def read_jsonl(path_jsonl: str | Path | None) -> Iterator[dict]:
                 yield _restore_internal_missing_effect_size(json.loads(line))
 
 
-def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None, compresslevel: int = 9) -> None:
+def write_jsonl(
+    records: Iterable[dict],
+    path_jsonl: str | Path | None,
+    compresslevel: int = 9,
+    *,
+    deterministic: bool = False,
+) -> None:
     """
     Write an iterable of records as JSONL (.jsonl or .jsonl.gz).
 
@@ -200,6 +213,25 @@ def write_jsonl(records: Iterable[dict], path_jsonl: str | Path | None, compress
     open_func = open_gzip_file if p.suffix == ".gz" else open_text_file
 
     message = f"Writing JSONL to {path_jsonl}"
+    if deterministic and p.suffix == ".gz":
+        partial_path = p.with_suffix(p.suffix + ".partial")
+        try:
+            with partial_path.open("wb") as raw_stream:
+                with gzip.GzipFile(
+                    filename="",
+                    mode="wb",
+                    fileobj=raw_stream,
+                    compresslevel=compresslevel,
+                    mtime=0,
+                ) as gzip_stream:
+                    with io.TextIOWrapper(gzip_stream, encoding="utf-8", newline="\n") as f:
+                        for record in tqdm(records, desc=message):
+                            f.write(_serialize_jsonl_record(record) + "\n")
+            os.replace(partial_path, p)
+        finally:
+            partial_path.unlink(missing_ok=True)
+        return
+
     with open_func(p, "wt", encoding="utf-8") as f:
         for record in tqdm(records, desc=message):
             f.write(_serialize_jsonl_record(record) + "\n")

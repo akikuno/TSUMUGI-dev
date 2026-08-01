@@ -30,13 +30,23 @@ def main() -> None:
     ###########################################################
 
     if getattr(args, "statistical_results", None):
-        validator.validate_statistical_results(args.statistical_results)
+        validator.validate_statistical_results(
+            args.statistical_results,
+            require_strain=bool(getattr(args, "integrate_mgi", False)),
+        )
 
     if getattr(args, "mp_obo", None):
         validator.validate_obo_file(args.mp_obo)
 
     if getattr(args, "impc_phenodigm", None):
         validator.validate_phenodigm_file(args.impc_phenodigm)
+
+    if getattr(args, "integrate_mgi", False):
+        validator.validate_mgi_reports(
+            args.mgi_gene_pheno,
+            args.mgi_phenotypic_allele,
+            args.mgi_pheno_sex,
+        )
 
     if getattr(args, "mp_obo", None) and (getattr(args, "exclude", None) or getattr(args, "include", None)):
         mp_term_id = args.exclude or args.include
