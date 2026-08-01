@@ -5,7 +5,7 @@
 </p>
 
 [![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
-[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/pytest.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
+[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/unit-test.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
 [![PyPI](https://img.shields.io/pypi/v/tsumugi.svg?label=PyPI&color=orange)](https://pypi.org/project/tsumugi/)
 [![Bioconda](https://img.shields.io/conda/v/bioconda/tsumugi?label=Bioconda&color=orange)](https://anaconda.org/bioconda/tsumugi)
 [![Preprint](https://img.shields.io/badge/bioRxiv-10.64898/2026.02.18.706720-red)](https://doi.org/10.64898/2026.02.18.706720)
@@ -22,12 +22,12 @@
 
 TSUMUGI(**紡ぎ**)の由来は、「表現型を織りなす遺伝子群を紡ぎ出す」という開発動機に即しています。  
 
-この文書は**TSUMUGI v1.1.1**を説明しています。
+この文書は**TSUMUGI v1.2.0**を説明しています。
 
 | 対象 | ソフトウェア版またはデータ版 |
 | --- | --- |
-| この文書で説明するソースコードとCLI | TSUMUGI v1.1.1 |
-| 公開Web版 | TSUMUGI v1.1.0（2026-07-31確認、v1.1.1は未配備） |
+| この文書で説明するソースコードとCLI | TSUMUGI v1.2.0 |
+| 公開Web版 | TSUMUGI v1.1.0（2026-07-31確認、v1.2.0は未配備） |
 | 公開Web版が使用するデータ | IMPC Release 24.0 |
 
 過去のソフトウェア版は[Zenodo](https://zenodo.org/records/21480711)から取得できます。
@@ -228,7 +228,7 @@ GraphMLは、デスクトップ版Cytoscapeと互換性のある形式で、Cyto
 
 # 🛠 コマンドライン版
 
-TSUMUGI v1.1.1のCLIでは、ローカルにダウンロードしたIMPC Release 24.0の統計結果ファイルから再計算し、生成した注釈の絞り込みやGraphML、ローカルWebアプリバンドルへの出力ができます。TSUMUGIにはPython 3.10以降が必要です。
+TSUMUGI v1.2.0のCLIでは、ローカルにダウンロードしたIMPC Release 24.0の統計結果ファイルから再計算し、生成した注釈の絞り込みやGraphML、ローカルWebアプリバンドルへの出力ができます。TSUMUGIにはPython 3.10以降が必要です。
 
 ## インストール
 

@@ -5,7 +5,7 @@
 </p>
 
 [![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
-[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/pytest.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
+[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/unit-test.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
 [![PyPI](https://img.shields.io/pypi/v/tsumugi.svg?label=PyPI&color=orange)](https://pypi.org/project/tsumugi/)
 [![Bioconda](https://img.shields.io/conda/v/bioconda/tsumugi?label=Bioconda&color=orange)](https://anaconda.org/bioconda/tsumugi)
 [![Preprint](https://img.shields.io/badge/bioRxiv-10.64898/2026.02.18.706720-red)](https://doi.org/10.64898/2026.02.18.706720)
@@ -22,12 +22,12 @@ This web app is available to everyone online👇️
 
 🔗 https://larc-tsukuba.github.io/tsumugi/
 
-This repository documents **TSUMUGI v1.1.1**.
+This repository documents **TSUMUGI v1.2.0**.
 
 | Component                          | Version or data release                                         |
 | ---------------------------------- | --------------------------------------------------------------- |
-| Source code and CLI described here | TSUMUGI v1.1.1                                                  |
-| Public web app                     | TSUMUGI v1.1.0 (verified 2026-07-31; v1.1.1 deployment pending) |
+| Source code and CLI described here | TSUMUGI v1.2.0                                                  |
+| Public web app                     | TSUMUGI v1.1.0 (verified 2026-07-31; v1.2.0 deployment pending) |
 | Data used by the public web app    | IMPC Release 24.0                                               |
 
 Archived software releases are available from [Zenodo](https://zenodo.org/records/21480711).
@@ -164,7 +164,7 @@ Export the current network as PNG, JPG, SVG, CSV, or GraphML. Module frames can 
 
 # 🛠 Command-Line Interface (CLI)
 
-The TSUMUGI v1.1.1 CLI can recompute results from a locally downloaded IMPC Release 24.0 statistical-results file, filter the generated annotations, and export GraphML or a local webapp bundle. TSUMUGI requires Python 3.10 or later.
+The TSUMUGI v1.2.0 CLI can recompute results from a locally downloaded IMPC Release 24.0 statistical-results file, filter the generated annotations, and export GraphML or a local webapp bundle. TSUMUGI requires Python 3.10 or later.
 
 ## Installation
 

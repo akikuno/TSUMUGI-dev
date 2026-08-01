@@ -8,7 +8,7 @@
 </p>
 
 [![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
-[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/pytest.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
+[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/unit-test.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
 [![PyPI](https://img.shields.io/pypi/v/tsumugi.svg?label=PyPI&color=orange)](https://pypi.org/project/tsumugi/)
 [![Bioconda](https://img.shields.io/conda/v/bioconda/tsumugi?label=Bioconda&color=orange)](https://anaconda.org/bioconda/tsumugi)
 [![Preprint](https://img.shields.io/badge/bioRxiv-10.64898/2026.02.18.706720-red)](https://doi.org/10.64898/2026.02.18.706720)
@@ -19,7 +19,7 @@
 Outil accessible à tous en ligne 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Cette documentation décrit le fonctionnement actuel de **TSUMUGI v1.1.1**. L'application web publique utilise les données IMPC **Release 24.0**.
+Cette documentation décrit le fonctionnement actuel de **TSUMUGI v1.2.0**. L'application web publique utilise les données IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** découle de l’idée de « tisser ensemble les gènes qui façonnent les phénotypes ».
 

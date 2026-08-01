@@ -8,7 +8,7 @@
 </p>
 
 [![License](https://img.shields.io/badge/License-MIT-9cf.svg)](https://choosealicense.com/licenses/mit/)
-[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/pytest.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
+[![Test](https://img.shields.io/github/actions/workflow/status/akikuno/tsumugi-dev/unit-test.yml?branch=main&label=Test&color=brightgreen)](https://github.com/akikuno/tsumugi-dev/actions)
 [![PyPI](https://img.shields.io/pypi/v/tsumugi.svg?label=PyPI&color=orange)](https://pypi.org/project/tsumugi/)
 [![Bioconda](https://img.shields.io/conda/v/bioconda/tsumugi?label=Bioconda&color=orange)](https://anaconda.org/bioconda/tsumugi)
 [![Preprint](https://img.shields.io/badge/bioRxiv-10.64898/2026.02.18.706720-red)](https://doi.org/10.64898/2026.02.18.706720)
@@ -19,7 +19,7 @@
 यह वेब पर सभी के लिए उपलब्ध है👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-यह दस्तावेज़ **TSUMUGI v1.1.1** के वर्तमान व्यवहार का वर्णन करता है। सार्वजनिक वेब ऐप IMPC **Release 24.0** डेटा का उपयोग करता है।
+यह दस्तावेज़ **TSUMUGI v1.2.0** के वर्तमान व्यवहार का वर्णन करता है। सार्वजनिक वेब ऐप IMPC **Release 24.0** डेटा का उपयोग करता है।
 
 **TSUMUGI(紡ぎ)** का अर्थ है “फेनोटाइप बनाने वाले जीन समूह को धागे की तरह बुनना”।
 
