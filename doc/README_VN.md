@@ -19,7 +19,7 @@
 Mở cho mọi người sử dụng trực tuyến 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Tài liệu này mô tả hoạt động hiện tại của **TSUMUGI v1.1.1**. Ứng dụng web công khai sử dụng dữ liệu IMPC **Release 24.0**.
+Tài liệu này mô tả hoạt động hiện tại của **TSUMUGI v1.2.0**. Ứng dụng web công khai sử dụng dữ liệu IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** mang ý nghĩa “dệt các nhóm gen tạo nên kiểu hình”.
 

@@ -19,7 +19,7 @@
 Está disponible para cualquiera en la web👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Esta documentación describe el funcionamiento actual de **TSUMUGI v1.1.1**. La aplicación web pública utiliza datos de IMPC **Release 24.0**.
+Esta documentación describe el funcionamiento actual de **TSUMUGI v1.2.0**. La aplicación web pública utiliza datos de IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** procede de “tejer los grupos génicos que forman los fenotipos”.
 

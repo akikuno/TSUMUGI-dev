@@ -19,7 +19,7 @@
 此工具開放給所有人使用👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-本文件說明**TSUMUGI v1.1.1**的現行功能。公開Web應用程式使用IMPC **Release 24.0**資料。
+本文件說明**TSUMUGI v1.2.0**的現行功能。公開Web應用程式使用IMPC **Release 24.0**資料。
 
 **TSUMUGI(紡ぎ)** 源自「將形成表型的基因群像紡線一樣編織」的概念。
 

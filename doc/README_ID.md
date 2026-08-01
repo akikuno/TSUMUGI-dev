@@ -19,7 +19,7 @@
 Alat ini terbuka untuk semua pengguna secara daring 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Dokumentasi ini menjelaskan perilaku **TSUMUGI v1.1.1** saat ini. Aplikasi web publik menggunakan data IMPC **Release 24.0**.
+Dokumentasi ini menjelaskan perilaku **TSUMUGI v1.2.0** saat ini. Aplikasi web publik menggunakan data IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** berarti “menyulam kelompok gen pembentuk fenotipe”.
 

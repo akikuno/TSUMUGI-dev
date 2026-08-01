@@ -19,7 +19,7 @@
 Online für alle nutzbar 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Diese Dokumentation beschreibt den aktuellen Stand von **TSUMUGI v1.1.1**. Die öffentliche Webanwendung verwendet IMPC-Daten aus **Release 24.0**.
+Diese Dokumentation beschreibt den aktuellen Stand von **TSUMUGI v1.2.0**. Die öffentliche Webanwendung verwendet IMPC-Daten aus **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** leitet sich von „Gen-Gruppen, die einen Phänotyp formen, miteinander verweben“ ab.
 

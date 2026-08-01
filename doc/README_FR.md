@@ -19,7 +19,7 @@
 Outil accessible à tous en ligne 👇️  
 🔗https://larc-tsukuba.github.io/tsumugi/
 
-Cette documentation décrit le fonctionnement actuel de **TSUMUGI v1.1.1**. L'application web publique utilise les données IMPC **Release 24.0**.
+Cette documentation décrit le fonctionnement actuel de **TSUMUGI v1.2.0**. L'application web publique utilise les données IMPC **Release 24.0**.
 
 **TSUMUGI (紡ぎ)** découle de l’idée de « tisser ensemble les gènes qui façonnent les phénotypes ».
 
