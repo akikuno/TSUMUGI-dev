@@ -334,8 +334,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="Filter genes based on the similarity score per KO or shared between KO pairs.",
     )
 
-    score_parser.add_argument("--min", type=int, help="Minimum number threshold")
-    score_parser.add_argument("--max", type=int, help="Maximum number threshold")
+    score_parser.add_argument("--min", type=float, help="Minimum similarity score threshold")
+    score_parser.add_argument("--max", type=float, help="Maximum similarity score threshold")
 
     score_parser.add_argument(
         "--in",

@@ -81,13 +81,13 @@ Example:
 
 - Gene pair (`gene1_symbol`, `gene2_symbol`)  
 - `phenotype_shared_annotations` (metadata-matched MICA contexts: MP term, life stage, zygosity, sexual dimorphism)
-- `phenotype_similarity_score` (Phenodigm score, 0–100)
+- `phenotype_similarity_score` (Phenodigm score, 0–100, serialized as a float rounded to six decimal places)
 
 Each shared context is the most informative common ancestor (MICA) of two significant MP annotations whose zygosity, life stage, and sexual-dimorphism labels match. It does not necessarily mean that both genes have the same directly annotated leaf MP term. The same MICA can appear as separate contexts when its metadata differ.
 
 Example:  
 ```json
-{"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
+{"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47.0}
 ```
 
 # 🌐 Network
@@ -273,6 +273,8 @@ TSUMUGI adapts the original PhenoDigm scoring formula ([Smedley D, et al. (2013)
    Compute observed best-match max/mean, then normalize by the symmetric optimal self-match score for the two genes.
    `Score = 100 * (normalized_max + normalized_mean) / 2`
    If the denominator is 0, the score is set to 0.
+
+* Serialize `phenotype_similarity_score` as a floating-point number rounded to six decimal places. Web outputs continue to use integer display scores.
 
 The resulting score is a phenotype-profile similarity measure. It is not a P-value, effect size, binding affinity, or evidence of a causal interaction between the genes.
 

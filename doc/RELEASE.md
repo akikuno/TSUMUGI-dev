@@ -24,6 +24,10 @@
 - Produce source-aware MGI-integrated genewise and pairwise JSONL outputs without requiring `--integrate-mgi`
 - Bundle a synchronized 2026-08-10 MGI report snapshot with machine-readable provenance
 
+### 🐛 Bug Fixes
+
+- Preserve Phenodigm scores in pairwise JSONL as floats rounded to six decimal places instead of collapsing them to integers
+
 ### 📝 Documentation
 
 - Centralize bundled-data versions, sources, checksums, update procedures, and license attribution in `src/TSUMUGI/data/README.md`

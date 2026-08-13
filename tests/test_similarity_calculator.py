@@ -22,6 +22,7 @@ from TSUMUGI.similarity_calculator import (
     annotate_phenotype_ancestors,
     calculate_all_pairwise_similarities,
     calculate_phenodigm_score,
+    round_phenodigm_score,
     summarize_similarity_annotations,
 )
 
@@ -734,10 +735,11 @@ def test_calculate_phenodigm_score_identical_gene_sets():
 
     scores = list(calculate_phenodigm_score(records, terms_similarity_map, term_ic_map))
 
-    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 100}]
+    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 100.0}]
+    assert isinstance(scores[0]["phenotype_similarity_score"], float)
 
 
-def test_calculate_phenodigm_score_rounds_output_to_int():
+def test_calculate_phenodigm_score_preserves_decimal_places():
     records = [
         {
             "marker_symbol": "Gene1",
@@ -761,7 +763,26 @@ def test_calculate_phenodigm_score_rounds_output_to_int():
 
     scores = list(calculate_phenodigm_score(records, terms_similarity_map, term_ic_map))
 
-    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 34}]
+    assert scores == [{"gene1_symbol": "Gene1", "gene2_symbol": "Gene2", "phenotype_similarity_score": 33.5}]
+
+
+@pytest.mark.parametrize("score", [64.51, 64.87, 65.12, 65.47])
+def test_round_phenodigm_score_keeps_distinct_values(score):
+    rounded = round_phenodigm_score(score)
+
+    assert rounded == score
+    assert isinstance(rounded, float)
+
+
+@pytest.mark.parametrize(
+    ("score", "expected"),
+    [
+        (64.5123454, 64.512345),
+        (64.5123456, 64.512346),
+    ],
+)
+def test_round_phenodigm_score_rounds_to_six_decimal_places(score, expected):
+    assert round_phenodigm_score(score) == expected
 
 
 def test_summarize_similarity_annotations_translates_names():
@@ -785,8 +806,8 @@ def test_summarize_similarity_annotations_translates_names():
         {"gene1_symbol": "GeneA", "gene2_symbol": "GeneC", "phenotype_shared_annotations": []},
     ]
     phenodigm_scores = [
-        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_similarity_score": 80},
-        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneC", "phenotype_similarity_score": 50},
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_similarity_score": 80.25},
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneC", "phenotype_similarity_score": 50.5},
     ]
 
     summary = list(
@@ -804,13 +825,13 @@ def test_summarize_similarity_annotations_translates_names():
                 "sexual_dimorphism": "None",
             }
         ],
-        "phenotype_similarity_score": 80,
+        "phenotype_similarity_score": 80.25,
     }
     assert summary[1] == {
         "gene1_symbol": "GeneA",
         "gene2_symbol": "GeneC",
         "phenotype_shared_annotations": [],
-        "phenotype_similarity_score": 0,
+        "phenotype_similarity_score": 0.0,
     }
 
 
@@ -832,6 +853,6 @@ def test_summarize_similarity_annotations_zeroes_score_without_shared_annotation
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
             "phenotype_shared_annotations": [],
-            "phenotype_similarity_score": 0,
+            "phenotype_similarity_score": 0.0,
         }
     ]

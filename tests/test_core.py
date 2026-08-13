@@ -10,7 +10,7 @@ def test_filter_pairwise_similarity_annotations_for_web_uses_count_and_score():
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
             "phenotype_shared_annotations": [{}, {}, {}],
-            "phenotype_similarity_score": 39,
+            "phenotype_similarity_score": 39.49,
         },
         {
             "gene1_symbol": "GeneC",
@@ -22,7 +22,7 @@ def test_filter_pairwise_similarity_annotations_for_web_uses_count_and_score():
             "gene1_symbol": "GeneE",
             "gene2_symbol": "GeneF",
             "phenotype_shared_annotations": [{}, {}, {}],
-            "phenotype_similarity_score": 40,
+            "phenotype_similarity_score": 39.51,
         },
     ]
 

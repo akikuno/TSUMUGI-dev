@@ -384,7 +384,7 @@ def _build_gene_display_network(
         source = str(record["gene1_symbol"])
         target = str(record["gene2_symbol"])
         other_gene = target if source == target_gene else source
-        score = int(record.get("phenotype_similarity_score", 0))
+        score = int(round(float(record.get("phenotype_similarity_score", 0))))
         shared_count = len(record.get("phenotype_shared_annotations", []))
         candidates.append((other_gene, score, shared_count))
 
@@ -403,7 +403,7 @@ def _build_gene_display_network(
 
     selected_records = [records_by_key[key] for key in sorted(selected_edge_keys)]
     score_map = _scale_gene_display_scores(
-        [int(record.get("phenotype_similarity_score", 0)) for record in selected_records]
+        [int(round(float(record.get("phenotype_similarity_score", 0)))) for record in selected_records]
     )
     nodes = [{"data": {"id": gene}} for gene in sorted(selected_nodes)]
     edges = [
@@ -411,7 +411,7 @@ def _build_gene_display_network(
             "data": {
                 "source": str(record["gene1_symbol"]),
                 "target": str(record["gene2_symbol"]),
-                "edge_size": score_map[int(record.get("phenotype_similarity_score", 0))],
+                "edge_size": score_map[int(round(float(record.get("phenotype_similarity_score", 0))))],
             }
         }
         for record in selected_records

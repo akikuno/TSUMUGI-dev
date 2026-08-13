@@ -2,6 +2,8 @@ import gzip
 import hashlib
 import json
 
+import pytest
+
 from TSUMUGI import integrated_similarity_builder, similarity_calculator
 from TSUMUGI.integrated_similarity_builder import (
     build_integrated_profiles,
@@ -127,6 +129,7 @@ def test_score_profile_pair_ignores_metadata_and_keeps_source_pairs(tmp_path):
     result = score_profile_pair(profiles[0], profiles[1], state)
 
     assert result["phenotype_similarity_score"] > 0
+    assert isinstance(result["phenotype_similarity_score"], float)
     assert result["gene1_marker_accession_id"] == "MGI:1"
     assert result["gene2_marker_accession_id"] == "MGI:2"
     assert result["phenotype_shared_annotations"] == [
@@ -160,7 +163,9 @@ def test_integrated_score_matches_current_phenodigm_scaling(tmp_path):
 
     integrated = score_profile_pair(profiles[0], profiles[1], state)
 
-    assert integrated["phenotype_similarity_score"] == current_scores[("GeneA", "GeneB")]
+    assert integrated["phenotype_similarity_score"] == pytest.approx(
+        current_scores[("GeneA", "GeneB")], abs=1e-6
+    )
 
 
 def test_pairwise_shards_are_complete_and_deterministic(tmp_path):
@@ -190,7 +195,7 @@ def test_pairwise_shards_are_complete_and_deterministic(tmp_path):
         records = [json.loads(line) for line in handle]
 
     assert summary1["pair_count"] == 3
-    assert summary1["algorithm_version"] == 1
+    assert summary1["algorithm_version"] == 3
     assert summary2["pair_count"] == 3
     assert len(records) == 3
     assert digest1 == digest2
@@ -204,7 +209,7 @@ def test_pairwise_shards_are_complete_and_deterministic(tmp_path):
     assert pairs == {("MGI:1", "MGI:2"), ("MGI:1", "MGI:3"), ("MGI:2", "MGI:3")}
 
 
-def test_pairwise_writer_upgrades_versionless_v1_metadata(tmp_path):
+def test_pairwise_writer_rebuilds_versionless_v1_metadata(tmp_path):
     _, state, profiles = _prepared(tmp_path)
     shard_dir = tmp_path / "shards"
     output = tmp_path / "pairwise.jsonl.gz"
@@ -231,8 +236,8 @@ def test_pairwise_writer_upgrades_versionless_v1_metadata(tmp_path):
     )
 
     upgraded = json.loads(metadata_path.read_text(encoding="utf-8"))
-    assert upgraded["algorithm_version"] == 1
-    assert summary["manifest"][0]["resumed"] is True
+    assert upgraded["algorithm_version"] == 3
+    assert summary["manifest"][0]["resumed"] is False
 
 
 def test_pairwise_writer_removes_stale_generated_shards(tmp_path):

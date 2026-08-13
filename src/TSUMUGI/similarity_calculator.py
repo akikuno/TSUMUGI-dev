@@ -19,6 +19,14 @@ from TSUMUGI.ontology_handler import (
     find_common_ancestors,
 )
 
+PHENODIGM_SCORE_DECIMAL_PLACES = 6
+
+
+def round_phenodigm_score(score: float) -> float:
+    """Round a Phenodigm score for stable JSON serialization."""
+    return round(float(score), PHENODIGM_SCORE_DECIMAL_PLACES)
+
+
 ###########################################################
 # Pairwise term similarity (with multiprocessing)
 ###########################################################
@@ -546,7 +554,7 @@ def calculate_phenodigm_score(
     genewise_phenotype_significants: list[dict[str, str | float]],
     terms_similarity_map: dict[tuple[str, str], dict[str, float]],
     term_ic_map: dict[str, float],
-) -> Iterator[dict[str, str | int]]:
+) -> Iterator[dict[str, str | float]]:
     """
     Calculate Phenodigm score between gene pairs.
     """
@@ -563,8 +571,12 @@ def calculate_phenodigm_score(
             gene2_record=gene2_record,
             terms_similarity_map=terms_similarity_map,
         )
-        score_int = int(round(score))
-        yield {"gene1_symbol": gene1_symbol, "gene2_symbol": gene2_symbol, "phenotype_similarity_score": score_int}
+        score_float = round_phenodigm_score(score)
+        yield {
+            "gene1_symbol": gene1_symbol,
+            "gene2_symbol": gene2_symbol,
+            "phenotype_similarity_score": score_float,
+        }
 
 
 ###########################################################
@@ -575,9 +587,9 @@ def calculate_phenodigm_score(
 def summarize_similarity_annotations(
     ontology_terms: dict[str, dict[str, str]],
     phenotype_ancestors: Iterator[dict[str, str | list[dict[str, str]]]],
-    phenodigm_scores: Iterator[dict[str, str | int]],
+    phenodigm_scores: Iterator[dict[str, str | float]],
     total_pairs: int,
-) -> Iterator[dict[str, list[dict[str, str]] | int]]:
+) -> Iterator[dict[str, list[dict[str, str]] | float | str]]:
     """Summarize similarity annotations including common ancestors and Phenodigm scores."""
 
     id_name_map = {v["id"]: v["name"] for v in ontology_terms.values()}
@@ -600,7 +612,7 @@ def summarize_similarity_annotations(
                     renamed_ancestor[k] = v
             ancestors_renamed.append(renamed_ancestor)
 
-        phenodigm_score = phenodigm_score["phenotype_similarity_score"] if ancestors_renamed else 0
+        phenodigm_score = phenodigm_score["phenotype_similarity_score"] if ancestors_renamed else 0.0
 
         annotations = {
             "gene1_symbol": gene1_symbol,

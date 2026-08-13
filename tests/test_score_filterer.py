@@ -5,11 +5,11 @@ from TSUMUGI.subcommands import score_filterer
 
 
 def test_parse_args_accepts_score_min_max():
-    args = argparser.parse_args(["score", "--min", "10", "--max", "50"])
+    args = argparser.parse_args(["score", "--min", "64.87", "--max", "65.12"])
 
     assert args.cmd == "score"
-    assert args.min == 10
-    assert args.max == 50
+    assert args.min == 64.87
+    assert args.max == 65.12
 
 
 def test_parse_args_requires_min_or_max():
@@ -21,9 +21,10 @@ def test_parse_args_requires_min_or_max():
 
 def test_filter_by_score_with_min_and_max(monkeypatch):
     pairwise_annotations = [
-        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_similarity_score": 30},
-        {"gene1_symbol": "GeneC", "gene2_symbol": "GeneD", "phenotype_similarity_score": 60},
-        {"gene1_symbol": "GeneE", "gene2_symbol": "GeneF", "phenotype_similarity_score": 90},
+        {"gene1_symbol": "GeneA", "gene2_symbol": "GeneB", "phenotype_similarity_score": 64.51},
+        {"gene1_symbol": "GeneC", "gene2_symbol": "GeneD", "phenotype_similarity_score": 64.87},
+        {"gene1_symbol": "GeneE", "gene2_symbol": "GeneF", "phenotype_similarity_score": 65.12},
+        {"gene1_symbol": "GeneG", "gene2_symbol": "GeneH", "phenotype_similarity_score": 65.47},
     ]
     dumped = []
 
@@ -32,11 +33,11 @@ def test_filter_by_score_with_min_and_max(monkeypatch):
 
     score_filterer.filter_by_score_of_phenotypes_per_pair(
         path_pairwise_similarity_annotations="pairwise-path",
-        min_phenotypes=50,
-        max_phenotypes=80,
+        min_phenotypes=64.87,
+        max_phenotypes=65.12,
     )
 
-    assert dumped == [pairwise_annotations[1]]
+    assert dumped == pairwise_annotations[1:3]
 
 
 def test_filter_by_score_with_only_min(monkeypatch):

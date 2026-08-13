@@ -16,7 +16,7 @@ def test_build_edges_formats_annotations():
         {
             "gene1_symbol": "GeneA",
             "gene2_symbol": "GeneB",
-            "phenotype_similarity_score": 12,
+            "phenotype_similarity_score": 64.87,
             "phenotype_shared_annotations": [
                 {
                     "mp_term_name": "abnormal movement",
@@ -40,7 +40,7 @@ def test_build_edges_formats_annotations():
     data = edges[0]["data"]
     assert data["source"] == "GeneA"
     assert data["target"] == "GeneB"
-    assert data["edge_size"] == 12
+    assert data["edge_size"] == 65
     assert set(data["phenotype"]) == {
         "abnormal movement (Homo, Early)",
         "eye defect (Hetero, Late, Male)",

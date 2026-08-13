@@ -151,7 +151,7 @@ def _compose_pairwise_similarity_annotations(
 
         pairwise_similarity_annotations_composed[gene_pair] = {
             "phenotype_shared_annotations": sorted(pair_annotations_composed),
-            "phenotype_similarity_score": record["phenotype_similarity_score"],
+            "phenotype_similarity_score": int(round(float(record["phenotype_similarity_score"]))),
         }
     return pairwise_similarity_annotations_composed
 
@@ -715,7 +715,7 @@ def _build_direct_edge_info(
             "source": gene1,
             "target": gene2,
             "phenotype": sorted(phenotypes),
-            "phenotype_similarity_score": int(record.get("phenotype_similarity_score", 0)),
+            "phenotype_similarity_score": int(round(float(record.get("phenotype_similarity_score", 0)))),
             "shared_context_count": len(shared_annotations),
         }
     }
@@ -736,7 +736,7 @@ def _write_direct_edge_buckets(
         handles = [stack.enter_context(path.open("w", encoding="utf-8")) for path in bucket_paths]
         for record in pairwise_similarity_annotations:
             shared_annotations = record.get("phenotype_shared_annotations", [])
-            score = int(record.get("phenotype_similarity_score", 0))
+            score = int(round(float(record.get("phenotype_similarity_score", 0))))
             if len(shared_annotations) < min_shared_annotations or score < min_phenotype_similarity_score:
                 continue
             pair_count += 1

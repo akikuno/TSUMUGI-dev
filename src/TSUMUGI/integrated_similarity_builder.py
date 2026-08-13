@@ -31,7 +31,7 @@ _worker_profiles: Sequence[Mapping[str, Any]] | None = None
 _worker_state: dict[str, Any] | None = None
 _worker_compresslevel = 6
 TERM_SIMILARITY_ALGORITHM_VERSION = 1
-PAIRWISE_ALGORITHM_VERSION = 1
+PAIRWISE_ALGORITHM_VERSION = 3
 
 
 def sha256_file(path: str | Path) -> str:
@@ -692,7 +692,7 @@ def score_profile_pair(
                     candidate_sources[mica].add((left_source, right_source))
 
     if not np.any(matrix > 0):
-        score = 0
+        score = 0.0
     else:
         row_max = matrix.max(axis=1)
         column_max = matrix.max(axis=0)
@@ -702,7 +702,9 @@ def score_profile_pair(
         ideal_average = float(np.mean(np.concatenate([left["self_scores"], right["self_scores"]])))
         normalized_max = observed_max / ideal_max if ideal_max > 0 else 0.0
         normalized_average = observed_average / ideal_average if ideal_average > 0 else 0.0
-        score = int(round(float(np.clip(100.0 * (normalized_max + normalized_average) / 2.0, 0.0, 100.0))))
+        score = similarity_calculator.round_phenodigm_score(
+            float(np.clip(100.0 * (normalized_max + normalized_average) / 2.0, 0.0, 100.0))
+        )
 
     shared_annotations = []
     for mica in sorted(

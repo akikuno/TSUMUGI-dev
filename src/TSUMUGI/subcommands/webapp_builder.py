@@ -122,7 +122,7 @@ def _build_edges(pairwise_similarity_annotations: Iterator[dict[str, str | int |
 
             phenotype_lines.append(f"{mp_term_name} ({annotations})")
 
-        edge_size = records["phenotype_similarity_score"]
+        edge_size = int(round(float(records["phenotype_similarity_score"])))
 
         edges.append(
             {

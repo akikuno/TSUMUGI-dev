@@ -199,10 +199,10 @@ tsumugi count --genewise --min 5 --max 50 \
 tsumugi score [-h] [--min MIN] [--max MAX] [--in PATH_PAIRWISE_ANNOTATIONS]
 ```
 
-Filter gene pairs by `phenotype_similarity_score` (0–100). At least one of `--min` or `--max` is required.
+Filter gene pairs by `phenotype_similarity_score` (0–100). Pairwise files store the score as a float rounded to six decimal places, and decimal bounds are accepted. At least one of `--min` or `--max` is required.
 
 #### `--min MIN`, `--max MAX`
-Lower/upper bounds for phenotype similarity score. Use either flag alone for one-sided filtering.
+Lower/upper bounds for phenotype similarity score. Decimal values are accepted. Use either flag alone for one-sided filtering.
 
 #### `--in PATH_PAIRWISE_ANNOTATIONS`
 Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.

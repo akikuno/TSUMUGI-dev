@@ -33,7 +33,7 @@ def _filter_pairwise_similarity_annotations_for_web(
     selected_records: list[dict[str, object]] = []
     for record in pairwise_similarity_annotations:
         shared_annotations = record.get("phenotype_shared_annotations", [])
-        phenotype_similarity_score = int(record.get("phenotype_similarity_score", 0))
+        phenotype_similarity_score = int(round(float(record.get("phenotype_similarity_score", 0))))
         if (
             len(shared_annotations) >= min_shared_annotations
             and phenotype_similarity_score >= min_phenotype_similarity_score

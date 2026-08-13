@@ -242,6 +242,7 @@ def run_integrated_pipeline(
         "MGIの`life_stage`は実測値ではありません。同じMP用語がIMPCの1つのライフステージだけに現れる場合に限り、その値を推定して保存しています。"
         "推定根拠は`audit/life-stage-inference-audit.tsv`で確認できます。\n\n"
         "`pairwise_similarity_annotations.jsonl.gz`は、IMPCとMGIのMP用語を遺伝子ごとにまとめ、統合後の注釈頻度からICを計算して作成した全遺伝子対です。"
+        "`phenotype_similarity_score`は0–100のPhenodigmスコアで、小数第6位に丸めた浮動小数点数として保存します。"
         "共有表現型を決めるときは、遺伝型、ライフステージ、性別、系統名を一致条件にしていません。\n\n"
         "MGIの異常MPはキュレーションされた関連であり、統計的有意差を表しません。"
         "また、異なるMGI遺伝子型を遺伝子単位でまとめるため、条件固有の表現型が同時に起きることを意味しません。\n\n"

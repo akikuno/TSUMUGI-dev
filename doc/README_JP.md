@@ -107,12 +107,12 @@ TSUMUGIで利用している表現型データを、Gzip圧縮JSONL形式でダ�
 
 - 遺伝子ペアの名称（gene1_symbol, gene2_symbol）  
 - メタデータが一致するMICAの注釈情報（Phenotype shared annotations；MP用語、発達段階、接合型、性差情報を保持）
-- ペア間の表現型類似度（Phenotype similarity score；Resnik類似度に基づくPhenodigmスコア；0–100スケール）  
+- ペア間の表現型類似度（Phenotype similarity score；Resnik類似度に基づくPhenodigmスコア；0–100スケール、小数第6位までの浮動小数点数）
 
 各共有コンテキストは、接合型、ライフステージ、性差ラベルが一致する2つの有意MP注釈から得た、最も情報量の高い共通祖先（MICA）です。両遺伝子に同じ末端MP用語が直接注釈されたことを意味しません。同じMICAでもメタデータが異なれば、別のコンテキストとして扱います。
 
 ```json
-{"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47}
+{"gene1_symbol": "1500009L16Rik", "gene2_symbol": "Aak1", "phenotype_shared_annotations": [{"mp_term_name": "increased circulating enzyme level", "life_stage": "Early", "zygosity": "Homo", "sexual_dimorphism": "None"}], "phenotype_similarity_score": 47.0}
 ```
 
 ## 🌐 ネットワーク描出
@@ -338,6 +338,8 @@ TSUMUGIは、Phenodigm ([Smedley D, et al. (2013)](https://doi.org/10.1093/datab
    観測された最良対応の最大値と平均値を求め、2遺伝子の対称な最適自己一致スコアで正規化します。
    `Score = 100 * (normalized_max + normalized_mean) / 2`  
    分母が0の場合は0とします。
+
+* `pairwise_similarity_annotations`の`phenotype_similarity_score`は、小数第6位に丸めた浮動小数点数として保存します。Web出力の表示用スコアは整数のままです。
 
 このスコアは表現型プロファイルの類似度です。P値、効果量、結合親和性、遺伝子間の因果的相互作用を示す値ではありません。
 

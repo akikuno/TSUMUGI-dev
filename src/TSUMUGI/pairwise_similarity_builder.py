@@ -10,7 +10,7 @@ from TSUMUGI import similarity_calculator
 
 def build_pairwise_similarity(
     genewise_phenotype_significants: list[dict], ontology_terms: dict, args
-) -> Iterator[dict[str, dict[str, str] | int]]:
+) -> Iterator[dict[str, object]]:
     mp_term_ids = {r["mp_term_id"] for r in genewise_phenotype_significants}
 
     terms_similarity_map, term_ic_map = similarity_calculator.calculate_all_pairwise_similarities(
@@ -60,7 +60,7 @@ def build_pairwise_similarity(
 
     logging.info(f"Compute phenotype annotations and similarity score for {num_pairs} pairs...")
 
-    pairwise_similarity_annotations: Iterator[dict[str, dict[str, str] | int]] = (
+    pairwise_similarity_annotations: Iterator[dict[str, object]] = (
         similarity_calculator.summarize_similarity_annotations(
             ontology_terms, phenotype_ancestors, phenodigm_scores, num_pairs
         )
