@@ -108,7 +108,7 @@ def run_integrated_pipeline(
     ontology_terms: dict[str, dict[str, Any]],
     disease_annotations_by_gene: dict[str, list[dict[str, str]]],
 ) -> None:
-    """Run the experimental source-aware IMPC-MGI annotation pipeline."""
+    """Run the source-aware IMPC-MGI annotation pipeline."""
     temp_dir = root_dir / ".tempdir" / "integrated"
     audit_dir = root_dir / "audit"
     shard_dir = root_dir / "shards"
@@ -236,7 +236,7 @@ def run_integrated_pipeline(
     }
     _write_json(summary, root_dir / "integrated-run-summary.json")
     (root_dir / "README.md").write_text(
-        "# IMPCとMGIを統合した実験用注釈\n\n"
+        "# IMPCとMGIを統合した注釈\n\n"
         "`genewise_phenotype_annotations.jsonl.gz`は、IMPCの行と、MGIが整理したLOF遺伝子型–異常MP関連を収録しています。"
         "情報源は`source`で区別できます。欠測値はJSONの`null`です。\n\n"
         "MGIの`life_stage`は実測値ではありません。同じMP用語がIMPCの1つのライフステージだけに現れる場合に限り、その値を推定して保存しています。"
@@ -245,7 +245,8 @@ def run_integrated_pipeline(
         "共有表現型を決めるときは、遺伝型、ライフステージ、性別、系統名を一致条件にしていません。\n\n"
         "MGIの異常MPはキュレーションされた関連であり、統計的有意差を表しません。"
         "また、異なるMGI遺伝子型を遺伝子単位でまとめるため、条件固有の表現型が同時に起きることを意味しません。\n\n"
-        "これらは実験用の成果物です。現在のメタデータ絞り込みやWebには対応していません。\n",
+        "現在のメタデータ絞り込みやWebには対応していません。"
+        "従来のIMPC単独処理とWeb生成が必要な場合は`--no-integrate-mgi`を指定してください。\n",
         encoding="utf-8",
         newline="\n",
     )

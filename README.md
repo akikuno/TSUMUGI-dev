@@ -164,7 +164,7 @@ Export the current network as PNG, JPG, SVG, CSV, or GraphML. Module frames can 
 
 # 🛠 Command-Line Interface (CLI)
 
-The TSUMUGI v1.2.0 CLI can recompute results from a locally downloaded IMPC Release 24.0 statistical-results file, filter the generated annotations, and export GraphML or a local webapp bundle. TSUMUGI requires Python 3.10 or later.
+The TSUMUGI v1.2.0 CLI integrates a locally downloaded IMPC Release 24.0 statistical-results file with bundled MGI loss-of-function phenotype reports by default. It writes source-aware genewise annotations and pairwise phenotype similarities. TSUMUGI requires Python 3.10 or later.
 
 ## Installation
 
@@ -191,7 +191,9 @@ tsumugi run \
   --threads 8
 ```
 
-The output directory contains `genewise_phenotype_annotations.jsonl.gz`, `pairwise_similarity_annotations.jsonl.gz`, and the `TSUMUGI-webapp` visualization bundle.
+The output directory contains the MGI-integrated `genewise_phenotype_annotations.jsonl.gz` and `pairwise_similarity_annotations.jsonl.gz` files, plus audit and shard files. The default integrated pipeline does not generate `TSUMUGI-webapp`. Use `--no-integrate-mgi` to run the legacy IMPC-only pipeline and retain local webapp generation.
+
+The default integrated run requires the `strain_name` column in the IMPC input. Bundled-data versions, sources, checksums, and licenses are listed in the [data provenance inventory](src/TSUMUGI/data/README.md).
 
 A pairwise result can then be filtered, for example:
 
@@ -206,7 +208,7 @@ tsumugi mp --include MP:0001146 \
 
 | Command                 | Purpose                                                           |
 | ----------------------- | ----------------------------------------------------------------- |
-| `tsumugi run`           | Recompute annotations and the similarity network from IMPC data   |
+| `tsumugi run`           | Integrate IMPC and MGI annotations and compute pairwise similarity |
 | `tsumugi mp`            | Filter by the presence or measured non-significance of an MP term |
 | `tsumugi count`         | Filter by phenotype counts per pair or per gene                   |
 | `tsumugi score`         | Filter by pairwise phenotype similarity score                     |
@@ -218,6 +220,8 @@ tsumugi mp --include MP:0001146 \
 | `tsumugi build-webapp`  | Build a locally served webapp bundle                              |
 
 Filtering and export commands use `pairwise_similarity_annotations.jsonl.gz`, `genewise_phenotype_annotations.jsonl.gz`, or both. The files are available from the [TSUMUGI top page](https://larc-tsukuba.github.io/tsumugi/). Filtering commands write JSONL to STDOUT and can be chained with pipes.
+
+MGI-integrated output records preserve source provenance. MGI abnormal annotations are curated assertions rather than IMPC statistical-test results; their `effect_size` is `null`, and life stage is inferred where possible. Pairwise shared terms are MICA contexts with `source_pairs`. The integrated pairwise score is not directly comparable with the public webapp or legacy IMPC-only score because the phenotype profiles and joint information-content background differ. Metadata-specific filtering, GraphML export, and webapp building currently require legacy-schema output generated with `--no-integrate-mgi`.
 
 See the [complete CLI reference](doc/CLI.md) for all options, input requirements, examples, output details, and interpretation cautions.
 

@@ -110,14 +110,26 @@ def build_parser() -> argparse.ArgumentParser:
         default=1,
         help=("Number of threads to use for TSUMUGI pipeline.\nIf not specified, defaults to 1.\n"),
     )
-    run.add_argument(
+    mgi_mode = run.add_mutually_exclusive_group()
+    mgi_mode.add_argument(
         "--integrate-mgi",
+        dest="integrate_mgi",
         action="store_true",
         help=(
-            "Integrate all-background primary MGI LOF annotations with IMPC annotations.\n"
-            "This experimental mode writes source-aware genewise and pairwise JSONL files.\n"
+            "Integrate all-background primary MGI LOF annotations with IMPC annotations (default).\n"
+            "Writes source-aware genewise and pairwise JSONL files; web assets are not generated.\n"
         ),
     )
+    mgi_mode.add_argument(
+        "--no-integrate-mgi",
+        dest="integrate_mgi",
+        action="store_false",
+        help=(
+            "Use the legacy IMPC-only pipeline instead of MGI integration.\n"
+            "This mode retains the existing web asset generation workflow.\n"
+        ),
+    )
+    run.set_defaults(integrate_mgi=True)
     run.add_argument(
         "--annotations-only",
         action="store_true",
@@ -128,21 +140,21 @@ def build_parser() -> argparse.ArgumentParser:
         dest="mgi_gene_pheno",
         type=str,
         required=False,
-        help="Path to MGI_GenePheno.rpt. Uses the bundled experimental file when omitted.\n",
+        help="Path to MGI_GenePheno.rpt. Uses the bundled file when omitted.\n",
     )
     run.add_argument(
         "--mgi-phenotypic-allele",
         dest="mgi_phenotypic_allele",
         type=str,
         required=False,
-        help="Path to MGI_PhenotypicAllele.rpt. Uses the bundled experimental file when omitted.\n",
+        help="Path to MGI_PhenotypicAllele.rpt. Uses the bundled file when omitted.\n",
     )
     run.add_argument(
         "--mgi-pheno-sex",
         dest="mgi_pheno_sex",
         type=str,
         required=False,
-        help="Path to MGI_Pheno_Sex.rpt. Uses the bundled experimental file when omitted.\n",
+        help="Path to MGI_Pheno_Sex.rpt. Uses the bundled file when omitted.\n",
     )
     run.add_argument(
         "--pair-block-size",

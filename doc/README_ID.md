@@ -193,15 +193,16 @@ Siap digunakan saat `tsumugi --version` menampilkan versinya.
 ## Cara pakai
 
 ### Hitung ulang dari data IMPC (`tsumugi run`)
-Jika `--mp_obo` dihilangkan, TSUMUGI menggunakan `data-version: releases/2025-08-27/mp.obo` bawaan.  
+Secara bawaan, TSUMUGI mengintegrasikan laporan MGI yang disertakan dan menghasilkan file JSONL genewise dan pairwise. Gunakan `--no-integrate-mgi` untuk menjalankan pipeline lama yang hanya memakai IMPC.
+Jika `--mp_obo` dihilangkan, TSUMUGI menggunakan `data-version: releases/2026-07-22/mp.obo` bawaan.
 Jika `--impc_phenodigm` dihilangkan, TSUMUGI menggunakan file yang diambil pada 2025-10-01 dari [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
 ```bash
 tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-Output: `./tsumugi-output` berisi anotasi genewise (genewise_phenotype_annotations.jsonl.gz), data kemiripan pairwise (pairwise_similarity_annotations.jsonl.gz), dan aset visualisasi (`TSUMUGI-webapp`).
+Output: `./tsumugi-output` berisi anotasi genewise terintegrasi MGI (genewise_phenotype_annotations.jsonl.gz), data kemiripan pairwise (pairwise_similarity_annotations.jsonl.gz), serta file audit dan shard. Mode bawaan tidak menghasilkan aset web.
 
 > [!IMPORTANT]  
-> Direktori `TSUMUGI-webapp` menyertakan skrip peluncuran per OS; klik dua kali untuk membuka webapp lokal:  
+> Hanya `--no-integrate-mgi` yang menghasilkan direktori `TSUMUGI-webapp` beserta skrip peluncuran per OS:
 > - Windows: `open_webapp_windows.bat`  
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`

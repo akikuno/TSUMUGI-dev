@@ -2,16 +2,16 @@
 
 [Back to README](../README.md) | [日本語README](README_JP.md)
 
-This reference documents the TSUMUGI v1.1.1 CLI. Run `tsumugi COMMAND --help` to confirm the exact syntax supported by the installed version.
+This reference documents the TSUMUGI v1.2.0 CLI. Run `tsumugi COMMAND --help` to confirm the exact syntax supported by the installed version.
 
-The TSUMUGI CLI can recompute results from a locally downloaded IMPC Release 24.0 statistical-results file and provides more fine-grained filtering and output options than the web tool.
+The TSUMUGI CLI integrates a locally downloaded IMPC Release 24.0 statistical-results file with bundled MGI loss-of-function phenotype reports by default.
 
 ## Features
 
-- Recompute with IMPC `statistical-results-ALL.csv.gz` (optionally `mp.obo`, `impc_phenodigm.csv`).
+- Integrate IMPC `statistical-results-ALL.csv.gz` with bundled MGI reports (optionally override `mp.obo`, `impc_phenodigm.csv`, or the MGI reports).
 - Filter by significant MP annotations or measured non-significant records.
 - Filter by a gene-symbol file or a CSV/TSV gene-pair file.
-- Outputs: GraphML (`tsumugi build-graphml`) and a locally served webapp bundle (`tsumugi build-webapp`).
+- Outputs: source-aware genewise annotations and pairwise phenotype similarities. Legacy IMPC-only output, GraphML, and a local webapp remain available with `--no-integrate-mgi`.
 
 ## Installation
 
@@ -31,7 +31,7 @@ You are ready if `tsumugi --version` prints the version.
 
 ## Available commands
 
-- `tsumugi run`: Recompute the network from IMPC data
+- `tsumugi run`: Integrate IMPC and MGI annotations and compute pairwise similarity
 - `tsumugi mp --include/--exclude (--pairwise/--genewise)`: Filter gene pairs or genes by significant MP annotations or measured non-significant records
 - `tsumugi count --pairwise/--genewise (--min/--max)`: Filter by phenotype counts (pairwise or per gene)
 - `tsumugi score (--min/--max)`: Filter by phenotype similarity score (pairwise)
@@ -53,22 +53,33 @@ You are ready if `tsumugi --version` prints the version.
 
 ## Usage
 
-### Recompute from IMPC data (`tsumugi run`)
-If `--mp_obo` is omitted, TSUMUGI uses the bundled `data-version: releases/2025-08-27/mp.obo`.
+### Integrate IMPC and MGI data (`tsumugi run`)
+If `--mp_obo` is omitted, TSUMUGI uses the bundled `data-version: releases/2026-07-22/mp.obo`.
 If `--impc_phenodigm` is omitted, it uses the file fetched on 2025-10-01 from the [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
+If the three MGI report options are omitted, TSUMUGI uses the bundled snapshot documented in the [data provenance inventory](../src/TSUMUGI/data/README.md). The IMPC input must contain `strain_name` in the default integrated mode.
 ```bash
 tsumugi run \
   --output_dir ./tsumugi-output \
   --statistical_results ./statistical-results-ALL.csv.gz \
   --threads 8
 ```
-Outputs: `./tsumugi-output` contains genewise annotations (genewise_phenotype_annotations.jsonl.gz), pairwise similarity data (pairwise_similarity_annotations.jsonl.gz), and visualization assets (`TSUMUGI-webapp`).
+Outputs: `./tsumugi-output` contains MGI-integrated genewise annotations (`genewise_phenotype_annotations.jsonl.gz`), pairwise similarity data (`pairwise_similarity_annotations.jsonl.gz`), audit summaries, and pair shards. Web assets are not generated in this mode.
 
 > [!IMPORTANT]
-> The `TSUMUGI-webapp` directory includes OS-specific launch scripts; double-click to open the local web app:
+> Use `--no-integrate-mgi` for the legacy IMPC-only pipeline. That mode retains `TSUMUGI-webapp` generation and its OS-specific launch scripts:
 > - Windows: `open_webapp_windows.bat`
 > - macOS: `open_webapp_mac.command`
 > - Linux: `open_webapp_linux.sh`
+
+The explicit `--integrate-mgi` option remains accepted for backward compatibility. Custom snapshots can be supplied with `--mgi-gene-pheno`, `--mgi-phenotypic-allele`, and `--mgi-pheno-sex`.
+
+#### Integrated-output semantics and limitations
+
+- Genewise records retain `source` and `significance_basis`. MGI abnormal annotations are curated assertions, not IMPC statistical-test results; `effect_size` is `null`, and life stage is inferred where possible.
+- MGI inclusion is restricted to all-background primary loss-of-function records meeting the pipeline's allele and zygosity rules. Multiple genotypes and backgrounds are aggregated to marker-level phenotype profiles; co-occurrence in one animal is not implied.
+- Pairwise shared terms are MICA contexts and include `source_pairs`. Pairwise scoring uses joint information content recalculated from the integrated profiles.
+- Integrated scores are not directly comparable with public-webapp or legacy IMPC-only scores because both phenotype profiles and the information-content background differ.
+- Metadata-specific filtering (`life-stage`, `sex`, and `zygosity`), `build-graphml`, and `build-webapp` currently require legacy-schema output generated with `--no-integrate-mgi`.
 
 ### Filter by MP term (`tsumugi mp --include/--exclude`)
 Extract gene pairs (or genes) that include phenotypes of interest, or identify measurements for which no statistically significant abnormality was recorded under the selected conditions.

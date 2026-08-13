@@ -194,15 +194,16 @@ pip install tsumugi
 ## 사용법
 
 ### IMPC 데이터로 재계산(`tsumugi run`)
-`--mp_obo`를 생략하면 TSUMUGI는 번들 `data-version: releases/2025-08-27/mp.obo`를 사용합니다.  
+기본적으로 TSUMUGI는 번들 MGI 보고서를 통합하여 genewise 및 pairwise JSONL 파일을 생성합니다. 기존 IMPC-only pipeline을 실행하려면 `--no-integrate-mgi`를 사용하십시오.
+`--mp_obo`를 생략하면 TSUMUGI는 번들 `data-version: releases/2026-07-22/mp.obo`를 사용합니다.
 `--impc_phenodigm`를 생략하면 2025-10-01에 [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)에서 가져온 파일을 사용합니다.
 ```bash
 tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-출력: `./tsumugi-output`에는 genewise 주석(genewise_phenotype_annotations.jsonl.gz), pairwise 유사도 데이터(pairwise_similarity_annotations.jsonl.gz), 시각화 에셋(`TSUMUGI-webapp`)이 포함됩니다.
+출력: `./tsumugi-output`에는 MGI 통합 genewise 주석(genewise_phenotype_annotations.jsonl.gz), pairwise 유사도 데이터(pairwise_similarity_annotations.jsonl.gz), audit 및 shard 파일이 포함됩니다. 기본 모드는 Web asset을 생성하지 않습니다.
 
 > [!IMPORTANT]  
-> `TSUMUGI-webapp` 디렉터리에는 OS별 실행 스크립트가 포함되어 있습니다. 더블 클릭하면 로컬 웹앱을 열 수 있습니다:  
+> `--no-integrate-mgi`만 OS별 실행 스크립트가 포함된 `TSUMUGI-webapp` 디렉터리를 생성합니다:
 > - Windows: `open_webapp_windows.bat`  
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`

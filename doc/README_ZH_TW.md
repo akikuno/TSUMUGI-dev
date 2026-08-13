@@ -193,15 +193,16 @@ pip install tsumugi
 ## 使用方法
 
 ### 從IMPC資料重新計算（`tsumugi run`）
-若省略`--mp_obo`，TSUMUGI使用內建`data-version: releases/2025-08-27/mp.obo`。  
+預設情況下，TSUMUGI會整合隨附的MGI報告，並產生genewise與pairwise JSONL檔案。使用`--no-integrate-mgi`可執行舊版IMPC單獨流程。
+若省略`--mp_obo`，TSUMUGI使用內建`data-version: releases/2026-07-22/mp.obo`。
 若省略`--impc_phenodigm`，使用2025-10-01從[IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/)取得的檔案。
 ```bash
 tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-輸出：`./tsumugi-output`包含genewise註解（genewise_phenotype_annotations.jsonl.gz）、pairwise相似度資料（pairwise_similarity_annotations.jsonl.gz）與視覺化資源（`TSUMUGI-webapp`）。
+輸出：`./tsumugi-output`包含MGI整合的genewise註解（genewise_phenotype_annotations.jsonl.gz）、pairwise相似度資料（pairwise_similarity_annotations.jsonl.gz）以及稽核與分片檔案。預設模式不產生Web資源。
 
 > [!IMPORTANT]  
-> `TSUMUGI-webapp`目錄包含各作業系統的啟動腳本；雙擊即可開啟本地Web應用：  
+> 只有`--no-integrate-mgi`才會產生包含各作業系統啟動腳本的`TSUMUGI-webapp`目錄：
 > - Windows: `open_webapp_windows.bat`  
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`

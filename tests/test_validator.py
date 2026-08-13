@@ -37,6 +37,21 @@ def test_validate_statistical_results_accepts_all_required_columns(tmp_path):
     validate_statistical_results(path)
 
 
+def test_validate_statistical_results_requires_strain_for_mgi_integration(tmp_path):
+    path = tmp_path / "statistical-results-ALL.csv"
+    _write_csv(path, REQUIRED_STATISTICAL_RESULT_COLUMNS)
+
+    with pytest.raises(ValueError, match="strain_name"):
+        validate_statistical_results(path, require_strain=True)
+
+
+def test_validate_statistical_results_accepts_strain_for_mgi_integration(tmp_path):
+    path = tmp_path / "statistical-results-ALL.csv"
+    _write_csv(path, REQUIRED_STATISTICAL_RESULT_COLUMNS | {"strain_name"})
+
+    validate_statistical_results(path, require_strain=True)
+
+
 @pytest.mark.parametrize(
     "missing_column",
     [

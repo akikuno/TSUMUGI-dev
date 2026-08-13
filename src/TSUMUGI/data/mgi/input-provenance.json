@@ -3,30 +3,30 @@
   "files": {
     "MGI_GenePheno.rpt": {
       "source_url": "https://www.informatics.jax.org/downloads/reports/MGI_GenePheno.rpt",
-      "retrieved_at": null,
-      "recorded_original_mtime": "2026-07-23T16:29:23.664049700+09:00",
-      "remote_checked_at": "2026-08-01T16:37:10+09:00",
-      "remote_last_modified_at_check": "2026-07-27T12:01:08Z",
-      "remote_matches_local_at_check": false,
-      "local_sha256": "e6cba55730f564a191cbad3fb2628249804452cc2d8ddafb08d09b763eea7d99"
+      "retrieved_at": "2026-08-13T16:29:04+09:00",
+      "recorded_original_mtime": "2026-08-10T21:00:37+09:00",
+      "remote_checked_at": "2026-08-13T16:29:04+09:00",
+      "remote_last_modified_at_check": "2026-08-10T12:00:37Z",
+      "remote_matches_local_at_check": true,
+      "local_sha256": "a80836cc0a4496a80b8750ea5ac7013618cf17359b89ce6c9638a89e46b7cf8b"
     },
     "MGI_PhenotypicAllele.rpt": {
       "source_url": "https://www.informatics.jax.org/downloads/reports/MGI_PhenotypicAllele.rpt",
-      "retrieved_at": null,
-      "recorded_original_mtime": "2026-07-24T05:47:39.760409200+09:00",
-      "remote_checked_at": "2026-08-01T16:37:10+09:00",
-      "remote_last_modified_at_check": "2026-07-27T12:01:43Z",
-      "remote_matches_local_at_check": false,
-      "local_sha256": "ac1f0dfb263bd07f51aecda7606fabd2d281b50b1908bda1c5013ca855d6da0d"
+      "retrieved_at": "2026-08-13T16:29:04+09:00",
+      "recorded_original_mtime": "2026-08-10T21:00:55+09:00",
+      "remote_checked_at": "2026-08-13T16:29:04+09:00",
+      "remote_last_modified_at_check": "2026-08-10T12:00:55Z",
+      "remote_matches_local_at_check": true,
+      "local_sha256": "b1a6cf6514bb6e4dbd4fca975809fb504c7ba5354a7a073259aa3b9dbd5aead0"
     },
     "MGI_Pheno_Sex.rpt": {
       "source_url": "https://www.informatics.jax.org/downloads/reports/MGI_Pheno_Sex.rpt",
-      "retrieved_at": null,
-      "recorded_original_mtime": "2026-07-24T05:47:34.999882300+09:00",
-      "remote_checked_at": "2026-08-01T16:37:10+09:00",
-      "remote_last_modified_at_check": "2026-07-27T12:01:42Z",
-      "remote_matches_local_at_check": false,
-      "local_sha256": "99c2b1db28c39125bd9cc6e992164c893d91ebedc4480c34b17cfdde1e128a78"
+      "retrieved_at": "2026-08-13T16:29:04+09:00",
+      "recorded_original_mtime": "2026-08-10T21:00:54+09:00",
+      "remote_checked_at": "2026-08-13T16:29:04+09:00",
+      "remote_last_modified_at_check": "2026-08-10T12:00:54Z",
+      "remote_matches_local_at_check": true,
+      "local_sha256": "774c20c48ae0ead6802a74dc554b69d730c4bee69af3759af36db0ff54a8744b"
     }
   }
 }

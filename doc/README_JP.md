@@ -228,7 +228,7 @@ GraphMLは、デスクトップ版Cytoscapeと互換性のある形式で、Cyto
 
 # 🛠 コマンドライン版
 
-TSUMUGI v1.2.0のCLIでは、ローカルにダウンロードしたIMPC Release 24.0の統計結果ファイルから再計算し、生成した注釈の絞り込みやGraphML、ローカルWebアプリバンドルへの出力ができます。TSUMUGIにはPython 3.10以降が必要です。
+TSUMUGI v1.2.0のCLIは、ローカルにダウンロードしたIMPC Release 24.0の統計結果と同梱のMGI機能喪失型表現型レポートを既定で統合し、出典付きの遺伝子別注釈と遺伝子ペア別表現型類似度を出力します。TSUMUGIにはPython 3.10以降が必要です。
 
 ## インストール
 
@@ -255,7 +255,9 @@ tsumugi run \
   --threads 8
 ```
 
-出力先には`genewise_phenotype_annotations.jsonl.gz`、`pairwise_similarity_annotations.jsonl.gz`、可視化用の`TSUMUGI-webapp`が生成されます。
+出力先には、MGIを統合した`genewise_phenotype_annotations.jsonl.gz`と`pairwise_similarity_annotations.jsonl.gz`に加えて、監査用ファイルと分割ファイルが生成されます。既定の統合処理では`TSUMUGI-webapp`を生成しません。従来のIMPC単独処理とローカルWebアプリ生成が必要な場合は、`--no-integrate-mgi`を指定してください。
+
+既定の統合処理では、IMPC入力に`strain_name`列が必要です。同梱データの版、取得元、チェックサム、ライセンスは[データ来歴一覧](../src/TSUMUGI/data/README.md)にまとめています。
 
 遺伝子ペアの結果は、次のように絞り込めます。
 
@@ -270,7 +272,7 @@ tsumugi mp --include MP:0001146 \
 
 | コマンド | 用途 |
 | --- | --- |
-| `tsumugi run` | IMPCデータから注釈と類似ネットワークを再計算 |
+| `tsumugi run` | IMPCとMGIの注釈を統合し、遺伝子ペア別類似度を計算 |
 | `tsumugi mp` | MP用語の有意注釈または測定済み非有意記録で絞り込み |
 | `tsumugi count` | 遺伝子ペアまたは遺伝子ごとの表現型数で絞り込み |
 | `tsumugi score` | 遺伝子ペアの表現型類似度スコアで絞り込み |
@@ -282,6 +284,8 @@ tsumugi mp --include MP:0001146 \
 | `tsumugi build-webapp` | ローカル配信用Webアプリバンドルを生成 |
 
 絞り込みと出力の各コマンドは、用途に応じて`pairwise_similarity_annotations.jsonl.gz`、`genewise_phenotype_annotations.jsonl.gz`、または両方を使います。両ファイルは[TSUMUGIトップページ](https://larc-tsukuba.github.io/tsumugi/)から取得できます。絞り込み結果はJSONLとしてSTDOUTへ出力され、パイプで連結できます。
+
+MGI統合出力は、各注釈の出典を保持します。MGIの異常表現型注釈はIMPCの統計検定結果ではなく、キュレーションされた情報であるため、`effect_size`は`null`となり、ライフステージは可能な範囲で推定されます。遺伝子ペアの共有用語はMICAを表し、`source_pairs`に元の注釈ペアを記録します。表現型プロファイルと情報量の母集団が変わるため、統合後の類似度は公開Web版や従来のIMPC単独結果と直接比較できません。メタデータ別の絞り込み、GraphML出力、Webアプリ生成には、現在のところ`--no-integrate-mgi`で生成した従来形式の出力が必要です。
 
 全オプション、入力要件、使用例、出力の詳細、解釈上の注意点は、英語版の[CLIリファレンス](CLI.md)を参照してください。
 

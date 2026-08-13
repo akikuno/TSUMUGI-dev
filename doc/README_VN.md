@@ -193,15 +193,16 @@ Sẵn sàng khi `tsumugi --version` hiển thị phiên bản.
 ## Cách dùng
 
 ### Tính lại từ dữ liệu IMPC (`tsumugi run`)
-Nếu bỏ `--mp_obo`, TSUMUGI dùng `data-version: releases/2025-08-27/mp.obo` đi kèm.  
+Theo mặc định, TSUMUGI tích hợp các báo cáo MGI đi kèm và tạo tệp JSONL genewise và pairwise. Dùng `--no-integrate-mgi` để chạy pipeline cũ chỉ dùng IMPC.
+Nếu bỏ `--mp_obo`, TSUMUGI dùng `data-version: releases/2026-07-22/mp.obo` đi kèm.
 Nếu bỏ `--impc_phenodigm`, TSUMUGI dùng file lấy ngày 2025-10-01 từ [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/).
 ```bash
 tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-Đầu ra: `./tsumugi-output` chứa chú giải genewise (genewise_phenotype_annotations.jsonl.gz), dữ liệu tương đồng pairwise (pairwise_similarity_annotations.jsonl.gz) và tài nguyên trực quan (`TSUMUGI-webapp`).
+Đầu ra: `./tsumugi-output` chứa chú giải genewise tích hợp MGI (genewise_phenotype_annotations.jsonl.gz), dữ liệu tương đồng pairwise (pairwise_similarity_annotations.jsonl.gz), cùng tệp audit và shard. Chế độ mặc định không tạo tài nguyên web.
 
 > [!IMPORTANT]  
-> Thư mục `TSUMUGI-webapp` có script mở theo hệ điều hành; nhấp đúp để mở webapp cục bộ:  
+> Chỉ `--no-integrate-mgi` tạo thư mục `TSUMUGI-webapp` với script mở theo hệ điều hành:
 > - Windows: `open_webapp_windows.bat`  
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`

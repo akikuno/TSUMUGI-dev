@@ -13,6 +13,23 @@
   [[Commit Detail](https://github.com/akikuno/TSUMUGI-dev/commit/XXX)]  
 -->
 
+## v1.2.0 (unreleased)
+
+### 💥 Breaking
+
+- Make the IMPC-MGI integrated annotation pipeline the default for `tsumugi run`; use `--no-integrate-mgi` for the legacy IMPC-only pipeline and webapp generation
+
+### 🌟 New Features
+
+- Produce source-aware MGI-integrated genewise and pairwise JSONL outputs without requiring `--integrate-mgi`
+- Bundle a synchronized 2026-08-10 MGI report snapshot with machine-readable provenance
+
+### 📝 Documentation
+
+- Centralize bundled-data versions, sources, checksums, update procedures, and license attribution in `src/TSUMUGI/data/README.md`
+- Update the bundled Mammalian Phenotype Ontology to `releases/2026-07-22/mp.obo`
+- Document integrated-output semantics, score comparability limits, and unsupported metadata/Web workflows
+
 ## v1.1.1 (2026-07-31)
 
 ### 🖼️ User Interface

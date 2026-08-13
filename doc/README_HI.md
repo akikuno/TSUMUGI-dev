@@ -193,15 +193,16 @@ pip install tsumugi
 ## उपयोग
 
 ### IMPC डेटा से पुनः गणना (`tsumugi run`)
-अगर `--mp_obo` छोड़ा गया है, TSUMUGI bundled `data-version: releases/2025-08-27/mp.obo` का उपयोग करता है।  
+डिफ़ॉल्ट रूप से TSUMUGI शामिल MGI reports को जोड़कर genewise और pairwise JSONL फ़ाइलें बनाता है। पुराने IMPC-only pipeline के लिए `--no-integrate-mgi` उपयोग करें।
+अगर `--mp_obo` छोड़ा गया है, TSUMUGI bundled `data-version: releases/2026-07-22/mp.obo` का उपयोग करता है।
 अगर `--impc_phenodigm` छोड़ा गया है, यह 2025-10-01 को [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/) से प्राप्त फ़ाइल का उपयोग करता है।
 ```bash
 tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-आउटपुट: `./tsumugi-output` में genewise annotations (genewise_phenotype_annotations.jsonl.gz), pairwise similarity data (pairwise_similarity_annotations.jsonl.gz) और visualization assets (`TSUMUGI-webapp`) शामिल हैं।
+आउटपुट: `./tsumugi-output` में MGI-integrated genewise annotations (genewise_phenotype_annotations.jsonl.gz), pairwise similarity data (pairwise_similarity_annotations.jsonl.gz), audit और shard फ़ाइलें शामिल हैं। डिफ़ॉल्ट मोड web assets नहीं बनाता।
 
 > [!IMPORTANT]  
-> `TSUMUGI-webapp` डायरेक्टरी में OS-विशिष्ट launch scripts शामिल हैं; डबल-क्लिक करके लोकल webapp खोलें:  
+> केवल `--no-integrate-mgi` OS-विशिष्ट launch scripts वाली `TSUMUGI-webapp` डायरेक्टरी बनाता है:
 > - Windows: `open_webapp_windows.bat`  
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`

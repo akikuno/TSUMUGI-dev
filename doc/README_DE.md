@@ -193,15 +193,16 @@ Bereit, wenn `tsumugi --version` die Version ausgibt.
 ## Verwendung
 
 ### Neu berechnen aus IMPC-Daten (`tsumugi run`)
-Wenn `--mp_obo` weggelassen wird, nutzt TSUMUGI das mitgelieferte `data-version: releases/2025-08-27/mp.obo`.  
+Standardmäßig integriert TSUMUGI die mitgelieferten MGI-Berichte und erzeugt genewise- und pairwise-JSONL-Dateien. Mit `--no-integrate-mgi` wird die bisherige IMPC-only-Pipeline ausgeführt.
+Wenn `--mp_obo` weggelassen wird, nutzt TSUMUGI das mitgelieferte `data-version: releases/2026-07-22/mp.obo`.
 Wenn `--impc_phenodigm` weggelassen wird, nutzt es die am 2025-10-01 vom [IMPC Disease Models Portal](https://diseasemodels.research.its.qmul.ac.uk/) bezogene Datei.
 ```bash
 tsumugi run   --output_dir ./tsumugi-output   --statistical_results ./statistical-results-ALL.csv.gz   --threads 8
 ```
-Ausgaben: `./tsumugi-output` enthält genewise-Annotationen (genewise_phenotype_annotations.jsonl.gz), pairwise-Ähnlichkeitsdaten (pairwise_similarity_annotations.jsonl.gz) und Visualisierungs-Assets (`TSUMUGI-webapp`).
+Ausgaben: `./tsumugi-output` enthält MGI-integrierte genewise-Annotationen (genewise_phenotype_annotations.jsonl.gz), pairwise-Ähnlichkeitsdaten (pairwise_similarity_annotations.jsonl.gz) sowie Audit- und Shard-Dateien. Im Standardmodus werden keine Web-Assets erzeugt.
 
 > [!IMPORTANT]  
-> Das Verzeichnis `TSUMUGI-webapp` enthält OS-spezifische Startskripte; doppelklicken, um die lokale Webapp zu öffnen:  
+> Nur `--no-integrate-mgi` erzeugt das Verzeichnis `TSUMUGI-webapp` mit OS-spezifischen Startskripten:
 > - Windows: `open_webapp_windows.bat`  
 > - macOS: `open_webapp_mac.command`  
 > - Linux: `open_webapp_linux.sh`

@@ -89,7 +89,7 @@ def validate_mgi_reports(
     phenotypic_allele_path: str | Path,
     pheno_sex_path: str | Path,
 ) -> None:
-    """Validate the three MGI reports used by the experimental integration mode."""
+    """Validate the three MGI reports used by the integration mode."""
     paths = [Path(gene_pheno_path), Path(phenotypic_allele_path), Path(pheno_sex_path)]
     missing = [str(path) for path in paths if not path.is_file()]
     if missing:
