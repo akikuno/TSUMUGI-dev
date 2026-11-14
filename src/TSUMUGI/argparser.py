@@ -14,6 +14,14 @@ def _positive_int(value: str) -> int:
     return parsed
 
 
+def _non_negative_int(value: str) -> int:
+    """Parse a non-negative integer (0 disables the option)."""
+    parsed = int(value)
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be a non-negative integer")
+    return parsed
+
+
 def _get_version() -> str:
     """
     Get TSUMUGI version defined in pyproject.toml.
@@ -162,6 +170,27 @@ def build_parser() -> argparse.ArgumentParser:
         type=_positive_int,
         default=128,
         help="Number of consecutive gene1 markers per deterministic pairwise output shard (default: 128).\n",
+    )
+    run.add_argument(
+        "--web-min-shared",
+        dest="web_min_shared",
+        type=_positive_int,
+        default=None,
+        help=(
+            "Minimum number of shared abnormal phenotype contexts for a gene pair to be drawn in the\n"
+            "Phenotype and Gene pages of the web app (default: 2).\n"
+        ),
+    )
+    run.add_argument(
+        "--web-top-neighbors",
+        dest="web_top_neighbors",
+        type=_non_negative_int,
+        default=None,
+        help=(
+            "Draw a gene pair in the web app only when it is among this many most similar partners of\n"
+            "either gene (default: 180). Use 0 to draw every pair passing --web-min-shared.\n"
+            "'--web-min-shared 3 --web-top-neighbors 0' reproduces the rule of TSUMUGI <= 1.1.\n"
+        ),
     )
     # Debug options (hidden) to retain temporary files
     run.add_argument(
@@ -535,6 +564,77 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     # =========================================================
+    # assign (Rank gene sets for each gene by phenotype similarity)
+    # =========================================================
+
+    assign_parser = subparsers.add_parser(
+        "assign",
+        help="Rank gene sets (e.g. disease gene groups) for each gene by phenotype similarity",
+        description=(
+            "For each gene, rank user-provided gene sets by the mean of the largest phenotype similarity\n"
+            "scores between the gene and the members of each set, and list the shared phenotypes ordered\n"
+            "from the cell to the whole organism."
+        ),
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    assign_parser.add_argument(
+        "-s",
+        "--gene_sets",
+        dest="path_gene_sets",
+        type=str,
+        required=True,
+        help="Path to gene sets in GMT format (set name, description, mouse gene symbols; tab-separated).\n",
+    )
+
+    assign_parser.add_argument(
+        "-g",
+        "--genes",
+        dest="path_genes",
+        type=str,
+        required=False,
+        help=(
+            "Path to a text file of query gene symbols (one per line).\n"
+            "If omitted, every gene in the pairwise annotations is ranked and shared phenotypes are not listed.\n"
+        ),
+    )
+
+    assign_parser.add_argument(
+        "--top_members",
+        dest="top_members",
+        type=_positive_int,
+        default=3,
+        help="Number of most similar members averaged into the assignment score (default: 3).\n",
+    )
+
+    assign_parser.add_argument(
+        "--max_sets",
+        dest="max_sets",
+        type=_positive_int,
+        default=5,
+        help="Number of top-ranked gene sets reported per gene (default: 5).\n",
+    )
+
+    assign_parser.add_argument(
+        "-m",
+        "--mp_obo",
+        type=str,
+        required=False,
+        help="Path to MP ontology file (mp.obo). Uses the bundled file when omitted.\n",
+    )
+
+    assign_parser.add_argument(
+        "--in",
+        dest="path_pairwise",
+        type=str,
+        required=False,
+        help=(
+            "Path to 'pairwise_similarity_annotations' file (JSONL or JSONL.gz).\n"
+            "If omitted, data are read from STDIN.\n"
+        ),
+    )
+
+    # =========================================================
     # build-webapp
     # =========================================================
 
@@ -624,6 +724,13 @@ def parse_args(argv=None):
 
         if not args.genewise and not args.pairwise:
             parser.error("mp: Please specify either '-g/--genewise' or '-p/--pairwise'.")
+
+    ########################################################################
+    # assign
+    ########################################################################
+    if args.cmd == "assign":
+        if not args.mp_obo:
+            args.mp_obo = str(files("TSUMUGI") / "data" / "mp.obo")
 
     ########################################################################
     # count / score

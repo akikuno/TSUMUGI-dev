@@ -411,6 +411,23 @@ pairwise annotation फ़ाइल (JSONL/.gz) का पाथ। न दे�
 tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
+### हर जीन के लिए जीन सेट की रैंकिंग (`tsumugi assign`)
+```bash
+tsumugi assign [-h] -s PATH_GENE_SETS [-g PATH_GENES] [--top_members N] [--max_sets N] [-m PATH_MP_OBO] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+हर जीन के लिए, उपयोगकर्ता द्वारा दिए गए जीन सेट (जैसे किसी रोग के ज्ञात जीन) को फ़ीनोटाइप समानता के आधार पर क्रम में रखता है। स्कोर, जीन और सेट के सदस्यों के बीच सबसे बड़े similarity scores का औसत है (डिफ़ॉल्ट: 3 सदस्य); जीन स्वयं शामिल नहीं किया जाता। जीन सेट GMT फ़ॉर्मैट में दें (नाम, विवरण, माउस जीन सिंबल; टैब से अलग)।
+
+`-g` देने पर `shared_phenotypes` में साझा फ़ीनोटाइप `cell`, `structure`, `function`, `organism`, `other` के क्रम में दिए जाते हैं। परिणाम एक परिकल्पना है, सदस्यता का प्रमाण नहीं।
+
+```bash
+tsumugi assign \
+  --gene_sets disease_gene_sets.gmt \
+  --genes genes.txt \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > gene_set_assignments.jsonl
+```
+
 ### GraphML / webapp एक्सपोर्ट
 ```bash
 tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS

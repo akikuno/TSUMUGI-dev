@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import heapq
 import logging
 import pickle
 import shutil
@@ -19,27 +20,69 @@ from TSUMUGI import (
     web_deployer,
 )
 
-WEB_MIN_SHARED_ANNOTATIONS = 3
+# Web networks draw a gene pair that shares WEB_MIN_SHARED_ANNOTATIONS or more annotations when it is among the
+# WEB_TOP_NEIGHBORS most similar such partners of either gene.
+# The former rule (three or more shared annotations) is reproduced with
+# `--web-min-shared 3 --web-top-neighbors 0`.
+WEB_MIN_SHARED_ANNOTATIONS = 2
 WEB_MIN_PHENOTYPE_SIMILARITY_SCORE = 1
+WEB_TOP_NEIGHBORS = 180
 GENE_ASSET_MIN_SHARED_ANNOTATIONS = 1
+
+
+def _resolve_web_thresholds(args) -> tuple[int, int | None]:
+    """Return (minimum shared annotations, top neighbors or None) from CLI arguments or defaults."""
+    min_shared_annotations = getattr(args, "web_min_shared", None)
+    if min_shared_annotations is None:
+        min_shared_annotations = WEB_MIN_SHARED_ANNOTATIONS
+    top_neighbors = getattr(args, "web_top_neighbors", None)
+    if top_neighbors is None:
+        top_neighbors = WEB_TOP_NEIGHBORS
+    return min_shared_annotations, (top_neighbors or None)
 
 
 def _filter_pairwise_similarity_annotations_for_web(
     pairwise_similarity_annotations: Iterator[dict[str, object]],
     min_shared_annotations: int,
     min_phenotype_similarity_score: int,
+    top_neighbors: int | None = None,
 ) -> list[dict[str, object]]:
-    """Filter pairwise annotations before building web network JSON files."""
-    selected_records: list[dict[str, object]] = []
-    for record in pairwise_similarity_annotations:
+    """Filter pairwise annotations before building web network JSON files.
+
+    A pair is eligible when it has enough shared annotations and a large enough rounded score.
+    When `top_neighbors` is given, an eligible pair is kept only if it is among the `top_neighbors`
+    most similar eligible partners of at least one of its two genes (ties favor earlier records).
+    """
+    selected_records: dict[int, dict[str, object]] = {}
+    neighbor_heaps: dict[object, list[tuple[float, int]]] = defaultdict(list)
+    heap_memberships: dict[int, int] = {}
+    for index, record in enumerate(pairwise_similarity_annotations):
         shared_annotations = record.get("phenotype_shared_annotations", [])
-        phenotype_similarity_score = int(round(float(record.get("phenotype_similarity_score", 0))))
-        if (
-            len(shared_annotations) >= min_shared_annotations
-            and phenotype_similarity_score >= min_phenotype_similarity_score
-        ):
-            selected_records.append(record)
-    return selected_records
+        score = float(record.get("phenotype_similarity_score", 0))
+        if len(shared_annotations) < min_shared_annotations or int(round(score)) < min_phenotype_similarity_score:
+            continue
+        selected_records[index] = record
+        if top_neighbors is None:
+            continue
+        heap_memberships[index] = 0
+        for gene in (record["gene1_symbol"], record["gene2_symbol"]):
+            heap = neighbor_heaps[gene]
+            entry = (score, -index)
+            if len(heap) < top_neighbors:
+                heapq.heappush(heap, entry)
+                heap_memberships[index] += 1
+                continue
+            evicted = heapq.heappushpop(heap, entry)
+            if evicted == entry:
+                continue
+            heap_memberships[index] += 1
+            evicted_index = -evicted[1]
+            heap_memberships[evicted_index] -= 1
+            if heap_memberships[evicted_index] == 0 and evicted_index != index:
+                del selected_records[evicted_index], heap_memberships[evicted_index]
+        if heap_memberships[index] == 0:
+            del selected_records[index], heap_memberships[index]
+    return [selected_records[index] for index in sorted(selected_records)]
 
 
 def run_pipeline(args) -> None:
@@ -136,17 +179,20 @@ def run_pipeline(args) -> None:
             min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
         )
 
+        web_min_shared_annotations, web_top_neighbors = _resolve_web_thresholds(args)
         pairwise_similarity_annotations_with_shared_phenotype = _filter_pairwise_similarity_annotations_for_web(
             io_handler.read_jsonl(path_pairwise_similarity_annotations),
-            min_shared_annotations=WEB_MIN_SHARED_ANNOTATIONS,
+            min_shared_annotations=web_min_shared_annotations,
             min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+            top_neighbors=web_top_neighbors,
         )
         logging.info(
-            "Selected %d pairwise records for web networks with shared_annotations >= %d and "
-            "phenotype_similarity_score >= %d",
+            "Selected %d pairwise records for web networks with shared_annotations >= %d, "
+            "phenotype_similarity_score >= %d and top neighbors per gene = %s",
             len(pairwise_similarity_annotations_with_shared_phenotype),
-            WEB_MIN_SHARED_ANNOTATIONS,
+            web_min_shared_annotations,
             WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+            web_top_neighbors if web_top_neighbors is not None else "all",
         )
 
         logging.info("Building phenotype network JSON files...")
@@ -200,10 +246,12 @@ def run_pipeline(args) -> None:
         if gene_network_dir.exists() and path_pairwise_similarity_annotations.exists() and not has_gene_modules:
             logging.info("Building gene phenotype module JSON files for debug web...")
             pairwise_similarity_annotations = io_handler.read_jsonl(path_pairwise_similarity_annotations)
+            web_min_shared_annotations, web_top_neighbors = _resolve_web_thresholds(args)
             pairwise_similarity_annotations_with_shared_phenotype = _filter_pairwise_similarity_annotations_for_web(
                 pairwise_similarity_annotations,
-                min_shared_annotations=WEB_MIN_SHARED_ANNOTATIONS,
+                min_shared_annotations=web_min_shared_annotations,
                 min_phenotype_similarity_score=WEB_MIN_PHENOTYPE_SIMILARITY_SCORE,
+                top_neighbors=web_top_neighbors,
             )
             gene_phenotype_module_builder.build_gene_phenotype_module_json(
                 pairwise_similarity_annotations_with_shared_phenotype,

@@ -411,6 +411,23 @@ Path ke file anotasi pairwise (JSONL/.gz). Jika dihilangkan, membaca dari STDIN.
 tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
+### Memeringkat set gen untuk setiap gen (`tsumugi assign`)
+```bash
+tsumugi assign [-h] -s PATH_GENE_SETS [-g PATH_GENES] [--top_members N] [--max_sets N] [-m PATH_MP_OBO] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+Untuk setiap gen, memeringkat set gen yang diberikan pengguna (misalnya gen yang diketahui untuk tiap penyakit) berdasarkan kemiripan fenotipe. Skor adalah rata-rata skor kemiripan tertinggi antara gen dan anggota set (bawaan: 3 anggota); gen itu sendiri dikecualikan. Set gen diberikan dalam format GMT (nama, deskripsi, simbol gen mencit; dipisahkan tab).
+
+Dengan `-g`, `shared_phenotypes` mencantumkan fenotipe bersama dalam urutan `cell`, `structure`, `function`, `organism`, `other`. Hasilnya adalah hipotesis, bukan bukti keanggotaan.
+
+```bash
+tsumugi assign \
+  --gene_sets disease_gene_sets.gmt \
+  --genes genes.txt \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > gene_set_assignments.jsonl
+```
+
 ### Ekspor GraphML / webapp
 ```bash
 tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS

@@ -411,6 +411,23 @@ pairwise注释文件（JSONL/.gz）路径。省略时从STDIN读取。
 tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
+### 为每个基因排序基因集（`tsumugi assign`）
+```bash
+tsumugi assign [-h] -s PATH_GENE_SETS [-g PATH_GENES] [--top_members N] [--max_sets N] [-m PATH_MP_OBO] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+对每个基因，按表型相似度对用户提供的基因集（例如各疾病的已知致病基因）进行排序。得分是该基因与基因集成员之间最高相似度得分的平均值（默认取3个成员），基因自身不计入。基因集以GMT格式提供（名称、描述、小鼠基因符号，以制表符分隔）。
+
+指定`-g`时，`shared_phenotypes`按`cell`、`structure`、`function`、`organism`、`other`的顺序列出共享表型。结果是假设，而不是归属的证据。
+
+```bash
+tsumugi assign \
+  --gene_sets disease_gene_sets.gmt \
+  --genes genes.txt \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > gene_set_assignments.jsonl
+```
+
 ### 导出GraphML / webapp
 ```bash
 tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS

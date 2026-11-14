@@ -411,6 +411,23 @@ Ruta al archivo pairwise (JSONL/.gz). Si se omite, lee desde STDIN.
 tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
+### Clasificar conjuntos de genes para cada gen (`tsumugi assign`)
+```bash
+tsumugi assign [-h] -s PATH_GENE_SETS [-g PATH_GENES] [--top_members N] [--max_sets N] [-m PATH_MP_OBO] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+Para cada gen, clasifica los conjuntos de genes proporcionados por el usuario (por ejemplo, los genes conocidos de cada enfermedad) según la similitud fenotípica. La puntuación es la media de las mayores similitudes entre el gen y los miembros del conjunto (por defecto, 3 miembros); el propio gen se excluye. Los conjuntos se indican en formato GMT (nombre, descripción, símbolos de genes de ratón; separados por tabulaciones).
+
+Con `-g`, `shared_phenotypes` enumera los fenotipos compartidos en el orden `cell`, `structure`, `function`, `organism`, `other`. El resultado es una hipótesis, no una prueba de pertenencia.
+
+```bash
+tsumugi assign \
+  --gene_sets disease_gene_sets.gmt \
+  --genes genes.txt \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > gene_set_assignments.jsonl
+```
+
 ### Exportar GraphML / webapp
 ```bash
 tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS

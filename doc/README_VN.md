@@ -411,6 +411,23 @@ Loại bỏ zygosity chỉ định.
 tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
+### Xếp hạng các tập gen cho từng gen (`tsumugi assign`)
+```bash
+tsumugi assign [-h] -s PATH_GENE_SETS [-g PATH_GENES] [--top_members N] [--max_sets N] [-m PATH_MP_OBO] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+Với mỗi gen, xếp hạng các tập gen do người dùng cung cấp (ví dụ: các gen đã biết của từng bệnh) theo độ tương đồng kiểu hình. Điểm là trung bình của các điểm tương đồng cao nhất giữa gen và các thành viên của tập (mặc định: 3 thành viên); bản thân gen được loại trừ. Tập gen được cung cấp ở định dạng GMT (tên, mô tả, ký hiệu gen chuột; phân tách bằng tab).
+
+Khi dùng `-g`, `shared_phenotypes` liệt kê các kiểu hình chung theo thứ tự `cell`, `structure`, `function`, `organism`, `other`. Kết quả là một giả thuyết, không phải bằng chứng về tư cách thành viên.
+
+```bash
+tsumugi assign \
+  --gene_sets disease_gene_sets.gmt \
+  --genes genes.txt \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > gene_set_assignments.jsonl
+```
+
 ### Xuất GraphML / webapp
 ```bash
 tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS

@@ -412,6 +412,23 @@ pairwise 주석 파일(JSONL/.gz) 경로. 생략 시 STDIN에서 읽습니다.
 tsumugi zygosity --keep Homo   --in pairwise_similarity_annotations.jsonl.gz   > pairwise_homo.jsonl
 ```
 
+### 유전자별 유전자 세트 순위 매기기(`tsumugi assign`)
+```bash
+tsumugi assign [-h] -s PATH_GENE_SETS [-g PATH_GENES] [--top_members N] [--max_sets N] [-m PATH_MP_OBO] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+각 유전자에 대해 사용자가 제공한 유전자 세트(예: 질환별로 알려진 유전자)를 표현형 유사도로 순위화합니다. 점수는 해당 유전자와 세트 구성원 사이의 가장 높은 유사도 점수들의 평균입니다(기본값: 3개 구성원). 유전자 자신은 제외됩니다. 유전자 세트는 GMT 형식(이름, 설명, 마우스 유전자 기호; 탭 구분)으로 지정합니다.
+
+`-g`를 지정하면 `shared_phenotypes`에 공유 표현형이 `cell`, `structure`, `function`, `organism`, `other` 순서로 나열됩니다. 결과는 가설이며 소속의 증거가 아닙니다.
+
+```bash
+tsumugi assign \
+  --gene_sets disease_gene_sets.gmt \
+  --genes genes.txt \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > gene_set_assignments.jsonl
+```
+
 ### GraphML / webapp 내보내기
 ```bash
 tsumugi build-graphml [-h] [--in PATH_PAIRWISE_ANNOTATIONS] -a PATH_GENEWISE_ANNOTATIONS

@@ -7,6 +7,7 @@ from pathlib import Path
 from TSUMUGI import argparser, core, validator
 from TSUMUGI.subcommands import (
     count_filterer,
+    gene_set_assigner,
     genes_filterer,
     graphml_builder,
     life_stage_filterer,
@@ -299,6 +300,20 @@ def main() -> None:
                 zygosity=args.drop,
                 drop=True,
             )
+
+    # -----------------------------------------------------
+    # Rank gene sets for each gene
+    # -----------------------------------------------------
+    if args.cmd == "assign":
+        logging.info("Ranking gene sets for each gene by phenotype similarity")
+        gene_set_assigner.assign_genes_to_gene_sets(
+            path_pairwise_similarity_annotations=args.path_pairwise or sys.stdin,
+            path_gene_sets=args.path_gene_sets,
+            path_genes=args.path_genes,
+            path_obo=args.mp_obo,
+            top_members=args.top_members,
+            max_sets=args.max_sets,
+        )
 
     # -----------------------------------------------------
     # Build GraphML

@@ -95,9 +95,11 @@ Example:
 The page transitions and draws the network automatically.
 
 > [!IMPORTANT]  
-> Gene and Phenotype pages visualize gene pairs with **3 or more shared abnormal phenotype contexts** and
-> **phenotypic similarity > 0.0**. Gene List retains pairs with **1 or more shared abnormal phenotype contexts**
-> among the submitted genes. These are display rules, not thresholds for statistical significance.
+> Gene and Phenotype pages visualize a gene pair with **2 or more shared abnormal phenotype contexts** when it is
+> among the **180 most similar such partners of either gene** (rounded phenotypic similarity of 1 or more).
+> Gene List retains pairs with **1 or more shared abnormal phenotype contexts** among the submitted genes.
+> These are display rules, not thresholds for statistical significance. The rule of TSUMUGI v1.1 and earlier
+> (3 or more shared contexts) is reproduced with `tsumugi run --web-min-shared 3 --web-top-neighbors 0`.
 
 ### Network panel
 **Nodes** represent genes. Click to see the list of abnormal phenotypes observed in that KO mouse; drag to rearrange positions.  
@@ -216,6 +218,7 @@ tsumugi mp --include MP:0001146 \
 | `tsumugi life-stage`    | Keep or drop a life stage                                         |
 | `tsumugi sex`           | Keep or drop a sex label                                          |
 | `tsumugi zygosity`      | Keep or drop a zygosity                                           |
+| `tsumugi assign`        | Rank gene sets (e.g. disease gene groups) for each gene           |
 | `tsumugi build-graphml` | Export GraphML                                                    |
 | `tsumugi build-webapp`  | Build a locally served webapp bundle                              |
 

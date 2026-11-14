@@ -39,6 +39,7 @@ You are ready if `tsumugi --version` prints the version.
 - `tsumugi life-stage --keep/--drop`: Filter by life stage (Embryo/Early/Interval/Late)
 - `tsumugi sex --keep/--drop`: Filter by sex (Male/Female/None)
 - `tsumugi zygosity --keep/--drop`: Filter by zygosity (Homo/Hetero/Hemi)
+- `tsumugi assign --gene_sets`: Rank gene sets (e.g. disease gene groups) for each gene by phenotype similarity
 - `tsumugi build-graphml`: Generate GraphML (Cytoscape, etc.)
 - `tsumugi build-webapp`: Generate TSUMUGI webapp assets (local HTML/CSS/JS)
 
@@ -70,6 +71,8 @@ Outputs: `./tsumugi-output` contains MGI-integrated genewise annotations (`genew
 > - Windows: `open_webapp_windows.bat`
 > - macOS: `open_webapp_mac.command`
 > - Linux: `open_webapp_linux.sh`
+
+In the IMPC-only pipeline, the Phenotype and Gene pages of the web app draw a gene pair that shares two or more abnormal phenotype contexts when it is among the 180 most similar such partners of either gene. `--web-top-neighbors N` changes this number (`0` draws every eligible pair), and `--web-min-shared N` sets the minimum number of shared abnormal phenotype contexts (default: 2). `--web-min-shared 3 --web-top-neighbors 0` reproduces the display rule of TSUMUGI v1.1 and earlier.
 
 The explicit `--integrate-mgi` option remains accepted for backward compatibility. Custom snapshots can be supplied with `--mgi-gene-pheno`, `--mgi-phenotypic-allele`, and `--mgi-pheno-sex`.
 
@@ -316,6 +319,44 @@ Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
 tsumugi zygosity --keep Homo \
   --in pairwise_similarity_annotations.jsonl.gz \
   > pairwise_homo.jsonl
+```
+
+### Rank gene sets for each gene (`tsumugi assign`)
+```bash
+tsumugi assign [-h] -s PATH_GENE_SETS [-g PATH_GENES] [--top_members N] [--max_sets N] [-m PATH_MP_OBO] [--in PATH_PAIRWISE_ANNOTATIONS]
+```
+
+For each gene, rank user-provided gene sets (for example, the genes known to cause each disease) by phenotype similarity. The assignment score of a gene for a gene set is the mean of the largest similarity scores between the gene and the members of the set; the gene itself is excluded, so known members can be used to check the ranking. One JSONL record is written per gene and reported gene set, with `rank`, `assignment_score`, `nearest_members`, and `shared_phenotypes`.
+
+`shared_phenotypes` lists the phenotypes shared with the members, ordered by level of biological organisation: `cell` (cellular phenotype), `structure` (tissue and organ morphology), `function` (organ physiology and homeostasis), `organism` (survival, body growth, behavior, fertility), and `other`. Read from top to bottom, the list is a candidate route from the cell to the whole-organism phenotype.
+
+> [!NOTE]
+> The score also reflects non-specific similarity: genes with many annotations or with lethal phenotypes are similar to many gene sets. Compare the `rank` across gene sets and inspect `shared_phenotypes`; the output is a hypothesis, not evidence of membership.
+
+#### `-s PATH_GENE_SETS`, `--gene_sets PATH_GENE_SETS`
+Gene sets in GMT format: set name, description, and mouse gene symbols, separated by tabs. Required.
+
+#### `-g PATH_GENES`, `--genes PATH_GENES`
+Text file of query gene symbols (one per line). If omitted, every gene in the pairwise file is ranked and `shared_phenotypes` is not written.
+
+#### `--top_members N`
+Number of most similar members averaged into the score (default: 3). Gene sets with fewer other members in the pairwise file are not candidates.
+
+#### `--max_sets N`
+Number of top-ranked gene sets reported per gene (default: 5).
+
+#### `-m PATH_MP_OBO`, `--mp_obo PATH_MP_OBO`
+Path to the Mammalian Phenotype ontology (mp.obo). If omitted, the bundled file is used.
+
+#### `--in PATH_PAIRWISE_ANNOTATIONS`
+Path to the pairwise annotation file (JSONL/.gz). If omitted, reads from STDIN.
+
+```bash
+tsumugi assign \
+  --gene_sets disease_gene_sets.gmt \
+  --genes genes.txt \
+  --in pairwise_similarity_annotations.jsonl.gz \
+  > gene_set_assignments.jsonl
 ```
 
 ### Export GraphML / webapp
